@@ -8,3 +8,4 @@ C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\obj\Debug\OctoAwesome.csproj
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\obj\Debug\OctoAwesome.exe
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\obj\Debug\OctoAwesome.pdb
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\obj\Debug\OctoAwesome.csprojAssemblyReference.cache
+C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\obj\Debug\OctoAwesome.RenderControl.resources

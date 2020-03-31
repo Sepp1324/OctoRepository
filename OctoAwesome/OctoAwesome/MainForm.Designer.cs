@@ -34,7 +34,7 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.programMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.renderPanel = new System.Windows.Forms.Panel();
+            this.renderControl = new OctoAwesome.RenderControl();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,25 +73,24 @@
             // closeMenu
             // 
             this.closeMenu.Name = "closeMenu";
-            this.closeMenu.Size = new System.Drawing.Size(180, 22);
+            this.closeMenu.Size = new System.Drawing.Size(103, 22);
             this.closeMenu.Text = "Close";
             this.closeMenu.Click += new System.EventHandler(this.closeMenu_Click);
             // 
-            // renderPanel
+            // renderControl
             // 
-            this.renderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.renderPanel.Location = new System.Drawing.Point(0, 24);
-            this.renderPanel.Name = "renderPanel";
-            this.renderPanel.Size = new System.Drawing.Size(800, 404);
-            this.renderPanel.TabIndex = 3;
-            this.renderPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.renderPanel_Paint);
+            this.renderControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.renderControl.Location = new System.Drawing.Point(0, 24);
+            this.renderControl.Name = "renderControl";
+            this.renderControl.Size = new System.Drawing.Size(800, 404);
+            this.renderControl.TabIndex = 3;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.renderPanel);
+            this.Controls.Add(this.renderControl);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.DoubleBuffered = true;
@@ -112,7 +111,7 @@
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem programMenu;
         private System.Windows.Forms.ToolStripMenuItem closeMenu;
-        private System.Windows.Forms.Panel renderPanel;
+        private RenderControl renderControl;
     }
 }
 
