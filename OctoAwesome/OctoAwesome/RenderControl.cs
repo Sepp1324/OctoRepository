@@ -15,9 +15,13 @@ namespace OctoAwesome
 
         public Game Game { get; set; }
 
+        private Image grass;
+
         public RenderControl()
         {
             InitializeComponent();
+
+            grass = Image.FromFile("Asses/grass.png");
         }
 
         protected override void OnResize(EventArgs e)
@@ -32,6 +36,8 @@ namespace OctoAwesome
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.Clear(Color.CornflowerBlue);
+
+            e.Graphics.DrawImage(grass, new Rectangle(0, 0, ClientSize.Width, ClientSize.Height));
 
             if (Game == null)
                 return;

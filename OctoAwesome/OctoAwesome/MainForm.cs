@@ -36,5 +36,37 @@ namespace OctoAwesome
         {
             Close();
         }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if(game != null)
+            {
+                switch (keyData)
+                {
+                    case Keys.Left: game.Left = true; break;
+                    case Keys.Right: game.Right = true; break;
+                    case Keys.Up: game.Up = true; break;
+                    case Keys.Down: game.Down = true; break;
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            if (game == null)
+                return;
+
+            switch (e.KeyCode)
+            {
+                case Keys.Left: game.Left = false; break;
+                case Keys.Right: game.Right = false; break;
+                case Keys.Up: game.Up = false; break;
+                case Keys.Down: game.Down = false; break;
+            }
+
+            base.OnKeyUp(e);
+        }
     }
 }
