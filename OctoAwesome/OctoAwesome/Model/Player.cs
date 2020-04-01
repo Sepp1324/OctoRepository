@@ -40,7 +40,7 @@ namespace OctoAwesome.Model
             int cellX = (int)(Position.X / Map.CELLSIZE);
             int cellY = (int)(Position.Y / Map.CELLSIZE);
 
-            CellType cellType = map.Cells[cellX, cellY];
+            CellType cellType = map.GetCell(cellX, cellY);
 
             //Geschwindigkeit modifizieren
             switch (cellType)

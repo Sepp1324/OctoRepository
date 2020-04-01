@@ -18,7 +18,7 @@ namespace OctoAwesome.Model
         {
             get
             {
-                return new Vector2(Map.Cells.GetLength(0) * Map.CELLSIZE, Map.Cells.GetLength(1) * Map.CELLSIZE);
+                return new Vector2(Map.Columns * Map.CELLSIZE, Map.Rows * Map.CELLSIZE);
             }
         }
 
@@ -28,7 +28,8 @@ namespace OctoAwesome.Model
 
         public Game(Input input)
         {
-            Map = new Map(20, 20);
+            //Map = Map.Generate(20, 20, CellType.Grass);
+            Map = Map.Load(@"C:\Users\sebip\OneDrive\Desktop\testMap.map");
             Player = new Player(input, Map);
             Camera = new Camera(this, input);
         }
@@ -40,7 +41,6 @@ namespace OctoAwesome.Model
             if (Player.Position.X - Player.Radius < 0)
             {
                 Player.Position = new Vector2(Player.Radius, Player.Position.Y);
-                //Player.Position = new Vector2(PlaygroundSize.X, Player.Position.Y);
             }
 
             if (Player.Position.X + Player.Radius > PlaygroundSize.X)

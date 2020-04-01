@@ -47,13 +47,13 @@ namespace MapEditor
             SolidBrush waterBrush = new SolidBrush(Color.Blue);
             SolidBrush selectionBrush = new SolidBrush(Color.FromArgb(100, Color.White));
 
-            for (int x = 0; x < map.Cells.GetLength(0); x++)
+            for (int x = 0; x < map.Columns; x++)
             {
-                for (int y = 0; y < map.Cells.GetLength(1); y++)
+                for (int y = 0; y < map.Rows; y++)
                 {
                     SolidBrush brush = null;
 
-                    switch (map.Cells[x, y])
+                    switch (map.GetCell(x, y))
                     {
                         case CellType.Grass: brush = grassBrush; break;
                         case CellType.Sand: brush = sandBrush; break;
@@ -73,14 +73,14 @@ namespace MapEditor
 
             using (Pen pen = new Pen(Color.FromArgb(100, Color.White)))
             {
-                for (int x = 0; x < map.Cells.GetLength(0) + 1; x++)
+                for (int x = 0; x < map.Columns + 1; x++)
                 {
-                    e.Graphics.DrawLine(pen, new Point(x * cellSize, 0), new Point(x * cellSize, map.Cells.GetLength(1) * cellSize));
+                    e.Graphics.DrawLine(pen, new Point(x * cellSize, 0), new Point(x * cellSize, map.Rows * cellSize));
                 }
 
-                for (int y = 0; y < map.Cells.GetLength(1); y++)
+                for (int y = 0; y < map.Rows; y++)
                 {
-                    e.Graphics.DrawLine(pen, new Point(0, y * cellSize), new Point(map.Cells.GetLength(0) * cellSize, y * cellSize));
+                    e.Graphics.DrawLine(pen, new Point(0, y * cellSize), new Point(map.Columns * cellSize, y * cellSize));
                 }
             }
 
@@ -99,12 +99,12 @@ namespace MapEditor
 
         private void smallMapMenu_Click(object sender, EventArgs e)
         {
-            map = new Map(20, 20);
+            map = Map.Generate(20, 20, CellType.Grass);
         }
 
         private void mediumMapMenu_Click(object sender, EventArgs e)
         {
-            map = new Map(40, 40);
+            map = Map.Generate(40, 40, CellType.Grass);
         }
 
         private void renderPanel_MouseMove(object sender, MouseEventArgs e)
@@ -114,10 +114,10 @@ namespace MapEditor
             if (map == null || !mouseDraw || !mouseActive)
                 return;
 
-            if (mousePosition.X < 0 || mousePosition.X >= map.Cells.GetLength(0) || mousePosition.Y < 0 || mousePosition.Y >= map.Cells.GetLength(1))
+            if (mousePosition.X < 0 || mousePosition.X >= map.Columns || mousePosition.Y < 0 || mousePosition.Y >= map.Rows)
                 return;
 
-            map.Cells[mousePosition.X, mousePosition.Y] = drawMode;
+            map.SetCell(mousePosition.X, mousePosition.Y, drawMode);
         }
 
         private void renderPanel_MouseEnter(object sender, EventArgs e)
