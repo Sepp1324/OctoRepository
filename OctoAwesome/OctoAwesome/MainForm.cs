@@ -18,6 +18,7 @@ namespace OctoAwesome
         private Input input = new Input();
         private Game game;
         private Stopwatch watch = new Stopwatch();
+        private RenderControl renderControl;
 
         public MainForm()
         {
@@ -25,17 +26,20 @@ namespace OctoAwesome
 
             game = new Game(input);
 
+            renderControl = new RenderControl(game);
+            renderControl.Dock = DockStyle.Fill;
+            this.Controls.Add(renderControl);
+
             watch.Start();
-            renderControl.Game = game;
-            game.PlaygroundSize = new Point(renderControl.ClientSize.Width, renderControl.ClientSize.Height);
         }
+
 
         private void timer_Tick(object sender, EventArgs e)
         {
             game.Update(watch.Elapsed);
             watch.Restart();
             renderControl.Invalidate();
-            
+
         }
 
         private void closeMenu_Click(object sender, EventArgs e)

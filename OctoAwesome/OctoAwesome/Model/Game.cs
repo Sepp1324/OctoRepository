@@ -11,6 +11,7 @@ namespace OctoAwesome.Model
     internal sealed class Game
     {
         private Input input;
+        public Camera Camera { get; private set; }
         public PointF PlaygroundSize { get; set; }
 
         public Player Player { get; private set; }
@@ -18,6 +19,8 @@ namespace OctoAwesome.Model
         public Game(Input input)
         {
             Player = new Player(input);
+            Camera = new Camera(this, input);
+            PlaygroundSize = new PointF(2000, 2000);
         }
 
         public void Update(TimeSpan frameTime )
@@ -43,6 +46,8 @@ namespace OctoAwesome.Model
             {
                 Player.Position = new Vector2(PlaygroundSize.X, Player.Position.Y - 100);
             }
+
+            Camera.Update(frameTime);
         }
     }
 }

@@ -12,21 +12,24 @@ using OctoAwesome.Model;
 
 namespace OctoAwesome
 {
-    public partial class RenderControl : UserControl
+    internal partial class RenderControl : UserControl
     {
         private const int SPRITE_WIDTH = 57;
         private const int SPRITE_HEIGHT = 57;
 
         private Stopwatch watch = new Stopwatch();
 
-        internal Game Game { get; set; }
+        //internal Game Game { get; private set; }
+        private readonly Game game;
 
-        private Image grass;
-        private Image sprite;
+        private readonly Image grass;
+        private readonly Image sprite;
 
-        public RenderControl()
+        public RenderControl(Game game)
         {
             InitializeComponent();
+
+            this.game = game;
 
             grass = Image.FromFile("Assets/grass.png");
             sprite = Image.FromFile("Assets/Sprite.png");
@@ -36,9 +39,9 @@ namespace OctoAwesome
 
         protected override void OnResize(EventArgs e)
         {
-            if (Game != null)
+            if (game != null)
             {
-                Game.PlaygroundSize = new Point(ClientSize.Width, ClientSize.Height);
+               // Game.PlaygroundSize = new Point(ClientSize.Width, ClientSize.Height);
             }
             base.OnResize(e);
         }
@@ -47,15 +50,27 @@ namespace OctoAwesome
         {
             e.Graphics.Clear(Color.CornflowerBlue);
 
-            for (int x = 0; x < ClientRectangle.Width; x += grass.Width)
+            int offsetX = (int)game.Camera.Center.X - (this.ClientSize.Width / 2);
+            int offsetY = (int)game.Camera.Center.Y - (this.ClientSize.Height / 2);
+
+            int cellX1 = Math.Max(0, (int)(offsetX / 100));
+            int cellY1 = Math.Max(0, (int)(offsetY / 100));
+
+            int cellCountX = (ClientSize.Width / grass.Width) + 2;
+            int cellCountY = (ClientSize.Height / grass.Height) + 2;
+
+            int cellX2 = Math.Min(cellX1 + cellCountX, (int)(game.PlaygroundSize.X / grass.Width));
+            int cellY2 = Math.Min(cellY1 + cellCountY, (int)(game.PlaygroundSize.Y / grass.Height));
+
+            for (int x = cellX1; x < cellX2; x++)
             {
-                for (int y = 0; y < ClientRectangle.Height; y += grass.Height)
+                for (int y = cellY1; y < cellY2; y++)
                 {
-                    e.Graphics.DrawImage(grass, new Point(x, y));
+                    e.Graphics.DrawImage(grass, new Point(x * grass.Width - offsetX, y * grass.Height - offsetY));
                 }
             }
 
-            if (Game == null)
+            if (game == null)
                 return;
 
             using (Brush brush = new SolidBrush(Color.White))
@@ -64,8 +79,9 @@ namespace OctoAwesome
 
                 int offsetx = 0;
 
-                if (Game.Player.State == PlayerState.WALK)
+                if (game.Player.State == PlayerState.WALK)
                 {
+
                     switch (frame)
                     {
                         case 0: offsetx = 0; break;
@@ -79,7 +95,7 @@ namespace OctoAwesome
                     offsetx = SPRITE_WIDTH;
                 }
                 //Umrechnung in Grad
-                float direction = (Game.Player.Angle * 360f) / (float)(2 * Math.PI);
+                float direction = (game.Player.Angle * 360f) / (float)(2 * Math.PI);
 
                 //in positiven BEreich
                 direction += 180;
@@ -99,7 +115,7 @@ namespace OctoAwesome
                     case 4: offsety = 1 * SPRITE_HEIGHT; break;
                 }
 
-                e.Graphics.DrawImage(sprite, new RectangleF(Game.Player.Position.X, Game.Player.Position.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(sprite, new RectangleF(game.Player.Position.X - offsetX, game.Player.Position.Y - offsetY, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
             }
         }
     }
