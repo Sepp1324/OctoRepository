@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OctoAwesome.Components;
+using OctoAwesome.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,12 +15,16 @@ namespace OctoAwesome
 {
     public partial class MainForm : Form
     {
-        private Game game = new Game();
+        private Input input = new Input();
+        private Game game;
         private Stopwatch watch = new Stopwatch();
 
         public MainForm()
         {
             InitializeComponent();
+
+            game = new Game(input);
+
             watch.Start();
             renderControl.Game = game;
             game.PlaygroundSize = new Point(renderControl.ClientSize.Width, renderControl.ClientSize.Height);
@@ -26,24 +32,7 @@ namespace OctoAwesome
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (game != null)
-            {
-                switch (keyData)
-                {
-                    case Keys.Left:
-                        game.Left = true;
-                        break;
-                    case Keys.Right:
-                        game.Right = true;
-                        break;
-                    case Keys.Down:
-                        game.Down = true;
-                        break;
-                    case Keys.Up:
-                        game.Up = true;
-                        break;
-                }
-            }
+            input.KeyDown(keyData);
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -58,6 +47,13 @@ namespace OctoAwesome
         private void closeMenu_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+
+            input.KeyUp(e.KeyCode);
+            base.OnKeyUp(e);
         }
     }
 }
