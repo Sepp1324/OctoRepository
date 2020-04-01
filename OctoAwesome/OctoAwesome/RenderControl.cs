@@ -15,9 +15,13 @@ namespace OctoAwesome
 
         public Game Game { get; set; }
 
+        private Image grass;
+
         public RenderControl()
         {
             InitializeComponent();
+
+            grass = Image.FromFile("Assets/grass.png");
         }
 
         protected override void OnResize(EventArgs e)
@@ -33,6 +37,8 @@ namespace OctoAwesome
         {
             e.Graphics.Clear(Color.CornflowerBlue);
 
+            e.Graphics.DrawImage(grass, new Rectangle(0, 0, ClientSize.Width, ClientSize.Height));
+
             if (Game == null)
                 return;
 
@@ -41,6 +47,31 @@ namespace OctoAwesome
                 e.Graphics.FillEllipse(brush, new Rectangle(Game.Position.X, Game.Position.Y, 100, 100));
 
             }
+        }
+
+  
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+
+            if (Game == null)
+                return;
+
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    Game.Left = false;
+                    break;
+                case Keys.Right:
+                    Game.Right = false;
+                    break;
+                case Keys.Down:
+                    Game.Down = false;
+                    break;
+                case Keys.Up:
+                    Game.Up = false;
+                    break;
+            }
+            base.OnKeyUp(e);
         }
     }
 }

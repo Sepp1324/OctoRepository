@@ -24,12 +24,35 @@ namespace OctoAwesome
             game.PlaygroundSize = new Point(renderControl.ClientSize.Width, renderControl.ClientSize.Height);
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (game != null)
+            {
+                switch (keyData)
+                {
+                    case Keys.Left:
+                        game.Left = true;
+                        break;
+                    case Keys.Right:
+                        game.Right = true;
+                        break;
+                    case Keys.Down:
+                        game.Down = true;
+                        break;
+                    case Keys.Up:
+                        game.Up = true;
+                        break;
+                }
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void timer_Tick(object sender, EventArgs e)
         {
             game.Update(watch.Elapsed);
             watch.Restart();
             renderControl.Invalidate();
-            
+
         }
 
         private void closeMenu_Click(object sender, EventArgs e)
