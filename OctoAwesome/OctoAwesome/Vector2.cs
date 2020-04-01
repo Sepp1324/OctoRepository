@@ -29,14 +29,14 @@ namespace OctoAwesome
 
         public float Angle()
         {
-           return (float) Math.Atan2(Y, X);
+            return (float)Math.Atan2(Y, X);
         }
 
         public Vector2 Normalized()
         {
             float length = Length();
 
-            if (length == 0)
+            if(length == 0)
             {
                 return new Vector2(0, 0);
             }

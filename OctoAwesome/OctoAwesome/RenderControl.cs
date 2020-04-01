@@ -8,17 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using OctoAwesome.Model;
 
 namespace OctoAwesome
 {
     public partial class RenderControl : UserControl
     {
         private const int SPRITE_WIDTH = 57;
-        private const int SPRITE_HEIGHT = 64;
+        private const int SPRITE_HEIGHT = 57;
 
         private Stopwatch watch = new Stopwatch();
 
-        public Game Game { get; set; }
+        internal Game Game { get; set; }
 
         private Image grass;
         private Image sprite;
@@ -61,8 +62,17 @@ namespace OctoAwesome
             {
                 int frame = (int)((watch.ElapsedMilliseconds / 250) % 4);
 
-                e.Graphics.DrawImage(sprite, new Rectangle(Game.Position.X, Game.Position.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new Rectangle(frame * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
-                //e.Graphics.FillEllipse(brush, new Rectangle(Game.Position.X, Game.Position.Y, 100, 100));
+                int offsetx = 0;
+
+                switch(frame)
+                {
+                    case 0: offsetx = 0; break;
+                    case 1: offsetx = SPRITE_WIDTH; break;
+                    case 2: offsetx = 2 * SPRITE_WIDTH; break;
+                    case 3: offsetx = SPRITE_WIDTH; break;
+                }
+
+                e.Graphics.DrawImage(sprite, new RectangleF(Game.Player.Position.X, Game.Player.Position.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, 0, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
             }
         }
     }
