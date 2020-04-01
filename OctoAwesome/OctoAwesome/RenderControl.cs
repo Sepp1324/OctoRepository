@@ -36,7 +36,7 @@ namespace OctoAwesome
 
         protected override void OnResize(EventArgs e)
         {
-            if(Game != null)
+            if (Game != null)
             {
                 Game.PlaygroundSize = new Point(ClientSize.Width, ClientSize.Height);
             }
@@ -47,9 +47,9 @@ namespace OctoAwesome
         {
             e.Graphics.Clear(Color.CornflowerBlue);
 
-            for(int x = 0; x < ClientRectangle.Width; x += grass.Width)
+            for (int x = 0; x < ClientRectangle.Width; x += grass.Width)
             {
-                for(int y = 0; y < ClientRectangle.Height; y += grass.Height)
+                for (int y = 0; y < ClientRectangle.Height; y += grass.Height)
                 {
                     e.Graphics.DrawImage(grass, new Point(x, y));
                 }
@@ -64,15 +64,42 @@ namespace OctoAwesome
 
                 int offsetx = 0;
 
-                switch(frame)
+                if (Game.Player.State == PlayerState.WALK)
                 {
-                    case 0: offsetx = 0; break;
-                    case 1: offsetx = SPRITE_WIDTH; break;
-                    case 2: offsetx = 2 * SPRITE_WIDTH; break;
-                    case 3: offsetx = SPRITE_WIDTH; break;
+                    switch (frame)
+                    {
+                        case 0: offsetx = 0; break;
+                        case 1: offsetx = SPRITE_WIDTH; break;
+                        case 2: offsetx = 2 * SPRITE_WIDTH; break;
+                        case 3: offsetx = SPRITE_WIDTH; break;
+                    }
+                }
+                else
+                {
+                    offsetx = SPRITE_WIDTH;
+                }
+                //Umrechnung in Grad
+                float direction = (Game.Player.Angle * 360f) / (float)(2 * Math.PI);
+
+                //in positiven BEreich
+                direction += 180;
+
+                //offset
+                direction += 45;
+
+                int sector = (int)(direction / 90);
+
+                int offsety = 0;
+
+                switch (sector)
+                {
+                    case 1: offsety = 3 * SPRITE_HEIGHT; break;
+                    case 2: offsety = 2 * SPRITE_HEIGHT; break;
+                    case 3: offsety = 0 * SPRITE_HEIGHT; break;
+                    case 4: offsety = 1 * SPRITE_HEIGHT; break;
                 }
 
-                e.Graphics.DrawImage(sprite, new RectangleF(Game.Player.Position.X, Game.Player.Position.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, 0, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(sprite, new RectangleF(Game.Player.Position.X, Game.Player.Position.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
             }
         }
     }

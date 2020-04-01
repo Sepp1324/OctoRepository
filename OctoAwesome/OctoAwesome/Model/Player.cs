@@ -17,6 +17,8 @@ namespace OctoAwesome.Model
 
         public float Angle { get; private set; }
 
+        public PlayerState State { get; private set; }
+
         public Player(Input input)
         {
             this.input = input;
@@ -28,12 +30,22 @@ namespace OctoAwesome.Model
 
             velocity = velocity.Normalized();
 
-            if (velocity.Length() != 0f)
+            if (velocity.Length() > 0f)
             {
+                State = PlayerState.WALK;
                 Angle = velocity.Angle();
 
                 Position += (velocity * MAXSPEED * (float)frameTime.TotalSeconds);
             }
+            else
+            {
+                State = PlayerState.IDLE;
+            }
         }
+    }
+
+    internal enum PlayerState
+    {
+        WALK, IDLE
     }
 }
