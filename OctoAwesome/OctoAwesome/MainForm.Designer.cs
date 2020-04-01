@@ -103,6 +103,7 @@
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem programMenu;
         private System.Windows.Forms.ToolStripMenuItem closeMenu;
+        private RenderControl renderControl;
     }
 }
 

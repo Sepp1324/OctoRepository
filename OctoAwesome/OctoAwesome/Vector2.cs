@@ -44,6 +44,7 @@ namespace OctoAwesome
             }
             else
             {
+                //Vector2 squareThis = new Vector2(this.X * this.X, this.Y * this.Y);
                 return (this / length);
             }
         }

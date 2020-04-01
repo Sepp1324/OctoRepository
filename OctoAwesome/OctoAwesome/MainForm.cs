@@ -18,7 +18,6 @@ namespace OctoAwesome
         private Input input = new Input();
         private Game game;
         private Stopwatch watch = new Stopwatch();
-        private RenderControl renderControl;
 
         public MainForm()
         {
