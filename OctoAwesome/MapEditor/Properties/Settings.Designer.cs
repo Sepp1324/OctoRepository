@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UserInterface.Properties
+namespace MapEditor.Properties
 {
 
 
