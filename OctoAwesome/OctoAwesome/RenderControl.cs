@@ -31,6 +31,8 @@ namespace OctoAwesome
 
             this.game = game;
 
+            game.Camera.SetRenderSize(new Vector2(ClientSize.Width, ClientSize.Height));
+
             grass = Image.FromFile("Assets/grass.png");
             sprite = Image.FromFile("Assets/Sprite.png");
 
@@ -41,20 +43,17 @@ namespace OctoAwesome
         {
             if (game != null)
             {
-               // Game.PlaygroundSize = new Point(ClientSize.Width, ClientSize.Height);
+                game.Camera.SetRenderSize(new Vector2(ClientSize.Width, ClientSize.Height));
             }
             base.OnResize(e);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.Clear(Color.CornflowerBlue);
+            e.Graphics.Clear(Color.Brown);
 
-            int offsetX = (int)game.Camera.Center.X - (this.ClientSize.Width / 2);
-            int offsetY = (int)game.Camera.Center.Y - (this.ClientSize.Height / 2);
-
-            int cellX1 = Math.Max(0, (int)(offsetX / 100));
-            int cellY1 = Math.Max(0, (int)(offsetY / 100));
+            int cellX1 = Math.Max(0, (int)(game.Camera.ViewPort.X / 100));
+            int cellY1 = Math.Max(0, (int)(game.Camera.ViewPort.Y / 100));
 
             int cellCountX = (ClientSize.Width / grass.Width) + 2;
             int cellCountY = (ClientSize.Height / grass.Height) + 2;
@@ -66,7 +65,7 @@ namespace OctoAwesome
             {
                 for (int y = cellY1; y < cellY2; y++)
                 {
-                    e.Graphics.DrawImage(grass, new Point(x * grass.Width - offsetX, y * grass.Height - offsetY));
+                    e.Graphics.DrawImage(grass, new Point((int)(x * grass.Width - game.Camera.ViewPort.X), (int)(y * grass.Height - game.Camera.ViewPort.Y)));
                 }
             }
 
@@ -115,7 +114,9 @@ namespace OctoAwesome
                     case 4: offsety = 1 * SPRITE_HEIGHT; break;
                 }
 
-                e.Graphics.DrawImage(sprite, new RectangleF(game.Player.Position.X - offsetX, game.Player.Position.Y - offsetY, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
+                Point spriteCenter = new Point(27, 48);
+
+                e.Graphics.DrawImage(sprite, new RectangleF(game.Player.Position.X - game.Camera.ViewPort.X - spriteCenter.X, game.Player.Position.Y - game.Camera.ViewPort.Y - spriteCenter.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
             }
         }
     }
