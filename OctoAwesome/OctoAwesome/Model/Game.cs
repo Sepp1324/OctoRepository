@@ -12,15 +12,19 @@ namespace OctoAwesome.Model
     {
         private Input input;
         public Camera Camera { get; private set; }
+
         public PointF PlaygroundSize { get; set; }
 
         public Player Player { get; private set; }
+
+        public Map Map { get; private set; }
 
         public Game(Input input)
         {
             Player = new Player(input);
             Camera = new Camera(this, input);
             PlaygroundSize = new PointF(2000, 2000);
+            Map = new Map();
         }
 
         public void Update(TimeSpan frameTime )
