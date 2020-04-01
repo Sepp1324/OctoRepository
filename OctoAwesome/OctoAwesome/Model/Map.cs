@@ -8,7 +8,7 @@ namespace OctoAwesome.Model
 {
     internal sealed class Map
     {
-        public int CELLSIZE = 10;
+        public const int CELLSIZE = 100;
 
         public CellType[,] Cells { get; private set; }
 

@@ -14,7 +14,8 @@ namespace OctoAwesome.Components
         private Input input;
         private Vector2 renderSize;
 
-        public readonly float MAXSPEED = 100f;
+        public readonly float MAXSPEED = 1000f;
+        public readonly float SCALE = 10f;
 
         public Camera(Game game, Input input)
         {
@@ -30,12 +31,6 @@ namespace OctoAwesome.Components
 
         public void Update(TimeSpan frameTime)
         {
-            /*Vector2 velocity = new Vector2((input.CamLeft ? -1f : 0f) + (input.CamRight ? 1f : 0f), (input.CamUp ? -1f : 0f) + (input.CamDown ? 1f : 0f));
-
-            velocity = velocity.Normalized();
-
-            Center += (velocity * MAXSPEED * (float)frameTime.TotalSeconds);*/
-
             float posX = game.Player.Position.X - ViewPort.Left;
             float posY = game.Player.Position.Y - ViewPort.Top;
 

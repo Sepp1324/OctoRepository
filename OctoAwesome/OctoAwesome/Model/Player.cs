@@ -5,12 +5,15 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static OctoAwesome.Model.Map;
 
 namespace OctoAwesome.Model
 {
     internal sealed class Player
     {
         private Input input;
+
+        private Map map;
 
         public readonly float MAXSPEED = 300f;
         public Vector2 Position { get; set; }
@@ -21,17 +24,36 @@ namespace OctoAwesome.Model
 
         public PlayerState State { get; private set; }
 
-        public Player(Input input)
+        public Player(Input input, Map map)
         {
             this.input = input;
+            this.map = map;
             Radius = 10;
         }
 
         public void Update(TimeSpan frameTime)
         {
+            //Bewegungsrichung -> Input
             Vector2 velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
 
             velocity = velocity.Normalized();
+
+            //Oberflächenbeschaffung errechnen
+            int cellX = (int)(Position.X / Map.CELLSIZE);
+            int cellY = (int)(Position.Y / Map.CELLSIZE);
+
+            CellType cellType = map.Cells[cellX, cellY];
+
+            //Geschwindigkeit modifizieren
+            switch (cellType)
+            {
+                case CellType.Grass:
+                    velocity *= 1f;
+                    break;
+                case CellType.Sand:
+                    velocity *= 0.5f;
+                    break;
+            }
 
             if (velocity.Length() > 0f)
             {

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using OctoAwesome.Model;
+using static OctoAwesome.Model.Map;
 
 namespace OctoAwesome
 {
@@ -52,8 +53,8 @@ namespace OctoAwesome
         {
             e.Graphics.Clear(Color.FromArgb(63, 25, 0));
 
-            int cellX1 = Math.Max(0, (int)(game.Camera.ViewPort.X / 100));
-            int cellY1 = Math.Max(0, (int)(game.Camera.ViewPort.Y / 100));
+            int cellX1 = Math.Max(0, (int)(game.Camera.ViewPort.X / Map.CELLSIZE));
+            int cellY1 = Math.Max(0, (int)(game.Camera.ViewPort.Y / Map.CELLSIZE));
 
             int cellCountX = (ClientSize.Width / grass.Width) + 2;
             int cellCountY = (ClientSize.Height / grass.Height) + 2;
@@ -65,7 +66,18 @@ namespace OctoAwesome
             {
                 for (int y = cellY1; y < cellY2; y++)
                 {
-                    e.Graphics.DrawImage(grass, new Point((int)(x * grass.Width - game.Camera.ViewPort.X), (int)(y * grass.Height - game.Camera.ViewPort.Y)));
+                    switch(game.Map.Cells[x, y])
+                    {
+                        case CellType.Grass: 
+                            e.Graphics.DrawImage(grass, new Point((int)(x * grass.Width - game.Camera.ViewPort.X), (int)(y * grass.Height - game.Camera.ViewPort.Y))); 
+                            break;
+                        case CellType.Sand:
+                            using (SolidBrush sandBrush = new SolidBrush(Color.SandyBrown))
+                            {
+                                e.Graphics.FillRectangle(sandBrush, new Rectangle((int)(x * grass.Width - game.Camera.ViewPort.X), (int)(y * grass.Height - game.Camera.ViewPort.Y), Map.CELLSIZE, Map.CELLSIZE));
+                            }
+                            break;
+                    }
                 }
             }
 

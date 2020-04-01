@@ -36,7 +36,7 @@ namespace OctoAwesome
 
         public Vector2 Normalized()
         {
-            float length = LengthSquare();
+            float length = Length();
 
             if(length == 0)
             {
@@ -44,8 +44,8 @@ namespace OctoAwesome
             }
             else
             {
-                Vector2 squareThis = new Vector2(this.X * this.X, this.Y * this.Y);
-                return (squareThis / length);
+                //Vector2 squareThis = new Vector2(this.X * this.X, this.Y * this.Y);
+                return (this / length);
             }
         }
 
