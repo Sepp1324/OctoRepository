@@ -21,7 +21,7 @@ namespace MapEditor
         private Point mousePosition = new Point();
         private int cellSize = 20;
 
-        private CellType drawMode = CellType.Grass;
+        private ToolType drawMode = ToolType.CellTypeGras;
 
         public MainForm()
         {
@@ -44,6 +44,7 @@ namespace MapEditor
 
             SolidBrush sandBrush = new SolidBrush(Color.SandyBrown);
             SolidBrush grassBrush = new SolidBrush(Color.DarkGreen);
+            SolidBrush treeBrush = new SolidBrush(Color.Brown);
             SolidBrush waterBrush = new SolidBrush(Color.Blue);
             SolidBrush selectionBrush = new SolidBrush(Color.FromArgb(100, Color.White));
 
@@ -66,7 +67,18 @@ namespace MapEditor
                 }
             }
 
-            if(mouseActive)
+            foreach (var item in map.Items)
+            {
+                if (item is TreeItem)
+                {
+                    int x = (int)item.Position.X;
+                    int y = (int)item.Position.Y;
+
+                    e.Graphics.FillRectangle(treeBrush, new Rectangle(x * cellSize, y * cellSize, cellSize, cellSize));
+                }
+            }
+
+            if (mouseActive)
             {
                 e.Graphics.FillRectangle(selectionBrush, new Rectangle(mousePosition.X * cellSize, mousePosition.Y * cellSize, cellSize, cellSize));
             }
@@ -87,6 +99,7 @@ namespace MapEditor
             sandBrush.Dispose();
             grassBrush.Dispose();
             waterBrush.Dispose();
+            treeBrush.Dispose();
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -111,13 +124,67 @@ namespace MapEditor
         {
             mousePosition = new Point((int)(e.X / cellSize), (int)(e.Y / cellSize));
 
+            DrawCell();
+        }
+
+        private void renderPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                mouseDraw = true;
+
+                DrawCell();
+            }
+        }
+
+        private void renderPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                mouseDraw = false;
+            }
+        }
+
+        private void DrawCell()
+        {
             if (map == null || !mouseDraw || !mouseActive)
                 return;
 
             if (mousePosition.X < 0 || mousePosition.X >= map.Columns || mousePosition.Y < 0 || mousePosition.Y >= map.Rows)
                 return;
 
-            map.SetCell(mousePosition.X, mousePosition.Y, drawMode);
+            switch (drawMode)
+            {
+                case ToolType.CellTypeGras:
+                    map.SetCell(mousePosition.X, mousePosition.Y, CellType.Grass);
+                    break;
+
+                case ToolType.CellTypeSand:
+                    map.SetCell(mousePosition.X, mousePosition.Y, CellType.Sand);
+                    break;
+
+                case ToolType.CellTypeWater:
+                    map.SetCell(mousePosition.X, mousePosition.Y, CellType.Water);
+
+                    map.Items.RemoveAll(i => (int)i.Position.X == mousePosition.X && (int)i.Position.Y == mousePosition.Y);
+                    break;
+
+                case ToolType.ItemDelete:
+                    map.Items.RemoveAll(i => (int)i.Position.X == mousePosition.X && (int)i.Position.Y == mousePosition.Y);
+                    break;
+
+                case ToolType.ItemTree:
+                    //Prüfen ob Baum auf Wasser gemalt wird
+                    if (map.GetCell(mousePosition.X, mousePosition.Y) == CellType.Water)
+                        break;
+
+                    //Prüfen ob Baum auf Baum gemalen wird
+                    if (map.Items.Any(i => (int)i.Position.X == mousePosition.X && (int)i.Position.Y == mousePosition.Y))
+                        break;
+
+                    map.Items.Add(new TreeItem() { Position = new OctoAwesome.Vector2(mousePosition.X + 0.5f, mousePosition.Y + 0.5f) });
+                    break;
+            }
         }
 
         private void renderPanel_MouseEnter(object sender, EventArgs e)
@@ -132,45 +199,35 @@ namespace MapEditor
 
         private void sandButton_Click(object sender, EventArgs e)
         {
-            drawMode = CellType.Sand;
+            drawMode = ToolType.CellTypeSand;
 
             grassButton.Checked = false;
             sandButton.Checked = true;
             waterButton.Checked = false;
+            deleteButton.Checked = false;
+            treeButton.Checked = false;
         }
 
         private void grassButton_Click(object sender, EventArgs e)
         {
-            drawMode = CellType.Grass;
+            drawMode = ToolType.CellTypeGras;
 
             grassButton.Checked = true;
             sandButton.Checked = false;
             waterButton.Checked = false;
+            deleteButton.Checked = false;
+            treeButton.Checked = false;
         }
 
         private void waterButton_Click(object sender, EventArgs e)
         {
-            drawMode = CellType.Water;
+            drawMode = ToolType.CellTypeWater;
 
             grassButton.Checked = false;
             sandButton.Checked = false;
             waterButton.Checked = true;
-        }
-
-        private void renderPanel_MouseDown(object sender, MouseEventArgs e)
-        {
-            if(e.Button == MouseButtons.Left)
-            {
-                mouseDraw = true;
-            }
-        }
-
-        private void renderPanel_MouseUp(object sender, MouseEventArgs e)
-        {
-            if(e.Button == MouseButtons.Left)
-            {
-                mouseDraw = false;
-            }
+            deleteButton.Checked = false;
+            treeButton.Checked = false;
         }
 
         private void saveMenu_Click(object sender, EventArgs e)
@@ -178,7 +235,7 @@ namespace MapEditor
             if (map == null)
                 return;
 
-            if( saveFileDialog.ShowDialog(this) == DialogResult.OK)
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 Map.Save(saveFileDialog.FileName, map);
             }
@@ -186,10 +243,30 @@ namespace MapEditor
 
         private void loadMenu_Click(object sender, EventArgs e)
         {
-            if(openFileDialog.ShowDialog(this) == DialogResult.OK)
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 map = Map.Load(openFileDialog.FileName);
             }
+        }
+
+        private void treeButton_Click(object sender, EventArgs e)
+        {
+            drawMode = ToolType.ItemTree;
+            grassButton.Checked = false;
+            sandButton.Checked = false;
+            waterButton.Checked = false;
+            deleteButton.Checked = false;
+            treeButton.Checked = true;
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            drawMode = ToolType.ItemDelete;
+            grassButton.Checked = false;
+            sandButton.Checked = false;
+            waterButton.Checked = false;
+            deleteButton.Checked = true;
+            treeButton.Checked = false;
         }
     }
 }

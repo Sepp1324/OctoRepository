@@ -35,17 +35,21 @@
             this.programMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.smallMapMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumMapMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.closeMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.grassButton = new System.Windows.Forms.ToolStripButton();
+            this.sandButton = new System.Windows.Forms.ToolStripButton();
+            this.waterButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.treeButton = new System.Windows.Forms.ToolStripButton();
+            this.deleteButton = new System.Windows.Forms.ToolStripButton();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.renderPanel = new System.Windows.Forms.Panel();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.cellPositionLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.grassButton = new System.Windows.Forms.ToolStripButton();
-            this.sandButton = new System.Windows.Forms.ToolStripButton();
-            this.waterButton = new System.Windows.Forms.ToolStripButton();
-            this.loadMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip.SuspendLayout();
@@ -70,6 +74,7 @@
             this.programMenu,
             this.loadMenu,
             this.saveMenu,
+            this.toolStripSeparator2,
             this.closeMenu});
             this.programToolStripMenuItem.Name = "programToolStripMenuItem";
             this.programToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
@@ -81,27 +86,47 @@
             this.smallMapMenu,
             this.mediumMapMenu});
             this.programMenu.Name = "programMenu";
-            this.programMenu.Size = new System.Drawing.Size(180, 22);
+            this.programMenu.Size = new System.Drawing.Size(109, 22);
             this.programMenu.Text = "New";
             // 
             // smallMapMenu
             // 
             this.smallMapMenu.Name = "smallMapMenu";
-            this.smallMapMenu.Size = new System.Drawing.Size(180, 22);
+            this.smallMapMenu.Size = new System.Drawing.Size(110, 22);
             this.smallMapMenu.Text = "20 x 20";
             this.smallMapMenu.Click += new System.EventHandler(this.smallMapMenu_Click);
             // 
             // mediumMapMenu
             // 
             this.mediumMapMenu.Name = "mediumMapMenu";
-            this.mediumMapMenu.Size = new System.Drawing.Size(180, 22);
+            this.mediumMapMenu.Size = new System.Drawing.Size(110, 22);
             this.mediumMapMenu.Text = "40 x 40";
             this.mediumMapMenu.Click += new System.EventHandler(this.mediumMapMenu_Click);
+            // 
+            // loadMenu
+            // 
+            this.loadMenu.Name = "loadMenu";
+            this.loadMenu.Size = new System.Drawing.Size(109, 22);
+            this.loadMenu.Text = "Load...";
+            this.loadMenu.Click += new System.EventHandler(this.loadMenu_Click);
+            // 
+            // saveMenu
+            // 
+            this.saveMenu.Enabled = false;
+            this.saveMenu.Name = "saveMenu";
+            this.saveMenu.Size = new System.Drawing.Size(109, 22);
+            this.saveMenu.Text = "Save...";
+            this.saveMenu.Click += new System.EventHandler(this.saveMenu_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(106, 6);
             // 
             // closeMenu
             // 
             this.closeMenu.Name = "closeMenu";
-            this.closeMenu.Size = new System.Drawing.Size(180, 22);
+            this.closeMenu.Size = new System.Drawing.Size(109, 22);
             this.closeMenu.Text = "Close";
             this.closeMenu.Click += new System.EventHandler(this.closeMenu_Click);
             // 
@@ -110,12 +135,72 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.grassButton,
             this.sandButton,
-            this.waterButton});
+            this.waterButton,
+            this.toolStripSeparator1,
+            this.treeButton,
+            this.deleteButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(800, 25);
             this.toolStrip.TabIndex = 4;
             this.toolStrip.Text = "toolStrip1";
+            // 
+            // grassButton
+            // 
+            this.grassButton.Checked = true;
+            this.grassButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.grassButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.grassButton.Image = ((System.Drawing.Image)(resources.GetObject("grassButton.Image")));
+            this.grassButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.grassButton.Name = "grassButton";
+            this.grassButton.Size = new System.Drawing.Size(39, 22);
+            this.grassButton.Text = "Grass";
+            this.grassButton.Click += new System.EventHandler(this.grassButton_Click);
+            // 
+            // sandButton
+            // 
+            this.sandButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.sandButton.Image = ((System.Drawing.Image)(resources.GetObject("sandButton.Image")));
+            this.sandButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.sandButton.Name = "sandButton";
+            this.sandButton.Size = new System.Drawing.Size(37, 22);
+            this.sandButton.Text = "Sand";
+            this.sandButton.Click += new System.EventHandler(this.sandButton_Click);
+            // 
+            // waterButton
+            // 
+            this.waterButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.waterButton.Image = ((System.Drawing.Image)(resources.GetObject("waterButton.Image")));
+            this.waterButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.waterButton.Name = "waterButton";
+            this.waterButton.Size = new System.Drawing.Size(42, 22);
+            this.waterButton.Text = "Water";
+            this.waterButton.Click += new System.EventHandler(this.waterButton_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // treeButton
+            // 
+            this.treeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.treeButton.Image = ((System.Drawing.Image)(resources.GetObject("treeButton.Image")));
+            this.treeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.treeButton.Name = "treeButton";
+            this.treeButton.Size = new System.Drawing.Size(32, 22);
+            this.treeButton.Text = "Tree";
+            this.treeButton.Click += new System.EventHandler(this.treeButton_Click);
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.deleteButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteButton.Image")));
+            this.deleteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(44, 22);
+            this.deleteButton.Text = "Delete";
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
             // 
             // timer
             // 
@@ -151,53 +236,6 @@
             this.cellPositionLabel.Name = "cellPositionLabel";
             this.cellPositionLabel.Size = new System.Drawing.Size(33, 17);
             this.cellPositionLabel.Text = "[cell]";
-            // 
-            // grassButton
-            // 
-            this.grassButton.Checked = true;
-            this.grassButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.grassButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.grassButton.Image = ((System.Drawing.Image)(resources.GetObject("grassButton.Image")));
-            this.grassButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.grassButton.Name = "grassButton";
-            this.grassButton.Size = new System.Drawing.Size(39, 22);
-            this.grassButton.Text = "Grass";
-            this.grassButton.Click += new System.EventHandler(this.grassButton_Click);
-            // 
-            // sandButton
-            // 
-            this.sandButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.sandButton.Image = ((System.Drawing.Image)(resources.GetObject("sandButton.Image")));
-            this.sandButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.sandButton.Name = "sandButton";
-            this.sandButton.Size = new System.Drawing.Size(37, 22);
-            this.sandButton.Text = "Sand";
-            this.sandButton.Click += new System.EventHandler(this.sandButton_Click);
-            // 
-            // waterButton
-            // 
-            this.waterButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.waterButton.Image = ((System.Drawing.Image)(resources.GetObject("waterButton.Image")));
-            this.waterButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.waterButton.Name = "waterButton";
-            this.waterButton.Size = new System.Drawing.Size(42, 22);
-            this.waterButton.Text = "Water";
-            this.waterButton.Click += new System.EventHandler(this.waterButton_Click);
-            // 
-            // loadMenu
-            // 
-            this.loadMenu.Name = "loadMenu";
-            this.loadMenu.Size = new System.Drawing.Size(180, 22);
-            this.loadMenu.Text = "Load...";
-            this.loadMenu.Click += new System.EventHandler(this.loadMenu_Click);
-            // 
-            // saveMenu
-            // 
-            this.saveMenu.Enabled = false;
-            this.saveMenu.Name = "saveMenu";
-            this.saveMenu.Size = new System.Drawing.Size(180, 22);
-            this.saveMenu.Text = "Save...";
-            this.saveMenu.Click += new System.EventHandler(this.saveMenu_Click);
             // 
             // openFileDialog
             // 
@@ -254,6 +292,10 @@
         private System.Windows.Forms.ToolStripMenuItem saveMenu;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton treeButton;
+        private System.Windows.Forms.ToolStripButton deleteButton;
     }
 }
 

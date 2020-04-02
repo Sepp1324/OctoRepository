@@ -40,3 +40,4 @@ C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\water_upper
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\water_upperRight_convex.png
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\testMap.map
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\Tree.png
+C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\Tree1.png
