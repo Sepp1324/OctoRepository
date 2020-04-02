@@ -23,11 +23,11 @@ namespace OctoAwesome
         private readonly Game game;
 
         private readonly Image grass;
-        private readonly Image water;
-
         private readonly Image sprite;
+        private readonly Image tree;
 
         private readonly CellTypeRenderer sandRenderer;
+        private readonly CellTypeRenderer waterRenderer;
 
         public RenderControl(Game game)
         {
@@ -38,10 +38,11 @@ namespace OctoAwesome
             game.Camera.SetRenderSize(new Vector2(ClientSize.Width, ClientSize.Height));
 
             grass = Image.FromFile("Assets/grass_center.png");
-            water = Image.FromFile("Assets/water_center.png");
             sprite = Image.FromFile("Assets/Sprite.png");
+            tree = Image.FromFile("Assets/Tree.png");
 
             sandRenderer = new CellTypeRenderer("sand");
+            waterRenderer = new CellTypeRenderer("water");
 
             watch.Start();
         }
@@ -86,10 +87,16 @@ namespace OctoAwesome
                             break;
 
                         case CellType.Water:
-                            e.Graphics.DrawImage(water, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
+                           // e.Graphics.DrawImage(water, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
+                            waterRenderer.Draw(e.Graphics, game, x, y);
                             break;
                     }
                 }
+            }
+
+            foreach (var treeItem in game.Map.TreeItems.OrderBy(t => t.Position.Y))
+            {
+                e.Graphics.DrawImage(tree, new Rectangle((int)(treeItem.Position.X * game.Camera.SCALE - game.Camera.ViewPort.X) - 30, (int)(treeItem.Position.X * game.Camera.SCALE - game.Camera.ViewPort.Y) - 118, (int)game.Camera.SCALE, (int)game.Camera.SCALE * 2));
             }
 
             int frame = (int)((watch.ElapsedMilliseconds / 250) % 4);
