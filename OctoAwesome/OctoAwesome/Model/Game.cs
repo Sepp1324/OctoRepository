@@ -38,6 +38,27 @@ namespace OctoAwesome.Model
         {
             Player.Update(frameTime);
 
+            //Oberflächenbeschaffenheit ermitteln
+            int cellX = (int)Player.Position.X;
+            int cellY = (int)Player.Position.Y;
+
+            CellType cellType = Map.GetCell(cellX, cellY);
+
+            //Geschwindigkeit modifizieren
+            Vector2 velocity = Player.Velocity;
+
+            switch (cellType)
+            {
+                case CellType.Grass:
+                    velocity *= 0.8f;
+                    break;
+                case CellType.Sand:
+                    velocity *= 1f;
+                    break;
+            }
+
+            Player.Position += (velocity * (float)frameTime.TotalSeconds);
+
             if (Player.Position.X - Player.Radius < 0)
             {
                 Player.Position = new Vector2(Player.Radius, Player.Position.Y);

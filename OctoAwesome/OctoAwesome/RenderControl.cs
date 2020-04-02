@@ -23,19 +23,6 @@ namespace OctoAwesome
         private readonly Game game;
 
         private readonly Image grass;
-       /* private readonly Image sand_center;
-        private readonly Image sand_left;
-        private readonly Image sand_right;
-        private readonly Image sand_upper;
-        private readonly Image sand_lower;
-        private readonly Image sand_upperLeft_concarve;
-        private readonly Image sand_upperRight_concarve;
-        private readonly Image sand_lowerLeft_concarve;
-        private readonly Image sand_lowerRight_concarve;
-        private readonly Image sand_upperLeft_convex;
-        private readonly Image sand_upperRight_convex;
-        private readonly Image sand_lowerLeft_convex;
-        private readonly Image sand_lowerRight_convex;*/
         private readonly Image water;
 
         private readonly Image sprite;
@@ -56,20 +43,6 @@ namespace OctoAwesome
 
             sandRenderer = new CellTypeRenderer("sand");
 
-            /*sand_center = Image.FromFile("Assets/sand_center.png");
-            sand_left = Image.FromFile("Assets/sand_left.png");
-            sand_right = Image.FromFile("Assets/sand_right.png");
-            sand_upper = Image.FromFile("Assets/sand_upper.png");
-            sand_lower = Image.FromFile("Assets/sand_lower.png");
-            sand_upperLeft_concarve = Image.FromFile("Assets/sand_upperLeft_concave.png");
-            sand_upperRight_concarve = Image.FromFile("Assets/sand_upperRight_concave.png");
-            sand_lowerLeft_concarve = Image.FromFile("Assets/sand_lowerLeft_concave.png");
-            sand_lowerRight_concarve = Image.FromFile("Assets/sand_lowerRight_concave.png");
-            sand_upperLeft_convex = Image.FromFile("Assets/sand_upperLeft_convex.png");
-            sand_upperRight_convex = Image.FromFile("Assets/sand_upperRight_convex.png");
-            sand_lowerLeft_convex = Image.FromFile("Assets/sand_lowerLeft_convex.png");
-            sand_lowerRight_convex = Image.FromFile("Assets/sand_lowerRight_convex.png");*/
-          
             watch.Start();
         }
 
@@ -109,7 +82,6 @@ namespace OctoAwesome
                             break;
 
                         case CellType.Sand:
-                            //DrawSand(e.Graphics, x, y);
                             sandRenderer.Draw(e.Graphics, game, x, y);
                             break;
 
@@ -164,42 +136,6 @@ namespace OctoAwesome
 
             e.Graphics.DrawImage(sprite, new RectangleF((game.Player.Position.X * game.Camera.SCALE) - game.Camera.ViewPort.X - spriteCenter.X, (game.Player.Position.Y * game.Camera.SCALE) - game.Camera.ViewPort.Y - spriteCenter.Y, SPRITE_WIDTH, SPRITE_HEIGHT), new RectangleF(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), GraphicsUnit.Pixel);
         }
-
-        /*private void DrawSand(Graphics g, int x, int y)
-        {
-            //g.DrawImage(sand_center, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
-             DrawTexture(g, x, y, sand_center);
-
-            bool left = x > 0 && game.Map.GetCell(x - 1, y) != CellType.Sand;
-            bool top = y > 0 && game.Map.GetCell(x, y - 1) != CellType.Sand;
-            bool right = (x + 1) < game.Map.Columns && game.Map.GetCell(x + 1, y) != CellType.Sand;
-            bool bottom = (y + 1) < game.Map.Rows && game.Map.GetCell(x, y + 1) != CellType.Sand;
-
-            bool upperLeft = x > 0 && y > 0 && game.Map.GetCell(x - 1, y - 1) != CellType.Sand;
-            bool upperRight = (x + 1) < game.Map.Columns && y > 0 && game.Map.GetCell(x + 1, y - 1) != CellType.Sand;
-            bool lowerLeft = x > 0 && (y + 1) < game.Map.Rows && game.Map.GetCell(x - 1, y + 1) != CellType.Sand;
-            bool lowerRight = (x + 1) < game.Map.Columns && (y + 1) < game.Map.Rows && game.Map.GetCell(x + 1, y + 1) != CellType.Sand;
-
-            //Gerade Kanten
-            if (left) DrawTexture(g, x, y, sand_left);
-            if (right) DrawTexture(g, x, y, sand_right);
-            if (top) DrawTexture(g, x, y, sand_upper);
-            if (bottom) DrawTexture(g, x, y, sand_lower);
-
-            //Konvexe Ecken
-            if (left && top) DrawTexture(g, x, y, sand_upperLeft_convex);
-            if (left && bottom) DrawTexture(g, x, y, sand_lowerLeft_convex);
-            if (right && top) DrawTexture(g, x, y, sand_upperRight_convex);
-            if (right && bottom) DrawTexture(g, x, y, sand_lowerRight_convex);
-
-            //Konkave Ecken
-            if (upperLeft && !left && !top) DrawTexture(g, x, y, sand_upperLeft_concarve);
-            if (upperRight && !right && !top) DrawTexture(g, x, y, sand_upperRight_concarve);
-            if (lowerLeft && !left && !bottom) DrawTexture(g, x, y, sand_lowerLeft_concarve);
-            if (lowerRight && !right && !bottom) DrawTexture(g, x, y, sand_lowerRight_concarve);
-        }*/
-
-
     }
 }
 

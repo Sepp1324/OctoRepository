@@ -14,7 +14,10 @@ namespace OctoAwesome.Model
         private Map map;
 
         public readonly float MAXSPEED = 5f;
+
         public Vector2 Position { get; set; }
+
+        public Vector2 Velocity { get; set; }
 
         public float Radius { get; private set; }
 
@@ -32,34 +35,14 @@ namespace OctoAwesome.Model
         public void Update(TimeSpan frameTime)
         {
             //Bewegungsrichtung
-            Vector2 velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
-
-            velocity = velocity.Normalized();
-
-            //Oberflächenbeschaffenheit ermitteln
-            int cellX = (int)(Position.X);
-            int cellY = (int)(Position.Y);
-
-            CellType cellType = map.GetCell(cellX, cellY);
-
-            //Geschwindigkeit modifizieren
-            switch (cellType)
-            {
-                case CellType.Grass:
-                    velocity *= 1f;
-                    break;
-                case CellType.Sand:
-                    velocity *= 0.5f;
-                    break;
-            }
+            Velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
 
             //Bewegunsberechnung
-            if (velocity.Length() > 0f)
+            if (Velocity.Length() > 0f)
             {
+                Velocity = Velocity.Normalized() * MAXSPEED;
                 State = PlayerState.WALK;
-                Angle = velocity.Angle();
-
-                Position += (velocity * MAXSPEED * (float)frameTime.TotalSeconds);
+                Angle = Velocity.Angle();
             }
             else
             {

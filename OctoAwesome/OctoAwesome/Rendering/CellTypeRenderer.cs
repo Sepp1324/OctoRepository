@@ -42,20 +42,21 @@ namespace OctoAwesome.Rendering
             lowerRight_convex = Image.FromFile(string.Format("Assets/{0}_lowerRight_convex.png", name));
         }
 
-        public void Draw(Graphics g, Game game,  int x, int y)
+        public void Draw(Graphics g, Game game, int x, int y)
         {
+            CellType centerType = game.Map.GetCell(x, y);
+
             g.DrawImage(center, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
-            //DrawTexture(g, x, y, sand_center);
 
-            bool emptyLeft = x > 0 && game.Map.GetCell(x - 1, y) != CellType.Sand;
-            bool emptyTop = y > 0 && game.Map.GetCell(x, y - 1) != CellType.Sand;
-            bool emptyRight = (x + 1) < game.Map.Columns && game.Map.GetCell(x + 1, y) != CellType.Sand;
-            bool emptyBottom = (y + 1) < game.Map.Rows && game.Map.GetCell(x, y + 1) != CellType.Sand;
+            bool emptyLeft = x > 0 && game.Map.GetCell(x - 1, y) != centerType;
+            bool emptyTop = y > 0 && game.Map.GetCell(x, y - 1) != centerType;
+            bool emptyRight = (x + 1) < game.Map.Columns && game.Map.GetCell(x + 1, y) != centerType;
+            bool emptyBottom = (y + 1) < game.Map.Rows && game.Map.GetCell(x, y + 1) != centerType;
 
-            bool upperLeft = x > 0 && y > 0 && game.Map.GetCell(x - 1, y - 1) != CellType.Sand;
-            bool upperRight = (x + 1) < game.Map.Columns && y > 0 && game.Map.GetCell(x + 1, y - 1) != CellType.Sand;
-            bool lowerLeft = x > 0 && (y + 1) < game.Map.Rows && game.Map.GetCell(x - 1, y + 1) != CellType.Sand;
-            bool lowerRight = (x + 1) < game.Map.Columns && (y + 1) < game.Map.Rows && game.Map.GetCell(x + 1, y + 1) != CellType.Sand;
+            bool upperLeft = x > 0 && y > 0 && game.Map.GetCell(x - 1, y - 1) != centerType;
+            bool upperRight = (x + 1) < game.Map.Columns && y > 0 && game.Map.GetCell(x + 1, y - 1) != centerType;
+            bool lowerLeft = x > 0 && (y + 1) < game.Map.Rows && game.Map.GetCell(x - 1, y + 1) != centerType;
+            bool lowerRight = (x + 1) < game.Map.Columns && (y + 1) < game.Map.Rows && game.Map.GetCell(x + 1, y + 1) != centerType;
 
             //Gerade Kanten
             if (emptyLeft) DrawTexture(g, game.Camera, x, y, left);
@@ -76,7 +77,7 @@ namespace OctoAwesome.Rendering
             if (lowerRight && !emptyRight && !emptyBottom) DrawTexture(g, game.Camera, x, y, lowerRight_concarve);
         }
 
-        private static void DrawTexture(Graphics g, Camera camera,  int x, int y, Image image)
+        private static void DrawTexture(Graphics g, Camera camera, int x, int y, Image image)
         {
             g.DrawImage(image, new Rectangle((int)(x * camera.SCALE - camera.ViewPort.X), (int)(y * camera.SCALE - camera.ViewPort.Y), (int)camera.SCALE, (int)camera.SCALE));
 

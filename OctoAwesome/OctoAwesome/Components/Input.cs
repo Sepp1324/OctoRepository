@@ -13,10 +13,6 @@ namespace OctoAwesome.Components
         public bool Right { get; private set; }
         public bool Up { get; private set; }
         public bool Down { get; private set; }
-        public bool CamLeft { get; private set; }
-        public bool CamRight { get; private set; }
-        public bool CamUp { get; private set; }
-        public bool CamDown { get; private set; }
 
         public Input()
         {
@@ -31,10 +27,6 @@ namespace OctoAwesome.Components
                 case Keys.Right: Right = true; break;
                 case Keys.Up: Up = true; break;
                 case Keys.Down: Down = true; break;
-                case Keys.A: CamLeft = true; break;
-                case Keys.D: CamRight = true; break;
-                case Keys.W: CamUp = true; break;
-                case Keys.S: CamDown = true; break;
             }
         }
 
@@ -46,10 +38,6 @@ namespace OctoAwesome.Components
                 case Keys.Right: Right = false; break;
                 case Keys.Up: Up = false; break;
                 case Keys.Down: Down = false; break;
-                case Keys.A: CamLeft = false; break;
-                case Keys.D: CamRight = false; break;
-                case Keys.W: CamUp = false; break;
-                case Keys.S: CamDown = false; break;
             }
         }
     }
