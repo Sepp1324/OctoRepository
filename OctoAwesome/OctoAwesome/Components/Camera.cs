@@ -15,6 +15,7 @@ namespace OctoAwesome.Components
         private Vector2 renderSize;
 
         public readonly float MAXSPEED = 1000f;
+        public readonly float SCALE = 64f;
 
         public Camera(Game game, Input input)
         {
@@ -30,8 +31,8 @@ namespace OctoAwesome.Components
 
         public void Update(TimeSpan frameTime)
         {
-            float posX = game.Player.Position.X - ViewPort.Left;
-            float posY = game.Player.Position.Y - ViewPort.Top;
+            float posX = (game.Player.Position.X * SCALE) - ViewPort.Left;
+            float posY = (game.Player.Position.Y * SCALE) - ViewPort.Top;
 
             float frameX = ViewPort.Width / 4;
             float frameY = ViewPort.Height / 4;
@@ -62,25 +63,31 @@ namespace OctoAwesome.Components
             if (Center.Y < (ViewPort.Height / 2) - 100)
                 Center = new Vector2(Center.X, (ViewPort.Height / 2) - 100);
 
-            if (Center.X > game.PlaygroundSize.X - (ViewPort.Width / 2) + 100)
-                Center = new Vector2(game.PlaygroundSize.X - (ViewPort.Width / 2) + 100, Center.Y);
+            if (Center.X > (game.PlaygroundSize.X * SCALE) - (ViewPort.Width / 2) + 100)
+                Center = new Vector2(game.PlaygroundSize.X * SCALE - (ViewPort.Width / 2) + 100, Center.Y);
 
-            if (Center.Y > game.PlaygroundSize.Y - (ViewPort.Height / 2) + 100)
-                Center = new Vector2(Center.X, game.PlaygroundSize.Y - (ViewPort.Height / 2) + 100);
+            if (Center.Y > (game.PlaygroundSize.Y * SCALE) - (ViewPort.Height / 2) + 100)
+                Center = new Vector2(Center.X, game.PlaygroundSize.Y * SCALE - (ViewPort.Height / 2) + 100);
 
             RecalcViewPort();
         }
 
         private void RecalcViewPort()
         {
-            float offsetX = game.Camera.Center.X - (this.renderSize.X / 2);
-            float offsetY = game.Camera.Center.Y - (this.renderSize.Y / 2);
+            float offsetX = (game.Camera.Center.X) - (this.renderSize.X / 2);
+            float offsetY = (game.Camera.Center.Y) - (this.renderSize.Y / 2);
 
             ViewPort = new RectangleF(offsetX, offsetY, renderSize.X, renderSize.Y);
         }
 
+        /// <summary>
+        /// Kameraposition (Render-Koordinate)
+        /// </summary>
         public Vector2 Center { get; set; }
 
+        /// <summary>
+        /// Sichtbarer Bereich (render-Koordinate)
+        /// </summary>
         public RectangleF ViewPort { get; set; }
     }
 }

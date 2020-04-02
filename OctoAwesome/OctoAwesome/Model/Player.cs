@@ -13,7 +13,7 @@ namespace OctoAwesome.Model
         private Input input;
         private Map map;
 
-        public readonly float MAXSPEED = 300f;
+        public readonly float MAXSPEED = 2f;
         public Vector2 Position { get; set; }
 
         public float Radius { get; private set; }
@@ -26,7 +26,7 @@ namespace OctoAwesome.Model
         {
             this.input = input;
             this.map = map;
-            Radius = 10;
+            Radius = 0.1f;
         }
 
         public void Update(TimeSpan frameTime)
@@ -37,8 +37,8 @@ namespace OctoAwesome.Model
             velocity = velocity.Normalized();
 
             //Oberflächenbeschaffenheit ermitteln
-            int cellX = (int)(Position.X / Map.CELLSIZE);
-            int cellY = (int)(Position.Y / Map.CELLSIZE);
+            int cellX = (int)(Position.X);
+            int cellY = (int)(Position.Y);
 
             CellType cellType = map.GetCell(cellX, cellY);
 
