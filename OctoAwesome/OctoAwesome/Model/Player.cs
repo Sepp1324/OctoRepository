@@ -13,7 +13,7 @@ namespace OctoAwesome.Model
         private Input input;
         private Map map;
 
-        public readonly float MAXSPEED = 2f;
+        public readonly float MAXSPEED = 5f;
         public Vector2 Position { get; set; }
 
         public float Radius { get; private set; }
