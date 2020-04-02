@@ -59,25 +59,70 @@ namespace OctoAwesome.Model
 
             Player.Position += (velocity * (float)frameTime.TotalSeconds);
 
-            if (Player.Position.X - Player.Radius < 0)
+            //Block nach links (Kartenrand + nicht begehbare Zellen)
+            if (velocity.X < 0)
             {
-                Player.Position = new Vector2(Player.Radius, Player.Position.Y);
+                float posLeft = Player.Position.X - Player.Radius;
+
+                cellX = (int)posLeft;
+                cellY = (int)Player.Position.Y;
+
+                if(posLeft < 0)
+                {
+                    Player.Position = new Vector2(cellX + Player.Radius, Player.Position.Y);
+                }
+
+                if (cellX < 0 || Map.GetCell(cellX, cellY) == CellType.Water)
+                {
+                    Player.Position = new Vector2((cellX + 1) + Player.Radius, Player.Position.Y);
+                }
             }
 
-            if (Player.Position.X + Player.Radius > PlaygroundSize.X)
+            //Block nach oben (Kartenrand + nicht begehbare Zellen)
+            if(velocity.Y < 0)
             {
-                Player.Position = new Vector2(PlaygroundSize.X - Player.Radius, Player.Position.Y);
+                float posTop = Player.Position.Y - Player.Radius;
+
+                cellY = (int)posTop;
+                cellX = (int)Player.Position.X;
+
+                if (posTop < 0)
+                {
+                    Player.Position = new Vector2(Player.Position.X, cellY + Player.Radius);
+                }
+
+                if (cellY < 0 || Map.GetCell(cellX, cellY) == CellType.Water)
+                {
+                    Player.Position = new Vector2(Player.Position.X, cellY + 1 + Player.Radius);
+                }
             }
 
-            if (Player.Position.Y - Player.Radius < 0)
+            if(velocity.X > 0)
             {
-                Player.Position = new Vector2(Player.Position.X, Player.Radius);
+                float posRight = Player.Position.X + Player.Radius;
+
+                cellX = (int)posRight;
+                cellY = (int)Player.Position.Y;
+
+                if (cellX >= Map.Columns || Map.GetCell(cellX, cellY) == CellType.Water)
+                {
+                    Player.Position = new Vector2(cellX - Player.Radius, Player.Position.Y);
+                }
             }
 
-            if (Player.Position.Y + Player.Radius > PlaygroundSize.Y)
+            if(velocity.Y > 0)
             {
-                Player.Position = new Vector2(PlaygroundSize.X, Player.Position.Y - Player.Radius);
+                float posBottom = Player.Position.Y + Player.Radius;
+
+                cellY = (int)posBottom;
+                cellX = (int)Player.Position.X;
+
+                if (cellY >= Map.Rows || Map.GetCell(cellX, cellY) == CellType.Water)
+                {
+                    Player.Position = new Vector2(Player.Position.X, cellY - Player.Radius);
+                }
             }
+
             Camera.Update(frameTime);
         }
     }
