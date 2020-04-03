@@ -10,8 +10,6 @@ namespace OctoAwesome.Model
 {
     internal sealed class Game
     {
-        private Input input;
-
         private Dictionary<CellType, CellTypeDefinition> cellTypes;
 
         public Camera Camera { get; private set; }

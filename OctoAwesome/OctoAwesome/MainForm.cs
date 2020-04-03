@@ -39,6 +39,11 @@ namespace OctoAwesome
             watch.Restart();
             renderControl.Invalidate();
 
+            if (game.Player.InteractionPartner != null)
+            {
+                MessageBox.Show("Hurra!");
+                game.Player.InteractionPartner = null;
+            }
         }
 
         private void closeMenu_Click(object sender, EventArgs e)

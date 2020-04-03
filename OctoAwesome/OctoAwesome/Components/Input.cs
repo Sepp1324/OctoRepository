@@ -10,9 +10,14 @@ namespace OctoAwesome.Components
     internal sealed class Input
     {
         public bool Left { get; private set; }
+
         public bool Right { get; private set; }
+
         public bool Up { get; private set; }
+
         public bool Down { get; private set; }
+
+        public bool Interact { get; private set; }
 
         public Input()
         {
@@ -27,6 +32,7 @@ namespace OctoAwesome.Components
                 case Keys.Right: Right = true; break;
                 case Keys.Up: Up = true; break;
                 case Keys.Down: Down = true; break;
+                case Keys.X: Interact = true; break;
             }
         }
 
@@ -38,6 +44,7 @@ namespace OctoAwesome.Components
                 case Keys.Right: Right = false; break;
                 case Keys.Up: Up = false; break;
                 case Keys.Down: Down = false; break;
+                case Keys.X: Interact = false; break;
             }
         }
     }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.Model
 {
-    internal sealed class Player : Item
+    internal sealed class Player : Item, IHaveInventory
     {
         private Input input;
         private Map map;
@@ -25,11 +25,16 @@ namespace OctoAwesome.Model
 
         public PlayerState State { get; private set; }
 
+        public IHaveInventory InteractionPartner { get; set; }
+
+        public List<InventoryItem> InventoryItems { get; private set; }
+
         public Player(Input input, Map map)
         {
             this.input = input;
             this.map = map;
             Radius = 0.1f;
+            InventoryItems = new List<InventoryItem>();
         }
 
         public void Update(TimeSpan frameTime)
@@ -47,6 +52,44 @@ namespace OctoAwesome.Model
             else
             {
                 State = PlayerState.IDLE;
+            }
+
+            //Interaktion überprüfen
+            if(input.Interact)
+            {
+                int cellX = (int)Position.X;
+                int cellY = (int)Position.Y;
+
+                //Umrechnung in Grad
+                float direction = (Angle * 360f) / (float)(2 * Math.PI);
+
+                //In positiven Bereich rechnen
+                direction += 180;
+
+                //Offset hinzurechnen
+                direction += 45;
+
+                int sector = (int)(direction / 90);
+
+                switch(sector)
+                {
+                    //Oben
+                    case 1: cellY -= 1; break;
+
+                    //rechts
+                    case 2: cellX += 1; break;
+
+                    //Unten
+                    case 3: cellY += 1; break;
+
+                    //Links
+                    case 4: cellX -= 1; break;
+                }
+
+                InteractionPartner = map.Items.
+                    Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
+                    OfType<IHaveInventory>().
+                    FirstOrDefault();
             }
         }
     }
