@@ -54,42 +54,54 @@ namespace OctoAwesome.Model
                 State = PlayerState.IDLE;
             }
 
-            //Interaktion überprüfen
-            if(input.Interact)
+            int cellX = (int)Position.X;
+            int cellY = (int)Position.Y;
+
+            //Umrechnung in Grad
+            float direction = (Angle * 360f) / (float)(2 * Math.PI);
+
+            //In positiven Bereich rechnen
+            direction += 180;
+
+            //Offset hinzurechnen
+            direction += 45;
+
+            int sector = (int)(direction / 90);
+
+            switch (sector)
             {
-                int cellX = (int)Position.X;
-                int cellY = (int)Position.Y;
+                //Oben
+                case 1: cellY -= 1; break;
 
-                //Umrechnung in Grad
-                float direction = (Angle * 360f) / (float)(2 * Math.PI);
+                //rechts
+                case 2: cellX += 1; break;
 
-                //In positiven Bereich rechnen
-                direction += 180;
+                //Unten
+                case 3: cellY += 1; break;
 
-                //Offset hinzurechnen
-                direction += 45;
+                //Links
+                case 4: cellX -= 1; break;
+            }
 
-                int sector = (int)(direction / 90);
-
-                switch(sector)
-                {
-                    //Oben
-                    case 1: cellY -= 1; break;
-
-                    //rechts
-                    case 2: cellX += 1; break;
-
-                    //Unten
-                    case 3: cellY += 1; break;
-
-                    //Links
-                    case 4: cellX -= 1; break;
-                }
-
+            //Interaktion überprüfen
+            if (input.Interact)
+            {
+                input.Interact = false;
                 InteractionPartner = map.Items.
                     Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
                     OfType<IHaveInventory>().
                     FirstOrDefault();
+
+                if (InteractionPartner != null)
+                {
+                    var partner = map.Items.
+                        Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
+                        OfType<IHaveInventory>().
+                        FirstOrDefault();
+
+                    if (InteractionPartner != partner)
+                        InteractionPartner = null;
+                }
             }
         }
     }

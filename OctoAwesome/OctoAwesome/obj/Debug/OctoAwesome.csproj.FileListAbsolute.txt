@@ -42,3 +42,4 @@ C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\testMap.map
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\Tree.png
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\Tree1.png
 C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\bin\Debug\Assets\box.png
+C:\Users\sebip\source\repos\OctoAwesome\OctoAwesome\obj\Debug\OctoAwesome.InventoryForm.resources
