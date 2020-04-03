@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Model;
+using OctoAwesomeDX.Components;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.Components
 {
-    internal sealed class Camera
+    internal sealed class CameraComponent : DrawableGameComponent
     {
-        private OctoAwesome.Model.Game game;
-        private Input2 input;
+        private WorldComponent world;
+        private InputComponent input;
         private Vector2 renderSize;
 
         public readonly float MAXSPEED = 1000f;
         public readonly float SCALE = 64f;
 
-        public Camera(OctoAwesome.Model.Game game, Input2 input)
+        public CameraComponent(Microsoft.Xna.Framework.Game game, WorldComponent world, InputComponent input) : base(game)
         {
-            this.game = game;
+            this.world = world;
             this.input = input;
         }
 
@@ -30,33 +31,30 @@ namespace OctoAwesome.Components
             RecalcViewPort();
         }
 
-        public void Update(GameTime frameTime)
+        protected override void LoadContent()
         {
-            float posX = (game.Player.Position.X * SCALE) - ViewPort.Left;
-            float posY = (game.Player.Position.Y * SCALE) - ViewPort.Top;
+            SetRenderSize(new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height));
+        }
+
+        public override void Update(GameTime frameTime)
+        {
+            float posX = (world.World.Player.Position.X * SCALE) - ViewPort.Left;
+            float posY = (world.World.Player.Position.Y * SCALE) - ViewPort.Top;
 
             float frameX = ViewPort.Width / 4;
             float frameY = ViewPort.Height / 4;
 
             if (posX < frameX)
-            {
                 Center = new Vector2(Center.X - (frameX - posX), Center.Y);
-            }
 
             if (posX > ViewPort.Width - frameX)
-            {
                 Center = new Vector2(Center.X + (posX - (ViewPort.Width - frameX)), Center.Y);
-            }
 
             if (posY < frameY)
-            {
                 Center = new Vector2(Center.X, Center.Y - (frameY - posY));
-            }
 
             if (posY > ViewPort.Height - frameY)
-            {
                 Center = new Vector2(Center.X, Center.Y + (posY - (ViewPort.Height - frameY)));
-            }
 
             if (Center.X < (ViewPort.Width / 2) - 100)
                 Center = new Vector2((ViewPort.Width / 2) - 100, Center.Y);
@@ -64,19 +62,19 @@ namespace OctoAwesome.Components
             if (Center.Y < (ViewPort.Height / 2) - 100)
                 Center = new Vector2(Center.X, (ViewPort.Height / 2) - 100);
 
-            if (Center.X > (game.PlaygroundSize.X * SCALE) - (ViewPort.Width / 2) + 100)
-                Center = new Vector2(game.PlaygroundSize.X * SCALE - (ViewPort.Width / 2) + 100, Center.Y);
+            if (Center.X > (world.World.PlaygroundSize.X * SCALE) - (ViewPort.Width / 2) + 100)
+                Center = new Vector2(world.World.PlaygroundSize.X * SCALE - (ViewPort.Width / 2) + 100, Center.Y);
 
-            if (Center.Y > (game.PlaygroundSize.Y * SCALE) - (ViewPort.Height / 2) + 100)
-                Center = new Vector2(Center.X, game.PlaygroundSize.Y * SCALE - (ViewPort.Height / 2) + 100);
+            if (Center.Y > (world.World.PlaygroundSize.Y * SCALE) - (ViewPort.Height / 2) + 100)
+                Center = new Vector2(Center.X, world.World.PlaygroundSize.Y * SCALE - (ViewPort.Height / 2) + 100);
 
             RecalcViewPort();
         }
 
         private void RecalcViewPort()
         {
-            float offsetX = (game.Camera.Center.X) - (this.renderSize.X / 2);
-            float offsetY = (game.Camera.Center.Y) - (this.renderSize.Y / 2);
+            float offsetX = (Center.X) - (this.renderSize.X / 2);
+            float offsetY = (Center.Y) - (this.renderSize.Y / 2);
 
             ViewPort = new Rectangle((int)offsetX, (int)offsetY, (int)renderSize.X, (int)renderSize.Y);
         }

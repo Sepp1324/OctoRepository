@@ -45,11 +45,11 @@ namespace OctoAwesome.Rendering
             lowerRight_convex = content.Load<Texture2D>(string.Format("Textures/{0}_lowerRight_convex", name)); //Image.FromFile(string.Format("Assets/{0}_lowerRight_convex.png", name));
         }
 
-        public void Draw(SpriteBatch g, OctoAwesome.Model.Game game, int x, int y)
+        public void Draw(SpriteBatch g, CameraComponent camera, OctoAwesome.Model.Game game, int x, int y)
         {
             CellType centerType = game.Map.GetCell(x, y);
 
-            g.Draw(center, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE), Color.White);
+            g.Draw(center, new Rectangle((int)(x * camera.SCALE - camera.ViewPort.X), (int)(y * camera.SCALE - camera.ViewPort.Y), (int)camera.SCALE, (int)camera.SCALE), Color.White);
 
             bool emptyLeft = x > 0 && game.Map.GetCell(x - 1, y) != centerType;
             bool emptyTop = y > 0 && game.Map.GetCell(x, y - 1) != centerType;
@@ -62,25 +62,25 @@ namespace OctoAwesome.Rendering
             bool lowerRight = (x + 1) < game.Map.Columns && (y + 1) < game.Map.Rows && game.Map.GetCell(x + 1, y + 1) != centerType;
 
             //Gerade Kanten
-            if (emptyLeft) DrawTexture(g, game.Camera, x, y, left);
-            if (emptyRight) DrawTexture(g, game.Camera, x, y, right);
-            if (emptyTop) DrawTexture(g, game.Camera, x, y, upper);
-            if (emptyBottom) DrawTexture(g, game.Camera, x, y, lower);
+            if (emptyLeft) DrawTexture(g, camera, x, y, left);
+            if (emptyRight) DrawTexture(g, camera, x, y, right);
+            if (emptyTop) DrawTexture(g, camera, x, y, upper);
+            if (emptyBottom) DrawTexture(g, camera, x, y, lower);
 
             //Konvexe Ecken
-            if (emptyLeft && emptyTop) DrawTexture(g, game.Camera, x, y, upperLeft_convex);
-            if (emptyLeft && emptyBottom) DrawTexture(g, game.Camera, x, y, lowerLeft_convex);
-            if (emptyRight && emptyTop) DrawTexture(g, game.Camera, x, y, upperRight_convex);
-            if (emptyRight && emptyBottom) DrawTexture(g, game.Camera, x, y, lowerRight_convex);
+            if (emptyLeft && emptyTop) DrawTexture(g, camera, x, y, upperLeft_convex);
+            if (emptyLeft && emptyBottom) DrawTexture(g, camera, x, y, lowerLeft_convex);
+            if (emptyRight && emptyTop) DrawTexture(g, camera, x, y, upperRight_convex);
+            if (emptyRight && emptyBottom) DrawTexture(g, camera, x, y, lowerRight_convex);
 
             //Konkave Ecken
-            if (upperLeft && !emptyLeft && !emptyTop) DrawTexture(g, game.Camera, x, y, upperLeft_concarve);
-            if (upperRight && !emptyRight && !emptyTop) DrawTexture(g, game.Camera, x, y, upperRight_concarve);
-            if (lowerLeft && !emptyLeft && !emptyBottom) DrawTexture(g, game.Camera, x, y, lowerLeft_concarve);
-            if (lowerRight && !emptyRight && !emptyBottom) DrawTexture(g, game.Camera, x, y, lowerRight_concarve);
+            if (upperLeft && !emptyLeft && !emptyTop) DrawTexture(g, camera, x, y, upperLeft_concarve);
+            if (upperRight && !emptyRight && !emptyTop) DrawTexture(g, camera, x, y, upperRight_concarve);
+            if (lowerLeft && !emptyLeft && !emptyBottom) DrawTexture(g, camera, x, y, lowerLeft_concarve);
+            if (lowerRight && !emptyRight && !emptyBottom) DrawTexture(g, camera, x, y, lowerRight_concarve);
         }
 
-        private static void DrawTexture(SpriteBatch g, Camera camera, int x, int y, Texture2D image)
+        private static void DrawTexture(SpriteBatch g, CameraComponent camera, int x, int y, Texture2D image)
         {
             g.Draw(image, new Rectangle((int)(x * camera.SCALE - camera.ViewPort.X), (int)(y * camera.SCALE - camera.ViewPort.Y), (int)camera.SCALE, (int)camera.SCALE), Color.White);
 

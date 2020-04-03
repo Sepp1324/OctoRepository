@@ -13,8 +13,6 @@ namespace OctoAwesome.Model
     {
         private Dictionary<CellType, CellTypeDefinition> cellTypes;
 
-        public Camera Camera { get; private set; }
-
         public Vector2 PlaygroundSize
         {
             get
@@ -27,13 +25,10 @@ namespace OctoAwesome.Model
 
         public Map Map { get; private set; }
 
-        public Game(Input2 input)
+        public Game(InputComponent input)
         {
-            //Map = Map.Generate(20, 20, CellType.Grass);
             Map = Map.Load("Assets/testMap.map");
             Player = new Player(input, Map);
-            //Map.Items.Add(Player);
-            Camera = new Camera(this, input);
 
             cellTypes = new Dictionary<CellType, CellTypeDefinition>();
             cellTypes.Add(CellType.Grass, new CellTypeDefinition() { CanGoto = true, VelocityFactor = 0.8f });
@@ -149,8 +144,6 @@ namespace OctoAwesome.Model
             }
 
             Player.Position = newPosition;
-
-            Camera.Update(frameTime);
         }
     }
 }

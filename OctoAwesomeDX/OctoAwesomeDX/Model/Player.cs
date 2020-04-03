@@ -11,7 +11,7 @@ namespace OctoAwesome.Model
 {
     internal sealed class Player : Item, IHaveInventory
     {
-        private Input2 input;
+        private InputComponent input;
         private Map map;
 
         public readonly float MAXSPEED = 2f;
@@ -30,7 +30,7 @@ namespace OctoAwesome.Model
 
         public List<InventoryItem> InventoryItems { get; private set; }
 
-        public Player(Input2 input, Map map)
+        public Player(InputComponent input, Map map)
         {
             this.input = input;
             this.map = map;
