@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Components;
+﻿using Microsoft.Xna.Framework;
+using OctoAwesome.Components;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +11,7 @@ namespace OctoAwesome.Model
 {
     internal sealed class Player : Item, IHaveInventory
     {
-        private Input input;
+        private Input2 input;
         private Map map;
 
         public readonly float MAXSPEED = 2f;
@@ -29,7 +30,7 @@ namespace OctoAwesome.Model
 
         public List<InventoryItem> InventoryItems { get; private set; }
 
-        public Player(Input input, Map map)
+        public Player(Input2 input, Map map)
         {
             this.input = input;
             this.map = map;
@@ -39,7 +40,7 @@ namespace OctoAwesome.Model
             InventoryItems.Add(new InventoryItem() { Name = "Apfel" });
         }
 
-        public void Update(TimeSpan frameTime)
+        public void Update(GameTime frameTime)
         {
             //Bewegungsrichtung
             Velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
@@ -47,7 +48,8 @@ namespace OctoAwesome.Model
             //Bewegunsberechnung
             if (Velocity.Length() > 0f)
             {
-                Velocity = Velocity.Normalized() * MAXSPEED;
+                Velocity.Normalize();
+                Velocity *= MAXSPEED;
                 State = PlayerState.WALK;
                 Angle = Velocity.Angle();
             }

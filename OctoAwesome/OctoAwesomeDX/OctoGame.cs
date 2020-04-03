@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using OctoAwesome.Components;
+using OctoAwesome.Rendering;
 
 namespace OctoAwesomeDX
 {
@@ -12,12 +14,25 @@ namespace OctoAwesomeDX
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Input2 input;
+
+        private Texture2D grass;
+        private Texture2D sprite;
+        private Texture2D tree;
+        private Texture2D box;
+
+        private CellTypeRenderer sandRenderer;
+        private CellTypeRenderer waterRenderer;
+
         OctoAwesome.Model.Game game;
 
         public OctoGame() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            input = new Input2(this);
+            Components.Add(input);
         }
 
         /// <summary>
@@ -29,7 +44,9 @@ namespace OctoAwesomeDX
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            game = OctoAwesome.Model.Game();
+
+
+            game = OctoAwesome.Model.Game(input);
 
             base.Initialize();
         }
@@ -44,7 +61,14 @@ namespace OctoAwesomeDX
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            Content.Load<Texture2D>("Textures/tree");
+            grass = Content.Load<Texture2D>("Textures/grass_center");
+
+            sandRenderer = new CellTypeRenderer(Content, "sand");
+            waterRenderer = new CellTypeRenderer(Content, "water");
+
+            sprite = Content.Load<Texture2D>("Textures/sprite");
+            tree = Content.Load<Texture2D>("Textures/tree");
+            box = Content.Load<Texture2D>("Textures/box");
         }
 
         /// <summary>
@@ -68,6 +92,8 @@ namespace OctoAwesomeDX
 
             // TODO: Add your update logic here
 
+            game.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -78,6 +104,10 @@ namespace OctoAwesomeDX
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            spriteBatch.Begin();
+
+            spriteBatch.End();
 
             // TODO: Add your drawing code here
 

@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Model;
+﻿using Microsoft.Xna.Framework;
+using OctoAwesome.Model;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,14 +11,14 @@ namespace OctoAwesome.Components
 {
     internal sealed class Camera
     {
-        private Game game;
-        private Input input;
+        private OctoAwesome.Model.Game game;
+        private Input2 input;
         private Vector2 renderSize;
 
         public readonly float MAXSPEED = 1000f;
         public readonly float SCALE = 64f;
 
-        public Camera(Game game, Input input)
+        public Camera(OctoAwesome.Model.Game game, Input2 input)
         {
             this.game = game;
             this.input = input;
@@ -29,7 +30,7 @@ namespace OctoAwesome.Components
             RecalcViewPort();
         }
 
-        public void Update(TimeSpan frameTime)
+        public void Update(GameTime frameTime)
         {
             float posX = (game.Player.Position.X * SCALE) - ViewPort.Left;
             float posY = (game.Player.Position.Y * SCALE) - ViewPort.Top;
@@ -77,7 +78,7 @@ namespace OctoAwesome.Components
             float offsetX = (game.Camera.Center.X) - (this.renderSize.X / 2);
             float offsetY = (game.Camera.Center.Y) - (this.renderSize.Y / 2);
 
-            ViewPort = new RectangleF(offsetX, offsetY, renderSize.X, renderSize.Y);
+            ViewPort = new Rectangle((int)offsetX, (int)offsetY, (int)renderSize.X, (int)renderSize.Y);
         }
 
         /// <summary>
@@ -88,6 +89,6 @@ namespace OctoAwesome.Components
         /// <summary>
         /// Sichtbarer Bereich (render-Koordinate)
         /// </summary>
-        public RectangleF ViewPort { get; set; }
+        public Rectangle ViewPort { get; set; }
     }
 }

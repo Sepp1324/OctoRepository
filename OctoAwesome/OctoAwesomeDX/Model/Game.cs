@@ -27,7 +27,7 @@ namespace OctoAwesome.Model
 
         public Map Map { get; private set; }
 
-        public Game(Input input)
+        public Game(Input2 input)
         {
             //Map = Map.Generate(20, 20, CellType.Grass);
             Map = Map.Load("Assets/testMap.map");
@@ -59,7 +59,7 @@ namespace OctoAwesome.Model
             Map.Items.Add(Player);
         }
 
-        public void Update(TimeSpan frameTime)
+        public void Update(GameTime frameTime)
         {
             Player.Update(frameTime);
 
@@ -74,7 +74,7 @@ namespace OctoAwesome.Model
 
             velocity *= cell.VelocityFactor;
 
-            Vector2 newPosition = Player.Position + (velocity * (float)frameTime.TotalSeconds);
+            Vector2 newPosition = Player.Position + (velocity * (float)frameTime.ElapsedGameTime.TotalSeconds);
 
             //Block nach links (Kartenrand + nicht begehbare Zellen)
             if (velocity.X < 0)

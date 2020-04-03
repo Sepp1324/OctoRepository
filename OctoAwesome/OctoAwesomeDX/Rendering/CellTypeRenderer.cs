@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Components;
 using OctoAwesome.Model;
 using System;
@@ -26,24 +28,24 @@ namespace OctoAwesome.Rendering
         private readonly Texture2D lowerLeft_convex;
         private readonly Texture2D lowerRight_convex;
 
-        public CellTypeRenderer(string name)
+        public CellTypeRenderer(ContentManager content,  string name)
         {
-            center = Image.FromFile(string.Format("Assets/{0}_center.png", name));
-            left = Image.FromFile(string.Format("Assets/{0}_left.png", name));
-            right = Image.FromFile(string.Format("Assets/{0}_right.png", name));
-            upper = Image.FromFile(string.Format("Assets/{0}_upper.png", name));
-            lower = Image.FromFile(string.Format("Assets/{0}_lower.png", name));
-            upperLeft_concarve = Image.FromFile(string.Format("Assets/{0}_upperLeft_concave.png", name));
-            upperRight_concarve = Image.FromFile(string.Format("Assets/{0}_upperRight_concave.png", name));
-            lowerLeft_concarve = Image.FromFile(string.Format("Assets/{0}_lowerLeft_concave.png", name));
-            lowerRight_concarve = Image.FromFile(string.Format("Assets/{0}_lowerRight_concave.png", name));
-            upperLeft_convex = Image.FromFile(string.Format("Assets/{0}_upperLeft_convex.png", name));
-            upperRight_convex = Image.FromFile(string.Format("Assets/{0}_upperRight_convex.png", name));
-            lowerLeft_convex = Image.FromFile(string.Format("Assets/{0}_lowerLeft_convex.png", name));
-            lowerRight_convex = Image.FromFile(string.Format("Assets/{0}_lowerRight_convex.png", name));
+            center = content.Load<Texture2D>("Textures/{0}_center");//Image.FromFile(string.Format("Assets/{0}_center.png", name));
+            left = content.Load<Texture2D>("Textures/{0}_left"); //Image.FromFile(string.Format("Assets/{0}_left.png", name));
+            right = content.Load<Texture2D>("Textures/{0}_right"); //Image.FromFile(string.Format("Assets/{0}_right.png", name));
+            upper = content.Load<Texture2D>("Textures/{0}_upper"); //Image.FromFile(string.Format("Assets/{0}_upper.png", name));
+            lower = content.Load<Texture2D>("Textures/{0}_lower"); //Image.FromFile(string.Format("Assets/{0}_lower.png", name));
+            upperLeft_concarve = content.Load<Texture2D>("Textures/{0}_upperLeft_concave"); //Image.FromFile(string.Format("Assets/{0}_upperLeft_concave.png", name));
+            upperRight_concarve = content.Load<Texture2D>("Textures/{0}_upperRight_concave"); //Image.FromFile(string.Format("Assets/{0}_upperRight_concave.png", name));
+            lowerLeft_concarve = content.Load<Texture2D>("Textures/{0}_lowerLeft_concave"); //Image.FromFile(string.Format("Assets/{0}_lowerLeft_concave.png", name));
+            lowerRight_concarve = content.Load<Texture2D>("Textures/{0}_lowerRight_concave"); //Image.FromFile(string.Format("Assets/{0}_lowerRight_concave.png", name));
+            upperLeft_convex = content.Load<Texture2D>("Textures/{0}_upperLeft_convex"); //Image.FromFile(string.Format("Assets/{0}_upperLeft_convex.png", name));
+            upperRight_convex = content.Load<Texture2D>("Textures/{0}_upperRight_convex"); //Image.FromFile(string.Format("Assets/{0}_upperRight_convex.png", name));
+            lowerLeft_convex = content.Load<Texture2D>("Textures/{0}_lowerLeft_convex"); //Image.FromFile(string.Format("Assets/{0}_lowerLeft_convex.png", name));
+            lowerRight_convex = content.Load<Texture2D>("Textures/{0}_lowerRight_convex"); //Image.FromFile(string.Format("Assets/{0}_lowerRight_convex.png", name));
         }
 
-        public void Draw(Graphics g, Game game, int x, int y)
+        public void Draw(SpriteBatch g, OctoAwesome.Model.Game game, int x, int y)
         {
             CellType centerType = game.Map.GetCell(x, y);
 
@@ -78,7 +80,7 @@ namespace OctoAwesome.Rendering
             if (lowerRight && !emptyRight && !emptyBottom) DrawTexture(g, game.Camera, x, y, lowerRight_concarve);
         }
 
-        private static void DrawTexture(Graphics g, Camera camera, int x, int y, Image image)
+        private static void DrawTexture(SpriteBatch g, Camera camera, int x, int y, Texture2D image)
         {
             g.DrawImage(image, new Rectangle((int)(x * camera.SCALE - camera.ViewPort.X), (int)(y * camera.SCALE - camera.ViewPort.Y), (int)camera.SCALE, (int)camera.SCALE));
 
