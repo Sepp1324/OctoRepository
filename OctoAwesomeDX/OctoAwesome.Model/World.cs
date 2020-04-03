@@ -1,15 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using OctoAwesome.Components;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Model
 {
-    internal sealed class Game
+    public sealed class World
     {
         private Dictionary<CellType, CellTypeDefinition> cellTypes;
 
@@ -25,7 +23,7 @@ namespace OctoAwesome.Model
 
         public Map Map { get; private set; }
 
-        public Game(InputComponent input)
+        public World(IInputSet input)
         {
             Map = Map.Load("Assets/testMap.map");
             Player = new Player(input, Map);

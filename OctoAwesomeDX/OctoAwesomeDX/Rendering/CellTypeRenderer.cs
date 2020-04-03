@@ -45,7 +45,7 @@ namespace OctoAwesome.Rendering
             lowerRight_convex = content.Load<Texture2D>(string.Format("Textures/{0}_lowerRight_convex", name)); //Image.FromFile(string.Format("Assets/{0}_lowerRight_convex.png", name));
         }
 
-        public void Draw(SpriteBatch g, CameraComponent camera, OctoAwesome.Model.Game game, int x, int y)
+        public void Draw(SpriteBatch g, CameraComponent camera, OctoAwesome.Model.World game, int x, int y)
         {
             CellType centerType = game.Map.GetCell(x, y);
 

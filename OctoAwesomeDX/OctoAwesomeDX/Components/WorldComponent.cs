@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Components;
+using OctoAwesome.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace OctoAwesomeDX.Components
 {
     internal sealed class WorldComponent : GameComponent
     {
-        public OctoAwesome.Model.Game World { get; private set; }
+        public World World { get; private set; }
 
         public WorldComponent(Game game, InputComponent input) : base(game)
         {
-            World = new OctoAwesome.Model.Game(input);
+            World = new World(input);
         }
 
         public override void Update(GameTime gameTime)

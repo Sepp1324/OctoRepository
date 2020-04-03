@@ -19,7 +19,7 @@ namespace OctoAwesome.Components
         public readonly float MAXSPEED = 1000f;
         public readonly float SCALE = 64f;
 
-        public CameraComponent(Microsoft.Xna.Framework.Game game, WorldComponent world, InputComponent input) : base(game)
+        public CameraComponent(Game game, WorldComponent world, InputComponent input) : base(game)
         {
             this.world = world;
             this.input = input;

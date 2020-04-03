@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using OctoAwesome.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,13 @@ using System.Text;
 
 namespace OctoAwesome.Components
 {
-    internal sealed class InputComponent : GameComponent
+    internal sealed class InputComponent : GameComponent, IInputSet
     {
+        private bool lastInteract = false;
+
+        private GamePadInput gamepad;
+        private KeyBoardInput keyboard;
+
         public bool Left { get; private set; }
 
         public bool Right { get; private set; }
@@ -17,31 +23,37 @@ namespace OctoAwesome.Components
 
         public bool Down { get; private set; }
 
-        public bool Interact { get; set; }
+        public bool Interact { get; private set; }
 
-        public InputComponent(Game game)
-            : base(game)
+        public InputComponent(Game game) : base(game)
         {
-
+            gamepad = new GamePadInput();
+            keyboard = new KeyBoardInput();
         }
 
         public override void Update(GameTime gameTime)
         {
-            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+            bool nextInteract = false;
 
-            Interact = gamePadState.Buttons.A == ButtonState.Pressed;
-            Left = gamePadState.ThumbSticks.Left.X < -0.5f;
-            Right = gamePadState.ThumbSticks.Left.X > 0.5f;
-            Down = gamePadState.ThumbSticks.Left.Y < -0.5f;
-            Up = gamePadState.ThumbSticks.Left.Y > 0.5f;
+            gamepad.Update();
+            nextInteract = gamepad.Interact;
+            Left = gamepad.Left;
+            Right = gamepad.Right;
+            Down = gamepad.Down;
+            Up = gamepad.Up;
 
-            KeyboardState keyBoardState = Keyboard.GetState();
+            keyboard.Update();
+            nextInteract |= keyboard.Interact;
+            Left |= keyboard.Left;
+            Right |= keyboard.Right;
+            Down |= keyboard.Down;
+            Up |= keyboard.Up;
 
-            Interact |= keyBoardState.IsKeyDown(Keys.Space);
-            Left |= keyBoardState.IsKeyDown(Keys.Left);
-            Right |= keyBoardState.IsKeyDown(Keys.Right);
-            Down |= keyBoardState.IsKeyDown(Keys.Down);
-            Up |= keyBoardState.IsKeyDown(Keys.Up);
+            if (nextInteract && !lastInteract)
+                Interact = true;
+            else
+                Interact = false;
+            lastInteract = nextInteract;
         }
     }
 }
