@@ -1,7 +1,6 @@
-﻿using OctoAwesomeDX;
-using System;
+﻿using System;
 
-namespace Testprojekt
+namespace OctoAwesomeDX
 {
 #if WINDOWS || LINUX
     /// <summary>
