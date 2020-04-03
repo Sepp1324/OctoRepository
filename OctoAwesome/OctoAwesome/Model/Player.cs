@@ -35,6 +35,8 @@ namespace OctoAwesome.Model
             this.map = map;
             Radius = 0.1f;
             InventoryItems = new List<InventoryItem>();
+
+            InventoryItems.Add(new InventoryItem() { Name = "Apfel" });
         }
 
         public void Update(TimeSpan frameTime)
@@ -84,25 +86,26 @@ namespace OctoAwesome.Model
             }
 
             //Interaktion überprüfen
-            if (input.Interact)
+            if (input.Interact && InteractionPartner == null)
             {
                 input.Interact = false;
                 InteractionPartner = map.Items.
                     Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
                     OfType<IHaveInventory>().
                     FirstOrDefault();
-
-                if (InteractionPartner != null)
-                {
-                    var partner = map.Items.
-                        Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
-                        OfType<IHaveInventory>().
-                        FirstOrDefault();
-
-                    if (InteractionPartner != partner)
-                        InteractionPartner = null;
-                }
             }
+
+            if (InteractionPartner != null)
+            {
+                var partner = map.Items.
+                    Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
+                    OfType<IHaveInventory>().
+                    FirstOrDefault();
+
+                if (InteractionPartner != partner)
+                    InteractionPartner = null;
+            }
+
         }
     }
 
