@@ -76,7 +76,9 @@ namespace OctoAwesome
             {
                 for (int y = cellY1; y < cellY2; y++)
                 {
-                    switch (game.Map.GetCell(x, y))
+                    CellCache cell = game.Map.CellCache[x, y];
+
+                    switch (cell.CellType)
                     {
                         case CellType.Grass:
                             e.Graphics.DrawImage(grass, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
