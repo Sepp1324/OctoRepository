@@ -34,6 +34,14 @@ namespace OctoAwesome.Components
             Right = gamePadState.ThumbSticks.Left.X > 0.5f;
             Down = gamePadState.ThumbSticks.Left.Y < -0.5f;
             Up = gamePadState.ThumbSticks.Left.Y > 0.5f;
+
+            KeyboardState keyBoardState = Keyboard.GetState();
+
+            Interact |= keyBoardState.IsKeyDown(Keys.Space);
+            Left |= keyBoardState.IsKeyDown(Keys.Left);
+            Right |= keyBoardState.IsKeyDown(Keys.Right);
+            Down |= keyBoardState.IsKeyDown(Keys.Down);
+            Up |= keyBoardState.IsKeyDown(Keys.Up);
         }
     }
 }

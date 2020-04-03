@@ -75,8 +75,6 @@ namespace OctoAwesomeDX
 
         protected override void Draw(GameTime gameTime)
         {
-            if (spriteBatch == null)
-                LoadContent();
 
             GraphicsDevice.Clear(new Color(0.2470f, 0.0980f, 0f));
 
@@ -103,7 +101,6 @@ namespace OctoAwesomeDX
                     switch (cell.CellType)
                     {
                         case OctoAwesome.Model.CellType.Grass:
-                            //e.Graphics.DrawImage(grass, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
                             spriteBatch.Draw(grass, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE), Color.White);
                             break;
 
