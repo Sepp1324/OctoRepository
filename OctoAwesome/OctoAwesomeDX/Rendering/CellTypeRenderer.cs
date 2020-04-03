@@ -17,6 +17,7 @@ namespace OctoAwesome.Rendering
         private readonly Texture2D center;
         private readonly Texture2D left;
         private readonly Texture2D right;
+        //Jojo
         private readonly Texture2D upper;
         private readonly Texture2D lower;
         private readonly Texture2D upperLeft_concarve;

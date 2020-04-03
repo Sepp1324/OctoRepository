@@ -27,9 +27,6 @@ namespace OctoAwesome.Rendering
         private readonly Texture2D upperRight_convex;
         private readonly Texture2D lowerLeft_convex;
         private readonly Texture2D lowerRight_convex;
-        //Tesssst
-        //Test
-        //Test
 
         public CellTypeRenderer(ContentManager content,  string name)
         {
