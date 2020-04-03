@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1062
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesomeDX", "OctoAwesomeDX\OctoAwesomeDX.csproj", "{84BDF649-5482-40E5-A852-BA7D4D15DD0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesomeDX", "OctoAwesomeDX\OctoAwesomeDX.csproj", "{0B8E6E21-8ED7-4FEA-BBEA-293E986AE7EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{84BDF649-5482-40E5-A852-BA7D4D15DD0B}.Debug|x86.ActiveCfg = Debug|x86
-		{84BDF649-5482-40E5-A852-BA7D4D15DD0B}.Debug|x86.Build.0 = Debug|x86
-		{84BDF649-5482-40E5-A852-BA7D4D15DD0B}.Release|x86.ActiveCfg = Release|x86
-		{84BDF649-5482-40E5-A852-BA7D4D15DD0B}.Release|x86.Build.0 = Release|x86
+		{0B8E6E21-8ED7-4FEA-BBEA-293E986AE7EA}.Debug|x86.ActiveCfg = Debug|x86
+		{0B8E6E21-8ED7-4FEA-BBEA-293E986AE7EA}.Debug|x86.Build.0 = Debug|x86
+		{0B8E6E21-8ED7-4FEA-BBEA-293E986AE7EA}.Release|x86.ActiveCfg = Release|x86
+		{0B8E6E21-8ED7-4FEA-BBEA-293E986AE7EA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {C8D129AD-2A29-482F-AD99-B680A9D93D63}
+		SolutionGuid = {BF2DFE5B-CB46-4696-88F3-8D2C16859A6F}
 	EndGlobalSection
 EndGlobal
