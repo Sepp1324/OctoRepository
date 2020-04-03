@@ -49,7 +49,7 @@ namespace OctoAwesome.Rendering
         {
             CellType centerType = game.Map.GetCell(x, y);
 
-            g.DrawImage(center, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE));
+            g.Draw(center, new Rectangle((int)(x * game.Camera.SCALE - game.Camera.ViewPort.X), (int)(y * game.Camera.SCALE - game.Camera.ViewPort.Y), (int)game.Camera.SCALE, (int)game.Camera.SCALE), Color.White);
 
             bool emptyLeft = x > 0 && game.Map.GetCell(x - 1, y) != centerType;
             bool emptyTop = y > 0 && game.Map.GetCell(x, y - 1) != centerType;
@@ -82,7 +82,7 @@ namespace OctoAwesome.Rendering
 
         private static void DrawTexture(SpriteBatch g, Camera camera, int x, int y, Texture2D image)
         {
-            g.DrawImage(image, new Rectangle((int)(x * camera.SCALE - camera.ViewPort.X), (int)(y * camera.SCALE - camera.ViewPort.Y), (int)camera.SCALE, (int)camera.SCALE));
+            g.Draw(image, new Rectangle((int)(x * camera.SCALE - camera.ViewPort.X), (int)(y * camera.SCALE - camera.ViewPort.Y), (int)camera.SCALE, (int)camera.SCALE), Color.White);
 
         }
     }

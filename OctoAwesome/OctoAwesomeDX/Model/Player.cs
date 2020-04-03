@@ -51,7 +51,7 @@ namespace OctoAwesome.Model
                 Velocity.Normalize();
                 Velocity *= MAXSPEED;
                 State = PlayerState.WALK;
-                Angle = Velocity.Angle();
+                Angle = (float)Math.Atan2(Velocity.Y, Velocity.X);
             }
             else
             {
