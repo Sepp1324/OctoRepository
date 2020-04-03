@@ -7,12 +7,14 @@ namespace OctoAwesomeDX
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class OctoGame : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public Game1()
+        OctoAwesome.Model.Game game;
+
+        public OctoGame() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -27,6 +29,7 @@ namespace OctoAwesomeDX
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            game = OctoAwesome.Model.Game();
 
             base.Initialize();
         }
@@ -41,6 +44,7 @@ namespace OctoAwesomeDX
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            Content.Load<Texture2D>("Textures/tree");
         }
 
         /// <summary>
@@ -59,8 +63,8 @@ namespace OctoAwesomeDX
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                //Exit();
 
             // TODO: Add your update logic here
 
