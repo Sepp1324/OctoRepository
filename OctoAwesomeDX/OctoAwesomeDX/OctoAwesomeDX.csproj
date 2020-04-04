@@ -38,7 +38,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>octoicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Components\CameraComponent.cs" />
@@ -92,7 +92,9 @@
     <Content Include="Content\Textures\water_upperLeft_convex.png" />
     <Content Include="Content\Textures\water_upperRight_concave.png" />
     <Content Include="Content\Textures\water_upperRight_convex.png" />
-    <Content Include="Icon.ico" />
+    <Content Include="octoicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
