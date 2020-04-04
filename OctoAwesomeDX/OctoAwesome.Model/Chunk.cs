@@ -11,7 +11,7 @@ namespace OctoAwesome.Model
     {
         public const int CHUNKSIZE_X = 100;
         public const int CHUNKSIZE_Y = 100;
-        public const int CHUNKSIZE_Z = 100;
+        public const int CHUNKSIZE_Z = 30;
 
         public IBlock[,,] Blocks { get; set; }
 
