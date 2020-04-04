@@ -155,11 +155,10 @@ namespace OctoAwesome.Components
                         new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
                     };
 
-                    Vector3 itemPos = new Vector3(item.Position.X + 0.5f, 0, item.Position.Y + 0.5f);
+                    Matrix billboard = Matrix.Invert(camera.View);
+                    billboard.Translation = new Vector3(item.Position.X, 0, item.Position.Y);
 
-                    effect.World = Matrix.CreateBillboard(itemPos, camera.CameraPosition, camera.CameraUpVector, null) * Matrix.CreateTranslation(item.Position.X + 0.5f, 0, item.Position.Y + 0.5f);
-
-                    //effect.World = ;
+                    effect.World = billboard;
 
                     foreach (var pass in effect.CurrentTechnique.Passes)
                     {
@@ -182,7 +181,10 @@ namespace OctoAwesome.Components
                         new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
                     };
 
-                    effect.World = Matrix.CreateTranslation(item.Position.X + 0.5f, 0, item.Position.Y + 0.5f);
+                    Matrix billboard = Matrix.Invert(camera.View);
+                    billboard.Translation = new Vector3(item.Position.X, 0, item.Position.Y);
+
+                    effect.World = billboard;
 
                     foreach (var pass in effect.CurrentTechnique.Passes)
                     {
@@ -215,7 +217,7 @@ namespace OctoAwesome.Components
                     }
                     else
                     {
-                        offsetx = spriteWidth;
+                     offsetx = spriteWidth;
                     }
 
                     //Umrechnung in Grad
@@ -249,7 +251,10 @@ namespace OctoAwesome.Components
                         new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx, offsety + spriteHeight))
                     };
 
-                    effect.World = Matrix.CreateTranslation(item.Position.X, 0, item.Position.Y);
+                    Matrix billboard = Matrix.Invert(camera.View);
+                    billboard.Translation = new Vector3(item.Position.X, 0, item.Position.Y);
+
+                    effect.World = billboard;
 
 
                     foreach (var pass in effect.CurrentTechnique.Passes)
