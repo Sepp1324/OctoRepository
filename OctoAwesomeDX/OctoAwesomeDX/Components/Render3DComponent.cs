@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OctoAwesome.Model;
 using OctoAwesomeDX.Components;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,10 @@ namespace OctoAwesome.Components
 
         private Texture2D grass;
         private Texture2D sand;
+        private Texture2D water;
         private Texture2D tree;
+        private Texture2D sprite;
+        private Texture2D box;
 
         private VertexBuffer vb;
         private IndexBuffer ib;
@@ -74,6 +76,9 @@ namespace OctoAwesome.Components
             grass = Game.Content.Load<Texture2D>("Textures/grass_center");
             sand = Game.Content.Load<Texture2D>("Textures/sand_center");
             tree = Game.Content.Load<Texture2D>("Textures/tree");
+            sprite = Game.Content.Load<Texture2D>("Textures/sprite");
+            water = Game.Content.Load<Texture2D>("Textures/water_center");
+            box = Game.Content.Load<Texture2D>("Textures/box");
 
             effect = new BasicEffect(GraphicsDevice);
 
@@ -81,24 +86,11 @@ namespace OctoAwesome.Components
             effect.Projection = camera.Projection;
             effect.TextureEnabled = true;
 
-            //effect.EnableDefaultLighting();
-            /*effect.LightingEnabled = true;
-            effect.AmbientLightColor = Color.DarkGray.ToVector3();
-
-            effect.DirectionalLight0.Enabled = true;
-            effect.DirectionalLight0.Direction = new Vector3(-3, -3, -5);
-            effect.DirectionalLight0.DiffuseColor = Color.Red.ToVector3();*/
-
             base.LoadContent();
         }
 
-        //float rotY = 0f;
-
         public override void Update(GameTime gameTime)
         {
-            //rotY += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-
             base.Update(gameTime);
         }
 
@@ -108,14 +100,6 @@ namespace OctoAwesome.Components
 
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            //GraphicsDevice.RasterizerState.CullMode = CullMode.None;
-            //RasterizerState r = new RasterizerState();
-            //r.CullMode = CullMode.None;
-            //r.FillMode = FillMode.WireFrame;
-
-            //GraphicsDevice.RasterizerState = r;
-
-            //effect.World = Matrix.CreateRotationY(rotY);
             effect.World = Matrix.Identity;
             effect.View = camera.View;
 
@@ -129,16 +113,19 @@ namespace OctoAwesome.Components
             {
                 for (int x = 0; x < width; x++)
                 {
-                    CellCache cell = world.World.Map.CellCache[x, z];
+                    Model.CellCache cell = world.World.Map.CellCache[x, z];
 
                     switch (cell.CellType)
                     {
-                        case CellType.Grass:
+                        case Model.CellType.Grass:
                             effect.Texture = grass;
                             break;
 
-                        case CellType.Sand:
+                        case Model.CellType.Sand:
                             effect.Texture = sand;
+                            break;
+                        case Model.CellType.Water:
+                            effect.Texture = water;
                             break;
                     }
 
@@ -152,65 +139,85 @@ namespace OctoAwesome.Components
                 }
             }
 
-            VertexPositionNormalTexture[] localVertices = new VertexPositionNormalTexture[]
-            {
-                new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
-                new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(1, 0)),
-                new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
-                new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
-                new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
-                new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
-            };
-
             foreach (var item in world.World.Map.Items.OrderBy(t => t.Position.Y))
             {
-                if (item is TreeItem)
+                if (item is Model.TreeItem)
                 {
                     effect.Texture = tree;
 
-                    localVertices[0].Position = new Vector3(-0.5f, 2, 0);
-                    localVertices[1].Position = new Vector3(0.5f, 2, 0);
-                    localVertices[3].Position = new Vector3(-0.5f, 2, 0);
+                    VertexPositionNormalTexture[] treeVertices = new VertexPositionNormalTexture[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 2, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 2, 0), Vector3.Backward, new Vector2(1, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 2, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
+                    };
+
+                    Vector3 itemPos = new Vector3(item.Position.X + 0.5f, 0, item.Position.Y + 0.5f);
+
+                    effect.World = Matrix.CreateBillboard(itemPos, camera.CameraPosition, camera.CameraUpVector, null) * Matrix.CreateTranslation(item.Position.X + 0.5f, 0, item.Position.Y + 0.5f);
+
+                    //effect.World = ;
+
+                    foreach (var pass in effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, treeVertices, 0, 2);
+                    }
+                }
+
+                if (item is Model.BoxItem)
+                {
+                    effect.Texture = box;
+
+                    VertexPositionNormalTexture[] boxVertices = new VertexPositionNormalTexture[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(1, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
+                    };
 
                     effect.World = Matrix.CreateTranslation(item.Position.X + 0.5f, 0, item.Position.Y + 0.5f);
 
                     foreach (var pass in effect.CurrentTechnique.Passes)
                     {
                         pass.Apply();
-                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, localVertices, 0, 2);
+                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, boxVertices, 0, 2);
                     }
                 }
 
-                if (item is BoxItem)
+                if (item is Model.Player)
                 {
-                    /*spriteBatch.Draw(box, new Rectangle(
-                        (int)(item.Position.X * camera.SCALE - camera.ViewPort.X) - 32,
-                        (int)(item.Position.Y * camera.SCALE - camera.ViewPort.Y) - 35,
-                        (int)camera.SCALE,
-                        (int)camera.SCALE), Color.White);*/
-                }
+                    effect.Texture = sprite;
 
-                if (item is Player)
-                {
-                    /*int frame = (int)((gameTime.TotalGameTime.TotalMilliseconds / 250) % 4);
+                    float spriteWidth = 1f / 9;
+                    float spriteHeight = 1f / 8;
 
-                    int offsetx = 0;
+                    int frame = (int)(gameTime.TotalGameTime.TotalMilliseconds / 250) % 4;
 
-                    if (world.World.Player.State == PlayerState.WALK)
+                    float offsetx = 0;
+
+                    if (world.World.Player.State == Model.PlayerState.WALK)
                     {
 
                         switch (frame)
                         {
                             case 0: offsetx = 0; break;
-                            case 1: offsetx = SPRITE_WIDTH; break;
-                            case 2: offsetx = 2 * SPRITE_WIDTH; break;
-                            case 3: offsetx = SPRITE_WIDTH; break;
+                            case 1: offsetx = spriteWidth; break;
+                            case 2: offsetx = 2 * spriteWidth; break;
+                            case 3: offsetx = spriteWidth; break;
                         }
                     }
                     else
                     {
-                        offsetx = SPRITE_WIDTH;
+                        offsetx = spriteWidth;
                     }
+
                     //Umrechnung in Grad
                     float direction = (world.World.Player.Angle * 360f) / (float)(2 * Math.PI);
 
@@ -222,22 +229,34 @@ namespace OctoAwesome.Components
 
                     int sector = (int)(direction / 90);
 
-                    int offsety = 0;
+                    float offsety = 0;
 
                     switch (sector)
                     {
-                        case 1: offsety = 3 * SPRITE_HEIGHT; break;
-                        case 2: offsety = 2 * SPRITE_HEIGHT; break;
-                        case 3: offsety = 0 * SPRITE_HEIGHT; break;
-                        case 4: offsety = 1 * SPRITE_HEIGHT; break;
+                        case 1: offsety = 3 * spriteHeight; break;
+                        case 2: offsety = 2 * spriteHeight; break;
+                        case 3: offsety = 0 * spriteHeight; break;
+                        case 4: offsety = 1 * spriteHeight; break;
                     }
 
-                    Point spriteCenter = new Point(27, 48);
+                    VertexPositionNormalTexture[] spriteVertices = new VertexPositionNormalTexture[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx, offsety)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety + spriteHeight)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx, offsety)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety + spriteHeight)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx, offsety + spriteHeight))
+                    };
 
-                    spriteBatch.Draw(sprite, new Rectangle(((int)(world.World.Player.Position.X * camera.SCALE) - camera.ViewPort.X - spriteCenter.X),
-                        ((int)(world.World.Player.Position.Y * camera.SCALE) - camera.ViewPort.Y - spriteCenter.Y), SPRITE_WIDTH, SPRITE_HEIGHT),
-                        new Rectangle(offsetx, offsety, SPRITE_WIDTH, SPRITE_HEIGHT), Color.White);
-                }*/
+                    effect.World = Matrix.CreateTranslation(item.Position.X, 0, item.Position.Y);
+
+
+                    foreach (var pass in effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, spriteVertices, 0, 2);
+                    }
                 }
             }
         }

@@ -23,15 +23,22 @@ namespace OctoAwesome.Components
             base.Initialize();
 
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1f, 10000f);
-                    }
+        }
 
         public override void Update(GameTime gameTime)
         {
+            CameraPosition = new Vector3(world.World.Player.Position.X, 10, world.World.Player.Position.Y + 10);
+            CameraUpVector = Vector3.Up;
+
             View = Matrix.CreateLookAt(
-                new Vector3(world.World.Player.Position.X, 10, world.World.Player.Position.Y + 20), //20 
-                new Vector3(world.World.Player.Position.X, 0, world.World.Player.Position.Y), 
-                Vector3.Up);
+                CameraPosition,
+                new Vector3(world.World.Player.Position.X, 0, world.World.Player.Position.Y),
+                CameraUpVector);
         }
+
+        public Vector3 CameraPosition { get; private set; }
+
+        public Vector3 CameraUpVector { get; private set; }
 
         public Matrix View { get; private set; }
 
