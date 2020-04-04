@@ -1,12 +1,15 @@
-﻿using System;
+﻿using OctoAwesome.Model.Properties;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Model.Blocks
 {
-    class SandBlock : IBlock
+    public class SandBlock : IBlock
     {
+        public static Bitmap Texture { get { return Resources.sand_center; } }
     }
 }

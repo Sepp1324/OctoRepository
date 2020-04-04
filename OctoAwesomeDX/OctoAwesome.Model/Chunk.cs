@@ -10,8 +10,8 @@ namespace OctoAwesome.Model
     public class Chunk
     {
         public const int CHUNKSIZE_X = 100;
-        public const int CHUNKSIZE_Y = 100;
-        public const int CHUNKSIZE_Z = 30;
+        public const int CHUNKSIZE_Y = 25;
+        public const int CHUNKSIZE_Z = 100;
 
         public IBlock[,,] Blocks { get; set; }
 
