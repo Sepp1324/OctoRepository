@@ -41,6 +41,7 @@
     <ApplicationIcon>octoicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Components\Camera3DComponent.cs" />
     <Compile Include="Components\CameraComponent.cs" />
     <Compile Include="Components\GamePadInput.cs" />
     <Compile Include="Components\InputComponent.cs" />

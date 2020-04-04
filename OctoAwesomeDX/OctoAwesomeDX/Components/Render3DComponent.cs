@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OctoAwesome.Model;
 using OctoAwesomeDX.Components;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,12 @@ namespace OctoAwesome.Components
     internal sealed class Render3DComponent : DrawableGameComponent
     {
         private WorldComponent world;
+        private Camera3DComponent camera;
 
         private BasicEffect effect;
+
         private Texture2D grass;
+        private Texture2D sand;
 
         private VertexBuffer vb;
         private IndexBuffer ib;
@@ -22,9 +26,10 @@ namespace OctoAwesome.Components
         private int vertexCount;
         private int indexCount;
 
-        public Render3DComponent(Game game, WorldComponent world) : base(game)
+        public Render3DComponent(Game game, WorldComponent world, Camera3DComponent camera) : base(game)
         {
             this.world = world;
+            this.camera = camera;
         }
 
         protected override void LoadContent()
@@ -38,9 +43,9 @@ namespace OctoAwesome.Components
             VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[vertexCount];
             short[] index = new short[indexCount];
 
-            for(int z = 0; z < height; z++)
+            for (int z = 0; z < height; z++)
             {
-                for(int x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                 {
                     int vertexOffset = (((z * width) + x) * 4);
                     int indexOffset = (((z * width) + x) * 6);
@@ -49,7 +54,7 @@ namespace OctoAwesome.Components
                     vertices[vertexOffset + 1] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z), Vector3.Up, new Vector2(1, 0));
                     vertices[vertexOffset + 2] = new VertexPositionNormalTexture(new Vector3(x, 0, z + 1), Vector3.Up, new Vector2(0, 1));
                     vertices[vertexOffset + 3] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z + 1), Vector3.Up, new Vector2(1, 1));
-                    
+
                     index[indexOffset + 0] = (short)(vertexOffset + 0);
                     index[indexOffset + 1] = (short)(vertexOffset + 1);
                     index[indexOffset + 2] = (short)(vertexOffset + 3);
@@ -66,14 +71,13 @@ namespace OctoAwesome.Components
             ib.SetData<short>(index);
 
             grass = Game.Content.Load<Texture2D>("Textures/grass_center");
+            sand = Game.Content.Load<Texture2D>("Textures/sand_center");
 
             effect = new BasicEffect(GraphicsDevice);
 
             effect.World = Matrix.Identity;
-            effect.View = Matrix.CreateLookAt(new Vector3(0, 20, 0), Vector3.Zero, Vector3.Forward);
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1f, 10000f);
+            effect.Projection = camera.Projection;
             effect.TextureEnabled = true;
-            effect.Texture = grass;
 
             //effect.EnableDefaultLighting();
             /*effect.LightingEnabled = true;
@@ -86,11 +90,12 @@ namespace OctoAwesome.Components
             base.LoadContent();
         }
 
-        float rotY = 0f;
+        //float rotY = 0f;
 
         public override void Update(GameTime gameTime)
         {
             //rotY += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
 
             base.Update(gameTime);
         }
@@ -100,24 +105,47 @@ namespace OctoAwesome.Components
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             //GraphicsDevice.RasterizerState.CullMode = CullMode.None;
-            RasterizerState r = new RasterizerState();
-            r.CullMode = CullMode.None;
+            //RasterizerState r = new RasterizerState();
+            //r.CullMode = CullMode.None;
             //r.FillMode = FillMode.WireFrame;
 
-            GraphicsDevice.RasterizerState = r;
+            //GraphicsDevice.RasterizerState = r;
 
             //effect.World = Matrix.CreateRotationY(rotY);
             effect.World = Matrix.Identity;
+            effect.View = camera.View;
 
             GraphicsDevice.SetVertexBuffer(vb);
             GraphicsDevice.Indices = ib;
 
-            foreach (var pass in effect.CurrentTechnique.Passes)
+            int width = world.World.Map.CellCache.GetLength(0);
+            int height = world.World.Map.CellCache.GetLength(1);
+
+            for (int z = 0; z < height; z++)
             {
-                pass.Apply();
-                //GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
-                GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, 0, indexCount / 3);
-                // GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, vertices, 0, 2);
+                for (int x = 0; x < width; x++)
+                {
+                    CellCache cell = world.World.Map.CellCache[x, z];
+
+                    switch (cell.CellType)
+                    {
+                        case CellType.Grass:
+                            effect.Texture = grass;
+                            break;
+
+                        case CellType.Sand:
+                            effect.Texture = sand;
+                            break;
+                    }
+
+                    int indexOffset = ((z * width) + x) * 6;
+
+                    foreach (var pass in effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, indexOffset, 2);
+                    }
+                }
             }
         }
     }
