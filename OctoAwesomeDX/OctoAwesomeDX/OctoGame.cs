@@ -18,6 +18,8 @@ namespace OctoAwesomeDX
         RenderComponent render;
         WorldComponent world;
 
+        Render3DComponent render3d;
+
         public OctoGame()
             : base()
         {
@@ -36,9 +38,13 @@ namespace OctoAwesomeDX
             camera.UpdateOrder = 3;
             Components.Add(camera);
 
-            render = new RenderComponent(this, world, camera);
+            /*render = new RenderComponent(this, world, camera);
             render.DrawOrder = 1;
-            Components.Add(render);
+            Components.Add(render);*/
+
+            render3d = new Render3DComponent(this);
+            render3d.DrawOrder = 1;
+            Components.Add(render3d);
         }
     }
 }
