@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OctoAwesome.Model;
 using OctoAwesomeDX.Components;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,8 @@ namespace OctoAwesome.Components
         private int vertexCount;
         private int indexCount;
 
-        public Render3DComponent(Game game, WorldComponent world, Camera3DComponent camera) : base(game)
+        public Render3DComponent(Game game, WorldComponent world, Camera3DComponent camera)
+            : base(game)
         {
             this.world = world;
             this.camera = camera;
@@ -37,33 +39,124 @@ namespace OctoAwesome.Components
 
         protected override void LoadContent()
         {
-            int width = world.World.Map.CellCache.GetLength(0);
-            int height = world.World.Map.CellCache.GetLength(1);
+            //int width = world.World.Map.CellCache.GetLength(0);
+            //int height = world.World.Map.CellCache.GetLength(1);
 
-            vertexCount = width * height * 4;
-            indexCount = width * height * 6;
+            //vertexCount = width * height * 4;
+            //indexCount = width * height * 6;
+
+            //VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[vertexCount];
+            //short[] index = new short[indexCount];
+
+            //for (int z = 0; z < height; z++)
+            //{
+            //    for (int x = 0; x < width; x++)
+            //    {
+            //        int vertexOffset = (((z * width) + x) * 4);
+            //        int indexOffset = (((z * width) + x) * 6);
+
+            //        vertices[vertexOffset + 0] = new VertexPositionNormalTexture(new Vector3(x, 0, z), Vector3.Up, new Vector2(0, 0));
+            //        vertices[vertexOffset + 1] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z), Vector3.Up, new Vector2(1, 0));
+            //        vertices[vertexOffset + 2] = new VertexPositionNormalTexture(new Vector3(x, 0, z + 1), Vector3.Up, new Vector2(0, 1));
+            //        vertices[vertexOffset + 3] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z + 1), Vector3.Up, new Vector2(1, 1));
+
+            //        index[indexOffset + 0] = (short)(vertexOffset + 0);
+            //        index[indexOffset + 1] = (short)(vertexOffset + 1);
+            //        index[indexOffset + 2] = (short)(vertexOffset + 3);
+            //        index[indexOffset + 3] = (short)(vertexOffset + 0);
+            //        index[indexOffset + 4] = (short)(vertexOffset + 3);
+            //        index[indexOffset + 5] = (short)(vertexOffset + 2);
+            //    }
+            //}
+
+            vertexCount = Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Z * 24;
+            indexCount = Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Z * 36;
 
             VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[vertexCount];
             short[] index = new short[indexCount];
 
-            for (int z = 0; z < height; z++)
+            for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
             {
-                for (int x = 0; x < width; x++)
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
-                    int vertexOffset = (((z * width) + x) * 4);
-                    int indexOffset = (((z * width) + x) * 6);
+                    for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+                    {
+                        int offset = x + (y * Chunk.CHUNKSIZE_X) + (z * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
+                        int vertexOffset = offset * 24;
+                        int indexOffset = offset * 36;
 
-                    vertices[vertexOffset + 0] = new VertexPositionNormalTexture(new Vector3(x, 0, z), Vector3.Up, new Vector2(0, 0));
-                    vertices[vertexOffset + 1] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z), Vector3.Up, new Vector2(1, 0));
-                    vertices[vertexOffset + 2] = new VertexPositionNormalTexture(new Vector3(x, 0, z + 1), Vector3.Up, new Vector2(0, 1));
-                    vertices[vertexOffset + 3] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z + 1), Vector3.Up, new Vector2(1, 1));
+                        //Oben
+                        vertices[vertexOffset + 0] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Up, new Vector2(0, 0));
+                        vertices[vertexOffset + 1] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Up, new Vector2(1, 0));
+                        vertices[vertexOffset + 2] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Up, new Vector2(0, 1));
+                        vertices[vertexOffset + 3] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Up, new Vector2(1, 1));
+                        index[indexOffset + 0] = (short)(vertexOffset + 0);
+                        index[indexOffset + 1] = (short)(vertexOffset + 1);
+                        index[indexOffset + 2] = (short)(vertexOffset + 3);
+                        index[indexOffset + 3] = (short)(vertexOffset + 0);
+                        index[indexOffset + 4] = (short)(vertexOffset + 3);
+                        index[indexOffset + 5] = (short)(vertexOffset + 2);
 
-                    index[indexOffset + 0] = (short)(vertexOffset + 0);
-                    index[indexOffset + 1] = (short)(vertexOffset + 1);
-                    index[indexOffset + 2] = (short)(vertexOffset + 3);
-                    index[indexOffset + 3] = (short)(vertexOffset + 0);
-                    index[indexOffset + 4] = (short)(vertexOffset + 3);
-                    index[indexOffset + 5] = (short)(vertexOffset + 2);
+                        //Links
+                        vertices[vertexOffset + 4] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Left, new Vector2(0, 0));
+                        vertices[vertexOffset + 5] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Left, new Vector2(1, 0));
+                        vertices[vertexOffset + 6] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Left, new Vector2(0, 1));
+                        vertices[vertexOffset + 7] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Left, new Vector2(1, 1));
+                        index[indexOffset + 6] = (short)(vertexOffset + 4);
+                        index[indexOffset + 7] = (short)(vertexOffset + 5);
+                        index[indexOffset + 8] = (short)(vertexOffset + 7);
+                        index[indexOffset + 9] = (short)(vertexOffset + 4);
+                        index[indexOffset + 10] = (short)(vertexOffset + 7);
+                        index[indexOffset + 11] = (short)(vertexOffset + 6);
+
+                        //Vorne
+                        vertices[vertexOffset + 8] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Forward, new Vector2(0, 0));
+                        vertices[vertexOffset + 9] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Forward, new Vector2(1, 0));
+                        vertices[vertexOffset + 10] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Forward, new Vector2(0, 1));
+                        vertices[vertexOffset + 11] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Forward, new Vector2(1, 1));
+                        index[indexOffset + 12] = (short)(vertexOffset + 8);
+                        index[indexOffset + 13] = (short)(vertexOffset + 9);
+                        index[indexOffset + 14] = (short)(vertexOffset + 11);
+                        index[indexOffset + 15] = (short)(vertexOffset + 8);
+                        index[indexOffset + 16] = (short)(vertexOffset + 11);
+                        index[indexOffset + 17] = (short)(vertexOffset + 10);
+
+                        //Rechts
+                        vertices[vertexOffset + 12] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Right, new Vector2(0, 0));
+                        vertices[vertexOffset + 13] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Right, new Vector2(1, 0));
+                        vertices[vertexOffset + 14] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Right, new Vector2(0, 1));
+                        vertices[vertexOffset + 15] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Right, new Vector2(1, 1));
+                        index[indexOffset + 18] = (short)(vertexOffset + 12);
+                        index[indexOffset + 19] = (short)(vertexOffset + 13);
+                        index[indexOffset + 20] = (short)(vertexOffset + 15);
+                        index[indexOffset + 21] = (short)(vertexOffset + 12);
+                        index[indexOffset + 22] = (short)(vertexOffset + 15);
+                        index[indexOffset + 23] = (short)(vertexOffset + 14);
+
+                        //Hinten
+                        vertices[vertexOffset + 16] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Backward, new Vector2(0, 0));
+                        vertices[vertexOffset + 17] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Backward, new Vector2(1, 0));
+                        vertices[vertexOffset + 18] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Backward, new Vector2(0, 1));
+                        vertices[vertexOffset + 19] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Backward, new Vector2(1, 1));
+                        index[indexOffset + 24] = (short)(vertexOffset + 16);
+                        index[indexOffset + 25] = (short)(vertexOffset + 17);
+                        index[indexOffset + 26] = (short)(vertexOffset + 19);
+                        index[indexOffset + 27] = (short)(vertexOffset + 16);
+                        index[indexOffset + 28] = (short)(vertexOffset + 19);
+                        index[indexOffset + 29] = (short)(vertexOffset + 18);
+
+                        //Unten
+                        vertices[vertexOffset + 20] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Down, new Vector2(0, 0));
+                        vertices[vertexOffset + 21] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Down, new Vector2(1, 0));
+                        vertices[vertexOffset + 22] = new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Down, new Vector2(0, 1));
+                        vertices[vertexOffset + 23] = new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Down, new Vector2(1, 1));
+                        index[indexOffset + 30] = (short)(vertexOffset + 20);
+                        index[indexOffset + 31] = (short)(vertexOffset + 21);
+                        index[indexOffset + 32] = (short)(vertexOffset + 23);
+                        index[indexOffset + 33] = (short)(vertexOffset + 20);
+                        index[indexOffset + 34] = (short)(vertexOffset + 23);
+                        index[indexOffset + 35] = (short)(vertexOffset + 22);
+                    }
                 }
             }
 
@@ -217,7 +310,7 @@ namespace OctoAwesome.Components
                     }
                     else
                     {
-                     offsetx = spriteWidth;
+                        offsetx = spriteWidth;
                     }
 
                     //Umrechnung in Grad
