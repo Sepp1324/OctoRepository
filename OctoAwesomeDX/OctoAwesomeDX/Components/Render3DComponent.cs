@@ -10,8 +10,9 @@ namespace OctoAwesome.Components
 {
     internal sealed class Render3DComponent : DrawableGameComponent
     {
-        VertexPositionColor[] vertices;
+        VertexPositionNormalTexture[] vertices;
         BasicEffect effect;
+        Texture2D sand;
 
         public Render3DComponent(Game game) : base(game)
         {
@@ -20,27 +21,34 @@ namespace OctoAwesome.Components
 
         protected override void LoadContent()
         {
-            vertices = new VertexPositionColor[] {
-                new VertexPositionColor(new Vector3(-5, 5, 0), Color.Red),
-                new VertexPositionColor(new Vector3(5, 5, 0), Color.Green),
-                new VertexPositionColor(new Vector3(0, -5, 0), Color.Yellow)
+            vertices = new VertexPositionNormalTexture[] {
+                new VertexPositionNormalTexture(new Vector3(-1, 1, 0), Vector3.Forward, new Vector2(0, 0)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 0), Vector3.Forward, new Vector2(1,0)),
+                new VertexPositionNormalTexture(new Vector3(1, -1, 0), Vector3.Forward,new Vector2(1, 1)),
+
+                new VertexPositionNormalTexture(new Vector3(-1, 1, 0), Vector3.Forward, new Vector2(0, 0)),
+                new VertexPositionNormalTexture(new Vector3(1, -1, 0), Vector3.Forward, new Vector2(1, 1)),
+                new VertexPositionNormalTexture(new Vector3(-1, -1, 0), Vector3.Forward, new Vector2(0, 1))
             };
+
+            sand = Game.Content.Load<Texture2D>("Textures/sand_center");
 
             effect = new BasicEffect(GraphicsDevice);
 
             effect.World = Matrix.Identity;
-            effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 20), Vector3.Zero, Vector3.Up);
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, GraphicsDevice.Viewport.AspectRatio, 1f, 10000f);
-            effect.VertexColorEnabled = true;
+            effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
+            effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1f, 10000f);
+            effect.TextureEnabled = true;
+            effect.Texture = sand;
 
-            base.LoadContent(); 
+            base.LoadContent();
         }
 
         float rotY = 0f;
 
         public override void Update(GameTime gameTime)
         {
-            rotY += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //rotY += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             base.Update(gameTime);
         }
@@ -52,16 +60,16 @@ namespace OctoAwesome.Components
             //GraphicsDevice.RasterizerState.CullMode = CullMode.None;
             RasterizerState r = new RasterizerState();
             r.CullMode = CullMode.None;
-            r.FillMode = FillMode.WireFrame;
+            //r.FillMode = FillMode.WireFrame;
 
             GraphicsDevice.RasterizerState = r;
 
             effect.World = Matrix.CreateRotationY(rotY);
 
-            foreach(var pass in effect.CurrentTechnique.Passes)
+            foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, 1);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, vertices, 0, 2);
             }
         }
     }
