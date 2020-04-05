@@ -12,6 +12,12 @@ namespace OctoAwesome.Model
         bool Right { get; }
         bool Up { get; }
         bool Down { get; }
+
+        bool HeadLeft { get; }
+        bool HeadRight { get; }
+        bool HeadUp { get; }
+        bool HeadDown { get; }
+
         bool Interact { get; }
     }
 }

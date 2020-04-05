@@ -17,7 +17,7 @@ namespace OctoAwesome.Components
     internal sealed class Render3DComponent : DrawableGameComponent
     {
         private WorldComponent world;
-        private Camera3DComponent camera;
+        private EgoCameraComponent camera;
 
         private BasicEffect effect;
 
@@ -36,7 +36,7 @@ namespace OctoAwesome.Components
         private int vertexCount;
         private int indexCount;
 
-        public Render3DComponent(Game game, WorldComponent world, Camera3DComponent camera)
+        public Render3DComponent(Game game, WorldComponent world, EgoCameraComponent camera)
             : base(game)
         {
             this.world = world;
@@ -45,36 +45,6 @@ namespace OctoAwesome.Components
 
         protected override void LoadContent()
         {
-            //int width = world.World.Map.CellCache.GetLength(0);
-            //int height = world.World.Map.CellCache.GetLength(1);
-
-            //vertexCount = width * height * 4;
-            //indexCount = width * height * 6;
-
-            //VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[vertexCount];
-            //short[] index = new short[indexCount];
-
-            //for (int z = 0; z < height; z++)
-            //{
-            //    for (int x = 0; x < width; x++)
-            //    {
-            //        int vertexOffset = (((z * width) + x) * 4);
-            //        int indexOffset = (((z * width) + x) * 6);
-
-            //        vertices[vertexOffset + 0] = new VertexPositionNormalTexture(new Vector3(x, 0, z), Vector3.Up, new Vector2(0, 0));
-            //        vertices[vertexOffset + 1] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z), Vector3.Up, new Vector2(1, 0));
-            //        vertices[vertexOffset + 2] = new VertexPositionNormalTexture(new Vector3(x, 0, z + 1), Vector3.Up, new Vector2(0, 1));
-            //        vertices[vertexOffset + 3] = new VertexPositionNormalTexture(new Vector3(x + 1, 0, z + 1), Vector3.Up, new Vector2(1, 1));
-
-            //        index[indexOffset + 0] = (short)(vertexOffset + 0);
-            //        index[indexOffset + 1] = (short)(vertexOffset + 1);
-            //        index[indexOffset + 2] = (short)(vertexOffset + 3);
-            //        index[indexOffset + 3] = (short)(vertexOffset + 0);
-            //        index[indexOffset + 4] = (short)(vertexOffset + 3);
-            //        index[indexOffset + 5] = (short)(vertexOffset + 2);
-            //    }
-            //}
-
             Bitmap grassTex = GrassBlock.Texture;
             Bitmap sandTex = SandBlock.Texture;
 
@@ -105,15 +75,15 @@ namespace OctoAwesome.Components
 
                         //Textur-Kooridinate "berechnen" :D
                         Vector2 textureOffset = new Vector2();
-                        Vector2 textureSize = new Vector2(0.5f, 0.5f);
+                        Vector2 textureSize = new Vector2(0.49f, 0.49f);
 
                         if (world.World.Chunk.Blocks[x, y, z] is GrassBlock)
                         {
-                            textureOffset = new Vector2(0, 0);
+                            textureOffset = new Vector2(0.005f, 0.005f);
                         }
                         else if (world.World.Chunk.Blocks[x, y, z] is SandBlock)
                         {
-                            textureOffset = new Vector2(0.5f, 0);
+                            textureOffset = new Vector2(0.505f, 0.005f);
                         }
 
                         //Oben
@@ -257,9 +227,9 @@ namespace OctoAwesome.Components
 
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            RasterizerState r = new RasterizerState();
-            r.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = r;
+            //RasterizerState r = new RasterizerState();
+            //r.CullMode = CullMode.None;
+            //GraphicsDevice.RasterizerState = r;
 
             effect.World = Matrix.Identity;
             effect.View = camera.View;
@@ -275,186 +245,132 @@ namespace OctoAwesome.Components
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, 0, indexCount / 3);
             }
 
-            //for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
-            //{
-            //    for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
-            //    {
-            //        for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
-            //        {
-            //            if (world.World.Chunk.Blocks[x, y, z] == null) continue;
+
+            foreach (var item in world.World.Map.Items.OrderBy(t => t.Position.Y))
+            {
+                if (item is Model.TreeItem)
+                {
+                    effect.Texture = tree;
+
+                    VertexPositionNormalTexture[] treeVertices = new VertexPositionNormalTexture[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 2, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 2, 0), Vector3.Backward, new Vector2(1, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 2, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
+                    };
+
+                    Matrix billboard = Matrix.Invert(camera.View);
+                    billboard.Translation = new Vector3(item.Position.X, 50, item.Position.Y);
+
+                    effect.World = billboard;
+
+                    foreach (var pass in effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, treeVertices, 0, 2);
+                    }
+                }
+
+                if (item is Model.BoxItem)
+                {
+                    effect.Texture = box;
+
+                    VertexPositionNormalTexture[] boxVertices = new VertexPositionNormalTexture[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(1, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
+                    };
+
+                    Matrix billboard = Matrix.Invert(camera.View);
+                    billboard.Translation = new Vector3(item.Position.X, 50, item.Position.Y);
+
+                    effect.World = billboard;
+
+                    foreach (var pass in effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, boxVertices, 0, 2);
+                    }
+                }
+
+                if (item is Model.Player)
+                {
+                    effect.Texture = sprite;
+
+                    float spriteWidth = 1f / 9;
+                    float spriteHeight = 1f / 8;
+
+                    int frame = (int)(gameTime.TotalGameTime.TotalMilliseconds / 250) % 4;
+
+                    float offsetx = 0;
+
+                    if (world.World.Player.State == Model.PlayerState.WALK)
+                    {
+
+                        switch (frame)
+                        {
+                            case 0: offsetx = 0; break;
+                            case 1: offsetx = spriteWidth; break;
+                            case 2: offsetx = 2 * spriteWidth; break;
+                            case 3: offsetx = spriteWidth; break;
+                        }
+                    }
+                    else
+                    {
+                        offsetx = spriteWidth;
+                    }
+
+                    //Umrechnung in Grad
+                    float direction = (world.World.Player.Angle * 360f) / (float)(2 * Math.PI);
+
+                    //in positiven BEreich
+                    direction += 180;
+
+                    //offset
+                    direction += 45;
+
+                    int sector = (int)(direction / 90);
+
+                    float offsety = 0;
+
+                    switch (sector)
+                    {
+                        case 1: offsety = 3 * spriteHeight; break;
+                        case 2: offsety = 2 * spriteHeight; break;
+                        case 3: offsety = 0 * spriteHeight; break;
+                        case 4: offsety = 1 * spriteHeight; break;
+                    }
+
+                    VertexPositionNormalTexture[] spriteVertices = new VertexPositionNormalTexture[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx, offsety)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety + spriteHeight)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx, offsety)),
+                        new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety + spriteHeight)),
+                        new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx, offsety + spriteHeight))
+                    };
+
+                    Matrix billboard = Matrix.Invert(camera.View);
+                    billboard.Translation = new Vector3(item.Position.X, 50, item.Position.Y);
+
+                    effect.World = billboard;
 
 
-
-            //            int offset = x + (y * Chunk.CHUNKSIZE_X) + (z * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
-            //            int indexOffset = offset * 36;
-
-
-            //            }
-            //        }
-            //    }
-
-
-
-            //int width = world.World.Map.CellCache.GetLength(0);
-            //int height = world.World.Map.CellCache.GetLength(1);
-
-
-
-            //for (int z = 0; z < height; z++)
-            //{
-            //    for (int x = 0; x < width; x++)
-            //    {
-            //        Model.CellCache cell = world.World.Map.CellCache[x, z];
-
-            //        switch (cell.CellType)
-            //        {
-            //            case Model.CellType.Grass:
-            //                effect.Texture = grass;
-            //                break;
-
-            //            case Model.CellType.Sand:
-            //                effect.Texture = sand;
-            //                break;
-            //            case Model.CellType.Water:
-            //                effect.Texture = water;
-            //                break;
-            //        }
-
-            //        int indexOffset = ((z * width) + x) * 6;
-
-            //        foreach (var pass in effect.CurrentTechnique.Passes)
-            //        {
-            //            pass.Apply();
-            //            GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, indexOffset, 2);
-            //        }
-            //    }
-            //}
-
-            //foreach (var item in world.World.Map.Items.OrderBy(t => t.Position.Y))
-            //{
-            //    if (item is Model.TreeItem)
-            //    {
-            //        effect.Texture = tree;
-
-            //        VertexPositionNormalTexture[] treeVertices = new VertexPositionNormalTexture[]
-            //        {
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 2, 0), Vector3.Backward, new Vector2(0, 0)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 2, 0), Vector3.Backward, new Vector2(1, 0)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 2, 0), Vector3.Backward, new Vector2(0, 0)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
-            //        };
-
-            //        Matrix billboard = Matrix.Invert(camera.View);
-            //        billboard.Translation = new Vector3(item.Position.X, 0, item.Position.Y);
-
-            //        effect.World = billboard;
-
-            //        foreach (var pass in effect.CurrentTechnique.Passes)
-            //        {
-            //            pass.Apply();
-            //            GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, treeVertices, 0, 2);
-            //        }
-            //    }
-
-            //    if (item is Model.BoxItem)
-            //    {
-            //        effect.Texture = box;
-
-            //        VertexPositionNormalTexture[] boxVertices = new VertexPositionNormalTexture[]
-            //        {
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(1, 0)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(0, 0)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(1, 1)),
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(0, 1))
-            //        };
-
-            //        Matrix billboard = Matrix.Invert(camera.View);
-            //        billboard.Translation = new Vector3(item.Position.X, 0, item.Position.Y);
-
-            //        effect.World = billboard;
-
-            //        foreach (var pass in effect.CurrentTechnique.Passes)
-            //        {
-            //            pass.Apply();
-            //            GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, boxVertices, 0, 2);
-            //        }
-            //    }
-
-            //    if (item is Model.Player)
-            //    {
-            //        effect.Texture = sprite;
-
-            //        float spriteWidth = 1f / 9;
-            //        float spriteHeight = 1f / 8;
-
-            //        int frame = (int)(gameTime.TotalGameTime.TotalMilliseconds / 250) % 4;
-
-            //        float offsetx = 0;
-
-            //        if (world.World.Player.State == Model.PlayerState.WALK)
-            //        {
-
-            //            switch (frame)
-            //            {
-            //                case 0: offsetx = 0; break;
-            //                case 1: offsetx = spriteWidth; break;
-            //                case 2: offsetx = 2 * spriteWidth; break;
-            //                case 3: offsetx = spriteWidth; break;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            offsetx = spriteWidth;
-            //        }
-
-            //        //Umrechnung in Grad
-            //        float direction = (world.World.Player.Angle * 360f) / (float)(2 * Math.PI);
-
-            //        //in positiven BEreich
-            //        direction += 180;
-
-            //        //offset
-            //        direction += 45;
-
-            //        int sector = (int)(direction / 90);
-
-            //        float offsety = 0;
-
-            //        switch (sector)
-            //        {
-            //            case 1: offsety = 3 * spriteHeight; break;
-            //            case 2: offsety = 2 * spriteHeight; break;
-            //            case 3: offsety = 0 * spriteHeight; break;
-            //            case 4: offsety = 1 * spriteHeight; break;
-            //        }
-
-            //        VertexPositionNormalTexture[] spriteVertices = new VertexPositionNormalTexture[]
-            //        {
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx, offsety)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety + spriteHeight)),
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 1, 0), Vector3.Backward, new Vector2(offsetx, offsety)),
-            //            new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx + spriteWidth, offsety + spriteHeight)),
-            //            new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.Backward, new Vector2(offsetx, offsety + spriteHeight))
-            //        };
-
-            //        Matrix billboard = Matrix.Invert(camera.View);
-            //        billboard.Translation = new Vector3(item.Position.X, 0, item.Position.Y);
-
-            //        effect.World = billboard;
-
-
-            //        foreach (var pass in effect.CurrentTechnique.Passes)
-            //        {
-            //            pass.Apply();
-            //            GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, spriteVertices, 0, 2);
-            //        }
-            //    }
-            //}
+                    foreach (var pass in effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, spriteVertices, 0, 2);
+                    }
+                }
+            }
 
         }
     }

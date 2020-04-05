@@ -1,19 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OctoAwesomeDX.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Components
 {
-    internal sealed class Camera3DComponent : DrawableGameComponent
+    internal sealed class EgoCameraComponent : DrawableGameComponent
     {
         private WorldComponent world;
 
-        public Camera3DComponent(Game game, WorldComponent world) : base(game)
+        public EgoCameraComponent(Game game, WorldComponent world)
+            : base(game)
         {
             this.world = world;
         }
@@ -27,12 +26,12 @@ namespace OctoAwesome.Components
 
         public override void Update(GameTime gameTime)
         {
-            CameraPosition = new Vector3(world.World.Player.Position.X, 60, world.World.Player.Position.Y + 10);
+            CameraPosition = new Vector3(world.World.Player.Position.X, 51, world.World.Player.Position.Y);
             CameraUpVector = Vector3.Up;
 
             View = Matrix.CreateLookAt(
                 CameraPosition,
-                new Vector3(world.World.Player.Position.X, 50, world.World.Player.Position.Y),
+                new Vector3(world.World.Player.Position.X + 1, 51, world.World.Player.Position.Y + 1),
                 CameraUpVector);
         }
 

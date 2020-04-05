@@ -18,6 +18,14 @@ namespace OctoAwesome.Components
 
         public bool Down { get; private set; }
 
+        public bool HeadLeft { get; private set; }
+
+        public bool HeadRight { get; private set; }
+
+        public bool HeadUp { get; private set; }
+
+        public bool HeadDown { get; private set; }
+
         public bool Interact { get; private set; }
 
         public void Update()
@@ -25,10 +33,16 @@ namespace OctoAwesome.Components
             KeyboardState keyBoardState = Keyboard.GetState();
 
             Interact = keyBoardState.IsKeyDown(Keys.Space);
-            Left = keyBoardState.IsKeyDown(Keys.Left);
-            Right = keyBoardState.IsKeyDown(Keys.Right);
-            Down = keyBoardState.IsKeyDown(Keys.Down);
-            Up = keyBoardState.IsKeyDown(Keys.Up);
+
+            Left = keyBoardState.IsKeyDown(Keys.A);
+            Right = keyBoardState.IsKeyDown(Keys.D);
+            Down = keyBoardState.IsKeyDown(Keys.S);
+            Up = keyBoardState.IsKeyDown(Keys.W);
+
+            HeadLeft = keyBoardState.IsKeyDown(Keys.Left);
+            HeadRight = keyBoardState.IsKeyDown(Keys.Right);
+            HeadDown = keyBoardState.IsKeyDown(Keys.Down);
+            HeadUp = keyBoardState.IsKeyDown(Keys.Up);
         }
     }
 }
