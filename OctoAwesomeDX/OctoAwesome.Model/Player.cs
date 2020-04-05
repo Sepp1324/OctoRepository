@@ -11,15 +11,15 @@ namespace OctoAwesome.Model
 
         public readonly float MAXSPEED = 10f;
 
-        public Vector2 Position { get; set; }
-
-        public Vector2 Velocity { get; set; }
+        public Vector3 Position { get; set; }
 
         public float Radius { get; private set; }
 
         public float Angle { get; private set; }
 
-        public float Jaw { get; set; }
+        public bool OnGround { get; set; }
+
+        public float Tilt { get; set; }
 
         public PlayerState State { get; private set; }
 
@@ -30,10 +30,13 @@ namespace OctoAwesome.Model
         public Player(IInputSet input)
         {
             this.input = input;
+            Position = new Vector3(0, 50, 0);
+            Velocity = new Vector3(0, 0, 0);
             Radius = 0.1f;
             Angle = 0f;
-            InventoryItems = new List<InventoryItem>();
+            Mass = 100;
 
+            InventoryItems = new List<InventoryItem>();
             InventoryItems.Add(new InventoryItem() { Name = "Apfel" });
         }
 
@@ -44,27 +47,34 @@ namespace OctoAwesome.Model
             float lookX = (float)Math.Cos(Angle);
             float lookY = (float)Math.Sin(Angle);
 
-            Velocity = new Vector2(lookX, lookY) * input.MoveY;
-
             float strafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
             float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
 
-            Velocity += new Vector2(strafeX, strafeY) * input.MoveX;
+            Vector3 force = new Vector3();
 
-            Jaw += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
-            Jaw = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Jaw));
+            force += new Vector3(lookX, 0, lookY) * input.MoveY;
+            force += new Vector3(strafeX, 0, strafeY) * input.MoveX;
+            force -= Velocity * 0.7f;
+            force += new Vector3(0, -10, 0);
+
+            Tilt += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
+            Tilt = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Tilt));
+
+            Vector3 acceleration = force / Mass;
+
+            Velocity += acceleration * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
             //BEwegungsberechnung
-            if (Velocity.Length() > 0)
-            {
-                Velocity.Normalize();
-                Velocity *= MAXSPEED;
-                State = PlayerState.WALK;
-            }
-            else
-            {
-                State = PlayerState.IDLE;
-            }
+            //if (Velocity.Length() > 0)
+            //{
+            //    Velocity.Normalize();
+            //    Velocity *= MAXSPEED;
+            //    State = PlayerState.WALK;
+            //}
+            //else
+            //{
+            //    State = PlayerState.IDLE;
+            //}
 
             ////Bewegungsrichtung
             //Velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));

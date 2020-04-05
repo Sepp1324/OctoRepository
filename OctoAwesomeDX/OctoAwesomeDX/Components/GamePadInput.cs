@@ -19,13 +19,16 @@ namespace OctoAwesome.Components
 
         public float HeadY { get; private set; }
 
-        public bool Interact { get; private set; }
+        public bool InteractTrigger { get; private set; }
+
+        public bool JumpTrigger { get; set; }
 
         public void Update()
         {
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-            Interact = gamePadState.Buttons.A == ButtonState.Pressed;
+            InteractTrigger = gamePadState.Buttons.A == ButtonState.Pressed;
+            JumpTrigger = gamePadState.Buttons.Y == ButtonState.Pressed;
 
             MoveX = gamePadState.ThumbSticks.Left.X;
             MoveY = gamePadState.ThumbSticks.Left.Y;

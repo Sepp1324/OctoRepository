@@ -28,6 +28,8 @@ namespace OctoAwesomeDX
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
 
+         //   this.IsMouseVisible = true;
+
             input = new InputComponent(this);
             input.UpdateOrder = 1;
             Components.Add(input);
