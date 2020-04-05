@@ -8,7 +8,6 @@ namespace OctoAwesome.Model
     public sealed class Player : Item, IHaveInventory
     {
         private IInputSet input;
-        private Map map;
 
         public readonly float MAXSPEED = 10f;
 
@@ -20,16 +19,17 @@ namespace OctoAwesome.Model
 
         public float Angle { get; private set; }
 
+        public float Jaw { get; set; }
+
         public PlayerState State { get; private set; }
 
         public IHaveInventory InteractionPartner { get; set; }
 
         public List<InventoryItem> InventoryItems { get; private set; }
 
-        public Player(IInputSet input, Map map)
+        public Player(IInputSet input)
         {
             this.input = input;
-            this.map = map;
             Radius = 0.1f;
             Angle = 0f;
             InventoryItems = new List<InventoryItem>();
@@ -55,6 +55,22 @@ namespace OctoAwesome.Model
 
             if (input.Down)
                 Velocity -= new Vector2(lookX, lookY) /* * (float)frameTime.ElapsedGameTime.TotalSeconds*/;
+
+            float stafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
+            float stafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
+
+            if (input.Right)
+                Velocity += new Vector2(stafeX, stafeY);
+
+            if (input.Left)
+                Velocity -= new Vector2(stafeX, stafeY);
+
+            if (input.HeadUp)
+                Jaw += (float)frameTime.ElapsedGameTime.TotalSeconds;
+
+            if (input.HeadDown)
+                Jaw -= (float)frameTime.ElapsedGameTime.TotalSeconds;
+            Jaw = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Jaw));
 
             if (Velocity.Length() > 0)
             {

@@ -9,50 +9,14 @@ namespace OctoAwesome.Model
 {
     public sealed class World
     {
-        private Dictionary<CellType, CellTypeDefinition> cellTypes;
-
-        public Vector2 PlaygroundSize
-        {
-            get
-            {
-                return new Vector2(Map.Columns, Map.Rows);
-            }
-        }
-
         public Player Player { get; private set; }
-
-        public Map Map { get; private set; }
 
         public Chunk Chunk { get; private set; }
 
         public World(IInputSet input)
         {
-            Map = Map.Load("Assets/testMap.map");
             Chunk = new Chunk();
-            Player = new Player(input, Map);
-
-            cellTypes = new Dictionary<CellType, CellTypeDefinition>();
-            cellTypes.Add(CellType.Grass, new CellTypeDefinition() { CanGoto = true, VelocityFactor = 0.8f });
-            cellTypes.Add(CellType.Sand, new CellTypeDefinition() { CanGoto = true, VelocityFactor = 1f });
-            cellTypes.Add(CellType.Water, new CellTypeDefinition() { CanGoto = false, VelocityFactor = 0f });
-
-            //Map Cache generieren
-            Map.CellCache = new CellCache[Map.Columns, Map.Rows];
-
-            for(int x = 0; x < Map.Columns; x++)
-            {
-                for(int y = 0; y < Map.Rows; y++)
-                {
-                    CellType cellType = Map.GetCell(x, y);
-
-                    bool haveItems = Map.Items.Any(i => (int)i.Position.X == x && (int)i.Position.Y == y);
-
-                    Map.CellCache[x, y] = new CellCache() { CellType = cellType, CanGoTo = cellTypes[cellType].CanGoto && !haveItems, VelocityFactor = cellTypes[cellType].VelocityFactor};
-                }
-            }
-
-            //Player als Item hinzufügen
-            Map.Items.Add(Player);
+            Player = new Player(input);
         }
 
         public void Update(GameTime frameTime)
@@ -63,12 +27,10 @@ namespace OctoAwesome.Model
             int cellX = (int)Player.Position.X;
             int cellY = (int)Player.Position.Y;
 
-            CellCache cell = Map.CellCache[cellX, cellY];
-
             //Geschwindigkeit modifizieren
             Vector2 velocity = Player.Velocity;
 
-            velocity *= cell.VelocityFactor;
+            //velocity *= cell.VelocityFactor;
 
             Vector2 newPosition = Player.Position + (velocity * (float)frameTime.ElapsedGameTime.TotalSeconds);
 
@@ -80,14 +42,12 @@ namespace OctoAwesome.Model
                 cellX = (int)posLeft;
                 cellY = (int)Player.Position.Y;
 
-                cell = Map.CellCache[cellX, cellY];
-
                 if (posLeft < 0)
                 {
                     newPosition = new Vector2(cellX + Player.Radius, newPosition.Y);
                 }
 
-                if (cellX < 0 || !cell.CanGoTo)
+                if (cellX < 0)
                 {
                     newPosition = new Vector2((cellX + 1) + Player.Radius, newPosition.Y);
                 }
@@ -101,14 +61,12 @@ namespace OctoAwesome.Model
                 cellY = (int)posTop;
                 cellX = (int)Player.Position.X;
 
-                cell = Map.CellCache[cellX, cellY];
-
                 if (posTop < 0)
                 {
                     newPosition = new Vector2(newPosition.X, cellY + Player.Radius);
                 }
 
-                if (cellY < 0 || !cell.CanGoTo)
+                if (cellY < 0)
                 {
                     newPosition = new Vector2(newPosition.X, cellY + 1 + Player.Radius);
                 }
@@ -121,9 +79,7 @@ namespace OctoAwesome.Model
                 cellX = (int)posRight;
                 cellY = (int)Player.Position.Y;
 
-                cell = Map.CellCache[cellX, cellY];
-
-                if (cellX >= Map.Columns || !cell.CanGoTo)
+                if (cellX >= Chunk.CHUNKSIZE_X)
                 {
                     newPosition = new Vector2(cellX - Player.Radius, newPosition.Y);
                 }
@@ -136,9 +92,7 @@ namespace OctoAwesome.Model
                 cellY = (int)posBottom;
                 cellX = (int)Player.Position.X;
 
-                cell = Map.CellCache[cellX, cellY];
-
-                if (cellY >= Map.Rows || !cell.CanGoTo)
+                if (cellY >= Chunk.CHUNKSIZE_Y)
                 {
                     newPosition = new Vector2(newPosition.X, cellY - Player.Radius);
                 }
