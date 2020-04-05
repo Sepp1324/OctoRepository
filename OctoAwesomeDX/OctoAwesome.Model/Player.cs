@@ -39,45 +39,27 @@ namespace OctoAwesome.Model
 
         public void Update(GameTime frameTime)
         {
-            if (input.HeadLeft)
-                Angle -= (float)frameTime.ElapsedGameTime.TotalSeconds;
-
-            if (input.HeadRight)
-                Angle += (float)frameTime.ElapsedGameTime.TotalSeconds;
+            Angle += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadX;
 
             float lookX = (float)Math.Cos(Angle);
             float lookY = (float)Math.Sin(Angle);
 
-            Velocity = new Vector2();
+            Velocity = new Vector2(lookX, lookY) * input.MoveY;
 
-            if (input.Up)
-                Velocity += new Vector2(lookX, lookY)/* * (float)frameTime.ElapsedGameTime.TotalSeconds*/;
+            float strafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
+            float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
 
-            if (input.Down)
-                Velocity -= new Vector2(lookX, lookY) /* * (float)frameTime.ElapsedGameTime.TotalSeconds*/;
+            Velocity += new Vector2(strafeX, strafeY) * input.MoveX;
 
-            float stafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
-            float stafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
-
-            if (input.Right)
-                Velocity += new Vector2(stafeX, stafeY);
-
-            if (input.Left)
-                Velocity -= new Vector2(stafeX, stafeY);
-
-            if (input.HeadUp)
-                Jaw += (float)frameTime.ElapsedGameTime.TotalSeconds;
-
-            if (input.HeadDown)
-                Jaw -= (float)frameTime.ElapsedGameTime.TotalSeconds;
+            Jaw += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
             Jaw = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Jaw));
 
+            //BEwegungsberechnung
             if (Velocity.Length() > 0)
             {
                 Velocity.Normalize();
                 Velocity *= MAXSPEED;
                 State = PlayerState.WALK;
-                //Angle = (float)Math.Atan2(Velocity.Y, Velocity.X);
             }
             else
             {
