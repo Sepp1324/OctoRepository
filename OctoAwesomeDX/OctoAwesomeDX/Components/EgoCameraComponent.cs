@@ -29,9 +29,12 @@ namespace OctoAwesome.Components
             CameraPosition = new Vector3(world.World.Player.Position.X, 51, world.World.Player.Position.Y);
             CameraUpVector = Vector3.Up;
 
+            float lookX = (float)Math.Cos(world.World.Player.Angle);
+            float lookY = (float)Math.Sin(world.World.Player.Angle);
+
             View = Matrix.CreateLookAt(
                 CameraPosition,
-                new Vector3(world.World.Player.Position.X + 1, 51, world.World.Player.Position.Y + 1),
+                new Vector3(world.World.Player.Position.X + lookX, 51, world.World.Player.Position.Y + lookY),
                 CameraUpVector);
         }
 

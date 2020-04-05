@@ -10,7 +10,7 @@ namespace OctoAwesome.Model
         private IInputSet input;
         private Map map;
 
-        public readonly float MAXSPEED = 2f;
+        public readonly float MAXSPEED = 10f;
 
         public Vector2 Position { get; set; }
 
@@ -31,6 +31,7 @@ namespace OctoAwesome.Model
             this.input = input;
             this.map = map;
             Radius = 0.1f;
+            Angle = 0f;
             InventoryItems = new List<InventoryItem>();
 
             InventoryItems.Add(new InventoryItem() { Name = "Apfel" });
@@ -38,70 +39,99 @@ namespace OctoAwesome.Model
 
         public void Update(GameTime frameTime)
         {
-            //Bewegungsrichtung
-            Velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
+            if (input.HeadLeft)
+                Angle -= (float)frameTime.ElapsedGameTime.TotalSeconds;
 
-            //Bewegunsberechnung
-            if (Velocity.Length() > 0f)
+            if (input.HeadRight)
+                Angle += (float)frameTime.ElapsedGameTime.TotalSeconds;
+
+            float lookX = (float)Math.Cos(Angle);
+            float lookY = (float)Math.Sin(Angle);
+
+            Velocity = new Vector2();
+
+            if (input.Up)
+                Velocity += new Vector2(lookX, lookY)/* * (float)frameTime.ElapsedGameTime.TotalSeconds*/;
+
+            if (input.Down)
+                Velocity -= new Vector2(lookX, lookY) /* * (float)frameTime.ElapsedGameTime.TotalSeconds*/;
+
+            if (Velocity.Length() > 0)
             {
                 Velocity.Normalize();
-               Velocity *= MAXSPEED;
+                Velocity *= MAXSPEED;
                 State = PlayerState.WALK;
-                Angle = (float)Math.Atan2(Velocity.Y, Velocity.X);
+                //Angle = (float)Math.Atan2(Velocity.Y, Velocity.X);
             }
             else
             {
                 State = PlayerState.IDLE;
             }
 
-            int cellX = (int)Position.X;
-            int cellY = (int)Position.Y;
+            ////Bewegungsrichtung
+            //Velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
 
-            //Umrechnung in Grad
-            float direction = (Angle * 360f) / (float)(2 * Math.PI);
+            ////Bewegunsberechnung
+            //if (Velocity.Length() > 0f)
+            //{
+            //    Velocity.Normalize();
+            //   Velocity *= MAXSPEED;
+            //    State = PlayerState.WALK;
+            //    Angle = (float)Math.Atan2(Velocity.Y, Velocity.X);
+            //}
+            //else
+            //{
+            //    State = PlayerState.IDLE;
+            //}
 
-            //In positiven Bereich rechnen
-            direction += 180;
+            //int cellX = (int)Position.X;
+            //int cellY = (int)Position.Y;
 
-            //Offset hinzurechnen
-            direction += 45;
+            ////Umrechnung in Grad
+            //float direction = (Angle * 360f) / (float)(2 * Math.PI);
 
-            int sector = (int)(direction / 90);
+            ////In positiven Bereich rechnen
+            //direction += 180;
 
-            switch (sector)
-            {
-                //Oben
-                case 1: cellY -= 1; break;
+            ////Offset hinzurechnen
+            //direction += 45;
 
-                //rechts
-                case 2: cellX += 1; break;
+            //int sector = (int)(direction / 90);
 
-                //Unten
-                case 3: cellY += 1; break;
+            //switch (sector)
+            //{
+            //    //Oben
+            //    case 1: cellY -= 1; break;
 
-                //Links
-                case 4: cellX -= 1; break;
-            }
+            //    //rechts
+            //    case 2: cellX += 1; break;
 
-            //Interaktion überprüfen
-            /*if (input.Interact && InteractionPartner == null)
-            {
-                InteractionPartner = map.Items.
-                    Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
-                    OfType<IHaveInventory>().
-                    FirstOrDefault();
-            }
+            //    //Unten
+            //    case 3: cellY += 1; break;
 
-            if (InteractionPartner != null)
-            {
-                var partner = map.Items.
-                    Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
-                    OfType<IHaveInventory>().
-                    FirstOrDefault();
+            //    //Links
+            //    case 4: cellX -= 1; break;
+            //}
 
-                if (InteractionPartner != partner)
-                    InteractionPartner = null;
-            }*/
+            ////Interaktion überprüfen
+            ///*if (input.Interact && InteractionPartner == null)
+            //{
+            //    InteractionPartner = map.Items.
+            //        Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
+            //        OfType<IHaveInventory>().
+            //        FirstOrDefault();
+            //}
+
+            //if (InteractionPartner != null)
+            //{
+            //    var partner = map.Items.
+            //        Where(i => (int)i.Position.X == cellX && (int)i.Position.Y == cellY).
+            //        OfType<IHaveInventory>().
+            //        FirstOrDefault();
+
+            //    if (InteractionPartner != partner)
+            //        InteractionPartner = null;
+            //}*/
 
         }
     }
