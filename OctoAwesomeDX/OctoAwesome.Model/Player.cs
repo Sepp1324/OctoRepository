@@ -17,6 +17,8 @@ namespace OctoAwesome.Model
 
         public float Tilt { get; set; }
 
+        public bool OnGround { get; set; }
+
         public PlayerState State { get; private set; }
 
         public IHaveInventory InteractionPartner { get; set; }
@@ -26,10 +28,11 @@ namespace OctoAwesome.Model
         public Player(IInputSet input)
         {
             this.input = input;
-            Radius = 0.1f;
-            Position = new Vector3(0, 0, 0);
+            Position = new Vector3(0, 50, 0);
             Velocity = new Vector3(0, 0, 0);
+            Radius = 0.1f;
             Angle = 0f;
+            Mass = 100;
             InventoryItems = new List<InventoryItem>();
 
             InventoryItems.Add(new InventoryItem() { Name = "Apfel" });
@@ -42,26 +45,38 @@ namespace OctoAwesome.Model
             float lookX = (float)Math.Cos(Angle);
             float lookY = (float)Math.Sin(Angle);
 
-            Velocity = new Vector3(lookX, 0, lookY) * input.MoveY;
+
+
+            //Velocity = new Vector3(lookX, 0, lookY) * input.MoveY;
+
 
             float strafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
             float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
 
-            Velocity += new Vector3(strafeX, 0, strafeY) * input.MoveX;
+            Vector3 force = new Vector3();
+
+            force += new Vector3(lookX, 0, lookY) * input.MoveY;
+            force += new Vector3(strafeX, 0, strafeY) * input.MoveX;
+            force -= Velocity * 0.7f;
+            force += new Vector3(0, -10, 0);
 
             Tilt += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
             Tilt = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Tilt));
 
-            if (Velocity.Length() > 0)
-            {
-                Velocity.Normalize();
-                Velocity *= MAXSPEED;
-                State = PlayerState.WALK;
-            }
-            else
-            {
-                State = PlayerState.IDLE;
-            }
+            Vector3 acceleration = force / Mass;
+
+            Velocity += acceleration * (float)frameTime.ElapsedGameTime.TotalSeconds;
+
+            //if (Velocity.Length() > 0)
+            //{
+            //    Velocity.Normalize();
+            //    Velocity *= MAXSPEED;
+            //    State = PlayerState.WALK;
+            //}
+            //else
+            //{
+            //    State = PlayerState.IDLE;
+            //}
 
             ////Bewegungsrichtung
             //Velocity = new Vector2((input.Left ? -1f : 0f) + (input.Right ? 1f : 0f), (input.Up ? -1f : 0f) + (input.Down ? 1f : 0f));
@@ -79,8 +94,8 @@ namespace OctoAwesome.Model
             //    State = PlayerState.IDLE;
             //}
 
-            //int cellX = (int)Position.X;
-            //int cellY = (int)Position.Y;
+            int cellX = (int)Position.X;
+            int cellY = (int)Position.Y;
 
             ////Umrechnung in Grad
             //float direction = (Angle * 360f) / (float)(2 * Math.PI);
