@@ -14,6 +14,7 @@ namespace OctoAwesome.Model
         float HeadX { get; }
         float HeadY { get; }
 
-        bool Interact { get; }
+        bool InteractTrigger { get; }
+        bool JumpTrigger { get; }
     }
 }

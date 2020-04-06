@@ -11,15 +11,11 @@ namespace OctoAwesome.Model
 
         public readonly float MAXSPEED = 10f;
 
-        public Vector2 Position { get; set; }
-
-        public Vector2 Velocity { get; set; }
-
         public float Radius { get; private set; }
 
         public float Angle { get; private set; }
 
-        public float Jaw { get; set; }
+        public float Tilt { get; set; }
 
         public PlayerState State { get; private set; }
 
@@ -31,8 +27,8 @@ namespace OctoAwesome.Model
         {
             this.input = input;
             Radius = 0.1f;
-            Position = new Vector2(0, 0);
-            Velocity = new Vector2(0, 0);
+            Position = new Vector3(0, 0, 0);
+            Velocity = new Vector3(0, 0, 0);
             Angle = 0f;
             InventoryItems = new List<InventoryItem>();
 
@@ -46,15 +42,15 @@ namespace OctoAwesome.Model
             float lookX = (float)Math.Cos(Angle);
             float lookY = (float)Math.Sin(Angle);
 
-            Velocity = new Vector2(lookX, lookY) * input.MoveY;
+            Velocity = new Vector3(lookX, 0, lookY) * input.MoveY;
 
-            float stafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
-            float stafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
+            float strafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
+            float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
 
-            Velocity += new Vector2(stafeX, stafeY) * input.MoveX;
+            Velocity += new Vector3(strafeX, 0, strafeY) * input.MoveX;
 
-            Jaw += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
-            Jaw = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Jaw));
+            Tilt += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
+            Tilt = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Tilt));
 
             if (Velocity.Length() > 0)
             {
