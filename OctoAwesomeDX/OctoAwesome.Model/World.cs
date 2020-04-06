@@ -24,19 +24,19 @@ namespace OctoAwesome.Model
         {
             Player.Update(frameTime);
 
-            //Oberflächenbeschaffenheit ermitteln
-            int cellX = (int)Player.Position.X;
-            int cellY = (int)Player.Position.Y;
-            int cellZ = (int)Player.Position.Z;
-
             //Geschwindigkeit modifizieren
             Player.Velocity += Player.Mass * new Vector3(0, -5f, 0) * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
-            Vector3 newPosition = Player.Position + (Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds);
+            Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
+
+            //Zellenindizies
+            int cellX = (int)(Player.Position.X + move.X);
+            int cellY = (int)(Player.Position.Y + move.Y);
+            int cellZ = (int)(Player.Position.Z + move.Z);
 
             BoundingBox playerBox = new BoundingBox(
-                new Vector3(newPosition.X - Player.Radius, newPosition.Y, newPosition.Z - Player.Radius),
-                new Vector3(newPosition.X + Player.Radius, newPosition.Y + 4f, newPosition.Z + Player.Radius));
+                new Vector3(Player.Position.X + move.X - Player.Radius, Player.Position.Y + move.Y, Player.Position.Z + move.Z - Player.Radius),
+                new Vector3(Player.Position.X + move.X + Player.Radius, Player.Position.Y + move.Y + 4f, Player.Position.Z + move.Z + Player.Radius));
 
             int range = 1;
             Player.OnGround = false;
@@ -58,98 +58,86 @@ namespace OctoAwesome.Model
 
                         foreach (var box in boxes)
                         {
-                            BoundingBox boxX = new BoundingBox(box.Min + new Vector3(x, y, z), box.Max + new Vector3(x, y, z));
+                            BoundingBox transformedBox = new BoundingBox(box.Min + new Vector3(x, y, z), box.Max + new Vector3(x, y, z));
 
-                            if (playerBox.Intersects(boxX))
+                            //(1) Kollisions-Check
+                            bool collisionX = (transformedBox.Min.X < playerBox.Max.X && transformedBox.Max.X > playerBox.Min.X);
+                            bool collisionY = (transformedBox.Min.Y < playerBox.Max.Y && transformedBox.Max.Y > playerBox.Min.Y);
+                            bool collisionZ = (transformedBox.Min.Z < playerBox.Max.Z && transformedBox.Max.Z > playerBox.Min.Z);
+
+                            float gap = 0.01f;
+
+                            if (collisionX && collisionY && collisionZ)
                             {
-                                newPosition.Y = boxX.Max.Y; //Test
-                                Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
-                                Player.OnGround = true;
+                                //(2) Kollisions-Zeitpunkt bestimmen
+                                float nx = 1f;
 
-                                playerBox = new BoundingBox(
-                                     new Vector3(newPosition.X - Player.Radius, newPosition.Y, newPosition.Z - Player.Radius),
-                                     new Vector3(newPosition.X + Player.Radius, newPosition.Y + 4f, newPosition.Z + Player.Radius));
+                                if (move.X > 0)
+                                {
+                                    float diff = playerBox.Max.X - transformedBox.Min.X;
+
+                                    if (diff < move.X) nx = 1f - (diff / move.X) - gap;
+                                }
+                                else if (move.X < 0)
+                                {
+                                    float diff = transformedBox.Max.X - playerBox.Min.X;
+
+                                    if (diff < -move.X) nx = 1f - (diff / -move.X) - gap;
+                                }
+
+                                float ny = 1f;
+
+                                if (move.Y > 0)
+                                {
+                                    float diff = playerBox.Max.Y - transformedBox.Min.Y;
+
+                                    if (diff < move.Y) ny = 1f - (diff / move.Y) - gap;
+                                }
+                                else if (move.Y < 0)
+                                {
+                                    float diff = transformedBox.Max.Y - playerBox.Min.Y;
+
+                                    if (diff < -move.Y)
+                                    {
+                                        ny = 1f - (diff / -move.Y) - gap;
+                                        Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
+                                        Player.OnGround = true;
+                                    }
+                                }
+
+                                float nz = 1f;
+
+                                if (move.Z > 0)
+                                {
+                                    float diff = playerBox.Max.Z - transformedBox.Min.Z;
+
+                                    if (diff < move.Z) nz = 1f - (diff / move.Z) - gap;
+                                }
+                                else if (move.Z < 0)
+                                {
+                                    float diff = transformedBox.Max.Z - playerBox.Min.Z;
+
+                                    if (diff < -move.Z) nz = 1f - (diff / -move.Z) - gap;
+                                }
+
+                                //(3) Kollisionsauflösung
+                                if (nx < ny)
+                                {
+                                    if (nx < nz) move = new Vector3(move.X * nx, move.Y, move.Z);
+                                    else move = new Vector3(move.X, move.Y, move.Z * nz);
+                                }
+                                else
+                                {
+                                    if (ny < nz) move = new Vector3(move.X, move.Y * ny, move.Z);
+                                    else move = new Vector3(move.X, move.Y, move.Z * nz);
+                                }
                             }
-                            //if(playerBox.Min.X < box.Min.X && playerBox.Max.X > box.Min.X ||
-                            //    playerBox.Min.X < box.Max.X && playerBox.Max.X > box.Min.X)
                         }
                     }
                 }
             }
 
-            //Block nach links (Kartenrand + nicht begehbare Zellen)
-            //if (velocity.X < 0)
-            //{
-            //    float posLeft = newPosition.X - Player.Radius;
-
-            //    cellX = (int)posLeft;
-            //    cellZ = (int)Player.Position.Z;
-
-            //    if (posLeft < 0)
-            //    {
-            //        newPosition = new Vector3(cellX + Player.Radius, newPosition.Y, newPosition.Z);
-            //    }
-
-            //    if (cellX < 0)
-            //    {
-            //        newPosition = new Vector3((cellX + 1) + Player.Radius, newPosition.Y, newPosition.Z);
-            //    }
-            //}
-
-            ////Block nach oben (Kartenrand + nicht begehbare Zellen)
-            //if(velocity.Z < 0)
-            //{
-            //    float posTop = newPosition.Z - Player.Radius;
-
-            //    cellZ = (int)posTop;
-            //    cellX = (int)Player.Position.X;
-
-            //    if (posTop < 0)
-            //    {
-            //        newPosition = new Vector3(newPosition.X, newPosition.Y, cellZ + Player.Radius);
-            //    }
-
-            //    if (cellZ < 0)
-            //    {
-            //        newPosition = new Vector3(newPosition.X, newPosition.Y, cellZ + 1 + Player.Radius);
-            //    }
-            //}
-
-            //if(velocity.X > 0)
-            //{
-            //    float posRight = newPosition.X + Player.Radius;
-
-            //    cellX = (int)posRight;
-            //    cellZ = (int)Player.Position.Z;
-
-            //    if (cellX >= Chunk.CHUNKSIZE_X)
-            //    {
-            //        newPosition = new Vector3(cellX - Player.Radius, newPosition.Y, newPosition.Z);
-            //    }
-            //}
-
-            //if(velocity.Z > 0)
-            //{
-            //    float posBottom = newPosition.Z + Player.Radius;
-
-            //    cellZ = (int)posBottom;
-            //    cellX = (int)Player.Position.X;
-
-            //    if (cellZ >= Chunk.CHUNKSIZE_Z)
-            //    {
-            //        newPosition = new Vector3(newPosition.X, newPosition.Y, cellZ - Player.Radius);
-            //    }
-            //}
-
-            //Player.OnGround = false;
-            //if (Player.Velocity.Y < 0)
-            //{
-            //    if (newPosition.Y < 50)
-            //    {
-
-            //    }
-            //}
-            Player.Position = newPosition;
+            Player.Position += move;
         }
     }
 }
