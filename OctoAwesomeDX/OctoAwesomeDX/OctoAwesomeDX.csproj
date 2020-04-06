@@ -44,6 +44,7 @@
     <Compile Include="Components\Camera3DComponent.cs" />
     <Compile Include="Components\EgoCameraComponent.cs" />
     <Compile Include="Components\GamePadInput.cs" />
+    <Compile Include="Components\HudComponent.cs" />
     <Compile Include="Components\InputComponent.cs" />
     <Compile Include="Components\KeyBoardInput.cs" />
     <Compile Include="Components\MouseInput.cs" />
@@ -72,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Content\Hud.spritefont" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Model\OctoAwesome.Model.csproj">
