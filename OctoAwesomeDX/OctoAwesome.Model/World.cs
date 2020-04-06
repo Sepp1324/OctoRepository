@@ -10,6 +10,36 @@ namespace OctoAwesome.Model
 {
     public sealed class World
     {
+        private readonly Vector3[] CollisionOrder = new[] 
+        {
+        //Block direkt unter dem Player
+        new Vector3(0, -1, 0),
+
+        //Blöcke am Boden um den Player herum
+        new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(0, -1, -1), new Vector3(0, -1, 1),
+
+        //Kollision mit der Decke
+        new Vector3(0, 6, 0),
+        new Vector3(-1, 6, 0), new Vector3(1, 6, 0), new Vector3(0, 6, -1), new Vector3(0, 6, 1),
+
+                new Vector3(0, 5, 0),
+        new Vector3(-1, 5, 0), new Vector3(1, 5, 0), new Vector3(0, 5, -1), new Vector3(0, 5, 1),
+
+                new Vector3(0, 4, 0),
+        new Vector3(-1, 4, 0), new Vector3(1, 4, 0), new Vector3(0, 4, -1), new Vector3(0, 4, 1),
+
+                new Vector3(0, 3, 0),
+        new Vector3(-1, 3, 0), new Vector3(1, 3, 0), new Vector3(0, 3, -1), new Vector3(0, 3, 1),
+
+                new Vector3(0, 2, 0),
+        new Vector3(-1, 2, 0), new Vector3(1, 2, 0), new Vector3(0, 2, -1), new Vector3(0, 2, 1),
+
+                new Vector3(0, 1, 0),
+        new Vector3(-1, 1, 0), new Vector3(1, 1, 0), new Vector3(0, 1, -1), new Vector3(0, 1, 1),
+                new Vector3(0, 0, 0),
+        new Vector3(-1, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 0, 1),
+        };
+
         public Player Player { get; private set; }
 
         public Chunk Chunk { get; private set; }
@@ -30,108 +60,106 @@ namespace OctoAwesome.Model
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
             //Zellenindizies
-            int cellX = (int)(Player.Position.X + move.X);
-            int cellY = (int)(Player.Position.Y + move.Y);
-            int cellZ = (int)(Player.Position.Z + move.Z);
+            //int cellX = (int)(Player.Position.X + move.X);
+            //int cellY = (int)(Player.Position.Y + move.Y);
+            //int cellZ = (int)(Player.Position.Z + move.Z);
 
             BoundingBox playerBox = new BoundingBox(
                 new Vector3(Player.Position.X + move.X - Player.Radius, Player.Position.Y + move.Y, Player.Position.Z + move.Z - Player.Radius),
                 new Vector3(Player.Position.X + move.X + Player.Radius, Player.Position.Y + move.Y + 4f, Player.Position.Z + move.Z + Player.Radius));
 
-            int range = 1;
             Player.OnGround = false;
 
-            for (int z = cellZ - range; z < cellZ + range; z++)
+            foreach (var collisionBox in CollisionOrder)
             {
-                for (int y = cellY - range; y < cellY + range; y++)
+                int x = (int)(collisionBox.X + Player.Position.X + move.X);
+                int y = (int)(collisionBox.Y + Player.Position.Y + move.Y);
+                int z = (int)(collisionBox.Z + Player.Position.Z + move.Z);
+
+
+                if (x < 0 || x >= Chunk.CHUNKSIZE_X || y < 0 || y >= Chunk.CHUNKSIZE_Y || z < 0 || z >= Chunk.CHUNKSIZE_Z)
+                    continue;
+
+                IBlock block = Chunk.Blocks[x, y, z];
+
+                if (block == null) continue;
+
+                BoundingBox[] boxes = block.GetCollisionBoxes();
+
+                foreach (var box in boxes)
                 {
-                    for (int x = cellX - range; x < cellX + range; x++)
+                    BoundingBox transformedBox = new BoundingBox(box.Min + new Vector3(x, y, z), box.Max + new Vector3(x, y, z));
+
+                    //(1) Kollisions-Check
+                    bool collisionX = (transformedBox.Min.X < playerBox.Max.X && transformedBox.Max.X > playerBox.Min.X);
+                    bool collisionY = (transformedBox.Min.Y < playerBox.Max.Y && transformedBox.Max.Y > playerBox.Min.Y);
+                    bool collisionZ = (transformedBox.Min.Z < playerBox.Max.Z && transformedBox.Max.Z > playerBox.Min.Z);
+
+                    float gap = 0.01f;
+
+                    if (collisionX && collisionY && collisionZ)
                     {
-                        if (x < 0 || x >= Chunk.CHUNKSIZE_X || y < 0 || y >= Chunk.CHUNKSIZE_Y || z < 0 || z >= Chunk.CHUNKSIZE_Z)
-                            continue;
+                        //(2) Kollisions-Zeitpunkt bestimmen
+                        float nx = 1f;
 
-                        IBlock block = Chunk.Blocks[x, y, z];
-
-                        if (block == null) continue;
-
-                        BoundingBox[] boxes = block.GetCollisionBoxes();
-
-                        foreach (var box in boxes)
+                        if (move.X > 0)
                         {
-                            BoundingBox transformedBox = new BoundingBox(box.Min + new Vector3(x, y, z), box.Max + new Vector3(x, y, z));
+                            float diff = playerBox.Max.X - transformedBox.Min.X;
 
-                            //(1) Kollisions-Check
-                            bool collisionX = (transformedBox.Min.X < playerBox.Max.X && transformedBox.Max.X > playerBox.Min.X);
-                            bool collisionY = (transformedBox.Min.Y < playerBox.Max.Y && transformedBox.Max.Y > playerBox.Min.Y);
-                            bool collisionZ = (transformedBox.Min.Z < playerBox.Max.Z && transformedBox.Max.Z > playerBox.Min.Z);
+                            if (diff < move.X) nx = 1f - (diff / move.X) - gap;
+                        }
+                        else if (move.X < 0)
+                        {
+                            float diff = transformedBox.Max.X - playerBox.Min.X;
 
-                            float gap = 0.01f;
+                            if (diff < -move.X) nx = 1f - (diff / -move.X) - gap;
+                        }
 
-                            if (collisionX && collisionY && collisionZ)
+                        float ny = 1f;
+
+                        if (move.Y > 0)
+                        {
+                            float diff = playerBox.Max.Y - transformedBox.Min.Y;
+
+                            if (diff < move.Y) ny = 1f - (diff / move.Y) - gap;
+                        }
+                        else if (move.Y < 0)
+                        {
+                            float diff = transformedBox.Max.Y - playerBox.Min.Y;
+
+                            if (diff < -move.Y)
                             {
-                                //(2) Kollisions-Zeitpunkt bestimmen
-                                float nx = 1f;
-
-                                if (move.X > 0)
-                                {
-                                    float diff = playerBox.Max.X - transformedBox.Min.X;
-
-                                    if (diff < move.X) nx = 1f - (diff / move.X) - gap;
-                                }
-                                else if (move.X < 0)
-                                {
-                                    float diff = transformedBox.Max.X - playerBox.Min.X;
-
-                                    if (diff < -move.X) nx = 1f - (diff / -move.X) - gap;
-                                }
-
-                                float ny = 1f;
-
-                                if (move.Y > 0)
-                                {
-                                    float diff = playerBox.Max.Y - transformedBox.Min.Y;
-
-                                    if (diff < move.Y) ny = 1f - (diff / move.Y) - gap;
-                                }
-                                else if (move.Y < 0)
-                                {
-                                    float diff = transformedBox.Max.Y - playerBox.Min.Y;
-
-                                    if (diff < -move.Y)
-                                    {
-                                        ny = 1f - (diff / -move.Y) - gap;
-                                        Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
-                                        Player.OnGround = true;
-                                    }
-                                }
-
-                                float nz = 1f;
-
-                                if (move.Z > 0)
-                                {
-                                    float diff = playerBox.Max.Z - transformedBox.Min.Z;
-
-                                    if (diff < move.Z) nz = 1f - (diff / move.Z) - gap;
-                                }
-                                else if (move.Z < 0)
-                                {
-                                    float diff = transformedBox.Max.Z - playerBox.Min.Z;
-
-                                    if (diff < -move.Z) nz = 1f - (diff / -move.Z) - gap;
-                                }
-
-                                //(3) Kollisionsauflösung
-                                if (nx < ny)
-                                {
-                                    if (nx < nz) move = new Vector3(move.X * nx, move.Y, move.Z);
-                                    else move = new Vector3(move.X, move.Y, move.Z * nz);
-                                }
-                                else
-                                {
-                                    if (ny < nz) move = new Vector3(move.X, move.Y * ny, move.Z);
-                                    else move = new Vector3(move.X, move.Y, move.Z * nz);
-                                }
+                                ny = 1f - (diff / -move.Y) - gap;
+                                Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
+                                Player.OnGround = true;
                             }
+                        }
+
+                        float nz = 1f;
+
+                        if (move.Z > 0)
+                        {
+                            float diff = playerBox.Max.Z - transformedBox.Min.Z;
+
+                            if (diff < move.Z) nz = 1f - (diff / move.Z) - gap;
+                        }
+                        else if (move.Z < 0)
+                        {
+                            float diff = transformedBox.Max.Z - playerBox.Min.Z;
+
+                            if (diff < -move.Z) nz = 1f - (diff / -move.Z) - gap;
+                        }
+
+                        //(3) Kollisionsauflösung
+                        if (nx < ny)
+                        {
+                            if (nx < nz) move = new Vector3(move.X * nx, move.Y, move.Z);
+                            else move = new Vector3(move.X, move.Y, move.Z * nz);
+                        }
+                        else
+                        {
+                            if (ny < nz) move = new Vector3(move.X, move.Y * ny, move.Z);
+                            else move = new Vector3(move.X, move.Y, move.Z * nz);
                         }
                     }
                 }

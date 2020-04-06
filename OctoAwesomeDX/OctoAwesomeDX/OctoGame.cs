@@ -29,6 +29,8 @@ namespace OctoAwesomeDX
             graphics.PreferredBackBufferHeight = 720;
 
            // this.IsMouseVisible = true;
+            //this.IsFixedTimeStep = false;
+            this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 4);
 
             input = new InputComponent(this);
             input.UpdateOrder = 1;
