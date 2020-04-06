@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OctoAwesome.Model.Blocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,12 +26,56 @@ namespace OctoAwesome.Model
 
             //Oberflächenbeschaffenheit ermitteln
             int cellX = (int)Player.Position.X;
+            int cellY = (int)Player.Position.Y;
             int cellZ = (int)Player.Position.Z;
 
             //Geschwindigkeit modifizieren
             Player.Velocity += Player.Mass * new Vector3(0, -5f, 0) * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
             Vector3 newPosition = Player.Position + (Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds);
+
+            BoundingBox playerBox = new BoundingBox(
+                new Vector3(newPosition.X - Player.Radius, newPosition.Y, newPosition.Z - Player.Radius),
+                new Vector3(newPosition.X + Player.Radius, newPosition.Y + 4f, newPosition.Z + Player.Radius));
+
+            int range = 1;
+            Player.OnGround = false;
+
+            for (int z = cellZ - range; z < cellZ + range; z++)
+            {
+                for (int y = cellY - range; y < cellY + range; y++)
+                {
+                    for (int x = cellX - range; x < cellX + range; x++)
+                    {
+                        if (x < 0 || x >= Chunk.CHUNKSIZE_X || y < 0 || y >= Chunk.CHUNKSIZE_Y || z < 0 || z >= Chunk.CHUNKSIZE_Z)
+                            continue;
+
+                        IBlock block = Chunk.Blocks[x, y, z];
+
+                        if (block == null) continue;
+
+                        BoundingBox[] boxes = block.GetCollisionBoxes();
+
+                        foreach (var box in boxes)
+                        {
+                            BoundingBox boxX = new BoundingBox(box.Min + new Vector3(x, y, z), box.Max + new Vector3(x, y, z));
+
+                            if (playerBox.Intersects(boxX))
+                            {
+                                newPosition.Y = boxX.Max.Y;
+                                Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
+                                Player.OnGround = true;
+
+                                playerBox = new BoundingBox(
+                                     new Vector3(newPosition.X - Player.Radius, newPosition.Y, newPosition.Z - Player.Radius),
+                                     new Vector3(newPosition.X + Player.Radius, newPosition.Y + 4f, newPosition.Z + Player.Radius));
+                            }
+                            //if(playerBox.Min.X < box.Min.X && playerBox.Max.X > box.Min.X ||
+                            //    playerBox.Min.X < box.Max.X && playerBox.Max.X > box.Min.X)
+                        }
+                    }
+                }
+            }
 
             //Block nach links (Kartenrand + nicht begehbare Zellen)
             //if (velocity.X < 0)
@@ -96,16 +141,14 @@ namespace OctoAwesome.Model
             //    }
             //}
 
-            Player.OnGround = false;
-            if (Player.Velocity.Y < 0)
-            {
-                if (newPosition.Y < 50)
-                {
-                    newPosition.Y = 50;
-                    Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
-                    Player.OnGround = true;
-                }
-            }
+            //Player.OnGround = false;
+            //if (Player.Velocity.Y < 0)
+            //{
+            //    if (newPosition.Y < 50)
+            //    {
+
+            //    }
+            //}
             Player.Position = newPosition;
         }
     }
