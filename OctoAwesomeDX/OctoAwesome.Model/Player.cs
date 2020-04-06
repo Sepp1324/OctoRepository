@@ -40,32 +40,43 @@ namespace OctoAwesome.Model
 
         public void Update(GameTime frameTime)
         {
+            float Power = 50f;
+
+            //Input verarbeiten
             Angle += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadX;
-
-            float lookX = (float)Math.Cos(Angle);
-            float lookY = (float)Math.Sin(Angle);
-
-
-
-            //Velocity = new Vector3(lookX, 0, lookY) * input.MoveY;
-
-
-            float strafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
-            float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
-
-            Vector3 force = new Vector3();
-
-            force += new Vector3(lookX, 0, lookY) * input.MoveY;
-            force += new Vector3(strafeX, 0, strafeY) * input.MoveX;
-            force -= Velocity * 0.7f;
-            force += new Vector3(0, -10, 0);
 
             Tilt += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
             Tilt = Math.Min(MathHelper.PiOver4, Math.Max(-MathHelper.PiOver4, Tilt));
 
-            Vector3 acceleration = force / Mass;
+            float lookX = (float)Math.Cos(Angle);
+            float lookY = (float)Math.Sin(Angle);
+            var VelocityDirection = new Vector3(lookX, 0, lookY) * input.MoveY;
 
-            Velocity += acceleration * (float)frameTime.ElapsedGameTime.TotalSeconds;
+            float strafeX = (float)Math.Cos(Angle + MathHelper.PiOver2);
+            float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
+            VelocityDirection += new Vector3(strafeX, 0, strafeY) * input.MoveX;
+
+            float Friction = 10;
+
+            Vector3 powerdirection = Power * VelocityDirection;
+            Vector3 VelocityChange = 2.0f / Mass * (powerdirection - Friction * Velocity);
+
+            Velocity += new Vector3((float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
+                                    (float)(VelocityChange.Y < 0 ? -Math.Sqrt(-VelocityChange.Y) : Math.Sqrt(VelocityChange.Y)),
+                                    (float)(VelocityChange.Z < 0 ? -Math.Sqrt(-VelocityChange.Z) : Math.Sqrt(VelocityChange.Z)));
+
+            //Vector3 force = new Vector3();
+
+            //force += new Vector3(lookX, 0, lookY) * input.MoveY;
+            //force += new Vector3(strafeX, 0, strafeY) * input.MoveX;
+            //force -= Velocity * 0.7f;
+            //force += new Vector3(0, -10, 0);
+
+
+
+            //Vector3 acceleration = force / Mass;
+
+            //Velocity += acceleration * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
             //if (Velocity.Length() > 0)
             //{
