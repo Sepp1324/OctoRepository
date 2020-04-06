@@ -8,15 +8,11 @@ namespace OctoAwesome.Model
 {
     public interface IInputSet
     {
-        bool Left { get; }
-        bool Right { get; }
-        bool Up { get; }
-        bool Down { get; }
+        float MoveX { get; }
+        float MoveY { get; }
 
-        bool HeadLeft { get; }
-        bool HeadRight { get; }
-        bool HeadUp { get; }
-        bool HeadDown { get; }
+        float HeadX { get; }
+        float HeadY { get; }
 
         bool Interact { get; }
     }
