@@ -41,6 +41,7 @@ namespace OctoAwesome.Model
         public void Update(GameTime frameTime)
         {
             float Power = 50f;
+            float JumpPower = 150000f;
 
             //Input verarbeiten
             Angle += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadX;
@@ -56,14 +57,19 @@ namespace OctoAwesome.Model
             float strafeY = (float)Math.Sin(Angle + MathHelper.PiOver2);
             VelocityDirection += new Vector3(strafeX, 0, strafeY) * input.MoveX;
 
-            float Friction = 10;
+            Vector3 Friction = new Vector3(1, 0, 1) * 10f;
 
             Vector3 powerdirection = Power * VelocityDirection;
+
+            if (input.JumpTrigger)
+                powerdirection += new Vector3(0, JumpPower, 0);
+
             Vector3 VelocityChange = 2.0f / Mass * (powerdirection - Friction * Velocity);
 
-            Velocity += new Vector3((float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
-                                    (float)(VelocityChange.Y < 0 ? -Math.Sqrt(-VelocityChange.Y) : Math.Sqrt(VelocityChange.Y)),
-                                    (float)(VelocityChange.Z < 0 ? -Math.Sqrt(-VelocityChange.Z) : Math.Sqrt(VelocityChange.Z)));
+            Velocity += new Vector3(
+                (float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
+                (float)(VelocityChange.Y < 0 ? -Math.Sqrt(-VelocityChange.Y) : Math.Sqrt(VelocityChange.Y)),
+                (float)(VelocityChange.Z < 0 ? -Math.Sqrt(-VelocityChange.Z) : Math.Sqrt(VelocityChange.Z)));
 
             //Vector3 force = new Vector3();
 
