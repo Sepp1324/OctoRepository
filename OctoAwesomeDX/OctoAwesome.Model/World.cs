@@ -62,7 +62,7 @@ namespace OctoAwesome.Model
 
                             if (playerBox.Intersects(boxX))
                             {
-                                newPosition.Y = boxX.Max.Y;
+                                newPosition.Y = boxX.Max.Y; //Test
                                 Player.Velocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
                                 Player.OnGround = true;
 
