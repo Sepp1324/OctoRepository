@@ -199,6 +199,8 @@ namespace OctoAwesome.Components
             effect.Projection = camera.Projection;
             effect.TextureEnabled = true;
 
+            effect.EnableDefaultLighting();
+
             base.LoadContent();
         }
 

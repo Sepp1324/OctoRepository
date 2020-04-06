@@ -28,7 +28,7 @@ namespace OctoAwesome.Model
         public Player(IInputSet input)
         {
             this.input = input;
-            Position = new Vector3(0, 50, 0);
+            Position = new Vector3(50, 70, 50);
             Velocity = new Vector3(0, 0, 0);
             Radius = 0.1f;
             Angle = 0f;
@@ -58,13 +58,17 @@ namespace OctoAwesome.Model
             VelocityDirection += new Vector3(strafeX, 0, strafeY) * input.MoveX;
 
             Vector3 Friction = new Vector3(1, 0, 1) * 10f;
+            Vector3 powerDirection = new Vector3();
 
-            Vector3 powerdirection = Power * VelocityDirection;
+            if (OnGround)
+            {
+                powerDirection += Power * VelocityDirection;
 
-            if (input.JumpTrigger)
-                powerdirection += new Vector3(0, JumpPower, 0);
+                if (input.JumpTrigger)
+                    powerDirection += new Vector3(0, JumpPower, 0);
+            }
 
-            Vector3 VelocityChange = 2.0f / Mass * (powerdirection - Friction * Velocity);
+            Vector3 VelocityChange = 2.0f / Mass * (powerDirection - Friction * Velocity);
 
             Velocity += new Vector3(
                 (float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
