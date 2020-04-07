@@ -13,9 +13,13 @@ namespace OctoAwesomeDX.Components
     {
         public World World { get; private set; }
 
-        public WorldComponent(Game game, InputComponent input) : base(game)
+        public Vector3? SelectedBox { get; set; }
+
+        public WorldComponent(Game game, InputComponent input)
+            : base(game)
         {
             World = new World(input);
+            SelectedBox = null;
         }
 
         public override void Update(GameTime gameTime)
