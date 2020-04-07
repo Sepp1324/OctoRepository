@@ -52,10 +52,9 @@ namespace OctoAwesome.Model
 
         public void Update(GameTime frameTime)
         {
-            Player.Update(frameTime);
+            Player.ExternalForce = new Vector3(0, -20f, 0) * Player.Mass;
 
-            //Geschwindigkeit modifizieren
-            Player.Velocity += Player.Mass * new Vector3(0, -5f, 0) * (float)frameTime.ElapsedGameTime.TotalSeconds;
+            Player.Update(frameTime);
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
 

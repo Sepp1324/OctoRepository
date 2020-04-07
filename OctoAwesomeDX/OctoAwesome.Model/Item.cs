@@ -15,5 +15,7 @@ namespace OctoAwesome.Model
         public Vector3 Velocity { get; set; }
 
         public float Mass { get; set; }
+
+        public Vector3 ExternalForce { get; set; }
     }
 }
