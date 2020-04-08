@@ -12,32 +12,40 @@ namespace OctoAwesome.Model
     {
         private readonly Vector3[] CollisionOrder = new[] 
         {
-        //Block direkt unter dem Player
-        new Vector3(0, -1, 0),
+            new Vector3(0, -5, 0),
+            new Vector3(0, -4, 0),
+            new Vector3(0, -3, 0),
+            new Vector3(0, -2, 0),
 
-        //Blöcke am Boden um den Player herum
-        new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(0, -1, -1), new Vector3(0, -1, 1),
+            //Block direkt unter dem Player
+            new Vector3(0, -1, 0),
 
-        //Kollision mit der Decke
-        new Vector3(0, 6, 0),
-        new Vector3(-1, 6, 0), new Vector3(1, 6, 0), new Vector3(0, 6, -1), new Vector3(0, 6, 1),
+            //Blöcke am Boden um den Player herum
+            new Vector3(-1, -1, -1), new Vector3(1, -1, -1), new Vector3(-1, -1, 1), new Vector3(1, -1, 1),
+            new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(0, -1, -1), new Vector3(0, -1, 1),
 
-                new Vector3(0, 5, 0),
-        new Vector3(-1, 5, 0), new Vector3(1, 5, 0), new Vector3(0, 5, -1), new Vector3(0, 5, 1),
-
-                new Vector3(0, 4, 0),
-        new Vector3(-1, 4, 0), new Vector3(1, 4, 0), new Vector3(0, 4, -1), new Vector3(0, 4, 1),
-
-                new Vector3(0, 3, 0),
-        new Vector3(-1, 3, 0), new Vector3(1, 3, 0), new Vector3(0, 3, -1), new Vector3(0, 3, 1),
-
-                new Vector3(0, 2, 0),
-        new Vector3(-1, 2, 0), new Vector3(1, 2, 0), new Vector3(0, 2, -1), new Vector3(0, 2, 1),
-
-                new Vector3(0, 1, 0),
-        new Vector3(-1, 1, 0), new Vector3(1, 1, 0), new Vector3(0, 1, -1), new Vector3(0, 1, 1),
-                new Vector3(0, 0, 0),
-        new Vector3(-1, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 0, 1),
+            //Kollision mit der Decke
+            new Vector3(0, 6, 0),
+            new Vector3(-1, 6, -1), new Vector3(1, 6, -1), new Vector3(-1, 6, 1), new Vector3(1, 6, 1),
+            new Vector3(-1, 6, 0), new Vector3(1, 6, 0), new Vector3(0, 6, -1), new Vector3(0, 6, 1),
+            new Vector3(0, 5, 0),
+            new Vector3(-1, 5, -1), new Vector3(1, 5, -1), new Vector3(-1, 5, 1), new Vector3(1, 5, 1),
+            new Vector3(-1, 5, 0), new Vector3(1, 5, 0), new Vector3(0, 5, -1), new Vector3(0, 5, 1),
+            new Vector3(0, 4, 0),
+            new Vector3(-1, 4, -1), new Vector3(1, 4, -1), new Vector3(-1, 4, 1), new Vector3(1, 4, 1),
+            new Vector3(-1, 4, 0), new Vector3(1, 4, 0), new Vector3(0, 4, -1), new Vector3(0, 4, 1),
+            new Vector3(0, 3, 0),
+            new Vector3(-1, 3, -1), new Vector3(1, 3, -1), new Vector3(-1, 3, 1), new Vector3(1, 3, 1),
+            new Vector3(-1, 3, 0), new Vector3(1, 3, 0), new Vector3(0, 3, -1), new Vector3(0, 3, 1),
+            new Vector3(0, 2, 0),
+            new Vector3(-1, 2, -1), new Vector3(1, 2, -1), new Vector3(-1, 2, 1), new Vector3(1, 2, 1),
+            new Vector3(-1, 2, 0), new Vector3(1, 2, 0), new Vector3(0, 2, -1), new Vector3(0, 2, 1),
+            new Vector3(0, 1, 0),
+            new Vector3(-1, 1, -1), new Vector3(1, 1, -1), new Vector3(-1, 1, 1), new Vector3(1, 1, 1),
+            new Vector3(-1, 1, 0), new Vector3(1, 1, 0), new Vector3(0, 1, -1), new Vector3(0, 1, 1),
+            new Vector3(0, 0, 0),
+            new Vector3(-1, 0, -1), new Vector3(1, 0, -1), new Vector3(-1, 0, 1), new Vector3(1, 0, 1),
+            new Vector3(-1, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 0, 1)
         };
 
         public Player Player { get; private set; }

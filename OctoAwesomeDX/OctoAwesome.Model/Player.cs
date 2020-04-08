@@ -15,6 +15,8 @@ namespace OctoAwesome.Model
 
         public float Angle { get; private set; }
 
+        public float Height { get; set; }
+
         public float Tilt { get; set; }
 
         public bool OnGround { get; set; }
@@ -32,6 +34,7 @@ namespace OctoAwesome.Model
             Velocity = new Vector3(0, 0, 0);
             Radius = 0.75f;
             Angle = 0f;
+            Height = 3.5f;
             Mass = 100;
             InventoryItems = new List<InventoryItem>();
 
