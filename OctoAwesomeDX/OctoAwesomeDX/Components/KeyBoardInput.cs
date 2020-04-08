@@ -22,6 +22,8 @@ namespace OctoAwesome.Components
 
         public bool JumpTrigger { get; private set; }
 
+        public bool ApplyTrigger { get; private set; }
+
         public void Update()
         {
             KeyboardState keyBoardState = Keyboard.GetState();
@@ -33,6 +35,7 @@ namespace OctoAwesome.Components
 
             InteractTrigger = keyBoardState.IsKeyDown(Keys.E);
             JumpTrigger = keyBoardState.IsKeyDown(Keys.Space);
+            ApplyTrigger = keyBoardState.IsKeyDown(Keys.Q);
 
             MoveX -= (keyBoardState.IsKeyDown(Keys.A) ? 1 : 0);
             MoveX += (keyBoardState.IsKeyDown(Keys.D) ? 1 : 0);

@@ -12,6 +12,7 @@ namespace OctoAwesome.Components
     {
         private bool lastInteract = false;
         private bool lastJump = false;
+        private bool lastApply = false;
 
         private GamePadInput gamepad;
         private KeyBoardInput keyboard;
@@ -29,6 +30,8 @@ namespace OctoAwesome.Components
 
         public bool JumpTrigger { get; private set; }
 
+        public bool ApplyTrigger { get; private set; }
+
         public InputComponent(Game game) : base(game)
         {
             gamepad = new GamePadInput();
@@ -40,6 +43,7 @@ namespace OctoAwesome.Components
         {
             bool nextInteract = false;
             bool nextJump = false;
+            bool nextApply = false;
 
             MoveX = 0f;
             MoveY = 0f;
@@ -49,6 +53,7 @@ namespace OctoAwesome.Components
             gamepad.Update();
             nextInteract = gamepad.InteractTrigger;
             nextJump = gamepad.JumpTrigger;
+            nextApply = gamepad.ApplyTrigger;
 
             MoveX += gamepad.MoveX;
             MoveY += gamepad.MoveY;
@@ -58,6 +63,7 @@ namespace OctoAwesome.Components
             keyboard.Update();
             nextInteract |= keyboard.InteractTrigger;
             nextJump |= keyboard.JumpTrigger;
+            nextApply |= keyboard.ApplyTrigger;
 
             MoveX += keyboard.MoveX;
             MoveY += keyboard.MoveY;
@@ -67,6 +73,7 @@ namespace OctoAwesome.Components
             mouse.Update();
             nextInteract |= mouse.InteractTrigger;
             nextJump |= mouse.JumpTrigger;
+            nextApply |= mouse.ApplyTrigger;
 
             MoveX += mouse.MoveX;
             MoveY += mouse.MoveY;
@@ -89,6 +96,12 @@ namespace OctoAwesome.Components
             else
                 JumpTrigger = false;
             lastJump = nextJump;
+
+            if (nextApply && !lastApply)
+                ApplyTrigger = true;
+            else
+                ApplyTrigger = false;
+            lastApply = nextApply;
         }
     }
 }

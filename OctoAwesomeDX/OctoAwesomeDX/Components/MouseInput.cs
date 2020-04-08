@@ -29,6 +29,8 @@ namespace OctoAwesome.Components
 
         public bool JumpTrigger { get; private set; }
 
+        public bool ApplyTrigger { get; private set; }
+
         public MouseInput(Game game)
         {
             this.game = game;
@@ -39,6 +41,7 @@ namespace OctoAwesome.Components
             MouseState state = Mouse.GetState();
 
             InteractTrigger = state.RightButton == ButtonState.Pressed;
+            ApplyTrigger = state.LeftButton == ButtonState.Pressed;
 
             int centerX = game.GraphicsDevice.Viewport.Width / 2;
             int centerY = game.GraphicsDevice.Viewport.Height / 2;
