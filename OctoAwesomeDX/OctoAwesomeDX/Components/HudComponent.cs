@@ -85,7 +85,7 @@ namespace OctoAwesome.Components
             //size = font.MeasureString(fps);
             //batch.DrawString(font, fps, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 45), Color.White);
 
-            int centerX = GraphicsDevice.Viewport.Width / 2;
+            int centerX = GraphicsDevice.Viewport.Width / 2; //BEI 78 WEITERMACHEN!!!!!!!!!!!
             int centerY = GraphicsDevice.Viewport.Height / 2;
 
             batch.Draw(pix, new Rectangle(centerX - 1, centerY - 15, 2, 30), Color.White * 0.5f);
