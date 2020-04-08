@@ -22,7 +22,7 @@ namespace OctoAwesome.Model
 
             //Blöcke am Boden um den Player herum
             new Vector3(-1, -1, -1), new Vector3(1, -1, -1), new Vector3(-1, -1, 1), new Vector3(1, -1, 1),
-            new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(0, -1, -1), new Vector3(0, -1, 1),
+            new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(0, -1, -1), new Vector3(0, -1, 1), //TEST
 
             //Kollision mit der Decke
             new Vector3(0, 6, 0),
