@@ -70,7 +70,7 @@ namespace OctoAwesome.Components
             HeadX += keyboard.HeadX;
             HeadY += keyboard.HeadY;
 
-            mouse.Update();
+            if(Game.IsActive) mouse.Update();
             nextInteract |= mouse.InteractTrigger;
             nextJump |= mouse.JumpTrigger;
             nextApply |= mouse.ApplyTrigger;

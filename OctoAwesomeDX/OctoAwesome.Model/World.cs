@@ -10,6 +10,7 @@ namespace OctoAwesome.Model
 {
     public sealed class World
     {
+        private readonly float Gap = 0.01f; 
         private readonly Vector3[] CollisionOrder = new[] 
         {
             new Vector3(0, -5, 0),
@@ -91,6 +92,12 @@ namespace OctoAwesome.Model
 
                 collision = false;
 
+                float min = 1f;
+                float minGap = 0f;
+                float maxGap = 0f;
+
+                Axis minAxis = Axis.None;
+
                 for (int z = minZ; z <= maxZ; z++)
                 {
                     for (int y = minY; y <= maxY; y++)
@@ -119,8 +126,6 @@ namespace OctoAwesome.Model
                                 bool collisionY = (transformedBox.Min.Y <= playerBox.Max.Y && transformedBox.Max.Y >= playerBox.Min.Y);
                                 bool collisionZ = (transformedBox.Min.Z <= playerBox.Max.Z && transformedBox.Max.Z >= playerBox.Min.Z);
 
-                                float gap = 0.001f;
-
                                 if (collisionX && collisionY && collisionZ)
                                 {
                                     collision = true;
@@ -128,10 +133,12 @@ namespace OctoAwesome.Model
                                     float max = 0f;
                                     float nx = 1f;
 
-                                    Vector3 correctedMove = move;
-                                    Vector3 correctedVelocity = Player.Velocity;
+                                    //Vector3 correctedMove = move;
+                                    //Vector3 correctedVelocity = Player.Velocity;
 
-                                    bool correctedOnGround = false;
+                                    Axis maxAxis = Axis.None;
+
+                                    //bool correctedOnGround = false;
 
                                     if (move.X > 0)
                                     {
@@ -144,9 +151,11 @@ namespace OctoAwesome.Model
                                             if (nx > max)
                                             {
                                                 max = nx;
-                                                correctedMove = new Vector3((move.X * nx) - gap, move.Y, move.Z);
-                                                correctedVelocity = new Vector3(0, Player.Velocity.Y, Player.Velocity.Z);
-                                                correctedOnGround = false;
+                                                maxAxis = Axis.X;
+                                                maxGap = -Gap;
+                                                //correctedMove = new Vector3((move.X * nx) - gap, move.Y, move.Z);
+                                                //correctedVelocity = new Vector3(0, Player.Velocity.Y, Player.Velocity.Z);
+                                                //correctedOnGround = false;
                                             }
                                         }
                                     }
@@ -161,9 +170,11 @@ namespace OctoAwesome.Model
                                             if (nx > max)
                                             {
                                                 max = nx;
-                                                correctedMove = new Vector3((move.X * nx) + gap, move.Y, move.Z);
-                                                correctedVelocity = new Vector3(0, Player.Velocity.Y, Player.Velocity.Z);
-                                                correctedOnGround = false;
+                                                maxAxis = Axis.X;
+                                                maxGap = Gap;
+                                                //correctedMove = new Vector3((move.X * nx) + gap, move.Y, move.Z);
+                                                //correctedVelocity = new Vector3(0, Player.Velocity.Y, Player.Velocity.Z);
+                                                //correctedOnGround = false;
                                             }
                                         }
                                     }
@@ -181,9 +192,11 @@ namespace OctoAwesome.Model
                                             if (ny > max)
                                             {
                                                 max = ny;
-                                                correctedMove = new Vector3(move.X, (move.Y * ny) - gap, move.Z);
-                                                correctedVelocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
-                                                correctedOnGround = false;
+                                                maxAxis = Axis.Y;
+                                                maxGap = -Gap;
+                                                //correctedMove = new Vector3(move.X, (move.Y * ny) - gap, move.Z);
+                                                //correctedVelocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
+                                                //correctedOnGround = false;
                                             }
                                         }
                                     }
@@ -198,9 +211,11 @@ namespace OctoAwesome.Model
                                             if (ny > max)
                                             {
                                                 max = ny;
-                                                correctedMove = new Vector3(move.X, (move.Y * ny) + gap, move.Z);
-                                                correctedVelocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
-                                                correctedOnGround = true;
+                                                maxAxis = Axis.Y;
+                                                maxGap = Gap;
+                                                //correctedMove = new Vector3(move.X, (move.Y * ny) + gap, move.Z);
+                                                //correctedVelocity = new Vector3(Player.Velocity.X, 0, Player.Velocity.Z);
+                                                //correctedOnGround = true;
                                             }
                                         }
                                     }
@@ -218,9 +233,11 @@ namespace OctoAwesome.Model
                                             if (nz > max)
                                             {
                                                 max = nz;
-                                                correctedMove = new Vector3(move.X, move.Y, (move.Z * nz) - gap);
-                                                correctedVelocity = new Vector3(Player.Velocity.X, Player.Velocity.Y, Player.Velocity.Z);
-                                                correctedOnGround = false;
+                                                maxAxis = Axis.Z;
+                                                maxGap = -Gap;
+                                                //correctedMove = new Vector3(move.X, move.Y, (move.Z * nz) - gap);
+                                                //correctedVelocity = new Vector3(Player.Velocity.X, Player.Velocity.Y, Player.Velocity.Z);
+                                                //correctedOnGround = false;
                                             }
                                         }
                                     }
@@ -235,22 +252,70 @@ namespace OctoAwesome.Model
                                             if (nz > max)
                                             {
                                                 max = nz;
-                                                correctedMove = new Vector3(move.X, move.Y, (move.Z * nz) + gap);
-                                                correctedVelocity = new Vector3(Player.Velocity.X, Player.Velocity.Y, Player.Velocity.Z);
-                                                correctedOnGround = false;
+                                                maxAxis = Axis.Z;
+                                                maxGap = Gap;
+                                                //correctedMove = new Vector3(move.X, move.Y, (move.Z * nz) + gap);
+                                                //correctedVelocity = new Vector3(Player.Velocity.X, Player.Velocity.Y, Player.Velocity.Z);
+                                                //correctedOnGround = false;
                                             }
                                         }
                                     }
-                                    move = correctedMove;
-                                    Player.Velocity = correctedVelocity;
-                                    Player.OnGround = correctedOnGround;
+
+                                    if (max < min)
+                                    {
+                                        min = max;
+                                        minAxis = maxAxis;
+                                        minGap = maxGap;
+                                    }
+
+                                    //move = correctedMove;
+                                    //Player.Velocity = correctedVelocity;
+                                    //Player.OnGround = correctedOnGround;
                                 }
                             }
                         }
                     }
                 }
+
+                if (collision)
+                {
+                    Vector3 movePart = move * min;
+
+                    Player.Position += movePart;
+                    move *= (1 - min);
+
+                    switch (minAxis)
+                    {
+                        case Axis.X: 
+                            move.X = 0;
+                            Player.Position = Player.Position + new Vector3(minGap, 0, 0);
+                            Player.Velocity *= new Vector3(0, 1, 1);
+                            break;
+
+                        case Axis.Y: 
+                            move.Y = 0;
+                            Player.Position = Player.Position + new Vector3(0, minGap, 0);
+                            Player.Velocity *= new Vector3(1, 0, 1);
+                            //if (Gap > 0) Player.OnGround = true;
+                            break;
+
+                        case Axis.Z: 
+                            move.Z = 0;
+                            Player.Position = Player.Position + new Vector3(0, 0, minGap);
+                            Player.Velocity *= new Vector3(1, 1, 0);
+                            break;
+                    }
+
+                }
+                else
+                {
+                    Player.Position += move;
+                }
+
+                Player.OnGround = true; 
+
                 loops++;
-            } while (collision || loops < 3);
+            } while (collision && loops < 3);
 
             //foreach (var collisionBox in CollisionOrder)
             //{
