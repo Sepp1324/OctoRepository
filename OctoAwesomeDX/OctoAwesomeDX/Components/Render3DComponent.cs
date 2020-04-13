@@ -101,9 +101,9 @@ namespace OctoAwesome.Components
                 world.Dirty = false;
             }
 
-            int cellX = (int)world.World.Player.Position.X;
-            int cellY = (int)world.World.Player.Position.Y;
-            int cellZ = (int)world.World.Player.Position.Z;
+            int cellX = world.World.Player.Position.Block.X;
+            int cellY = world.World.Player.Position.Block.Y;
+            int cellZ = world.World.Player.Position.Block.Z;
 
             int range = 8;
             Vector3? selected = null;
