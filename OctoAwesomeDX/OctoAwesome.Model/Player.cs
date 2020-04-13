@@ -30,7 +30,7 @@ namespace OctoAwesome.Model
         public Player(IInputSet input)
         {
             this.input = input;
-            Position = new Vector3(50, 70, 50);
+            Position = new Vector3(16, 33, 16);
             Velocity = new Vector3(0, 0, 0);
             Radius = 0.75f;
             Angle = 0f;
