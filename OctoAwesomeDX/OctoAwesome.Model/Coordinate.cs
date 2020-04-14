@@ -33,6 +33,11 @@ namespace OctoAwesome.Model
             return new Index3((int)(Block.X / Chunk.CHUNKSIZE_X), (int)(Block.Y / Chunk.CHUNKSIZE_Y), (int)(Block.Z / Chunk.CHUNKSIZE_Z));
         }
 
+        public Index3 AsLocalBlock()
+        {
+            return new Index3(Block.X % Chunk.CHUNKSIZE_X, Block.Y % Chunk.CHUNKSIZE_Y, Block.Z % Chunk.CHUNKSIZE_Z);
+        }
+
         public Vector3 AsLocalPosition()
         {
             return new Vector3(Block.X % Chunk.CHUNKSIZE_X + Position.X, Block.Y % Chunk.CHUNKSIZE_Y + Position.Y, Block.Z % Chunk.CHUNKSIZE_Z + Position.Z);

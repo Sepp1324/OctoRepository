@@ -79,23 +79,25 @@ namespace OctoAwesome.Components
                 {
                     for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     {
-                        if (chunk.Blocks[x, y, z] == null) continue;
+                        Index3 pos = new Index3(x, y, z);
+
+                        if (chunk.GetBlock(pos) == null) continue;
 
                         //Textur-Kooridinate "berechnen" :D
                         Vector2 textureOffset = new Vector2();
                         Vector2 textureSize = new Vector2(0.49f, 0.49f);
 
-                        if (chunk.Blocks[x, y, z] is GrassBlock)
+                        if (chunk.GetBlock(pos) is GrassBlock)
                         {
                             textureOffset = new Vector2(0.005f, 0.005f);
                         }
-                        else if (chunk.Blocks[x, y, z] is SandBlock)
+                        else if (chunk.GetBlock(pos) is SandBlock)
                         {
                             textureOffset = new Vector2(0.505f, 0.005f);
                         }
 
                         //Oben
-                        if (y == Chunk.CHUNKSIZE_Y - 1 || chunk.Blocks[x, y + 1, z] == null)
+                        if (y == Chunk.CHUNKSIZE_Y - 1 || chunk.GetBlock(x, y + 1, z) == null)
                         {
                             int localOffset = vertices.Count;
 
@@ -112,7 +114,7 @@ namespace OctoAwesome.Components
                         }
 
                         //Links
-                        if (x == 0 || chunk.Blocks[x - 1, y, z] == null)
+                        if (x == 0 || chunk.GetBlock(x - 1, y, z) == null)
                         {
                             int localOffset = vertices.Count;
 
@@ -129,7 +131,7 @@ namespace OctoAwesome.Components
                         }
 
                         //Vorne
-                        if (z == Chunk.CHUNKSIZE_Z - 1 || chunk.Blocks[x, y, z + 1] == null)
+                        if (z == Chunk.CHUNKSIZE_Z - 1 || chunk.GetBlock(x, y, z + 1) == null)
                         {
                             int localOffset = vertices.Count;
 
@@ -146,7 +148,7 @@ namespace OctoAwesome.Components
                         }
 
                         //Rechts
-                        if (x == Chunk.CHUNKSIZE_X - 1 || chunk.Blocks[x + 1, y, z] == null)
+                        if (x == Chunk.CHUNKSIZE_X - 1 || chunk.GetBlock(x + 1, y, z) == null)
                         {
                             int localOffset = vertices.Count;
 
@@ -163,7 +165,7 @@ namespace OctoAwesome.Components
                         }
 
                         //Hinten
-                        if (z == 0 || chunk.Blocks[x, y, z - 1] == null)
+                        if (z == 0 || chunk.GetBlock(x, y, z - 1) == null)
                         {
                             int localOffset = vertices.Count;
 
@@ -180,7 +182,7 @@ namespace OctoAwesome.Components
                         }
 
                         //Unten
-                        if (y == 0 || chunk.Blocks[x, y - 1, z] == null)
+                        if (y == 0 || chunk.GetBlock(x, y - 1, z) == null)
                         {
                             int localOffset = vertices.Count;
 
