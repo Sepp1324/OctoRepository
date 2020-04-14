@@ -7,9 +7,11 @@ using System.Text;
 
 namespace OctoAwesome.Model
 {
-    public class Planet
+    public class Planet : IPlanet
     {
         private Chunk[,,] chunks;
+
+        public Index3 Size { get; private set; }
 
         public int SizeX { get; private set; }
 
@@ -17,19 +19,17 @@ namespace OctoAwesome.Model
 
         public int SizeZ { get; private set; }
 
-        public Planet(int sizeX, int sizeY, int sizeZ)
+        public Planet(Index3 size)
         {
-            SizeX = sizeX;
-            SizeY = sizeY;
-            SizeZ = sizeZ;
+            Size = size;
 
-            chunks = new Chunk[sizeX, sizeY, sizeZ];
+            chunks = new Chunk[Size.X, Size.Y, Size.Z];
 
-            for (int x = 0; x < sizeX; x++)
+            for (int x = 0; x < Size.X; x++)
             {
-                for (int y = 0; y < sizeY; y++)
+                for (int y = 0; y < Size.Y; y++)
                 {
-                    for (int z = 0; z < sizeZ; z++)
+                    for (int z = 0; z < Size.Z; z++)
                     {
                         chunks[x, y, z] = new Chunk(new Index3(x, y, z));
                     }
@@ -37,12 +37,12 @@ namespace OctoAwesome.Model
             }
         }
 
-        public Chunk GetChunk(Index3 pos)
+        public IChunk GetChunk(Index3 pos)
         {
             return GetChunk(pos.X, pos.Y, pos.Z);
         }
 
-        public Chunk GetChunk(int x, int y, int z)
+        public IChunk GetChunk(int x, int y, int z)
         {
             if (chunks[x, y, z] == null)
             {
@@ -51,10 +51,11 @@ namespace OctoAwesome.Model
 
             return chunks[x, y, z];
         }
+
         public IBlock GetBlock(Index3 pos)
         {
             Coordinate coordinate = new Coordinate(0, pos, Vector3.Zero);
-            Chunk chunk = GetChunk(coordinate.AsChunk());
+            IChunk chunk = GetChunk(coordinate.AsChunk());
 
             return chunk.GetBlock(coordinate.AsLocalBlock());
         }
@@ -62,7 +63,7 @@ namespace OctoAwesome.Model
         public void SetBlock(Index3 pos, IBlock block, TimeSpan time)
         {
             Coordinate coordinate = new Coordinate(0, pos, Vector3.Zero);
-            Chunk chunk = GetChunk(coordinate.AsChunk());
+            IChunk chunk = GetChunk(coordinate.AsChunk());
             chunk.SetBlock(coordinate.AsLocalBlock(), block, time);
         }
     }

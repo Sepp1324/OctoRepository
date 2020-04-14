@@ -10,7 +10,7 @@ namespace OctoAwesome.Model
 {
     public sealed class World
     {
-        private readonly float Gap = 0.01f;
+        private readonly float Gap = 0.001f;
 
         public Player Player { get; private set; }
 
@@ -24,7 +24,7 @@ namespace OctoAwesome.Model
 
             for (int p = 0; p < planetCount; p++)
             {
-                planets[p] = new Planet(10, 10, 1);
+                planets[p] = new Planet(new Index3(10, 10, 1));
             }
         }
 
@@ -97,9 +97,14 @@ namespace OctoAwesome.Model
                             int iy = (int)(y + Player.Position.AsVector3().Y + move.Y);
                             int iz = (int)(z + Player.Position.AsVector3().Z + move.Z);
 
-                            if (x < 0 || x >= Chunk.CHUNKSIZE_X ||
-                                y < 0 || y >= Chunk.CHUNKSIZE_Y ||
-                                z < 0 || z >= Chunk.CHUNKSIZE_Z)
+                            //if (x < 0 || x >= Chunk.CHUNKSIZE_X ||
+                            //    y < 0 || y >= Chunk.CHUNKSIZE_Y ||
+                            //    z < 0 || z >= Chunk.CHUNKSIZE_Z)
+                            //    continue;
+
+                            if (x < 0 || x >= Chunk.CHUNKSIZE_X * 10 ||
+                                y < 0 || y >= Chunk.CHUNKSIZE_Y * 10 ||
+                                z < 0 || z >= Chunk.CHUNKSIZE_Z * 1)
                                 continue;
 
                             Index3 pos = new Index3(x, y, z);
@@ -269,7 +274,7 @@ namespace OctoAwesome.Model
                             move.Z = 0;
                             Player.Position = Player.Position + new Vector3(0, 0, minGap);
                             Player.Velocity *= new Vector3(1, 1, 0);
-                            //if (minGap > 0) Player.OnGround = true;
+                            if (minGap > 0) Player.OnGround = true;
                             break;
                     }
                 }
@@ -277,7 +282,7 @@ namespace OctoAwesome.Model
                 {
                     Player.Position += move;
                 }
-                Player.OnGround = true;
+                //Player.OnGround = true;
 
                 loops++;
             } while (collision && loops < 3);

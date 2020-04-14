@@ -11,7 +11,8 @@ namespace OctoAwesome.Model
 
         public const float POWER = 600f;
 
-        public const float JUMPPOWER = 8000000f;
+        //public const float JUMPPOWER = 8000000f;
+        public const float JUMPPOWER = 6000000f;
 
         public const float FRICTION = 60f;
 
