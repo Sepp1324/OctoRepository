@@ -27,15 +27,17 @@ namespace OctoAwesome.Model
 
         public IBlock GetBlock(Index3 index)
         {
-
             if (index.X < 0 || index.X >= Chunk.CHUNKSIZE_X || index.Y < 0 || index.Y >= Chunk.CHUNKSIZE_Y || index.Z < 0 || index.Z >= Chunk.CHUNKSIZE_Z)
-                throw new IndexOutOfRangeException();
+                return null;
 
             return blocks[index.X, index.Y, index.Z];
         }
 
         public void SetBlock(Index3 index, IBlock block, TimeSpan time)
         {
+            if (index.X < 0 || index.X >= Chunk.CHUNKSIZE_X || index.Y < 0 || index.Y >= Chunk.CHUNKSIZE_Y || index.Z < 0 || index.Z >= Chunk.CHUNKSIZE_Z)
+                return;
+
             blocks[index.X, index.Y, index.Z] = block;
             LastChange = time;
         }
