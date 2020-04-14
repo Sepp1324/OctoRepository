@@ -56,18 +56,22 @@ namespace OctoAwesome.Components
 
             IPlanet planet = world.World.GetPlanet(0);
 
-            chunkRenderer = new ChunkRenderer[planet.Size.X, planet.Size.Y, planet.Size.Z];
+            //chunkRenderer = new ChunkRenderer[planet.Size.X, planet.Size.Y, planet.Size.Z];
 
-            for (int x = 0; x < planet.Size.X; x++)
-            {
-                for (int y = 0; y < planet.Size.Y; y++)
-                {
-                    for (int z = 0; z < planet.Size.Z; z++)
-                    {
-                        chunkRenderer[x, y, z] = new ChunkRenderer(GraphicsDevice, camera.Projection, planet.GetChunk(new Index3(x, y, z)), blockTextures);
-                    }
-                }
-            }
+            //for (int x = 0; x < planet.Size.X; x++)
+            //{
+            //    for (int y = 0; y < planet.Size.Y; y++)
+            //    {
+            //        for (int z = 0; z < planet.Size.Z; z++)
+            //        {
+            //            chunkRenderer[x, y, z] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures);
+
+            //            chunkRenderer[x, y, z].SetChunk(planet.GetChunk(new Index3(x, y, z));
+            //        }
+            //    }
+            //}
+
+            chunkRenderer = new ChunkRenderer[3, 3, 3];
 
             selectionLines = new[] 
             {
@@ -183,6 +187,11 @@ namespace OctoAwesome.Components
                     GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineList, selectionLines, 0, 8, selectionIndizes, 0, 12);
                 }
             }
+        }
+
+        private void FillChunkRenderer()
+        {
+
         }
     }
 }

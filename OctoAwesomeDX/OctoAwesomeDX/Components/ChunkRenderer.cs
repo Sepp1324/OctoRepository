@@ -25,10 +25,9 @@ namespace OctoAwesome.Components
 
         private TimeSpan lastReset;
 
-        public ChunkRenderer(GraphicsDevice graphicsDevice, Matrix projection, IChunk chunk, Texture2D textures)
+        public ChunkRenderer(GraphicsDevice graphicsDevice, Matrix projection, Texture2D textures)
         {
             this.graphicsDevice = graphicsDevice;
-            this.chunk = chunk;
             this.textures = textures;
 
             effect = new BasicEffect(graphicsDevice);
@@ -38,6 +37,12 @@ namespace OctoAwesome.Components
 
             effect.EnableDefaultLighting();
 
+            //RegenerateVertexBuffer();
+        }
+
+        public void SetChunk(IChunk chunk)
+        {
+            this.chunk = chunk;
             RegenerateVertexBuffer();
         }
 
@@ -49,6 +54,8 @@ namespace OctoAwesome.Components
 
         public void Draw(Matrix view)
         {
+            if (chunk == null) return;
+
             effect.World = Matrix.CreateTranslation(chunk.Index.X * Chunk.CHUNKSIZE_X, chunk.Index.Y * Chunk.CHUNKSIZE_Y, chunk.Index.Z * Chunk.CHUNKSIZE_Z);
 
             effect.View = view;
@@ -78,6 +85,8 @@ namespace OctoAwesome.Components
                 ib.Dispose();
                 ib = null;
             }
+
+            if (chunk == null) return;
 
             List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
             List<int> index = new List<int>();
