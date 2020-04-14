@@ -6,6 +6,10 @@ using System.Text;
 
 namespace OctoAwesome.Model
 {
+
+    /// <summary>
+    /// Datenstruktur zur genauen Position von SPiel-Elementen innerhalb der Welt
+    /// </summary>
     public struct Coordinate
     {
         public int Planet;
@@ -23,6 +27,9 @@ namespace OctoAwesome.Model
             this.Normalize();
         }
 
+        /// <summary>
+        /// Indizierung des Chunkes
+        /// </summary>
         public Index3 ChunkIndex
         {
             get
@@ -36,7 +43,7 @@ namespace OctoAwesome.Model
         }
 
         /// <summary>
-        /// 
+        /// Gibt den globalen Index (Planet-Koordinaten) des Blockes zurück oder legt diesen fest.
         /// </summary>
         public Index3 GlobalBlockIndex
         {
@@ -44,12 +51,18 @@ namespace OctoAwesome.Model
             set { block = value; }
         }
 
+        /// <summary>
+        /// Gibt den lokalen INdex des Blocks (Chunk-Koordinaten) zurück oder legt diesen fest.
+        /// </summary>
         public Index3 LocalBlockIndex
         {
             get { return new Index3(block.X % Chunk.CHUNKSIZE_X, block.Y % Chunk.CHUNKSIZE_Y, block.Z % Chunk.CHUNKSIZE_Z); }
             set { throw new NotImplementedException(); }
         }
 
+        /// <summary>
+        /// Gibt die globale POsition (Planet-Koordinaten) als Vektor zurück oder legt diesen fest.
+        /// </summary>
         public Vector3 GlobalPosition
         {
             get { return new Vector3(block.X + position.X, block.Y + position.Y, block.Z + position.Z); }
@@ -60,31 +73,45 @@ namespace OctoAwesome.Model
             }
         }
 
+        /// <summary>
+        /// Gibt die lokale Position (Chunk-Koordinaten) als Vektor zurück oder legt diese fest.
+        /// </summary>
         public Vector3 LocalPosition
         {
+            get
+            {
+                Index3 blockIndex = LocalBlockIndex;
 
+                return new Vector3(blockIndex.X + position.X, blockIndex.Y + position.Y, blockIndex.Z + position.Z);
+            }
+
+            set
+            {
+                Index3 chunkIndex = ChunkIndex;
+
+                block = new Index3(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y, chunkIndex.Z * Chunk.CHUNKSIZE_Z);
+
+                position = value;
+                Normalize();
+            }
         }
 
-        public Vector3 AsVector3()
+        /// <summary>
+        /// Gibt die Position innerhalb des aktuelen Blockes zurück oder legt diesen fest.
+        /// </summary>
+        public Vector3 BlockPosition
         {
-            return new Vector3(block.X + position.X, block.Y + position.Y, block.Z + position.Z);
+            get { return position; }
+            set
+            {
+                position = value;
+                Normalize();
+            }
         }
 
-        public Index3 AsChunk()
-        {
-            return new Index3((int)(block.X / Chunk.CHUNKSIZE_X), (int)(block.Y / Chunk.CHUNKSIZE_Y), (int)(block.Z / Chunk.CHUNKSIZE_Z));
-        }
-
-        public Index3 AsLocalBlock()
-        {
-            return new Index3(block.X % Chunk.CHUNKSIZE_X, block.Y % Chunk.CHUNKSIZE_Y, block.Z % Chunk.CHUNKSIZE_Z);
-        }
-
-        public Vector3 AsLocalPosition()
-        {
-            return new Vector3(block.X % Chunk.CHUNKSIZE_X + position.X, block.Y % Chunk.CHUNKSIZE_Y + position.Y, block.Z % Chunk.CHUNKSIZE_Z + position.Z);
-        }
-
+        /// <summary>
+        /// Normalisiert die vorhandenen Positions-Paramter [0 - 1]
+        /// </summary>
         public void Normalize()
         {
             block.X += (int)Math.Floor(position.X);

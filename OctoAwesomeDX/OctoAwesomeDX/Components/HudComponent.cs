@@ -72,12 +72,12 @@ namespace OctoAwesome.Components
             //    world.World.Player.Position.Y.ToString("0.00") + "/" +
             //    world.World.Player.Position.Z.ToString("0.00");
             string pos = "pos: [" +
-                world.World.Player.Position.Block.X.ToString("0") + "/" +
-                world.World.Player.Position.Block.Y.ToString("0.00") + "/" +
-                world.World.Player.Position.Block.Z.ToString("0.00") + "] (" +
-                world.World.Player.Position.Position.X.ToString("0.00") + "/" +
-                world.World.Player.Position.Position.Y.ToString("0.00") + "/" +
-                world.World.Player.Position.Position.Z.ToString("0.00") + ")";
+                world.World.Player.Position.BlockPosition.X.ToString("0") + "/" +
+                world.World.Player.Position.BlockPosition.Y.ToString("0.00") + "/" +
+                world.World.Player.Position.BlockPosition.Z.ToString("0.00") + "] (" +
+                world.World.Player.Position.GlobalPosition.X.ToString("0.00") + "/" +
+                world.World.Player.Position.GlobalPosition.Y.ToString("0.00") + "/" +
+                world.World.Player.Position.GlobalPosition.Z.ToString("0.00") + ")";
             var size = font.MeasureString(pos);
             batch.DrawString(font, pos, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 5), Color.White);
 

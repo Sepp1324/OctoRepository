@@ -49,16 +49,16 @@ namespace OctoAwesome.Model
         public IBlock GetBlock(Index3 index)
         {
             Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
-            IChunk chunk = GetChunk(coordinate.AsChunk());
+            IChunk chunk = GetChunk(coordinate.ChunkIndex);
 
-            return chunk.GetBlock(coordinate.AsLocalBlock());
+            return chunk.GetBlock(coordinate.LocalBlockIndex);
         }
 
         public void SetBlock(Index3 index, IBlock block, TimeSpan time)
         {
             Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
-            IChunk chunk = GetChunk(coordinate.AsChunk());
-            chunk.SetBlock(coordinate.AsLocalBlock(), block, time);
+            IChunk chunk = GetChunk(coordinate.ChunkIndex);
+            chunk.SetBlock(coordinate.LocalBlockIndex, block, time);
         }
     }
 }
