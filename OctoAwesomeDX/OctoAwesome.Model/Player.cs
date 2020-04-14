@@ -44,8 +44,8 @@ namespace OctoAwesome.Model
         public void Update(GameTime frameTime)
         {
             float Power = 500f;
-            //float JumpPower = 10000000f;
-            float JumpPower = 1500000;
+            float JumpPower = 10000000f;
+            //float JumpPower = 1500000;
 
             Vector3 externalPower = ((ExternalForce * ExternalForce) / (2 * Mass)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
