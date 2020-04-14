@@ -24,7 +24,7 @@ namespace OctoAwesomeDX.Components
         {
             this.input = input;
 
-            World = new World(input);
+            World = new World(input, 1);
             SelectedBox = null;
             Dirty = false;
         }

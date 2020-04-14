@@ -61,7 +61,7 @@ namespace OctoAwesome.Components
                 blockTextures = Texture2D.FromStream(GraphicsDevice, stream);
             }
 
-            chunkRenderer = new ChunkRenderer(GraphicsDevice, camera.Projection, world.World.Chunk, blockTextures);
+            chunkRenderer = new ChunkRenderer(GraphicsDevice, camera.Projection, world.World.GetPlanet(0).GetChunk(0, 0, 0), blockTextures);
 
             selectionLines = new[] 
             {
@@ -111,7 +111,7 @@ namespace OctoAwesome.Components
                     {
                         if (x < 0 || x >= Chunk.CHUNKSIZE_X || y < 0 || y >= Chunk.CHUNKSIZE_Y || z < 0 || z >= Chunk.CHUNKSIZE_Z) continue;
 
-                        IBlock block = world.World.Chunk.Blocks[x, y, z];
+                        IBlock block = world.World.GetPlanet(0).GetChunk(0, 0, 0).Blocks[x, y, z];
 
                         if (block == null) continue;
 

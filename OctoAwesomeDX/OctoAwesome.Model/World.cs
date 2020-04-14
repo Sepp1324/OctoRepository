@@ -14,12 +14,23 @@ namespace OctoAwesome.Model
 
         public Player Player { get; private set; }
 
-        public Chunk Chunk { get; private set; }
+        private Planet[] planets;
 
-        public World(IInputSet input)
+        public World(IInputSet input, int planetCount)
         {
-            Chunk = new Chunk();
             Player = new Player(input);
+
+            planets = new Planet[planetCount];
+
+            for (int p = 0; p < planetCount; p++)
+            {
+                planets[p] = new Planet(10, 10, 3);
+            }
+        }
+
+        public Planet GetPlanet(int id)
+        {
+            return planets[id];
         }
 
         public void Update(GameTime frameTime)
@@ -91,7 +102,7 @@ namespace OctoAwesome.Model
                                 z < 0 || z >= Chunk.CHUNKSIZE_Z)
                                 continue;
 
-                            IBlock block = Chunk.Blocks[x, y, z];
+                            IBlock block = GetPlanet(0).GetChunk(0, 0, 0).Blocks[x, y, z];
 
                             if (block == null)
                                 continue;
@@ -272,12 +283,12 @@ namespace OctoAwesome.Model
 
         public void DeleteBlock(int x, int y, int z)
         {
-            Chunk.Blocks[x, y, z] = null;
+            GetPlanet(0).GetChunk(0, 0, 0).Blocks[x, y, z] = null;
         }
 
         public void PutBlock(int x, int y, int z)
         {
-            Chunk.Blocks[x, y, z] = new GrassBlock();
+            GetPlanet(0).GetChunk(0, 0, 0).Blocks[x, y, z] = new GrassBlock();
         }
     }
 }
