@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.Model
 {
-    public class Chunk : IChunk
+    public abstract class Chunk : IChunk
     {
         public const int CHUNKSIZE_X = 32;
         public const int CHUNKSIZE_Y = 32;
         public const int CHUNKSIZE_Z = 32;
 
-        private IBlock[, ,] blocks;
+        protected IBlock[, ,] blocks;
 
         public Index3 Index { get; private set; }
 
@@ -23,27 +23,6 @@ namespace OctoAwesome.Model
         {
             blocks = new IBlock[CHUNKSIZE_X, CHUNKSIZE_Y, CHUNKSIZE_Z];
             Index = pos;
-
-            for(int z = 0; z < CHUNKSIZE_Z; z++)
-            {
-                for(int y = 0; y < CHUNKSIZE_Y; y++)
-                {
-                    float heightY = (float)Math.Sin((float)(y * Math.PI) / 16f);
-                    for(int x = 0; x < CHUNKSIZE_X; x++)
-                    {
-                        float heightX = (float)Math.Sin((float)(x * Math.PI) / 16f);
-                        float height = (heightX + heightY) * 2;
-
-                        if (z < (int)(16 + height))
-                        {
-                            //if (x % 2 == 0 || y % 2 == 0)
-                            blocks[x, y, z] = new GrassBlock();
-                            //else
-                            //    Blocks[x, y, z] = new SandBlock();
-                        }
-                    }
-                }
-            }
         }
 
         public IBlock GetBlock(Index3 index)
@@ -55,20 +34,10 @@ namespace OctoAwesome.Model
             return blocks[index.X, index.Y, index.Z];
         }
 
-        //public IBlock GetBlock(int x, int y, int z)
-        //{
-
-        //}
-
         public void SetBlock(Index3 index, IBlock block, TimeSpan time)
         {
             blocks[index.X, index.Y, index.Z] = block;
             LastChange = time;
         }
-
-        //public void SetBlock(int x, int y, int z, IBlock block, TimeSpan time)
-        //{
-
-        //}
     }
 }

@@ -8,6 +8,8 @@ namespace OctoAwesome.Model
 {
     public interface IPlanet
     {
+        int Seed { get; }
+
         Index3 Size { get; }
 
         IChunk GetChunk(Index3 index);

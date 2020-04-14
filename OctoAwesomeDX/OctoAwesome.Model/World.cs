@@ -14,21 +14,23 @@ namespace OctoAwesome.Model
 
         public Player Player { get; private set; }
 
-        private Planet[] planets;
+        private IPlanet[] planets;
 
         public World(IInputSet input, int planetCount)
         {
+            DebugMapGenerator mapGenerator = new DebugMapGenerator();
+
             Player = new Player(input);
 
             planets = new Planet[planetCount];
 
             for (int p = 0; p < planetCount; p++)
             {
-                planets[p] = new Planet(new Index3(10, 10, 1));
+                planets[p] = mapGenerator.GeneratePlanet((int)DateTime.Now.Ticks);
             }
         }
 
-        public Planet GetPlanet(int id)
+        public IPlanet GetPlanet(int id)
         {
             return planets[id];
         }
