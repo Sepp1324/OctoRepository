@@ -31,7 +31,7 @@ namespace OctoAwesome.Model
                 {
                     for (int z = 0; z < sizeZ; z++)
                     {
-                        chunks[x, y, z] = new Chunk();
+                        chunks[x, y, z] = new Chunk(new Index3(x, y, z));
                     }
                 }
             }
@@ -59,11 +59,11 @@ namespace OctoAwesome.Model
             return chunk.GetBlock(coordinate.AsLocalBlock());
         }
 
-        public void SetBlock(Index3 pos, IBlock block)
+        public void SetBlock(Index3 pos, IBlock block, TimeSpan time)
         {
             Coordinate coordinate = new Coordinate(0, pos, Vector3.Zero);
             Chunk chunk = GetChunk(coordinate.AsChunk());
-            chunk.SetBlock(coordinate.AsLocalBlock(), block);
+            chunk.SetBlock(coordinate.AsLocalBlock(), block, time);
         }
     }
 }

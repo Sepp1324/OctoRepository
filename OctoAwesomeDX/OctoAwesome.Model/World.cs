@@ -24,7 +24,7 @@ namespace OctoAwesome.Model
 
             for (int p = 0; p < planetCount; p++)
             {
-                planets[p] = new Planet(10, 10, 3);
+                planets[p] = new Planet(10, 10, 1);
             }
         }
 
@@ -281,16 +281,6 @@ namespace OctoAwesome.Model
 
                 loops++;
             } while (collision && loops < 3);
-        }
-
-        public void DeleteBlock(Index3 pos)
-        {
-            GetPlanet(0).SetBlock(pos, null);
-        }
-
-        public void PutBlock(Index3 pos)
-        {
-            GetPlanet(0).SetBlock(pos, new GrassBlock());
         }
     }
 }

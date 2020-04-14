@@ -15,8 +15,6 @@ namespace OctoAwesomeDX.Components
 
         public Vector3? SelectedBox { get; set; }
 
-        public bool Dirty { get; set; }
-
         private InputComponent input;
 
         public WorldComponent(Game game, InputComponent input)
@@ -26,7 +24,6 @@ namespace OctoAwesomeDX.Components
 
             World = new World(input, 1);
             SelectedBox = null;
-            Dirty = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -35,8 +32,7 @@ namespace OctoAwesomeDX.Components
             {
                 Index3 pos = new Index3((int)SelectedBox.Value.X, (int)SelectedBox.Value.Y, (int)SelectedBox.Value.Z);
 
-                World.DeleteBlock(pos);
-                Dirty = true;
+                World.GetPlanet(0).SetBlock(pos, null, gameTime.TotalGameTime);
             }
 
             World.Update(gameTime);
