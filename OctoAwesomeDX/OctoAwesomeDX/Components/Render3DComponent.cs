@@ -16,7 +16,7 @@ namespace OctoAwesome.Components
 {
     internal sealed class Render3DComponent : DrawableGameComponent
     {
-        public static Index3 VIEWRANGE = new Index3(1, 1, 1);
+        public static Index3 VIEWRANGE = new Index3(2, 2, 1);
 
         private WorldComponent world;
         private EgoCameraComponent camera;
@@ -59,22 +59,6 @@ namespace OctoAwesome.Components
             }
 
             IPlanet planet = world.World.GetPlanet(0);
-
-            //chunkRenderer = new ChunkRenderer[planet.Size.X, planet.Size.Y, planet.Size.Z];
-
-            //for (int x = 0; x < planet.Size.X; x++)
-            //{
-            //    for (int y = 0; y < planet.Size.Y; y++)
-            //    {
-            //        for (int z = 0; z < planet.Size.Z; z++)
-            //        {
-            //            chunkRenderer[x, y, z] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures);
-
-            //            chunkRenderer[x, y, z].SetChunk(planet.GetChunk(new Index3(x, y, z));
-            //        }
-            //    }
-            //}
-
             chunkRenderer = new ChunkRenderer[
                 (VIEWRANGE.X * 2) + 1,
                 (VIEWRANGE.Y * 2) + 1,
@@ -122,6 +106,8 @@ namespace OctoAwesome.Components
 
         public override void Update(GameTime gameTime)
         {
+            FillChunkRenderer();
+
             for (int x = 0; x < chunkRenderer.GetLength(0); x++)
             {
                 for (int y = 0; y < chunkRenderer.GetLength(1); y++)
@@ -133,9 +119,9 @@ namespace OctoAwesome.Components
                 }
             }
 
-            int cellX = world.World.Player.Position.GlobalBlockIndex.X;
-            int cellY = world.World.Player.Position.GlobalBlockIndex.Y;
-            int cellZ = world.World.Player.Position.GlobalBlockIndex.Z;
+            int cellX = world.World.Player.Position.LocalBlockIndex.X;
+            int cellY = world.World.Player.Position.LocalBlockIndex.Y;
+            int cellZ = world.World.Player.Position.LocalBlockIndex.Z;
 
             int range = 8;
             Vector3? selected = null;
@@ -168,7 +154,10 @@ namespace OctoAwesome.Components
                                 if (!bestDistance.HasValue || bestDistance.Value > distance)
                                 {
                                     bestDistance = distance.Value;
-                                    selected = new Vector3(x, y, z);
+                                    selected = new Vector3(
+                                        (world.World.Player.Position.ChunkIndex.X * Chunk.CHUNKSIZE_X) + x,
+                                        (world.World.Player.Position.ChunkIndex.Y * Chunk.CHUNKSIZE_Y) + y,
+                                        (world.World.Player.Position.ChunkIndex.Z * Chunk.CHUNKSIZE_Z) + z);
                                 }
                             }
                         }
@@ -200,6 +189,11 @@ namespace OctoAwesome.Components
 
             if (world.SelectedBox.HasValue)
             {
+                Vector3 selectedBoxPosition = new Vector3(
+                    world.SelectedBox.Value.X + (chunkOffset.X * Chunk.CHUNKSIZE_X),
+                    world.SelectedBox.Value.Y + (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
+                    world.SelectedBox.Value.Z + (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
+
                 selectionEffect.World = Matrix.CreateTranslation(world.SelectedBox.Value);
                 selectionEffect.View = camera.View;
                 selectionEffect.Projection = camera.Projection;
@@ -241,6 +235,8 @@ namespace OctoAwesome.Components
                     }
                 }
             }
+
+            chunkOffset = centerChunk;
         }
     }
 }

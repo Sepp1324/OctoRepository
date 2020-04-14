@@ -40,7 +40,6 @@ namespace OctoAwesome.Model
             Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
 
             Player.Update(frameTime);
-
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
             IPlanet planet = GetPlanet(Player.Position.Planet);
@@ -275,7 +274,12 @@ namespace OctoAwesome.Model
                 {
                     Player.Position += move;
                 }
-                //Player.OnGround = true;
+
+                Coordinate playerPosition = Player.Position;
+
+                Index3 blockIndex = playerPosition.GlobalBlockIndex;
+                blockIndex.Normalize(planetSize);
+                Player.Position = new Coordinate(playerPosition.Planet, blockIndex, playerPosition.BlockPosition);
 
                 loops++;
             } while (collision && loops < 3);
