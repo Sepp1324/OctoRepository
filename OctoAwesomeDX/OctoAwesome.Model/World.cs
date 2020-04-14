@@ -43,6 +43,9 @@ namespace OctoAwesome.Model
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
+            IPlanet planet = GetPlanet(Player.Position.Planet);
+            Index3 planetSize = new Index3(planet.Size.X * Chunk.CHUNKSIZE_X, planet.Size.Y * Chunk.CHUNKSIZE_Y, planet.Size.Z * Chunk.CHUNKSIZE_Z);
+
             Player.OnGround = false;
 
             int minx = (int)Math.Min(
@@ -95,26 +98,14 @@ namespace OctoAwesome.Model
                     {
                         for (int x = minx; x <= maxx; x++)
                         {
-                            int ix = (int)(x + Player.Position.GlobalPosition.X + move.X);
-                            int iy = (int)(y + Player.Position.GlobalPosition.Y + move.Y);
-                            int iz = (int)(z + Player.Position.GlobalPosition.Z + move.Z);
-
-                            //if (x < 0 || x >= Chunk.CHUNKSIZE_X ||
-                            //    y < 0 || y >= Chunk.CHUNKSIZE_Y ||
-                            //    z < 0 || z >= Chunk.CHUNKSIZE_Z)
-                            //    continue;
-
-                            if (x < 0 || x >= Chunk.CHUNKSIZE_X * 10 ||
-                                y < 0 || y >= Chunk.CHUNKSIZE_Y * 10 ||
-                                z < 0 || z >= Chunk.CHUNKSIZE_Z * 1)
-                                continue;
+                            if (z < 0 || z >= planetSize.Z) continue;
 
                             Index3 pos = new Index3(x, y, z);
+                            pos.Normalize(planetSize);
 
-                            IBlock block = GetPlanet(0).GetBlock(pos);
+                            IBlock block = GetPlanet(Player.Position.Planet).GetBlock(pos);
 
-                            if (block == null)
-                                continue;
+                            if (block == null) continue;
 
                             BoundingBox[] boxes = block.GetCollisionBoxes();
 

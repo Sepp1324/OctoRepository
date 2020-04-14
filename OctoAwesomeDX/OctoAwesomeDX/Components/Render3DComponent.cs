@@ -86,7 +86,10 @@ namespace OctoAwesome.Components
                 {
                     for (int z = 0; z < chunkRenderer.GetLength(2); z++)
                     {
-                        chunkRenderer[x, y, z] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures);
+                        chunkRenderer[x, y, z] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures)
+                        {
+                            RelativeIndex = new Index3(x - VIEWRANGE.X, y - VIEWRANGE.Y, z - VIEWRANGE.Z)
+                        };
                     }
                 }
             }
@@ -226,11 +229,9 @@ namespace OctoAwesome.Components
 
                         if (chunkIndex.X < 0) chunkIndex.X += planet.Size.X;
                         if (chunkIndex.Y < 0) chunkIndex.Y += planet.Size.Y;
-                        if (chunkIndex.Z < 0) chunkIndex.Z += planet.Size.Z;
 
                         chunkIndex.X %= planet.Size.X;
                         chunkIndex.Y %= planet.Size.Y;
-                        chunkIndex.Z %= planet.Size.Z;
 
                         IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
                         chunkRenderer[
