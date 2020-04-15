@@ -18,6 +18,8 @@ namespace OctoAwesome.Model
             Z = z;
         }
 
+        public Index3(Index2 index, int z) : this(index.X, index.Y, z) {}
+
         public void Normalize(Index3 size)
         {
             if (X < 0) X += (int)(-(X / size.X) + 1) * size.X;

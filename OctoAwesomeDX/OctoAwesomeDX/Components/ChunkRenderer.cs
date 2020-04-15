@@ -23,7 +23,7 @@ namespace OctoAwesome.Components
         private int vertexCount;
         private int indexCount;
 
-        private TimeSpan lastReset;
+        private int lastReset;
 
         public Index3 RelativeIndex { get; set; }
 
@@ -31,6 +31,7 @@ namespace OctoAwesome.Components
         {
             this.graphicsDevice = graphicsDevice;
             this.textures = textures;
+            this.lastReset = -1;
 
             effect = new BasicEffect(graphicsDevice);
             effect.World = Matrix.Identity;
@@ -52,7 +53,7 @@ namespace OctoAwesome.Components
         {
             if (chunk == null) return;
 
-            if (chunk.LastChange > lastReset)
+            if (chunk.ChangeCounter > lastReset)
                 RegenerateVertexBuffer();
         }
 
@@ -232,7 +233,7 @@ namespace OctoAwesome.Components
             ib = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
             ib.SetData<int>(index.ToArray());
 
-            lastReset = chunk.LastChange;
+            lastReset = chunk.ChangeCounter;
         }
 
         public void Dispose()

@@ -58,6 +58,7 @@
     <Compile Include="DebugMapGenerator.cs" />
     <Compile Include="IChunk.cs" />
     <Compile Include="IMapGenerator.cs" />
+    <Compile Include="Index2.cs" />
     <Compile Include="Index3.cs" />
     <Compile Include="IPlanet.cs" />
     <Compile Include="Planet.cs" />

@@ -11,7 +11,7 @@ namespace OctoAwesome.Model
     {
         private IMapGenerator generator;
 
-        private IChunk[,,] chunks;
+        private IChunk[, ,] chunks;
 
         public Index3 Size { get; private set; }
 
@@ -29,9 +29,11 @@ namespace OctoAwesome.Model
             {
                 for (int y = 0; y < Size.Y; y++)
                 {
-                    for (int z = 0; z < Size.Z; z++)
+                    IChunk[] result =generator.GenerateChunk(this, new Index2(x, y));
+
+                    for (int layer = 0; layer < this.Size.Z; layer++)
                     {
-                        chunks[x, y, z] = generator.GenerateChunk(this, new Index3(x, y, z));
+                        chunks[x, y, layer] = result[layer];
                     }
                 }
             }
@@ -62,7 +64,7 @@ namespace OctoAwesome.Model
             index.Normalize(new Index3(Size.X * Chunk.CHUNKSIZE_X, Size.Y * Chunk.CHUNKSIZE_Y, Size.Z * Chunk.CHUNKSIZE_Z));
             Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
             IChunk chunk = GetChunk(coordinate.ChunkIndex);
-            chunk.SetBlock(coordinate.LocalBlockIndex, block, time);
+            chunk.SetBlock(coordinate.LocalBlockIndex, block);
         }
     }
 }
