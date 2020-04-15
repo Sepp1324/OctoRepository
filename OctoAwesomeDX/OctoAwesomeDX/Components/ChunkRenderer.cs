@@ -27,6 +27,8 @@ namespace OctoAwesome.Components
 
         public Index3 RelativeIndex { get; set; }
 
+        public bool InUse { get; set; }
+
         public ChunkRenderer(GraphicsDevice graphicsDevice, Matrix projection, Texture2D textures)
         {
             this.graphicsDevice = graphicsDevice;
@@ -40,6 +42,8 @@ namespace OctoAwesome.Components
 
             effect.EnableDefaultLighting();
 
+            InUse = false;
+
             //RegenerateVertexBuffer();
         }
 
@@ -51,7 +55,7 @@ namespace OctoAwesome.Components
 
         public void Update()
         {
-            if (chunk == null) return;
+            if (!InUse || chunk == null) return;
 
             if (chunk.ChangeCounter > lastReset)
                 RegenerateVertexBuffer();
@@ -59,7 +63,7 @@ namespace OctoAwesome.Components
 
         public void Draw(Matrix view)
         {
-            if (chunk == null) return;
+            if (!InUse || chunk == null) return;
 
             effect.World = Matrix.CreateTranslation(RelativeIndex.X * Chunk.CHUNKSIZE_X, RelativeIndex.Y * Chunk.CHUNKSIZE_Y, RelativeIndex.Z * Chunk.CHUNKSIZE_Z);
             effect.View = view;

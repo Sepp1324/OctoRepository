@@ -22,7 +22,7 @@ namespace OctoAwesome.Components
         private WorldComponent world;
         private EgoCameraComponent camera;
 
-        private ChunkRenderer[, ,] chunkRenderer;
+        private ChunkRenderer[] chunkRenderer;
 
         private BasicEffect selectionEffect;
 
@@ -82,23 +82,12 @@ namespace OctoAwesome.Components
 
             IPlanet planet = world.World.GetPlanet(0);
             chunkRenderer = new ChunkRenderer[
-                (VIEWRANGE.X * 2) + 1,
-                (VIEWRANGE.Y * 2) + 1,
-                (VIEWRANGE.Z * 2) + 1];
+                ((VIEWRANGE.X * 2) + 1) *
+                ((VIEWRANGE.Y * 2) + 1) *
+                ((VIEWRANGE.Z * 2) + 1)];
 
-            for (int x = 0; x < chunkRenderer.GetLength(0); x++)
-            {
-                for (int y = 0; y < chunkRenderer.GetLength(1); y++)
-                {
-                    for (int z = 0; z < chunkRenderer.GetLength(2); z++)
-                    {
-                        chunkRenderer[x, y, z] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures)
-                        {
-                            RelativeIndex = new Index3(x - VIEWRANGE.X, y - VIEWRANGE.Y, z - VIEWRANGE.Z)
-                        };
-                    }
-                }
-            }
+            for (int i = 0; i < chunkRenderer.Length; i++)
+                chunkRenderer[i] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures);
 
             FillChunkRenderer();
 
@@ -130,16 +119,8 @@ namespace OctoAwesome.Components
         {
             FillChunkRenderer();
 
-            for (int x = 0; x < chunkRenderer.GetLength(0); x++)
-            {
-                for (int y = 0; y < chunkRenderer.GetLength(1); y++)
-                {
-                    for (int z = 0; z < chunkRenderer.GetLength(2); z++)
-                    {
-                        chunkRenderer[x, y, z].Update();
-                    }
-                }
-            }
+            for (int i = 0; i < chunkRenderer.Length; i++)
+                chunkRenderer[i].Update();
 
             int cellX = world.World.Player.Position.LocalBlockIndex.X;
             int cellY = world.World.Player.Position.LocalBlockIndex.Y;
@@ -200,16 +181,8 @@ namespace OctoAwesome.Components
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            for (int x = 0; x < chunkRenderer.GetLength(0); x++)
-            {
-                for (int y = 0; y < chunkRenderer.GetLength(1); y++)
-                {
-                    for (int z = 0; z < chunkRenderer.GetLength(2); z++)
-                    {
-                        chunkRenderer[x, y, z].Draw(camera.View);
-                    }
-                }
-            }
+            for (int i = 0; i < chunkRenderer.Length; i++)
+                chunkRenderer[i].Draw(camera.View);
 
             if (world.SelectedBox.HasValue)
             {
@@ -236,9 +209,23 @@ namespace OctoAwesome.Components
 
             if (centerChunk == chunkOffset) return;
 
-            if (centerChunk.X > chunkOffset.X)
+            Index3 delta = chunkOffset - centerChunk;
+
+            Queue<ChunkRenderer> freeChunkRenderer = new Queue<ChunkRenderer>();
+
+            for (int i = 0; i < chunkRenderer.Length; i++)
             {
-                //Scrolling nach rechts
+                ChunkRenderer renderer = chunkRenderer[i];
+
+                renderer.RelativeIndex += delta;
+
+                if (!renderer.InUse || renderer.RelativeIndex.X <= -VIEWRANGE.X || renderer.RelativeIndex.X >= VIEWRANGE.X ||
+                    renderer.RelativeIndex.Y <= -VIEWRANGE.Y || renderer.RelativeIndex.Y >= VIEWRANGE.Y ||
+                    renderer.RelativeIndex.Z <= -VIEWRANGE.Z || renderer.RelativeIndex.Z >= VIEWRANGE.Z)
+                {
+                    renderer.InUse = false;
+                    freeChunkRenderer.Enqueue(renderer);
+                }
             }
 
             for (int x = -VIEWRANGE.X; x <= VIEWRANGE.X; x++)
@@ -256,11 +243,16 @@ namespace OctoAwesome.Components
                         chunkIndex.X %= planet.Size.X;
                         chunkIndex.Y %= planet.Size.Y;
 
-                        IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
-                        chunkRenderer[
-                            x + VIEWRANGE.X,
-                            y + VIEWRANGE.Y,
-                            z + VIEWRANGE.Z].SetChunk(chunk);
+                        Index3 relative = chunkIndex - centerChunk;
+
+                        if (!chunkRenderer.Any(c => c.RelativeIndex == relative))
+                        {
+                            IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
+                            ChunkRenderer renderer = freeChunkRenderer.Dequeue();
+                            renderer.SetChunk(chunk);
+                            renderer.RelativeIndex = relative;
+                            renderer.InUse = true;
+                        }
                     }
                 }
             }
