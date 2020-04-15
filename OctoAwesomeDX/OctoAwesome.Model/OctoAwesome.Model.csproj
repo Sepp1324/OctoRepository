@@ -49,12 +49,17 @@
   <ItemGroup>
     <Compile Include="Axis.cs" />
     <Compile Include="Blocks\Block.cs" />
-    <Compile Include="Blocks\BlockDefinition.cs" />
     <Compile Include="Blocks\GrassBlock.cs" />
+    <Compile Include="Blocks\GrassBlockDefinition.cs" />
     <Compile Include="Blocks\GroundBlock.cs" />
+    <Compile Include="Blocks\GroundBlockDefinition.cs" />
+    <Compile Include="Blocks\IBlockDefinition.cs" />
     <Compile Include="Blocks\SandBlock.cs" />
+    <Compile Include="Blocks\SandBlockDefinition.cs" />
     <Compile Include="Blocks\StoneBlock.cs" />
+    <Compile Include="Blocks\StoneBlockDefinition.cs" />
     <Compile Include="Blocks\WaterBlock.cs" />
+    <Compile Include="Blocks\WaterBlockDefinition.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="Blocks\IBlock.cs" />
     <Compile Include="Coordinate.cs" />
