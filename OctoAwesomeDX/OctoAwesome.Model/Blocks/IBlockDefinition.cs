@@ -17,5 +17,7 @@ namespace OctoAwesome.Model.Blocks
         Bitmap SideTexture { get; }
 
         IBlock GetInstance();
+
+        Type GetBlockType();
     }
 }

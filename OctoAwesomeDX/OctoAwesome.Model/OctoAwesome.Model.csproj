@@ -90,16 +90,22 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="Resources\grass_center.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sand_center.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\ground_center.png" />
-    <Content Include="Resources\water_center.png" />
-    <Content Include="Resources\stone_center.png" />
+    <Content Include="Resources\grass_bottom.png" />
+    <Content Include="Resources\grass_side.png" />
+    <Content Include="Resources\grass_top.png" />
+    <Content Include="Resources\ground_bottom.png" />
+    <Content Include="Resources\ground_top.png" />
+    <Content Include="Resources\sand_bottom.png" />
+    <Content Include="Resources\sand_side.png" />
+    <Content Include="Resources\sand_top.png" />
+    <Content Include="Resources\stone_bottom.png" />
+    <Content Include="Resources\stone_side.png" />
+    <Content Include="Resources\stone_top.png" />
+    <Content Include="Resources\water_bottom.png" />
+    <Content Include="Resources\water_side.png" />
+    <Content Include="Resources\water_top.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

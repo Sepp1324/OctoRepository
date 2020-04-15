@@ -16,22 +16,27 @@ namespace OctoAwesome.Model.Blocks
 
         public Bitmap TopTexture
         {
-            get { return Resources.ground_center; }
+            get { return Resources.ground_top; }
         }
 
         public Bitmap BottomTexture
         {
-            get { return Resources.ground_center; }
+            get { return Resources.ground_bottom; }
         }
 
         public Bitmap SideTexture
         {
-            get { return Resources.ground_center; }
+            get { return Resources.grass_side; }
         }
 
-        IBlock IBlockDefinition.GetInstance()
+        public IBlock GetInstance()
         {
             return new GroundBlock();
+        }
+
+        public Type GetBlockType()
+        {
+            return typeof(GroundBlock);
         }
     }
 }
