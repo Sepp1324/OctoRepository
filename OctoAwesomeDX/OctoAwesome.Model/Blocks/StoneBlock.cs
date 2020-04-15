@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Model.Blocks
 {
-    [BlockDefinition(Name = "Grass")]
-    public class GrassBlock : Block
+    public class StoneBlock : Block
     {
-        public static Bitmap Texture { get { return Resources.grass_center; } }
+        public static Bitmap Texture { get { return Resources.stone_center; } }
     }
 }
