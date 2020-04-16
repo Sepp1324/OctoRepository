@@ -212,16 +212,7 @@ namespace OctoAwesome.Components
 
             if (centerChunk == chunkOffset) return;
 
-            Index3 delta = chunkOffset - centerChunk;
-
-            if (delta.X < -1)
-                delta.X += planet.Size.X;
-            else if (delta.X > 1)
-                delta.X -= planet.Size.X;
-            if (delta.Y < -1)
-                delta.Y += planet.Size.Y; 
-            else if (delta.Y > 1)
-                delta.Y -= planet.Size.Y;
+            Index3 delta = Index3.ShortestDistance(centerChunk, chunkOffset, planet.Size);
 
             Queue<ChunkRenderer> freeChunkRenderer = new Queue<ChunkRenderer>();
 
@@ -239,6 +230,8 @@ namespace OctoAwesome.Components
                     freeChunkRenderer.Enqueue(renderer);
                 }
             }
+
+            Console.WriteLine("Free Chunks: " + freeChunkRenderer.Count);
 
             for (int x = -VIEWRANGE.X; x <= VIEWRANGE.X; x++)
             {
@@ -258,7 +251,7 @@ namespace OctoAwesome.Components
                         chunkIndex.X %= planet.Size.X;
                         chunkIndex.Y %= planet.Size.Y;
 
-                        if (!chunkRenderer.Any(c => c.RelativeIndex == relative))
+                        if (!chunkRenderer.Any(c => c.RelativeIndex == relative && c.InUse))
                         {
                             IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
                             ChunkRenderer renderer = freeChunkRenderer.Dequeue();

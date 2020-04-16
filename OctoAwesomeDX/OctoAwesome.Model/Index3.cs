@@ -70,6 +70,31 @@ namespace OctoAwesome.Model
             return !i1.Equals(i2);
         }
 
+        public static Index3 operator *(Index3 i1, int scale)
+        {
+            return new Index3(i1.X * scale, i1.Y * scale, i1.Z * scale);
+        }
+
+        public static Index3 operator /(Index3 i1, int scale)
+        {
+            return new Index3(i1.X / scale, i1.Y / scale, i1.Z / scale);
+        }
+
+        public static Index3 ShortestDistance(Index3 origin, Index3 destination, Index3 size)
+        {
+            origin.NormalizeXYZ(size);
+            destination.NormalizeXYZ(size);
+            Index3 half = size / 2;
+
+            Index3 distance = destination - origin;
+
+            if (distance.X > half.X) distance.X -= size.X;
+            if (distance.Y > half.Y) distance.Y -= size.Y;
+            if (distance.Z > half.Z) distance.Z -= size.Z;
+
+            return distance;
+        }
+
         public override string ToString()
         {
             return "(" + X.ToString() + "/" + Y.ToString() + "/" + Z.ToString() + ")";
