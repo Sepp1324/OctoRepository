@@ -63,7 +63,6 @@
     <Compile Include="Chunk.cs" />
     <Compile Include="Blocks\IBlock.cs" />
     <Compile Include="Coordinate.cs" />
-    <Compile Include="DebugChunk.cs" />
     <Compile Include="DebugMapGenerator.cs" />
     <Compile Include="IChunk.cs" />
     <Compile Include="IMapGenerator.cs" />

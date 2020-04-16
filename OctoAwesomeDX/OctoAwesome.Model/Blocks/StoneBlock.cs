@@ -9,6 +9,5 @@ namespace OctoAwesome.Model.Blocks
 {
     public class StoneBlock : Block
     {
-        public static Bitmap Texture { get { return null; } }
     }
 }

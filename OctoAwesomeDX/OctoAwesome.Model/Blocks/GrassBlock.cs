@@ -10,6 +10,5 @@ namespace OctoAwesome.Model.Blocks
 {
     public class GrassBlock : Block
     {
-        public static Bitmap Texture { get { return Resources.grass_top; } }
     }
 }
