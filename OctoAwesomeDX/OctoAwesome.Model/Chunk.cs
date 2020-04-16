@@ -95,7 +95,7 @@ namespace OctoAwesome.Model
             }
         }
 
-        public void Deserialize(Stream stream, IBlockDefinition[] knownBlocks)
+        public void Deserialize(Stream stream, IEnumerable<IBlockDefinition> knownBlocks)
         {
             using (BinaryReader br = new BinaryReader(stream))
             {

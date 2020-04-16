@@ -15,10 +15,13 @@ namespace OctoAwesome.Model
         public Player Player { get; private set; }
 
         private IPlanet[] planets;
+        private IMapGenerator mapGenerator;
+        private IChunkPersistence chunkPersistence;
 
-        public World(IInputSet input, int planetCount)
+        public World(IInputSet input, int planetCount, IMapGenerator mapGenerator, IChunkPersistence chunkPersistence)
         {
-            DebugMapGenerator mapGenerator = new DebugMapGenerator();
+            this.mapGenerator = mapGenerator;
+            this.chunkPersistence = chunkPersistence;
 
             Player = new Player(input);
 
@@ -27,6 +30,7 @@ namespace OctoAwesome.Model
             for (int p = 0; p < planetCount; p++)
             {
                 planets[p] = mapGenerator.GeneratePlanet((int)DateTime.Now.Ticks);
+                planets[p].ChunkPersistence = chunkPersistence;
             }
         }
 
@@ -286,6 +290,14 @@ namespace OctoAwesome.Model
 
                 loops++;
             } while (collision && loops < 3);
+        }
+    
+        public void Save()
+        {
+            foreach(var planet in planets)
+            {
+                planet.Save();
+            }
         }
     }
 }

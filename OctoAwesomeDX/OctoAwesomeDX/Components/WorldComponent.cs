@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OctoAwesome;
 using OctoAwesome.Components;
 using OctoAwesome.Model;
 using System;
@@ -22,7 +23,10 @@ namespace OctoAwesomeDX.Components
         {
             this.input = input;
 
-            World = new World(input, 1);
+            IMapGenerator mapGenerator = new DebugMapGenerator();
+            IChunkPersistence chunkPersistence = new ChunkDiskPersistence();
+
+            World = new World(input, 1, mapGenerator, chunkPersistence);
             SelectedBox = null;
         }
 
@@ -36,6 +40,12 @@ namespace OctoAwesomeDX.Components
             }
 
             World.Update(gameTime);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            World.Save();
+            base.Dispose(disposing);
         }
     }
 }
