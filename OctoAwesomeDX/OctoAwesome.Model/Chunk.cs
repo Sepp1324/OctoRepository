@@ -117,7 +117,7 @@ namespace OctoAwesome.Model
 
                     if(typeIndex > 0)
                     {
-                        Type t = types[typeIndex];
+                        Type t = types[typeIndex - 1];
                         blocks[i] = (IBlock)Activator.CreateInstance(t);
                     }
                 }
