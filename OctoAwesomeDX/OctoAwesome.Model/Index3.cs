@@ -80,17 +80,18 @@ namespace OctoAwesome.Model
             return new Index3(i1.X / scale, i1.Y / scale, i1.Z / scale);
         }
 
-        public static Index3 ShortestDistance(Index3 origin, Index3 destination, Index3 size)
+        public static Index3 ShortestDistanceXY(Index3 origin, Index3 destination, Index2 size)
         {
-            origin.NormalizeXYZ(size);
-            destination.NormalizeXYZ(size);
-            Index3 half = size / 2;
+            origin.NormalizeXY(size);
+            destination.NormalizeXY(size);
+            Index2 half = size / 2;
 
             Index3 distance = destination - origin;
 
             if (distance.X > half.X) distance.X -= size.X;
+            else if (distance.X > half.X) distance.X += size.X;
             if (distance.Y > half.Y) distance.Y -= size.Y;
-            if (distance.Z > half.Z) distance.Z -= size.Z;
+            else if (distance.Y > half.Y) distance.Y += size.Y;
 
             return distance;
         }

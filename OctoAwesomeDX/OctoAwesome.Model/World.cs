@@ -43,7 +43,10 @@ namespace OctoAwesome.Model
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
             IPlanet planet = GetPlanet(Player.Position.Planet);
-            Index3 planetSize = new Index3(planet.Size.X * Chunk.CHUNKSIZE_X, planet.Size.Y * Chunk.CHUNKSIZE_Y, planet.Size.Z * Chunk.CHUNKSIZE_Z);
+
+            Index2 planetSize = new Index2(
+                planet.Size.X * Chunk.CHUNKSIZE_X, 
+                planet.Size.Y * Chunk.CHUNKSIZE_Y);
 
             Player.OnGround = false;
 
@@ -97,10 +100,10 @@ namespace OctoAwesome.Model
                     {
                         for (int x = minx; x <= maxx; x++)
                         {
-                            if (z < 0 || z >= planetSize.Z) continue;
+                            //if (z < 0 || z >= planetSize.Z) continue;
 
                             Index3 pos = new Index3(x, y, z);
-                            pos.NormalizeXYZ(planetSize);
+                            pos.NormalizeXY(planetSize);
 
                             IBlock block = GetPlanet(Player.Position.Planet).GetBlock(pos);
 
@@ -207,8 +210,8 @@ namespace OctoAwesome.Model
 
                                             if (nz > max)
                                             {
-                                                maxAxis = Axis.Z;
                                                 max = nz;
+                                                maxAxis = Axis.Z;
                                                 maxGap = -Gap;
                                             }
                                         }
@@ -278,7 +281,7 @@ namespace OctoAwesome.Model
                 Coordinate playerPosition = Player.Position;
 
                 Index3 blockIndex = playerPosition.GlobalBlockIndex;
-                blockIndex.NormalizeXYZ(planetSize);
+                blockIndex.NormalizeXY(planetSize);
                 Player.Position = new Coordinate(playerPosition.Planet, blockIndex, playerPosition.BlockPosition);
 
                 loops++;

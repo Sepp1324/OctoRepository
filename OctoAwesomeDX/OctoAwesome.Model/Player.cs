@@ -70,28 +70,14 @@ namespace OctoAwesome.Model
             powerDirection += ExternalForce;
             powerDirection += (POWER * VelocityDirection);
 
-            if (OnGround && input.JumpTrigger)
+            //if (OnGround && input.JumpTrigger)
+            if(input.JumpTrigger)
             {
                 Vector3 jumpDirection = new Vector3(lookX, lookY, 0f) * input.MoveY * 0.1f;
                 jumpDirection.Z = 1f;
                 jumpDirection.Normalize();
                 powerDirection += jumpDirection * JUMPPOWER;
             }
-
-            //powerDirection += ExternalForce;
-
-            //if (OnGround)
-            //{
-            //    powerDirection += (POWER * VelocityDirection);
-
-            //    if (input.JumpTrigger)
-            //    {
-            //        Vector3 jumpDirection = new Vector3(lookX, lookY, 0f) * input.MoveY * 0.1f;
-            //        jumpDirection.Z = 1f;
-            //        jumpDirection.Normalize();
-            //        powerDirection += jumpDirection * JUMPPOWER;
-            //    }
-            //}
 
             Vector3 VelocityChange = (2.0f / Mass * (powerDirection - Friction * Velocity)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
