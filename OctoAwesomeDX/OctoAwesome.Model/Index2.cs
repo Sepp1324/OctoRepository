@@ -5,6 +5,9 @@ using System.Text;
 
 namespace OctoAwesome.Model
 {
+    /// <summary>
+    /// Struktur zur Definierung einer zweidimensionalen Index-Position
+    /// </summary>
     public struct Index2
     {
         public int X;
@@ -16,13 +19,20 @@ namespace OctoAwesome.Model
             Y = y;
         }
 
-        public void Normalize(Index2 size)
+        public void NormalizeX(int size)
         {
-            if (X < 0) X += (int)(-(X / size.X) + 1) * size.X;
-            if (Y < 0) Y += (int)(-(Y / size.Y) + 1) * size.Y;
+            X = Normalize(X, size);
+        }
 
-            X %= size.X;
-            Y %= size.Y;
+        public void NormalizeY(int size)
+        {
+            Y = Normalize(Y, size);
+        }
+
+        public void Normalize(Index3 size)
+        {
+            NormalizeX(size.X);
+            NormalizeY(size.Y);
         }
 
         public static Index2 operator +(Index2 i1, Index2 i2)
@@ -48,6 +58,13 @@ namespace OctoAwesome.Model
         public static bool operator !=(Index2 i1, Index2 i2)
         {
             return !i1.Equals(i2);
+        }
+
+        public static int Normalize(int value, int size)
+        {
+            value %= size;
+            if (value < 0) value += size;
+            return value;
         }
 
         public override string ToString()

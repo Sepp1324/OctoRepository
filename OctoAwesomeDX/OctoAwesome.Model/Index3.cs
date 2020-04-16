@@ -22,20 +22,17 @@ namespace OctoAwesome.Model
 
         public void NormalizeX(int size)
         {
-            if (X < 0) X += (int)(-(X / size) + 1) * size;
-            X %= size;
+            X = Index2.Normalize(X, size);
         }
 
         public void NormalizeY(int size)
         {
-            if (Y < 0) Y += (int)(-(Y / size) + 1) * size;
-            Y %= size;
+            Y = Index2.Normalize(Y, size);
         }
 
         public void NormalizeZ(int size)
         {
-            if (Z < 0) Z += (int)(-(Z / size) + 1) * size;
-            Z %= size;
+            Z = Index2.Normalize(Z, size);
         }
 
         public void NormalizeXY(Index2 size)
