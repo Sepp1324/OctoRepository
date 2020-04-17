@@ -74,33 +74,24 @@ namespace OctoAwesome.Components
             effect.View = view;
             effect.Texture = textures;
 
-            graphicsDevice.SetVertexBuffer(vb);
-            graphicsDevice.Indices = ib;
-
-            foreach (var pass in effect.CurrentTechnique.Passes)
+            lock (this)
             {
-                pass.Apply();
-                graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, 0, indexCount / 3);
+                if (vb == null) 
+                    return;
+
+                graphicsDevice.SetVertexBuffer(vb);
+                graphicsDevice.Indices = ib;
+
+                foreach (var pass in effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, 0, indexCount / 3);
+                }
             }
         }
 
         public void RegenerateVertexBuffer()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            if (vb != null)
-            {
-                vb.Dispose();
-                vb = null;
-            }
-
-            if (ib != null)
-            {
-                ib.Dispose();
-                ib = null;
-            }
-
             if (chunk == null) return;
 
             Task t = new Task(() =>
@@ -257,19 +248,27 @@ namespace OctoAwesome.Components
                         }
                     }
                 }
-                Console.WriteLine("Vertex Fill: " + sw.ElapsedTicks);
-                sw.Restart();
 
                 vertexCount = vertices.Count;
                 indexCount = index.Count;
 
-                vb = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount, BufferUsage.WriteOnly);
-                vb.SetData<VertexPositionNormalTexture>(vertices.ToArray());
+                VertexBuffer vb2 = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount, BufferUsage.WriteOnly);
+                vb2.SetData<VertexPositionNormalTexture>(vertices.ToArray());
 
-                ib = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
-                ib.SetData<int>(index.ToArray());
+                IndexBuffer ib2 = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
+                ib2.SetData<int>(index.ToArray());
 
-                Console.WriteLine("VB Write: " + sw.ElapsedTicks);
+                VertexBuffer vbOld = vb;
+                IndexBuffer ibOld = ib;
+
+                lock (this)
+                {
+                    vb = vb2;
+                    ib = ib2;
+                }
+
+                if (vbOld != null) vbOld.Dispose();
+                if (ibOld != null) ibOld.Dispose();
 
                 lastReset = chunk.ChangeCounter;
             });

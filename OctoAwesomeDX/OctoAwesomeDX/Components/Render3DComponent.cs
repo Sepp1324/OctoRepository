@@ -91,7 +91,7 @@ namespace OctoAwesome.Components
 
             FillChunkRenderer();
 
-            selectionLines = new[] 
+            selectionLines = new[]
             {
                 new VertexPositionColor(new Vector3(-0.001f, +1.001f, +1.001f), Microsoft.Xna.Framework.Color.Black * 0.5f),
                 new VertexPositionColor(new Vector3(+1.001f, +1.001f, +1.001f), Microsoft.Xna.Framework.Color.Black * 0.5f),
@@ -222,7 +222,7 @@ namespace OctoAwesome.Components
 
                 renderer.RelativeIndex -= shift;
 
-                if (!renderer.InUse || 
+                if (!renderer.InUse ||
                     renderer.RelativeIndex.X < -VIEWRANGE.X || renderer.RelativeIndex.X > VIEWRANGE.X ||
                     renderer.RelativeIndex.Y < -VIEWRANGE.Y || renderer.RelativeIndex.Y > VIEWRANGE.Y ||
                     renderer.RelativeIndex.Z < -VIEWRANGE.Z || renderer.RelativeIndex.Z > VIEWRANGE.Z)
@@ -254,11 +254,15 @@ namespace OctoAwesome.Components
 
                         if (!chunkRenderer.Any(c => c.RelativeIndex == relative && c.InUse))
                         {
-                            IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
-                            ChunkRenderer renderer = freeChunkRenderer.Dequeue();
-                            renderer.SetChunk(chunk);
-                            renderer.RelativeIndex = relative;
-                            renderer.InUse = true;
+                            Task t = new Task(() =>
+                            {
+                                IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
+                                ChunkRenderer renderer = freeChunkRenderer.Dequeue();
+                                renderer.SetChunk(chunk);
+                                renderer.RelativeIndex = relative;
+                                renderer.InUse = true;
+                            });
+                            t.Start();
                         }
                     }
                 }
