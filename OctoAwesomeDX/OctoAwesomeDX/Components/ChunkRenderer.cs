@@ -4,8 +4,10 @@ using OctoAwesome.Model;
 using OctoAwesome.Model.Blocks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Components
 {
@@ -84,6 +86,9 @@ namespace OctoAwesome.Components
 
         public void RegenerateVertexBuffer()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             if (vb != null)
             {
                 vb.Dispose();
@@ -98,169 +103,177 @@ namespace OctoAwesome.Components
 
             if (chunk == null) return;
 
-            List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
-            List<int> index = new List<int>();
-            int textureColumns = textures.Width / Render3DComponent.TEXTURESIZE;
-            float textureWidth = 1f / textureColumns;
-
-            //BlockTypes sammeln            
-            var definitions = BlockDefinitionManager.GetBlockDefinitions();
-            Dictionary<Type, int> typeMapping = new Dictionary<Type, int>();
-            int definitionIndex = 0;
-
-            foreach (var definition in definitions)
-                typeMapping.Add(definition.GetBlockType(), definitionIndex++);
-
-            for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
+            Task t = new Task(() =>
             {
-                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
+                List<int> index = new List<int>();
+                int textureColumns = textures.Width / Render3DComponent.TEXTURESIZE;
+                float textureWidth = 1f / textureColumns;
+
+                //BlockTypes sammeln            
+                var definitions = BlockDefinitionManager.GetBlockDefinitions();
+                Dictionary<Type, int> typeMapping = new Dictionary<Type, int>();
+                int definitionIndex = 0;
+
+                foreach (var definition in definitions)
+                    typeMapping.Add(definition.GetBlockType(), definitionIndex++);
+
+                for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
                 {
-                    for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+                    for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                     {
-                        IBlock block = chunk.GetBlock(x, y, z);
-
-                        if (block == null) continue;
-
-                        if (!typeMapping.ContainsKey(block.GetType()))
-                            continue;
-
-                        int textureIndex;
-
-                        if (!typeMapping.TryGetValue(block.GetType(), out textureIndex))
-                            continue;
-                        textureIndex *= 3;
-
-                        //Textur-Kooridinate "berechnen" :D
-                        Vector2 textureOffset = new Vector2();
-                        Vector2 textureSize = new Vector2(textureWidth - 0.005f, textureWidth - 0.005f);
-
-                        //Oben
-                        if (z == Chunk.CHUNKSIZE_Z - 1 || chunk.GetBlock(new Index3(x, y, z + 1)) == null)
+                        for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                         {
+                            IBlock block = chunk.GetBlock(x, y, z);
+
+                            if (block == null) continue;
+
+                            if (!typeMapping.ContainsKey(block.GetType()))
+                                continue;
+
+                            int textureIndex;
+
+                            if (!typeMapping.TryGetValue(block.GetType(), out textureIndex))
+                                continue;
+                            textureIndex *= 3;
+
+                            //Textur-Kooridinate "berechnen" :D
+                            Vector2 textureOffset = new Vector2();
+                            Vector2 textureSize = new Vector2(textureWidth - 0.005f, textureWidth - 0.005f);
+
+                            //Oben
+                            if (z == Chunk.CHUNKSIZE_Z - 1 || chunk.GetBlock(new Index3(x, y, z + 1)) == null)
+                            {
+                                textureOffset = new Vector2(
+                                     (((textureIndex + 0) % textureColumns) * textureWidth) + 0.002f,
+                                     ((int)((textureIndex + 0) / textureColumns) * textureWidth) + 0.002f);
+
+                                int localOffset = vertices.Count;
+
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Forward, textureOffset));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Forward, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Forward, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Forward, textureOffset + textureSize));
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 1);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 2);
+                            }
+
+                            //Unten
+                            if (z == 0 || chunk.GetBlock(new Index3(x, y, z - 1)) == null)
+                            {
+                                textureOffset = new Vector2(
+                                     (((textureIndex + 1) % textureColumns) * textureWidth) + 0.002f,
+                                     ((int)((textureIndex + 1) / textureColumns) * textureWidth) + 0.002f);
+
+                                int localOffset = vertices.Count;
+
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Backward, textureOffset));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Backward, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Backward, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Backward, textureOffset + textureSize));
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 1);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 2);
+                            }
+
                             textureOffset = new Vector2(
-                                 (((textureIndex + 0) % textureColumns) * textureWidth) + 0.002f,
-                                 ((int)((textureIndex + 0) / textureColumns) * textureWidth) + 0.002f);
+                                 (((textureIndex + 2) % textureColumns) * textureWidth) + 0.002f,
+                                 ((int)((textureIndex + 2) / textureColumns) * textureWidth) + 0.002f);
 
-                            int localOffset = vertices.Count;
+                            //Hinten
+                            if (y == Chunk.CHUNKSIZE_Y - 1 || chunk.GetBlock(new Index3(x, y + 1, z)) == null)
+                            {
+                                int localOffset = vertices.Count;
 
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Forward, textureOffset));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Forward, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Forward, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Forward, textureOffset + textureSize));
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 1);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 2);
-                        }
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Up, textureOffset));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Up, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Up, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Up, textureOffset + textureSize));
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 1);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 2);
+                            }
 
-                        //Unten
-                        if (z == 0 || chunk.GetBlock(new Index3(x, y, z - 1)) == null)
-                        {
-                            textureOffset = new Vector2(
-                                 (((textureIndex + 1) % textureColumns) * textureWidth) + 0.002f,
-                                 ((int)((textureIndex + 1) / textureColumns) * textureWidth) + 0.002f);
+                            //Vorne
+                            if (y == 0 || chunk.GetBlock(new Index3(x, y - 1, z)) == null)
+                            {
+                                int localOffset = vertices.Count;
 
-                            int localOffset = vertices.Count;
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Down, textureOffset));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Down, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Down, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Down, textureOffset + textureSize));
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 1);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 2);
+                            }
 
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Backward, textureOffset));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Backward, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Backward, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Backward, textureOffset + textureSize));
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 1);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 2);
-                        }
+                            //Links
+                            if (x == 0 || chunk.GetBlock(new Index3(x - 1, y, z)) == null)
+                            {
+                                int localOffset = vertices.Count;
 
-                        textureOffset = new Vector2(
-                             (((textureIndex + 2) % textureColumns) * textureWidth) + 0.002f,
-                             ((int)((textureIndex + 2) / textureColumns) * textureWidth) + 0.002f);
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Left, textureOffset));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Left, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Left, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Left, textureOffset + textureSize));
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 1);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 2);
+                            }
 
-                        //Hinten
-                        if (y == Chunk.CHUNKSIZE_Y - 1 || chunk.GetBlock(new Index3(x, y + 1, z)) == null)
-                        {
-                            int localOffset = vertices.Count;
+                            //Rechts
+                            if (x == Chunk.CHUNKSIZE_X - 1 || chunk.GetBlock(new Index3(x + 1, y, z)) == null)
+                            {
+                                int localOffset = vertices.Count;
 
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Up, textureOffset));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Up, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Up, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Up, textureOffset + textureSize));
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 1);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 2);
-                        }
-
-                        //Vorne
-                        if (y == 0 || chunk.GetBlock(new Index3(x, y - 1, z)) == null)
-                        {
-                            int localOffset = vertices.Count;
-
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Down, textureOffset));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Down, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Down, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Down, textureOffset + textureSize));
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 1);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 2);
-                        }
-
-                        //Links
-                        if (x == 0 || chunk.GetBlock(new Index3(x - 1, y, z)) == null)
-                        {
-                            int localOffset = vertices.Count;
-
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), Vector3.Left, textureOffset));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), Vector3.Left, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 0), Vector3.Left, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), Vector3.Left, textureOffset + textureSize));
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 1);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 2);
-                        }
-
-                        //Rechts
-                        if (x == Chunk.CHUNKSIZE_X - 1 || chunk.GetBlock(new Index3(x + 1, y, z)) == null)
-                        {
-                            int localOffset = vertices.Count;
-
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Right, textureOffset));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Right, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Right, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
-                            vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Right, textureOffset + textureSize));
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 1);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 0);
-                            index.Add(localOffset + 3);
-                            index.Add(localOffset + 2);
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), Vector3.Right, textureOffset));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), Vector3.Right, new Vector2(textureOffset.X + textureSize.X, textureOffset.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 1), Vector3.Right, new Vector2(textureOffset.X, textureOffset.Y + textureSize.Y)));
+                                vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 0, z + 0), Vector3.Right, textureOffset + textureSize));
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 1);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 0);
+                                index.Add(localOffset + 3);
+                                index.Add(localOffset + 2);
+                            }
                         }
                     }
                 }
-            }
+                Console.WriteLine("Vertex Fill: " + sw.ElapsedTicks);
+                sw.Restart();
 
-            vertexCount = vertices.Count;
-            indexCount = index.Count;
+                vertexCount = vertices.Count;
+                indexCount = index.Count;
 
-            vb = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount, BufferUsage.WriteOnly);
-            vb.SetData<VertexPositionNormalTexture>(vertices.ToArray());
+                vb = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount, BufferUsage.WriteOnly);
+                vb.SetData<VertexPositionNormalTexture>(vertices.ToArray());
 
-            ib = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
-            ib.SetData<int>(index.ToArray());
+                ib = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
+                ib.SetData<int>(index.ToArray());
 
-            lastReset = chunk.ChangeCounter;
+                Console.WriteLine("VB Write: " + sw.ElapsedTicks);
+
+                lastReset = chunk.ChangeCounter;
+            });
+            t.Start();
         }
 
         public void Dispose()
