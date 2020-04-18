@@ -94,8 +94,8 @@ namespace OctoAwesome.Components
         {
             if (chunk == null) return;
 
-            Task t = new Task(() =>
-            {
+            //Task t = new Task(() =>
+            //{
                 List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
                 List<int> index = new List<int>();
                 int textureColumns = textures.Width / Render3DComponent.TEXTURESIZE;
@@ -271,8 +271,8 @@ namespace OctoAwesome.Components
                 if (ibOld != null) ibOld.Dispose();
 
                 lastReset = chunk.ChangeCounter;
-            });
-            t.Start();
+            //});
+            //t.Start();
         }
 
         public void Dispose()

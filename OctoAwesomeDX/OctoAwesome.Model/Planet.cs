@@ -9,7 +9,7 @@ namespace OctoAwesome.Model
 {
     internal class Planet : IPlanet
     {
-        private readonly int CACHELIMIT = 500;
+        private readonly int CACHELIMIT = 10000;
 
         private IMapGenerator generator;
 
