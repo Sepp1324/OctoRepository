@@ -47,13 +47,13 @@ namespace OctoAwesome.Model
             if (chunks[index.X, index.Y, index.Z] == null)
             {
                 //Load from Disk
-                IChunk first = ChunkPersistence.Load(Id, index);
+                IChunk first = ChunkPersistence.Load(this, index);
 
                 if (first != null)
                 {
                     for (int z = 0; z < this.Size.Z; z++)
                     {
-                        chunks[index.X, index.Y, z] = ChunkPersistence.Load(Id, new Index3(index.X, index.Y, z));
+                        chunks[index.X, index.Y, z] = ChunkPersistence.Load(this, new Index3(index.X, index.Y, z));
                         lastAccess.Add(new Index3(index.X, index.Y, z), accessCounter++);
                     }
                 }
@@ -73,7 +73,7 @@ namespace OctoAwesome.Model
                 {
                     Index3 oldest = lastAccess.OrderBy(a => a.Value).Select(a => a.Key).First();
                     var chunk = chunks[oldest.X, oldest.Y, oldest.Z];
-                    ChunkPersistence.Save(chunk, Id);
+                    ChunkPersistence.Save(chunk, this);
                     chunks[oldest.X, oldest.Y, oldest.Z] = null; //TODO: Pooling
                     lastAccess.Remove(oldest);
                 }
@@ -83,7 +83,7 @@ namespace OctoAwesome.Model
                 lastAccess[index] = accessCounter++;
             }
 
-            return chunks[index.X, index.Y, index.Z];
+            return chunks[index.X, index.Y, index.Z]; 
         }
 
         public IBlock GetBlock(Index3 index)
@@ -115,7 +115,7 @@ namespace OctoAwesome.Model
                     for(int x = 0; x < Size.X; x++)
                     {
                         if (chunks[x, y, z] != null)
-                            ChunkPersistence.Save(chunks[x, y, z], Id);
+                            ChunkPersistence.Save(chunks[x, y, z], this);
                     }
                 }
             }

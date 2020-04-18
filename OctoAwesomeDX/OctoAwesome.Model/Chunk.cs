@@ -18,12 +18,15 @@ namespace OctoAwesome.Model
 
         public Index3 Index { get; private set; }
 
+        public IPlanet Planet { get; private set; }
+
         public int ChangeCounter { get; private set; }
 
-        public Chunk(Index3 pos)
+        public Chunk(Index3 pos, IPlanet planet)
         {
             blocks = new IBlock[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z];
             Index = pos;
+            Planet = planet;
             ChangeCounter = 0;
         }
 

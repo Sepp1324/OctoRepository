@@ -11,6 +11,8 @@ namespace OctoAwesome.Model
     {
         Index3 Index { get; }
 
+        IPlanet Planet { get;  }
+
         int ChangeCounter { get; }
 
         IBlock GetBlock(Index3 index);

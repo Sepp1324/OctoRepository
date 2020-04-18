@@ -12,11 +12,11 @@ namespace OctoAwesome
     public class ChunkDiskPersistence : IChunkPersistence
     {
 
-        public void Save(IChunk chunk, int planet)
+        public void Save(IChunk chunk, IPlanet planet)
         {
             var root = GetRoot();
 
-            string fileName = planet.ToString() + "_" + chunk.Index.X + "_" + chunk.Index.Y + "_" + chunk.Index.Z + ".chunk";
+            string fileName = planet.Id.ToString() + "_" + chunk.Index.X + "_" + chunk.Index.Y + "_" + chunk.Index.Z + ".chunk";
        
             using(Stream stream = File.Open(root.FullName + "\\" + fileName, FileMode.Create, FileAccess.Write))
             {
@@ -24,7 +24,7 @@ namespace OctoAwesome
             }
         }
 
-        public IChunk Load(int planet, Index3 index)
+        public IChunk Load(IPlanet planet, Index3 index)
         {
             var root = GetRoot();
             string fileName = planet.ToString() + "_" + index.X + "_" + index.Y + "_" + index.Z + ".chunk";
@@ -34,7 +34,7 @@ namespace OctoAwesome
 
             using (Stream stream = File.Open(root.FullName + "\\" + fileName, FileMode.Open, FileAccess.Read))
             {
-                IChunk chunk = new Chunk(index);
+                IChunk chunk = new Chunk(index, planet);
                 chunk.Deserialize(stream, BlockDefinitionManager.GetBlockDefinitions());
                 return chunk;
             }
