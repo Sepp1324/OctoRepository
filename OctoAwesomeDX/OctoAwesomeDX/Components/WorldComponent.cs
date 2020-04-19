@@ -1,22 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
-using OctoAwesome;
-using OctoAwesome.Components;
 using OctoAwesome.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace OctoAwesomeDX.Components
+namespace OctoAwesome.Components
 {
     internal sealed class WorldComponent : GameComponent
     {
+        private InputComponent input;
+
         public World World { get; private set; }
 
         public Vector3? SelectedBox { get; set; }
-
-        private InputComponent input;
 
         public WorldComponent(Game game, InputComponent input)
             : base(game)
@@ -26,7 +23,7 @@ namespace OctoAwesomeDX.Components
             IMapGenerator mapGenerator = new DebugMapGenerator();
             IChunkPersistence chunkPersistence = new ChunkDiskPersistence();
 
-            World = new World(input, 1, mapGenerator, chunkPersistence);
+            World = new Model.World(input, 1, mapGenerator, chunkPersistence);
             SelectedBox = null;
         }
 
@@ -34,9 +31,12 @@ namespace OctoAwesomeDX.Components
         {
             if (input.ApplyTrigger && SelectedBox.HasValue)
             {
-                Index3 pos = new Index3((int)SelectedBox.Value.X, (int)SelectedBox.Value.Y, (int)SelectedBox.Value.Z);
+                Index3 pos = new Index3(
+                    (int)SelectedBox.Value.X,
+                    (int)SelectedBox.Value.Y,
+                    (int)SelectedBox.Value.Z);
 
-                World.GetPlanet(0).SetBlock(pos, null, gameTime.TotalGameTime);
+                World.GetPlanet(0).SetBlock(pos, null);
             }
 
             World.Update(gameTime);
@@ -45,6 +45,7 @@ namespace OctoAwesomeDX.Components
         protected override void Dispose(bool disposing)
         {
             World.Save();
+
             base.Dispose(disposing);
         }
     }

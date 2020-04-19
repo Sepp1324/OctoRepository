@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OctoAwesomeDX.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,29 +13,27 @@ namespace OctoAwesome.Components
 
         private SpriteBatch batch;
         private SpriteFont font;
-
         private Texture2D pix;
 
-        private float[] frameBuffer;
+        private int buffersize = 10;
+        private float[] framebuffer;
+        private int bufferindex = 0;
 
-        private int bufferSize = 10;
-        private int bufferIndex = 0;
+        private int framecount = 0;
+        private double seconds = 0;
+        private double lastfps = 0f;
 
-        private int frameCount = 0;
-        private double milliSeconds = 0;
-        private double lastValue = 0;
-
-        public HudComponent(Game game, WorldComponent world): base(game)
+        public HudComponent(Game game, WorldComponent world)
+            : base(game)
         {
             this.world = world;
 
-            frameBuffer = new float[bufferSize];
+            framebuffer = new float[buffersize];
         }
 
         public override void Initialize()
         {
             batch = new SpriteBatch(Game.GraphicsDevice);
-
             base.Initialize();
         }
 
@@ -49,50 +46,39 @@ namespace OctoAwesome.Components
 
         public override void Draw(GameTime gameTime)
         {
-            frameCount++;
-            milliSeconds += gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (frameCount == 10)
+            framecount++;
+            seconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (framecount == 10)
             {
-                lastValue = milliSeconds / frameCount;
-                frameCount = 0;
-                milliSeconds = 0;
+                lastfps = seconds / framecount;
+                framecount = 0;
+                seconds = 0;
             }
 
-            frameBuffer[bufferIndex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            bufferIndex %= bufferSize;
+            framebuffer[bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            bufferindex %= buffersize;
 
             batch.Begin();
-
             batch.DrawString(font, "Development Version", new Vector2(5, 5), Color.White);
 
-            //string pos = "pos: " + world.World.Player.Position.ToString();
-            //string pos = "pos: " +
-            //    world.World.Player.Position.X.ToString("0.00") + "/" +
-            //    world.World.Player.Position.Y.ToString("0.00") + "/" +
-            //    world.World.Player.Position.Z.ToString("0.00");
-            string pos = "pos: [" +
-                world.World.Player.Position.BlockPosition.X.ToString("0") + "/" +
-                world.World.Player.Position.BlockPosition.Y.ToString("0.00") + "/" +
-                world.World.Player.Position.BlockPosition.Z.ToString("0.00") + "] (" +
-                world.World.Player.Position.GlobalPosition.X.ToString("0.00") + "/" +
-                world.World.Player.Position.GlobalPosition.Y.ToString("0.00") + "/" +
-                world.World.Player.Position.GlobalPosition.Z.ToString("0.00") + ")";
+            string pos = "pos: " + world.World.Player.Position.ToString();
             var size = font.MeasureString(pos);
             batch.DrawString(font, pos, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 5), Color.White);
 
-            float deg = (world.World.Player.Angle / MathHelper.TwoPi) * 360;
+            float grad = (world.World.Player.Angle / MathHelper.TwoPi) * 360;
 
-            string rot = "rot: " + (((world.World.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " + ((world.World.Player.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
-            size = font.MeasureString(rot); 
+            string rot = "rot: " +
+                (((world.World.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((world.World.Player.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+
+            size = font.MeasureString(rot);
             batch.DrawString(font, rot, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 25), Color.White);
 
-            //string fps = "fps: " + (1f / (frameBuffer.Sum() / bufferSize)).ToString("0.00");
+            //string fps = "fps: " + (1f / (framebuffer.Sum() / buffersize)).ToString("0.00");
             //size = font.MeasureString(fps);
             //batch.DrawString(font, fps, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 45), Color.White);
 
-            int t = (int)(1f / lastValue);
-            string fps = "fps: " + t.ToString("0.00");
+            string fps = "fps: " + ((int)(1f / lastfps)).ToString("0.00");
             size = font.MeasureString(fps);
             batch.DrawString(font, fps, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 45), Color.White);
 

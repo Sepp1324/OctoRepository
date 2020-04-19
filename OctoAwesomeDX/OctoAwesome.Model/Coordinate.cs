@@ -6,16 +6,24 @@ using System.Text;
 
 namespace OctoAwesome.Model
 {
-
     /// <summary>
-    /// Datenstruktur zur genauen Position von SPiel-Elementen innerhalb der Welt
+    /// Datenstruktur zur genauen Position von Spiel-Elementen innerhalb der OctoAwesome Welt.
     /// </summary>
     public struct Coordinate
     {
+        /// <summary>
+        /// Index des Planeten im Universum.
+        /// </summary>
         public int Planet;
 
+        /// <summary>
+        /// Index des betroffenen Blocks.
+        /// </summary>
         private Index3 block;
 
+        /// <summary>
+        /// Position innerhalb des Blocks (0...1).
+        /// </summary>
         private Vector3 position;
 
         public Coordinate(int planet, Index3 block, Vector3 position)
@@ -23,22 +31,27 @@ namespace OctoAwesome.Model
             Planet = planet;
             this.block = block;
             this.position = position;
-
             this.Normalize();
         }
 
         /// <summary>
-        /// Indizierung des Chunkes
+        /// Gibt den Index des Chunks zurück oder legt diesen fest.
         /// </summary>
         public Index3 ChunkIndex
         {
             get
             {
-                return new Index3((int)(block.X / Chunk.CHUNKSIZE_X), (int)(block.Y / Chunk.CHUNKSIZE_Y), (int)(block.Z / Chunk.CHUNKSIZE_Z));
+                return new Index3(
+                (int)(block.X / Chunk.CHUNKSIZE_X),
+                (int)(block.Y / Chunk.CHUNKSIZE_Y),
+                (int)(block.Z / Chunk.CHUNKSIZE_Z));
             }
             set
             {
-                Vector3 localPosition = new Vector3(block.X % Chunk.CHUNKSIZE_X + position.X, block.Y % Chunk.CHUNKSIZE_Y + position.Y, block.Z % Chunk.CHUNKSIZE_Z + position.Z);
+                Vector3 localPosition = new Vector3(
+                    block.X % Chunk.CHUNKSIZE_X + position.X,
+                    block.Y % Chunk.CHUNKSIZE_Y + position.Y,
+                    block.Z % Chunk.CHUNKSIZE_Z + position.Z);
             }
         }
 
@@ -52,20 +65,37 @@ namespace OctoAwesome.Model
         }
 
         /// <summary>
-        /// Gibt den lokalen INdex des Blocks (Chunk-Koordinaten) zurück oder legt diesen fest.
+        /// Gibt den lokalen Index des Blocks (Chunk-Koordinaten) zurück oder legt diesen fest.
         /// </summary>
         public Index3 LocalBlockIndex
         {
-            get { return new Index3(block.X % Chunk.CHUNKSIZE_X, block.Y % Chunk.CHUNKSIZE_Y, block.Z % Chunk.CHUNKSIZE_Z); }
-            set { throw new NotImplementedException(); }
+            get
+            {
+                return new Index3(
+                    block.X % Chunk.CHUNKSIZE_X,
+                    block.Y % Chunk.CHUNKSIZE_Y,
+                    block.Z % Chunk.CHUNKSIZE_Z);
+            }
+            set
+            {
+                Index3 chunk = ChunkIndex;
+                GlobalBlockIndex = chunk + value;
+                Normalize();
+            }
         }
 
         /// <summary>
-        /// Gibt die globale POsition (Planet-Koordinaten) als Vektor zurück oder legt diesen fest.
+        /// Gibt die globale Position (Planet-Koordinaten) als Vektor zurück oder legt diesen fest.
         /// </summary>
         public Vector3 GlobalPosition
         {
-            get { return new Vector3(block.X + position.X, block.Y + position.Y, block.Z + position.Z); }
+            get
+            {
+                return new Vector3(
+                    block.X + position.X,
+                    block.Y + position.Y,
+                    block.Z + position.Z);
+            }
             set
             {
                 position = GlobalPosition;
@@ -81,23 +111,25 @@ namespace OctoAwesome.Model
             get
             {
                 Index3 blockIndex = LocalBlockIndex;
-
-                return new Vector3(blockIndex.X + position.X, blockIndex.Y + position.Y, blockIndex.Z + position.Z);
+                return new Vector3(
+                    blockIndex.X + position.X,
+                    blockIndex.Y + position.Y,
+                    blockIndex.Z + position.Z);
             }
-
             set
             {
                 Index3 chunkIndex = ChunkIndex;
-
-                block = new Index3(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y, chunkIndex.Z * Chunk.CHUNKSIZE_Z);
-
+                block = new Index3(
+                    chunkIndex.X * Chunk.CHUNKSIZE_X,
+                    chunkIndex.Y * Chunk.CHUNKSIZE_Y,
+                    chunkIndex.Z * Chunk.CHUNKSIZE_Z);
                 position = value;
                 Normalize();
             }
         }
 
         /// <summary>
-        /// Gibt die Position innerhalb des aktuelen Blockes zurück oder legt diesen fest.
+        /// Gibt die Position innerhalb des aktuellen Blockes zurück oder legt diese fest.
         /// </summary>
         public Vector3 BlockPosition
         {
@@ -110,7 +142,7 @@ namespace OctoAwesome.Model
         }
 
         /// <summary>
-        /// Normalisiert die vorhandenen Positions-Paramter [0 - 1]
+        /// Normalisiert die vorhandenen Parameter auf den Position-Wertebereich von [0...1] und die damit verbundene Verschiebung im Block.
         /// </summary>
         public void Normalize()
         {
@@ -149,7 +181,11 @@ namespace OctoAwesome.Model
 
         public override string ToString()
         {
-            return "(" + Planet + "/" + (block.X + position.X).ToString("0.00") + "/" + (block.Y + position.Y).ToString("0.00") + "/" + (block.Z + position.Z).ToString("0.00") + ")";
+            return
+                "(" + Planet + "/" +
+                (block.X + position.X).ToString("0.00") + "/" +
+                (block.Y + position.Y).ToString("0.00") + "/" +
+                (block.Z + position.Z).ToString("0.00") + ")";
         }
     }
 }

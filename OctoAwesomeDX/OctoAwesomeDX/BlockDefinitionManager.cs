@@ -21,6 +21,7 @@ namespace OctoAwesome
                 definitions.Add(new StoneBlockDefinition());
                 definitions.Add(new WaterBlockDefinition());
             }
+
             return definitions;
         }
     }

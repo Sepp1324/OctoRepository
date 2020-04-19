@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OctoAwesome.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,38 +12,32 @@ namespace OctoAwesome.Components
         private bool lastInteract = false;
         private bool lastJump = false;
         private bool lastApply = false;
-
         private GamePadInput gamepad;
-        private KeyBoardInput keyboard;
+        private KeyboardInput keyboard;
         private MouseInput mouse;
 
         public float MoveX { get; private set; }
-
         public float MoveY { get; private set; }
-
         public float HeadX { get; private set; }
-
         public float HeadY { get; private set; }
-
         public bool InteractTrigger { get; private set; }
-
+        public bool ApplyTrigger { get; private set; }
         public bool JumpTrigger { get; private set; }
 
-        public bool ApplyTrigger { get; private set; }
-
-        public InputComponent(Game game) : base(game)
+        public InputComponent(Game game)
+            : base(game)
         {
             gamepad = new GamePadInput();
-            keyboard = new KeyBoardInput();
+            keyboard = new KeyboardInput();
             mouse = new MouseInput(game);
         }
 
         public override void Update(GameTime gameTime)
         {
+
             bool nextInteract = false;
             bool nextJump = false;
             bool nextApply = false;
-
             MoveX = 0f;
             MoveY = 0f;
             HeadX = 0f;
@@ -52,8 +45,8 @@ namespace OctoAwesome.Components
 
             gamepad.Update();
             nextInteract = gamepad.InteractTrigger;
-            nextJump = gamepad.JumpTrigger;
             nextApply = gamepad.ApplyTrigger;
+            nextJump = gamepad.JumpTrigger;
 
             MoveX += gamepad.MoveX;
             MoveY += gamepad.MoveY;
@@ -62,18 +55,20 @@ namespace OctoAwesome.Components
 
             keyboard.Update();
             nextInteract |= keyboard.InteractTrigger;
-            nextJump |= keyboard.JumpTrigger;
             nextApply |= keyboard.ApplyTrigger;
+            nextJump |= keyboard.JumpTrigger;
 
             MoveX += keyboard.MoveX;
             MoveY += keyboard.MoveY;
             HeadX += keyboard.HeadX;
             HeadY += keyboard.HeadY;
 
-            if(Game.IsActive) mouse.Update();
+            // Mouse
+            if (Game.IsActive)
+                mouse.Update();
             nextInteract |= mouse.InteractTrigger;
-            nextJump |= mouse.JumpTrigger;
             nextApply |= mouse.ApplyTrigger;
+            nextJump |= mouse.JumpTrigger;
 
             MoveX += mouse.MoveX;
             MoveY += mouse.MoveY;
@@ -91,17 +86,17 @@ namespace OctoAwesome.Components
                 InteractTrigger = false;
             lastInteract = nextInteract;
 
-            if (nextJump && !lastJump)
-                JumpTrigger = true;
-            else
-                JumpTrigger = false;
-            lastJump = nextJump;
-
             if (nextApply && !lastApply)
                 ApplyTrigger = true;
             else
                 ApplyTrigger = false;
             lastApply = nextApply;
+
+            if (nextJump && !lastJump)
+                JumpTrigger = true;
+            else
+                JumpTrigger = false;
+            lastJump = nextJump;
         }
     }
 }
