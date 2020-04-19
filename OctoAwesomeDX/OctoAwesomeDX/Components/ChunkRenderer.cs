@@ -46,8 +46,6 @@ namespace OctoAwesome.Components
             effect.EnableDefaultLighting();
 
             InUse = false;
-
-            // RegenerateVertexBuffer();
         }
 
         public void SetChunk(IChunk chunk)
@@ -57,13 +55,12 @@ namespace OctoAwesome.Components
             RegenerateVertexBuffer();
         }
 
-        public void Update()
+        public bool NeedUpdate()
         {
             if (!InUse || chunk == null)
-                return;
+                return false;
 
-            if (chunk.ChangeCounter > lastReset)
-                RegenerateVertexBuffer();
+            return (chunk.ChangeCounter > lastReset);
         }
 
         public void Draw(Matrix view, Index3 chunkOffset)
@@ -99,14 +96,10 @@ namespace OctoAwesome.Components
 
         public void RegenerateVertexBuffer()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
 
             if (chunk == null)
                 return;
 
-            //Task t = new Task(() =>
-            //{
             List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
             List<int> index = new List<int>();
             int textureColumns = textures.Width / SceneComponent.TEXTURESIZE;
@@ -252,9 +245,6 @@ namespace OctoAwesome.Components
                 }
             }
 
-            // Console.WriteLine("Vertex fill: " + sw.ElapsedTicks);
-            sw.Restart();
-
             vertexCount = vertices.Count;
             indexCount = index.Count;
 
@@ -279,12 +269,7 @@ namespace OctoAwesome.Components
             if (ibOld != null)
                 ibOld.Dispose();
 
-            // Console.WriteLine("VB Write: " + sw.ElapsedTicks);
-
             lastReset = chunk.ChangeCounter;
-            //});
-
-            //t.Start();
         }
 
         public void Dispose()
