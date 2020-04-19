@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoAwesomeDX
+namespace OctoAwesome.Client
 {
 #if WINDOWS || LINUX
     /// <summary>

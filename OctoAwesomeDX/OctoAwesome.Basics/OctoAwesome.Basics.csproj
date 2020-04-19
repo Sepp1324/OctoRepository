@@ -87,15 +87,6 @@
     <None Include="Resources\ground_top.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\sand_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sand_side.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sand_top.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\stone_bottom.png" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +103,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\water_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand_top.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

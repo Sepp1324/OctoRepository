@@ -9,8 +9,8 @@
     <ProjectGuid>{0FBACE48-1F20-45F6-84D1-9318ECB89E15}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OctoAwesome</RootNamespace>
-    <AssemblyName>OctoAwesomeDX</AssemblyName>
+    <RootNamespace>OctoAwesome.Client</RootNamespace>
+    <AssemblyName>OctoClient</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -44,7 +44,6 @@
     <Compile Include="ChunkDiskPersistence.cs" />
     <Compile Include="Components\ChunkRenderer.cs" />
     <Compile Include="Components\CameraComponent.cs" />
-    <Compile Include="Components\DebugMapGenerator.cs" />
     <Compile Include="Components\GamePadInput.cs" />
     <Compile Include="Components\HudComponent.cs" />
     <Compile Include="Components\InputComponent.cs" />

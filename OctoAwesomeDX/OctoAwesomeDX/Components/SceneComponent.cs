@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoAwesome.Components
+namespace OctoAwesome.Client.Components
 {
     internal sealed class SceneComponent : DrawableGameComponent
     {
@@ -209,6 +209,9 @@ namespace OctoAwesome.Components
 
             foreach (var renderer in activeChunkRenderer.ToArray())
             {
+                if (!renderer.InUse)
+                    continue;
+
                 Index3 shift = chunkOffset.ShortestDistanceXY(
                     renderer.ChunkIndex, new Index2(
                         renderer.Chunk.Planet.Size.X,

@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using OctoAwesome.Components;
+using OctoAwesome.Client.Components;
 using System;
 using System.Linq;
 
-namespace OctoAwesomeDX
+namespace OctoAwesome.Client
 {
     public class OctoGame : Game
     {

@@ -41,6 +41,8 @@ namespace OctoAwesome
         /// </summary>
         public int Id { get; private set; }
 
+        public IUniverse Universe { get; private set; }
+
         /// <summary>
         /// Seed des Zufallsgenerators dieses Planeten.
         /// </summary>
@@ -62,9 +64,10 @@ namespace OctoAwesome
         /// <param name="size">Größe des Planeten in Blocks</param>
         /// <param name="generator">Instanz des Map-Generators</param>
         /// <param name="seed">Seed des Zufallsgenerators</param>
-        public Planet(Index3 size, IMapGenerator generator, int seed)
+        public Planet(int id, IUniverse universe, Index3 size, IMapGenerator generator, int seed)
         {
-            this.Id = 0;
+            Id = id;
+            Universe = universe;
             this.generator = generator;
             Size = size;
             Seed = seed;
