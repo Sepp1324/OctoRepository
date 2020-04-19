@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoAwesome.Client.Components
+namespace OctoAwesome.Components
 {
     internal sealed class SceneComponent : DrawableGameComponent
     {
@@ -207,7 +208,7 @@ namespace OctoAwesome.Client.Components
 
             Index3 chunkOffset = world.World.Player.Position.ChunkIndex;
 
-            foreach (var renderer in activeChunkRenderer.ToArray())
+            foreach (var renderer in chunkRenderer)
             {
                 if (!renderer.InUse)
                     continue;
@@ -262,9 +263,9 @@ namespace OctoAwesome.Client.Components
             Index3 shift = currentChunk.ShortestDistanceXY(
                 destinationChunk, new Index2(planet.Size.X, planet.Size.Y));
 
-            for (int i = 0; i < activeChunkRenderer.Count; i++)
+            for (int i = activeChunkRenderer.Count - 1; i >= 0; i--)
             {
-                ChunkRenderer renderer = chunkRenderer[i];
+                ChunkRenderer renderer = activeChunkRenderer[i];
 
                 renderer.RelativeIndex -= shift;
 

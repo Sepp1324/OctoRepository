@@ -24,7 +24,7 @@ namespace OctoAwesome
         /// <summary>
         /// Chunk Array.
         /// </summary>
-        private IChunk[,,] chunks;
+        private IChunk[, ,] chunks;
 
         /// <summary>
         /// Speicher für den letzten Zugriff auf Chunks (Caching)
@@ -41,7 +41,12 @@ namespace OctoAwesome
         /// </summary>
         public int Id { get; private set; }
 
+        /// <summary>
+        /// Referenz auf das Parent Universe
+        /// </summary>
         public IUniverse Universe { get; private set; }
+
+        public IClimateMap ClimateMap { get; protected set; }
 
         /// <summary>
         /// Seed des Zufallsgenerators dieses Planeten.

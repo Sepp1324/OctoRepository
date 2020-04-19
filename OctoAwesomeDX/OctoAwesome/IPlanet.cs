@@ -15,6 +15,9 @@ namespace OctoAwesome
         /// </summary>
         int Id { get; }
 
+        /// <summary>
+        /// Referenz auf das Parent Universe
+        /// </summary>
         IUniverse Universe { get; }
 
         /// <summary>
@@ -26,6 +29,8 @@ namespace OctoAwesome
         /// Die Größe des Planeten in Blocks.
         /// </summary>
         Index3 Size { get; }
+
+        IClimateMap ClimateMap { get; }
 
         /// <summary>
         /// Instanz der Persistierungseinheit.
