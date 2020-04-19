@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OctoAwesome.Model;
-using OctoAwesome.Model.Blocks;
+using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -217,15 +216,15 @@ namespace OctoAwesome.Components
 
                 BoundingBox chunkBox = new BoundingBox(
                 new Vector3(
-                    shift.X * OctoAwesome.Model.Chunk.CHUNKSIZE_X,
-                    shift.Y * OctoAwesome.Model.Chunk.CHUNKSIZE_Y,
-                    shift.Z * OctoAwesome.Model.Chunk.CHUNKSIZE_Z),
+                    shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
+                    shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                    shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z),
                 new Vector3(
-                    (shift.X + 1) * OctoAwesome.Model.Chunk.CHUNKSIZE_X,
-                    (shift.Y + 1) * OctoAwesome.Model.Chunk.CHUNKSIZE_Y,
-                    (shift.Z + 1) * OctoAwesome.Model.Chunk.CHUNKSIZE_Z));
+                    (shift.X + 1) * OctoAwesome.Chunk.CHUNKSIZE_X,
+                    (shift.Y + 1) * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                    (shift.Z + 1) * OctoAwesome.Chunk.CHUNKSIZE_Z));
 
-                if (camera.Frustrum.Intersects(chunkBox))
+                if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera, shift);
             }
 

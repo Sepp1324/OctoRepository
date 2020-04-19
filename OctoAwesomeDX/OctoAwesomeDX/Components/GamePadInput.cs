@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OctoAwesome.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

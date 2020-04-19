@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using OctoAwesome.Model;
+using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +20,10 @@ namespace OctoAwesome.Components
         {
             this.input = input;
 
-            IMapGenerator mapGenerator = new DebugMapGenerator();
+            IMapGenerator mapGenerator = MapGeneratorManager.GetMapGenerators().First();
             IChunkPersistence chunkPersistence = new ChunkDiskPersistence();
 
-            World = new Model.World(input, 1, mapGenerator, chunkPersistence);
+            World = new World(input, 1, mapGenerator, chunkPersistence);
             SelectedBox = null;
         }
 
