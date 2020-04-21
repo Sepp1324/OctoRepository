@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome", "OctoAwesome\OctoAwesome.csproj", "{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Basics", "OctoAwesome.Basics\OctoAwesome.Basics.csproj", "{7C95EC87-26EC-4D09-A245-B09836587F73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Runtime", "OctoAwesome.Runtime\OctoAwesome.Runtime.csproj", "{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Client", "OctoAwesome.Client\OctoAwesome.Client.csproj", "{0FBACE48-1F20-45F6-84D1-9318ECB89E15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{3B44ED58-4A32-4CEA-9338-44BCF37D82E5}"
+	ProjectSection(SolutionItems) = preProject
+		lib\Lidgren.Network.dll = lib\Lidgren.Network.dll
+		lib\Lidgren.Network.xml = lib\Lidgren.Network.xml
+		lib\MonoGame.Framework.dll = lib\MonoGame.Framework.dll
+		lib\MonoGame.Framework.Net.dll = lib\MonoGame.Framework.Net.dll
+		lib\MonoGame.Framework.Net.xml = lib\MonoGame.Framework.Net.xml
+		lib\MonoGame.Framework.xml = lib\MonoGame.Framework.xml
+		lib\SharpDX.Direct2D1.dll = lib\SharpDX.Direct2D1.dll
+		lib\SharpDX.Direct2D1.xml = lib\SharpDX.Direct2D1.xml
+		lib\SharpDX.Direct3D11.dll = lib\SharpDX.Direct3D11.dll
+		lib\SharpDX.Direct3D11.xml = lib\SharpDX.Direct3D11.xml
+		lib\SharpDX.Direct3D9.dll = lib\SharpDX.Direct3D9.dll
+		lib\SharpDX.Direct3D9.xml = lib\SharpDX.Direct3D9.xml
+		lib\SharpDX.dll = lib\SharpDX.dll
+		lib\SharpDX.DXGI.dll = lib\SharpDX.DXGI.dll
+		lib\SharpDX.DXGI.xml = lib\SharpDX.DXGI.xml
+		lib\SharpDX.MediaFoundation.dll = lib\SharpDX.MediaFoundation.dll
+		lib\SharpDX.MediaFoundation.xml = lib\SharpDX.MediaFoundation.xml
+		lib\SharpDX.RawInput.dll = lib\SharpDX.RawInput.dll
+		lib\SharpDX.RawInput.xml = lib\SharpDX.RawInput.xml
+		lib\SharpDX.XAudio2.dll = lib\SharpDX.XAudio2.dll
+		lib\SharpDX.XAudio2.xml = lib\SharpDX.XAudio2.xml
+		lib\SharpDX.XInput.dll = lib\SharpDX.XInput.dll
+		lib\SharpDX.XInput.xml = lib\SharpDX.XInput.xml
+		lib\SharpDX.xml = lib\SharpDX.xml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C95EC87-26EC-4D09-A245-B09836587F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C95EC87-26EC-4D09-A245-B09836587F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C95EC87-26EC-4D09-A245-B09836587F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C95EC87-26EC-4D09-A245-B09836587F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EC127C3B-1A1C-4B73-84DB-A51078412A92}
+	EndGlobalSection
+EndGlobal

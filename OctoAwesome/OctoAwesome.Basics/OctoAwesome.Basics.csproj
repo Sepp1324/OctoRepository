@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7C95EC87-26EC-4D09-A245-B09836587F73}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OctoAwesome.Basics</RootNamespace>
+    <AssemblyName>OctoAwesome.Basics</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Biomes\FlatlandBiome.cs" />
+    <Compile Include="Biomes\HighMountainBiome.cs" />
+    <Compile Include="Biomes\HillsBiome.cs" />
+    <Compile Include="Biomes\IBiome.cs" />
+    <Compile Include="Biomes\LandBiomeGenerator.cs" />
+    <Compile Include="Biomes\OceanBiomeGenerator.cs" />
+    <Compile Include="Biomes\SuperBiomeBase.cs" />
+    <Compile Include="Biomes\SurfaceBiomeGenerator.cs" />
+    <Compile Include="Climate\ComplexClimateMap.cs" />
+    <Compile Include="ComplexPlanet.cs" />
+    <Compile Include="ComplexPlanetGenerator.cs" />
+    <Compile Include="DebugMapGenerator.cs" />
+    <Compile Include="GrassBlock.cs" />
+    <Compile Include="GrassBlockDefinition.cs" />
+    <Compile Include="GroundBlock.cs" />
+    <Compile Include="GroundBlockDefinition.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SandBlock.cs" />
+    <Compile Include="SandBlockDefinition.cs" />
+    <Compile Include="StoneBlock.cs" />
+    <Compile Include="StoneBlockDefinition.cs" />
+    <Compile Include="WaterBlock.cs" />
+    <Compile Include="WaterBlockDefinition.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OctoAwesome\OctoAwesome.csproj">
+      <Project>{6e65b8ea-557e-4be4-b1c8-05439c2945fb}</Project>
+      <Name>OctoAwesome</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grass_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grass_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grass_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ground_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ground_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\water_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\water_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\water_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ground_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stone_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stone_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stone_top.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
