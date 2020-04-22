@@ -24,9 +24,8 @@ namespace OctoAwesome.Client.Components
         private WorldComponent world;
         private CameraComponent camera;
 
-        private IPlanet planet;
-
         private ChunkRenderer[] chunkRenderer;
+        private IPlanet planet;
 
         private Queue<ChunkRenderer> freeChunkRenderer = new Queue<ChunkRenderer>();
         private List<ChunkRenderer> activeChunkRenderer = new List<ChunkRenderer>();
@@ -42,7 +41,6 @@ namespace OctoAwesome.Client.Components
         private Index3 currentChunk = new Index3(-1, -1, -1);
 
         private Thread backgroundThread;
-
 
         public SceneComponent(Game game, WorldComponent world, CameraComponent camera)
             : base(game)
@@ -165,7 +163,7 @@ namespace OctoAwesome.Client.Components
                             y + (currentChunk.Y * Chunk.CHUNKSIZE_Y),
                             z + (currentChunk.Z * Chunk.CHUNKSIZE_Z));
 
-                        IBlock block = ResourceManager.Instance.GetBlock(pos);
+                        IBlock block = ResourceManager.Instance.GetBlock(planet.Id, pos);
                         if (block == null)
                             continue;
 
@@ -225,13 +223,13 @@ namespace OctoAwesome.Client.Components
 
                 BoundingBox chunkBox = new BoundingBox(
                 new Vector3(
-                    shift.X * Chunk.CHUNKSIZE_X,
-                    shift.Y * Chunk.CHUNKSIZE_Y,
-                    shift.Z * Chunk.CHUNKSIZE_Z),
+                    shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
+                    shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                    shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z),
                 new Vector3(
-                    (shift.X + 1) * Chunk.CHUNKSIZE_X,
-                    (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
-                    (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
+                    (shift.X + 1) * OctoAwesome.Chunk.CHUNKSIZE_X,
+                    (shift.Y + 1) * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                    (shift.Z + 1) * OctoAwesome.Chunk.CHUNKSIZE_Z));
 
                 if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera, shift);
@@ -295,7 +293,7 @@ namespace OctoAwesome.Client.Components
 
                 if (!activeChunkRenderer.Any(c => c.RelativeIndex == distance))
                 {
-                    IChunk chunk = ResourceManager.Instance.GetChunk(chunkIndex);
+                    IChunk chunk = ResourceManager.Instance.GetChunk(planet.Id, chunkIndex);
                     if (chunk != null)
                     {
                         ChunkRenderer renderer = freeChunkRenderer.Dequeue();

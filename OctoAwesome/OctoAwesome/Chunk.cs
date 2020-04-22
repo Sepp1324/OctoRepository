@@ -153,7 +153,7 @@ namespace OctoAwesome
                 // Schreibe Phase 1
                 bw.Write(types.Count);
 
-                //Fall: Luftchunk
+                // Im Falle eines Luft-Chunks...
                 if (types.Count == 0)
                     return;
 
@@ -185,7 +185,7 @@ namespace OctoAwesome
                 List<Type> types = new List<Type>();
                 int typecount = br.ReadInt32();
 
-                //Fall: Luftchunk 
+                // Im Falle eines Luftchunks
                 if (typecount == 0)
                     return;
 
