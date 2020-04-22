@@ -24,6 +24,8 @@ namespace OctoAwesome.Client.Components
         private WorldComponent world;
         private CameraComponent camera;
 
+        private IPlanet planet;
+
         private ChunkRenderer[] chunkRenderer;
 
         private Queue<ChunkRenderer> freeChunkRenderer = new Queue<ChunkRenderer>();
@@ -84,7 +86,7 @@ namespace OctoAwesome.Client.Components
                 blockTextures = Texture2D.FromStream(GraphicsDevice, stream);
             }
 
-            IPlanet planet = world.World.GetPlanet(0);
+            planet = ResourceManager.Instance.GetPlanet(0);
 
             chunkRenderer = new ChunkRenderer[
                 ((VIEWRANGE * 2) + 1) *
@@ -113,7 +115,7 @@ namespace OctoAwesome.Client.Components
             backgroundThread.IsBackground = true;
             backgroundThread.Start();
 
-            selectionLines = new[] 
+            selectionLines = new[]
             {
                 new VertexPositionColor(new Vector3(-0.001f, +1.001f, +1.001f), Microsoft.Xna.Framework.Color.Black * 0.5f),
                 new VertexPositionColor(new Vector3(+1.001f, +1.001f, +1.001f), Microsoft.Xna.Framework.Color.Black * 0.5f),
@@ -125,8 +127,8 @@ namespace OctoAwesome.Client.Components
                 new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Microsoft.Xna.Framework.Color.Black * 0.5f),
             };
 
-            selectionIndeces = new short[] 
-            { 
+            selectionIndeces = new short[]
+            {
                 0, 1, 0, 2, 1, 3, 2, 3,
                 4, 5, 4, 6, 5, 7, 6, 7,
                 0, 4, 1, 5, 2, 6, 3, 7
@@ -150,7 +152,7 @@ namespace OctoAwesome.Client.Components
             Index3 currentChunk = world.World.Player.Position.ChunkIndex;
 
             Vector3? selected = null;
-            IPlanet planet = world.World.GetPlanet(world.World.Player.Position.Planet);
+            IPlanet planet = ResourceManager.Instance.GetPlanet(world.World.Player.Position.Planet);
             float? bestDistance = null;
             for (int z = localcell.Z - SELECTIONRANGE; z < localcell.Z + SELECTIONRANGE; z++)
             {
@@ -163,7 +165,7 @@ namespace OctoAwesome.Client.Components
                             y + (currentChunk.Y * Chunk.CHUNKSIZE_Y),
                             z + (currentChunk.Z * Chunk.CHUNKSIZE_Z));
 
-                        IBlock block = planet.GetBlock(pos);
+                        IBlock block = ResourceManager.Instance.GetBlock(pos);
                         if (block == null)
                             continue;
 
@@ -218,18 +220,18 @@ namespace OctoAwesome.Client.Components
 
                 Index3 shift = chunkOffset.ShortestDistanceXY(
                     renderer.ChunkIndex, new Index2(
-                        renderer.Chunk.Planet.Size.X,
-                        renderer.Chunk.Planet.Size.Y));
+                        planet.Size.X,
+                        planet.Size.Y));
 
                 BoundingBox chunkBox = new BoundingBox(
                 new Vector3(
-                    shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
-                    shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                    shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z),
+                    shift.X * Chunk.CHUNKSIZE_X,
+                    shift.Y * Chunk.CHUNKSIZE_Y,
+                    shift.Z * Chunk.CHUNKSIZE_Z),
                 new Vector3(
-                    (shift.X + 1) * OctoAwesome.Chunk.CHUNKSIZE_X,
-                    (shift.Y + 1) * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                    (shift.Z + 1) * OctoAwesome.Chunk.CHUNKSIZE_Z));
+                    (shift.X + 1) * Chunk.CHUNKSIZE_X,
+                    (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
+                    (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
 
                 if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera, shift);
@@ -255,7 +257,7 @@ namespace OctoAwesome.Client.Components
         private void FillChunkRenderer()
         {
             Index3 destinationChunk = world.World.Player.Position.ChunkIndex;
-            IPlanet planet = world.World.GetPlanet(world.World.Player.Position.Planet);
+            IPlanet planet = ResourceManager.Instance.GetPlanet(world.World.Player.Position.Planet);
             destinationChunk.Z = Math.Max(VIEWHEIGHT, Math.Min(planet.Size.Z - VIEWHEIGHT, destinationChunk.Z));
 
             HandleHighPrioUpdates();
@@ -293,7 +295,7 @@ namespace OctoAwesome.Client.Components
 
                 if (!activeChunkRenderer.Any(c => c.RelativeIndex == distance))
                 {
-                    IChunk chunk = world.World.GetPlanet(0).GetChunk(chunkIndex);
+                    IChunk chunk = ResourceManager.Instance.GetChunk(chunkIndex);
                     if (chunk != null)
                     {
                         ChunkRenderer renderer = freeChunkRenderer.Dequeue();

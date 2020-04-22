@@ -13,26 +13,11 @@ namespace OctoAwesome.Runtime
         // private IPlanet[] planets;
         private IUniverse universe;
 
-        private IMapGenerator mapGenerator;
-        private IChunkPersistence chunkPersistence;
-
         public Player Player { get; private set; }
 
-        public UpdateDomain(IInputSet input, int planetCount, IMapGenerator mapGenerator, IChunkPersistence chunkPersistence)
+        public UpdateDomain(IInputSet input, int planetCount)
         {
-            this.mapGenerator = mapGenerator;
-            this.chunkPersistence = chunkPersistence;
-
             Player = new Player(input);
-
-            universe = mapGenerator.GenerateUniverse("Milchstraße");
-
-            for (int p = 0; p < planetCount; p++)
-            {
-                IPlanet planet = mapGenerator.GeneratePlanet(universe, 244);
-                planet.ChunkPersistence = chunkPersistence;
-                universe.SetPlanet(planet);
-            }
         }
 
         public void Update(GameTime frameTime)
@@ -42,7 +27,7 @@ namespace OctoAwesome.Runtime
             Player.Update(frameTime);
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
-            IPlanet planet = GetPlanet(Player.Position.Planet);
+            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
             Index2 planetSize = new Index2(
                 planet.Size.X * Chunk.CHUNKSIZE_X,
@@ -98,7 +83,7 @@ namespace OctoAwesome.Runtime
                             Index3 pos = new Index3(x, y, z);
                             pos.NormalizeXY(planetSize);
 
-                            IBlock block = GetPlanet(Player.Position.Planet).GetBlock(pos);
+                            IBlock block = ResourceManager.Instance.GetBlock(pos);
                             if (block == null)
                                 continue;
 
@@ -269,14 +254,9 @@ namespace OctoAwesome.Runtime
             } while (collision && loops < 3);
         }
 
-        public IPlanet GetPlanet(int id)
-        {
-            return universe.GetPlanet(id);
-        }
-
         public void Save()
         {
-            universe.GetPlanet(0).Save();
+            ResourceManager.Instance.Save();
         }
     }
 }

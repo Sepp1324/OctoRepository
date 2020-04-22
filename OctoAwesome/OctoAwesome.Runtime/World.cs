@@ -10,21 +10,14 @@ namespace OctoAwesome.Runtime
 {
     public sealed class World
     {
-        
-
         private UpdateDomain[] updateDomains;
 
         public Player Player { get { return updateDomains[0].Player; } }
 
-        public World(IInputSet input, int planetCount, IMapGenerator mapGenerator, IChunkPersistence chunkPersistence)
+        public World(IInputSet input, int planetCount)
         {
             updateDomains = new UpdateDomain[1];
-            updateDomains[0] = new UpdateDomain(input, planetCount, mapGenerator, chunkPersistence);
-        }
-
-        public IPlanet GetPlanet(int id)
-        {
-            return updateDomains[0].GetPlanet(id);
+            updateDomains[0] = new UpdateDomain(input, planetCount);
         }
 
         public void Update(GameTime frameTime)

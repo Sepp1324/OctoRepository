@@ -57,6 +57,13 @@ namespace OctoAwesome
             if (item == null)
             {
                 cacheLock.EnterWriteLock();
+
+                if (_cache.TryGetValue(index, out item))
+                {
+                    item.LastAccess = watch.Elapsed;
+                    return item.Value;
+                }
+
                 try
                 {
                     V result = loadDelegate(index);
@@ -102,10 +109,9 @@ namespace OctoAwesome
 
         public void Flush()
         {
+            cacheLock.EnterWriteLock();
             try
             {
-                cacheLock.EnterWriteLock();
-
                 if (saveDelegate != null)
                 {
                     foreach (var item in _cache.Values)
@@ -114,7 +120,7 @@ namespace OctoAwesome
                     }
                 }
 
-                //_cache.Clear();
+                // _cache.Clear();
             }
             finally
             {

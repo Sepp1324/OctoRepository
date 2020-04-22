@@ -263,7 +263,7 @@ namespace OctoAwesome.Client.Components
                     ib2 = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
                     ib2.SetData<int>(index.ToArray());
                 }
-                catch(Exception) { }
+                catch (Exception) { }
             }
 
             VertexBuffer vbOld = vb;
