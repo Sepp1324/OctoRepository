@@ -10,13 +10,16 @@ namespace OctoAwesome.Runtime
     {
         private readonly float Gap = 0.001f;
 
-        // private IPlanet[] planets;
         private IUniverse universe;
+
+        private Cache<Index3, IChunk> localChunkCache;
 
         public Player Player { get; private set; }
 
         public UpdateDomain(IInputSet input, int planetCount)
         {
+            localChunkCache = new Cache<Index3, IChunk>(10, loadChunk, null);
+
             Player = new Player(input);
         }
 
@@ -83,8 +86,7 @@ namespace OctoAwesome.Runtime
                             Index3 pos = new Index3(x, y, z);
                             pos.NormalizeXY(planetSize);
 
-                            IBlock block = ResourceManager.Instance.GetBlock(
-                                Player.Position.Planet, pos);
+                            IBlock block = GetBlock(pos);
                             if (block == null)
                                 continue;
 
@@ -253,6 +255,57 @@ namespace OctoAwesome.Runtime
                 loops++;
 
             } while (collision && loops < 3);
+        }
+
+        private IChunk loadChunk(Index3 index)
+        {
+            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
+            return ResourceManager.Instance.GetChunk(planet.Id, index);
+        }
+
+        /// <summary>
+        /// Liefert den Block an der angegebenen Block-Koodinate zurück.
+        /// </summary>
+        /// <param name="index">Block Index</param>
+        /// <returns>Block oder null, falls dort kein Block existiert</returns>
+        public IBlock GetBlock(Index3 index)
+        {
+            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
+
+            index.NormalizeXY(new Index2(
+                planet.Size.X * Chunk.CHUNKSIZE_X,
+                planet.Size.Y * Chunk.CHUNKSIZE_Y));
+            Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
+
+            // Betroffener Chunk ermitteln
+            Index3 chunkIndex = coordinate.ChunkIndex;
+            if (chunkIndex.X < 0 || chunkIndex.X >= planet.Size.X ||
+                chunkIndex.Y < 0 || chunkIndex.Y >= planet.Size.Y ||
+                chunkIndex.Z < 0 || chunkIndex.Z >= planet.Size.Z)
+                return null;
+            IChunk chunk = localChunkCache.Get(chunkIndex);
+            if (chunk == null)
+                return null;
+
+            return chunk.GetBlock(coordinate.LocalBlockIndex);
+        }
+
+        /// <summary>
+        /// Überschreibt den Block an der angegebenen Koordinate.
+        /// </summary>
+        /// <param name="index">Block-Koordinate</param>
+        /// <param name="block">Neuer Block oder null, falls der alte Bock gelöscht werden soll.</param>
+        public void SetBlock(Index3 index, IBlock block)
+        {
+            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
+
+            index.NormalizeXYZ(new Index3(
+                planet.Size.X * Chunk.CHUNKSIZE_X,
+                planet.Size.Y * Chunk.CHUNKSIZE_Y,
+                planet.Size.Z * Chunk.CHUNKSIZE_Z));
+            Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
+            IChunk chunk = localChunkCache.Get(coordinate.ChunkIndex);
+            chunk.SetBlock(coordinate.LocalBlockIndex, block);
         }
 
         public void Save()
