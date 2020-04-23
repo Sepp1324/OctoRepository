@@ -10,14 +10,18 @@ namespace OctoAwesome.Runtime
         private readonly float Gap = 0.001f;
 
         private IPlanet planet;
+        private IInputSet input;
+
         private Cache<Index3, IChunk> localChunkCache;
 
         public Player Player { get; private set; }
 
         public Vector3? SelectedBox { get; private set; }
 
-        public ActorHost(Player player)
+        public ActorHost(Player player, IInputSet input)
         {
+            this.input = input;
+
             Player = player;
             SelectedBox = null;
 
@@ -27,10 +31,52 @@ namespace OctoAwesome.Runtime
 
         public void Update(GameTime frameTime)
         {
-            #region PlayerMovement
             Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
 
-            Player.Update(frameTime);
+            #region InputProcessing 
+
+            Vector3 externalPower = ((Player.ExternalForce * Player.ExternalForce) / (2 * Player.Mass)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
+
+            // Input verarbeiten
+            Player.Angle += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadX;
+            Player.Tilt += (float)frameTime.ElapsedGameTime.TotalSeconds * input.HeadY;
+            Player.Tilt = Math.Min(1.5f, Math.Max(-1.5f, Player.Tilt));
+
+            float lookX = (float)Math.Cos(Player.Angle);
+            float lookY = -(float)Math.Sin(Player.Angle);
+            var VelocityDirection = new Vector3(lookX, lookY, 0) * input.MoveY;
+
+            float stafeX = (float)Math.Cos(Player.Angle + MathHelper.PiOver2);
+            float stafeY = -(float)Math.Sin(Player.Angle + MathHelper.PiOver2);
+            VelocityDirection += new Vector3(stafeX, stafeY, 0) * input.MoveX;
+
+            Vector3 Friction = new Vector3(1, 1, 0.1f) * Player.FRICTION;
+            Vector3 powerdirection = new Vector3();
+
+            powerdirection += Player.ExternalForce;
+            powerdirection += (Player.POWER * VelocityDirection);
+            // if (OnGround && input.JumpTrigger)
+            if (input.JumpTrigger)
+            {
+                Vector3 jumpDirection = new Vector3(lookX, lookY, 0f) * input.MoveY * 0.1f;
+                jumpDirection.Z = 1f;
+                jumpDirection.Normalize();
+                powerdirection += jumpDirection * Player.JUMPPOWER;
+            }
+
+            Vector3 VelocityChange = (2.0f / Player.Mass * (powerdirection - Friction * Player.Velocity)) *
+                (float)frameTime.ElapsedGameTime.TotalSeconds;
+
+            Player.Velocity += new Vector3(
+                (float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
+                (float)(VelocityChange.Y < 0 ? -Math.Sqrt(-VelocityChange.Y) : Math.Sqrt(VelocityChange.Y)),
+                (float)(VelocityChange.Z < 0 ? -Math.Sqrt(-VelocityChange.Z) : Math.Sqrt(VelocityChange.Z)));
+
+            #endregion
+
+            #region PlayerMovement
+
+            
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
             IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
@@ -266,7 +312,10 @@ namespace OctoAwesome.Runtime
             Index3 localcell = Player.Position.LocalBlockIndex;
             Index3 currentChunk = Player.Position.ChunkIndex;
 
-            Vector3 direction = new Vector3((float)Math.Sin(Player.Angle), (float)Math.Cos(Player.Angle), (float)Math.Sin(Player.Tilt));
+            Vector3 direction = new Vector3(
+                (float)Math.Cos(Player.Angle), 
+                -(float)Math.Sin(Player.Angle), 
+                (float)Math.Sin(Player.Tilt));
             direction.Normalize();
 
             Ray pickRay = new Ray(new Vector3(
@@ -288,7 +337,7 @@ namespace OctoAwesome.Runtime
                             y + (currentChunk.Y * Chunk.CHUNKSIZE_Y),
                             z + (currentChunk.Z * Chunk.CHUNKSIZE_Z));
 
-                        IBlock block = ResourceManager.Instance.GetBlock(planet.Id, pos);
+                        IBlock block = GetBlock(pos);
                         if (block == null)
                             continue;
 
@@ -316,6 +365,19 @@ namespace OctoAwesome.Runtime
             SelectedBox = selected;
 
             #endregion
+
+            #region BlockInteraction
+            
+            if (input.ApplyTrigger && SelectedBox.HasValue)
+            {
+                Index3 pos = new Index3(
+                    (int)SelectedBox.Value.X,
+                    (int)SelectedBox.Value.Y,
+                    (int)SelectedBox.Value.Z);
+
+                ResourceManager.Instance.SetBlock(planet.Id, pos, null);
+            }
+            #endregion 
         }
 
         private IChunk loadChunk(Index3 index)

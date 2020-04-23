@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -12,9 +9,11 @@ namespace OctoAwesome.Runtime
 
         public List<ActorHost> ActorHosts { get; set; }
 
-        public UpdateDomain(IInputSet input, int planetCount)
+        public UpdateDomain(IInputSet input)
         {
-            var host = new ActorHost(new Player(input));
+            ActorHosts = new List<ActorHost>();
+
+            var host = new ActorHost(new Player(), input);
 
             ActorHosts.Add(host);
         }

@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -61,22 +57,18 @@ namespace OctoAwesome.Client.Components
             batch.Begin();
             batch.DrawString(font, "Development Version", new Vector2(5, 5), Color.White);
 
-            string pos = "pos: " + world.World.Player.Position.ToString();
+            string pos = "pos: " + world.World.Player.Player.Position.ToString();
             var size = font.MeasureString(pos);
             batch.DrawString(font, pos, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 5), Color.White);
 
-            float grad = (world.World.Player.Angle / MathHelper.TwoPi) * 360;
+            float deg = (world.World.Player.Player.Angle / MathHelper.TwoPi) * 360;
 
             string rot = "rot: " +
-                (((world.World.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
-                ((world.World.Player.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+                (((world.Player.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((world.Player.Player.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
 
             size = font.MeasureString(rot);
             batch.DrawString(font, rot, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 25), Color.White);
-
-            //string fps = "fps: " + (1f / (framebuffer.Sum() / buffersize)).ToString("0.00");
-            //size = font.MeasureString(fps);
-            //batch.DrawString(font, fps, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 45), Color.White);
 
             string fps = "fps: " + ((int)(1f / lastfps)).ToString("0.00");
             size = font.MeasureString(fps);

@@ -152,7 +152,7 @@ namespace OctoAwesome.Client.Components
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            Index3 chunkOffset = world.World.Player.Position.ChunkIndex;
+            Index3 chunkOffset = world.World.Player.Player.Position.ChunkIndex;
 
             foreach (var renderer in chunkRenderer)
             {
@@ -178,12 +178,12 @@ namespace OctoAwesome.Client.Components
                     renderer.Draw(camera, shift);
             }
 
-            if (world.SelectedBox.HasValue)
+            if (world.Player.SelectedBox.HasValue)
             {
                 Vector3 selectedBoxPosition = new Vector3(
-                    world.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
-                    world.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
-                    world.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
+                    world.Player.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
+                    world.Player.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
+                    world.Player.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
                 selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
                 selectionEffect.View = camera.View;
                 selectionEffect.Projection = camera.Projection;
@@ -197,8 +197,8 @@ namespace OctoAwesome.Client.Components
 
         private void FillChunkRenderer()
         {
-            Index3 destinationChunk = world.World.Player.Position.ChunkIndex;
-            IPlanet planet = ResourceManager.Instance.GetPlanet(world.World.Player.Position.Planet);
+            Index3 destinationChunk = world.World.Player.Player.Position.ChunkIndex;
+            IPlanet planet = ResourceManager.Instance.GetPlanet(world.World.Player.Player.Position.Planet);
             destinationChunk.Z = Math.Max(VIEWHEIGHT, Math.Min(planet.Size.Z - VIEWHEIGHT, destinationChunk.Z));
 
             HandleHighPrioUpdates();
