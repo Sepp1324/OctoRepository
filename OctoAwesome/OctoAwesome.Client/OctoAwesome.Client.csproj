@@ -48,7 +48,7 @@
     <Compile Include="Components\KeyBoardInput.cs" />
     <Compile Include="Components\MouseInput.cs" />
     <Compile Include="Components\SceneComponent.cs" />
-    <Compile Include="Components\WorldComponent.cs" />
+    <Compile Include="Components\PlayerProjectionComponent.cs" />
     <Compile Include="OctoGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

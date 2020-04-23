@@ -5,7 +5,7 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class HudComponent : DrawableGameComponent
     {
-        private WorldComponent world;
+        private PlayerProjectionComponent world;
 
         private SpriteBatch batch;
         private SpriteFont font;
@@ -19,7 +19,7 @@ namespace OctoAwesome.Client.Components
         private double seconds = 0;
         private double lastfps = 0f;
 
-        public HudComponent(Game game, WorldComponent world)
+        public HudComponent(Game game, PlayerProjectionComponent world)
             : base(game)
         {
             this.world = world;

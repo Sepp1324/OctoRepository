@@ -8,9 +8,9 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class CameraComponent : DrawableGameComponent
     {
-        private WorldComponent world;
+        private PlayerProjectionComponent world;
 
-        public CameraComponent(Game game, WorldComponent world)
+        public CameraComponent(Game game, PlayerProjectionComponent world)
             : base(game)
         {
             this.world = world;

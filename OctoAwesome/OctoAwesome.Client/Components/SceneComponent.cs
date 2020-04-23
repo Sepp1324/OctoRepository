@@ -17,7 +17,7 @@ namespace OctoAwesome.Client.Components
         public static int VIEWHEIGHT = 5;
         public static int TEXTURESIZE = 64;
 
-        private WorldComponent world;
+        private PlayerProjectionComponent world;
         private CameraComponent camera;
 
         private ChunkRenderer[] chunkRenderer;
@@ -38,7 +38,7 @@ namespace OctoAwesome.Client.Components
 
         private Thread backgroundThread;
 
-        public SceneComponent(Game game, WorldComponent world, CameraComponent camera)
+        public SceneComponent(Game game, PlayerProjectionComponent world, CameraComponent camera)
             : base(game)
         {
             this.world = world;
