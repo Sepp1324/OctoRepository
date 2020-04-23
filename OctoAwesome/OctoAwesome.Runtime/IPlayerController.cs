@@ -24,6 +24,6 @@ namespace OctoAwesome.Runtime
 
         void Interact(Index3 blockIndex);
 
-        void Apply();
+        void Apply(Index3 blockIndex);
     }
 }

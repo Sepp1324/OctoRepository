@@ -32,7 +32,7 @@ namespace OctoAwesome.Client.Components
 
             if (input.ApplyTrigger)
             {
-                Player.Apply();
+                Player.Apply(SelectedBox.Value);
             }
         }
     }

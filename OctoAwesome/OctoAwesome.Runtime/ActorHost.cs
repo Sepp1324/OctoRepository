@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OctoAwesome.Basics;
 using System;
 
 namespace OctoAwesome.Runtime
@@ -14,6 +15,7 @@ namespace OctoAwesome.Runtime
         private bool lastJump = false;
 
         private Index3? lastInteract = null;
+        private Index3? lastApply = null;
 
         public Player Player { get; private set; }
 
@@ -73,7 +75,7 @@ namespace OctoAwesome.Runtime
             #endregion
 
             #region PlayerMovement
-            
+
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
             IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
@@ -306,8 +308,19 @@ namespace OctoAwesome.Runtime
             #region BlockInteraction
 
             if (lastInteract.HasValue)
+            {
                 ResourceManager.Instance.SetBlock(planet.Id, lastInteract.Value, null);
-            #endregion 
+                lastInteract = null;
+            }
+
+            if (lastApply.HasValue)
+            {
+                Index3 newIndex = new Index3(lastApply.Value.X, lastApply.Value.Y, lastApply.Value.Z + 1);
+                ResourceManager.Instance.SetBlock(planet.Id, newIndex, new SandBlock());
+                lastApply = null;
+            }
+
+            #endregion
         }
 
         private IChunk loadChunk(Index3 index)
@@ -386,8 +399,9 @@ namespace OctoAwesome.Runtime
             lastInteract = blockIndex;
         }
 
-        public void Apply()
+        public void Apply(Index3 blockIndex)
         {
+            lastApply = blockIndex;
         }
     }
 }

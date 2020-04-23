@@ -217,6 +217,7 @@ namespace OctoAwesome.Client.Components
                     }
                 }
             }
+
             player.SelectedBox = selected;
 
             #endregion
