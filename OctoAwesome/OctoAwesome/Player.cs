@@ -4,6 +4,8 @@ namespace OctoAwesome
 {
     public sealed class Player : Item
     {
+        public const int SELECTIONRANGE = 8;
+
         public const float POWER = 600f;
 
         public const float JUMPPOWER = 7000000f;
