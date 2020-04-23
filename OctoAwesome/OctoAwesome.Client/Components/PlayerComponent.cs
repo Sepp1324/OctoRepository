@@ -6,16 +6,16 @@ namespace OctoAwesome.Client.Components
     internal sealed class PlayerComponent : GameComponent
     {
         private InputComponent input;
-        private World world;
-
-        public ActorHost Player { get { return world.Player; } }
+        private SimulationComponent simulation;
+        
+        public ActorHost Player { get { return simulation.World.Player; } }
 
         public Index3? SelectedBox { get; set; }
 
-        public PlayerComponent(Game game, InputComponent input) : base(game)
+        public PlayerComponent(Game game, InputComponent input, SimulationComponent simulation) : base(game)
         {
+            this.simulation = simulation;
             this.input = input;
-            world = new World();
         }
 
         public override void Update(GameTime gameTime)
@@ -34,15 +34,6 @@ namespace OctoAwesome.Client.Components
             {
                 Player.Apply();
             }
-
-            world.Update(gameTime);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            world.Save();
-
-            base.Dispose(disposing);
         }
     }
 }
