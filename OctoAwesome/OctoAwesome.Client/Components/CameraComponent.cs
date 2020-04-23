@@ -1,19 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class CameraComponent : DrawableGameComponent
     {
-        private PlayerProjectionComponent world;
+        private PlayerComponent player;
 
-        public CameraComponent(Game game, PlayerProjectionComponent world)
-            : base(game)
+        public CameraComponent(Game game, PlayerComponent player) : base(game)
         {
-            this.world = world;
+            this.player = player;
         }
 
         public override void Initialize()
@@ -27,28 +23,28 @@ namespace OctoAwesome.Client.Components
         public override void Update(GameTime gameTime)
         {
             CameraPosition = new Vector3(
-                world.World.Player.Player.Position.LocalPosition.X,
-                world.World.Player.Player.Position.LocalPosition.Y,
-                world.World.Player.Player.Position.LocalPosition.Z + 3.2f);
+                player.Player.Position.LocalPosition.X,
+                player.Player.Position.LocalPosition.Y,
+                player.Player.Position.LocalPosition.Z + 3.2f);
             CameraUpVector = new Vector3(0, 0, 1f);
 
-            float height = (float)Math.Sin(world.World.Player.Player.Tilt);
-            float distance = (float)Math.Cos(world.World.Player.Player.Tilt);
+            float height = (float)Math.Sin(player.Player.Tilt);
+            float distance = (float)Math.Cos(player.Player.Tilt);
 
-            float lookX = (float)Math.Cos(world.World.Player.Player.Angle) * distance;
-            float lookY = -(float)Math.Sin(world.World.Player.Player.Angle) * distance;
+            float lookX = (float)Math.Cos(player.Player.Angle) * distance;
+            float lookY = -(float)Math.Sin(player.Player.Angle) * distance;
 
-            float strafeX = (float)Math.Cos(world.World.Player.Player.Angle + MathHelper.PiOver2);
-            float strafeY = -(float)Math.Sin(world.World.Player.Player.Angle + MathHelper.PiOver2);
+            float strafeX = (float)Math.Cos(player.Player.Angle + MathHelper.PiOver2);
+            float strafeY = -(float)Math.Sin(player.Player.Angle + MathHelper.PiOver2);
 
             CameraUpVector = Vector3.Cross(new Vector3(strafeX, strafeY, 0), new Vector3(lookX, lookY, height));
 
             View = Matrix.CreateLookAt(
                 CameraPosition,
                 new Vector3(
-                    world.World.Player.Player.Position.LocalPosition.X + lookX,
-                    world.World.Player.Player.Position.LocalPosition.Y + lookY,
-                    world.World.Player.Player.Position.LocalPosition.Z + 3.2f + height),
+                    player.Player.Position.LocalPosition.X + lookX,
+                    player.Player.Position.LocalPosition.Y + lookY,
+                    player.Player.Position.LocalPosition.Z + 3.2f + height),
                 CameraUpVector);
 
             float centerX = GraphicsDevice.Viewport.Width / 2;

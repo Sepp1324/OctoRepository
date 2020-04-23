@@ -5,7 +5,7 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class HudComponent : DrawableGameComponent
     {
-        private PlayerProjectionComponent world;
+        private PlayerComponent player;
 
         private SpriteBatch batch;
         private SpriteFont font;
@@ -19,10 +19,9 @@ namespace OctoAwesome.Client.Components
         private double seconds = 0;
         private double lastfps = 0f;
 
-        public HudComponent(Game game, PlayerProjectionComponent world)
-            : base(game)
+        public HudComponent(Game game, PlayerComponent player) : base(game)
         {
-            this.world = world;
+            this.player = player;
 
             framebuffer = new float[buffersize];
         }
@@ -57,15 +56,15 @@ namespace OctoAwesome.Client.Components
             batch.Begin();
             batch.DrawString(font, "Development Version", new Vector2(5, 5), Color.White);
 
-            string pos = "pos: " + world.World.Player.Player.Position.ToString();
+            string pos = "pos: " + player.Player.Position.ToString();
             var size = font.MeasureString(pos);
             batch.DrawString(font, pos, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 5), Color.White);
 
-            float deg = (world.World.Player.Player.Angle / MathHelper.TwoPi) * 360;
+            float deg = (player.Player.Angle / MathHelper.TwoPi) * 360;
 
             string rot = "rot: " +
-                (((world.Player.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
-                ((world.Player.Player.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+                (((player.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((player.Player.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
 
             size = font.MeasureString(rot);
             batch.DrawString(font, rot, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 25), Color.White);
