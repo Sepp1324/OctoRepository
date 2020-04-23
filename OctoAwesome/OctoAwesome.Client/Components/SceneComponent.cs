@@ -3,14 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -19,7 +16,6 @@ namespace OctoAwesome.Client.Components
         public static int VIEWRANGE = 10;
         public static int VIEWHEIGHT = 5;
         public static int TEXTURESIZE = 64;
-        public static int SELECTIONRANGE = 8;
 
         private WorldComponent world;
         private CameraComponent camera;
@@ -145,69 +141,16 @@ namespace OctoAwesome.Client.Components
                 if (renderer.NeedUpdate() && !highPrioUpdate.Contains(renderer))
                     highPrioUpdate.Enqueue(renderer);
             }
-
-            Index3 localcell = world.World.Player.Position.LocalBlockIndex;
-            Index3 currentChunk = world.World.Player.Position.ChunkIndex;
-
-            Vector3? selected = null;
-            IPlanet planet = ResourceManager.Instance.GetPlanet(world.World.Player.Position.Planet);
-            float? bestDistance = null;
-            for (int z = localcell.Z - SELECTIONRANGE; z < localcell.Z + SELECTIONRANGE; z++)
-            {
-                for (int y = localcell.Y - SELECTIONRANGE; y < localcell.Y + SELECTIONRANGE; y++)
-                {
-                    for (int x = localcell.X - SELECTIONRANGE; x < localcell.X + SELECTIONRANGE; x++)
-                    {
-                        Index3 pos = new Index3(
-                            x + (currentChunk.X * Chunk.CHUNKSIZE_X),
-                            y + (currentChunk.Y * Chunk.CHUNKSIZE_Y),
-                            z + (currentChunk.Z * Chunk.CHUNKSIZE_Z));
-
-                        IBlock block = ResourceManager.Instance.GetBlock(planet.Id, pos);
-                        if (block == null)
-                            continue;
-
-                        BoundingBox[] boxes = block.GetCollisionBoxes();
-
-                        foreach (var box in boxes)
-                        {
-                            BoundingBox transformedBox = new BoundingBox(
-                                box.Min + new Vector3(x, y, z),
-                                box.Max + new Vector3(x, y, z));
-
-                            float? distance = camera.PickRay.Intersects(transformedBox);
-                            if (distance.HasValue)
-                            {
-                                if (!bestDistance.HasValue || bestDistance.Value > distance)
-                                {
-                                    bestDistance = distance.Value;
-                                    selected = new Vector3(pos.X, pos.Y, pos.Z);
-                                    //new Vector3(
-                                    //    (world.World.Player.Position.ChunkIndex.X * Chunk.CHUNKSIZE_X) + x,
-                                    //    (world.World.Player.Position.ChunkIndex.Y * Chunk.CHUNKSIZE_Y) + y,
-                                    //    (world.World.Player.Position.ChunkIndex.Z * Chunk.CHUNKSIZE_Z) + z);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            world.SelectedBox = selected;
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            Microsoft.Xna.Framework.Color background =
-                new Microsoft.Xna.Framework.Color(181, 224, 255);
+            Microsoft.Xna.Framework.Color background =  new Microsoft.Xna.Framework.Color(181, 224, 255);
             GraphicsDevice.Clear(background);
 
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-
-            // GraphicsDevice.RasterizerState.CullMode = CullMode.None;
-            // GraphicsDevice.RasterizerState.FillMode = FillMode.WireFrame;
 
             Index3 chunkOffset = world.World.Player.Position.ChunkIndex;
 
@@ -223,13 +166,13 @@ namespace OctoAwesome.Client.Components
 
                 BoundingBox chunkBox = new BoundingBox(
                 new Vector3(
-                    shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
-                    shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                    shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z),
+                    shift.X * Chunk.CHUNKSIZE_X,
+                    shift.Y * Chunk.CHUNKSIZE_Y,
+                    shift.Z * Chunk.CHUNKSIZE_Z),
                 new Vector3(
-                    (shift.X + 1) * OctoAwesome.Chunk.CHUNKSIZE_X,
-                    (shift.Y + 1) * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                    (shift.Z + 1) * OctoAwesome.Chunk.CHUNKSIZE_Z));
+                    (shift.X + 1) * Chunk.CHUNKSIZE_X,
+                    (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
+                    (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
 
                 if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera, shift);
