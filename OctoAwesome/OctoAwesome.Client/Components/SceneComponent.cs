@@ -205,6 +205,7 @@ namespace OctoAwesome.Client.Components
 
                         if (distance.HasValue && distance.Value < bestDistance)
                         {
+                            pos.NormalizeXY(planet.Size * Chunk.CHUNKSIZE);
                             selected = pos;
                             selectedAxis = collisionAxis;
                             bestDistance = distance.Value;
@@ -213,9 +214,10 @@ namespace OctoAwesome.Client.Components
                 }
             }
 
-            if (selected != null)
+            if (selected.HasValue)
             {
                 player.SelectedBox = selected;
+
                 switch (selectedAxis)
                 {
                     case Axis.X: player.SelectedOrientation = (camera.PickRay.Direction.X > 0 ? OrientationFlags.SideNegativeX : OrientationFlags.SidePositiveX); break;
@@ -260,13 +262,13 @@ namespace OctoAwesome.Client.Components
 
                 BoundingBox chunkBox = new BoundingBox(
                 new Vector3(
-                    shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
-                    shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                    shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z),
+                    shift.X * Chunk.CHUNKSIZE_X,
+                    shift.Y * Chunk.CHUNKSIZE_Y,
+                    shift.Z * Chunk.CHUNKSIZE_Z),
                 new Vector3(
-                    (shift.X + 1) * OctoAwesome.Chunk.CHUNKSIZE_X,
-                    (shift.Y + 1) * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                    (shift.Z + 1) * OctoAwesome.Chunk.CHUNKSIZE_Z));
+                    (shift.X + 1) * Chunk.CHUNKSIZE_X,
+                    (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
+                    (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
 
                 if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera, shift);
@@ -274,11 +276,20 @@ namespace OctoAwesome.Client.Components
 
             if (player.SelectedBox.HasValue)
             {
+                Index3 offset = player.Player.Position.ChunkIndex * Chunk.CHUNKSIZE;
+                Index3 planetSize = planet.Size * Chunk.CHUNKSIZE;
+                Index3 relativePosition = new Index3(
+                    Index2.ShortestDistanceOnAxis(offset.X, player.SelectedBox.Value.X, planetSize.X),
+                    Index2.ShortestDistanceOnAxis(offset.Y, player.SelectedBox.Value.Y, planetSize.Y),
+                    player.SelectedBox.Value.Z - offset.Z);
+
                 Vector3 selectedBoxPosition = new Vector3(
                     player.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
                     player.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
                     player.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
-                selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
+                //selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
+
+                selectionEffect.World = Matrix.CreateTranslation(relativePosition);
                 selectionEffect.View = camera.View;
                 selectionEffect.Projection = camera.Projection;
                 foreach (var pass in selectionEffect.CurrentTechnique.Passes)
