@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using OctoAwesome;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
 using System;
 using System.Configuration;
-using System.Threading;
+using System.Linq;
 
 namespace OctoAwesome.Client
 {
@@ -19,8 +22,8 @@ namespace OctoAwesome.Client
         InputComponent input;
         SceneComponent scene;
         PlayerComponent player;
-        SimulationComponent simulation;
         HudComponent hud;
+        SimulationComponent simulation;
 
         public OctoGame()
             : base()
@@ -66,6 +69,7 @@ namespace OctoAwesome.Client
             player = new PlayerComponent(this, input, simulation);
             player.UpdateOrder = 2;
             Components.Add(player);
+
 
             camera = new CameraComponent(this, player);
             camera.UpdateOrder = 4;

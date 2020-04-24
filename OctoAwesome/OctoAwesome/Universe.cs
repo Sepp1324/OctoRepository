@@ -7,7 +7,6 @@ namespace OctoAwesome
 {
     public class Universe : IUniverse
     {
-
         public Universe(int id, string name)
         {
             Id = id;

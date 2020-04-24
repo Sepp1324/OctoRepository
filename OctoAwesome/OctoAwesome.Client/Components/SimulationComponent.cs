@@ -1,5 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -7,15 +11,11 @@ namespace OctoAwesome.Client.Components
     {
         public World World { get; private set; }
 
-        public SimulationComponent(Game game) : base(game)
-        {
-
-        }
+        public SimulationComponent(Game game) : base(game) { }
 
         public override void Initialize()
         {
             World = new World();
-
             base.Initialize();
         }
 

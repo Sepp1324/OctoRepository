@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Basics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -9,7 +12,6 @@ namespace OctoAwesome.Runtime
         private readonly float Gap = 0.001f;
 
         private IPlanet planet;
-
         private Cache<Index3, IChunk> localChunkCache;
 
         private bool lastJump = false;
@@ -22,7 +24,6 @@ namespace OctoAwesome.Runtime
         public ActorHost(Player player)
         {
             Player = player;
-
             localChunkCache = new Cache<Index3, IChunk>(10, loadChunk, null);
             planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
         }
@@ -31,7 +32,7 @@ namespace OctoAwesome.Runtime
         {
             Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
 
-            #region InputProcessing 
+            #region Inputverarbeitung
 
             Vector3 externalPower = ((Player.ExternalForce * Player.ExternalForce) / (2 * Player.Mass)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
 
@@ -57,7 +58,6 @@ namespace OctoAwesome.Runtime
             if (lastJump)
             {
                 lastJump = false;
-
                 Vector3 jumpDirection = new Vector3(lookX, lookY, 0f) * Move.Y * 0.1f;
                 jumpDirection.Z = 1f;
                 jumpDirection.Normalize();
@@ -74,7 +74,7 @@ namespace OctoAwesome.Runtime
 
             #endregion
 
-            #region PlayerMovement
+            #region Playerbewegung
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
             IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
@@ -109,15 +109,21 @@ namespace OctoAwesome.Runtime
 
             do
             {
-                BoundingBox playerBox = new BoundingBox(
-                    new Vector3(
-                        Player.Position.GlobalPosition.X + move.X - Player.Radius,
-                        Player.Position.GlobalPosition.Y + move.Y - Player.Radius,
-                        Player.Position.GlobalPosition.Z + move.Z),
-                    new Vector3(
-                        Player.Position.GlobalPosition.X + move.X + Player.Radius,
-                        Player.Position.GlobalPosition.Y + move.Y + Player.Radius,
-                        Player.Position.GlobalPosition.Z + move.Z + Player.Height));
+                //BoundingBox playerBox = new BoundingBox(
+                //    new Vector3(
+                //        Player.Position.GlobalPosition.X + move.X - Player.Radius,
+                //        Player.Position.GlobalPosition.Y + move.Y - Player.Radius,
+                //        Player.Position.GlobalPosition.Z + move.Z),
+                //    new Vector3(
+                //        Player.Position.GlobalPosition.X + move.X + Player.Radius,
+                //        Player.Position.GlobalPosition.Y + move.Y + Player.Radius,
+                //        Player.Position.GlobalPosition.Z + move.Z + Player.Height));
+
+                Vector3 playerCorner = new Vector3(
+                        Player.Position.GlobalPosition.X + (move.X > 0 ? Player.Radius : -Player.Radius),
+                        Player.Position.GlobalPosition.Y + (move.Y > 0 ? Player.Radius : -Player.Radius),
+                        Player.Position.GlobalPosition.Z + (move.Z > 0 ? Player.Height : 0)
+                    );
 
                 collision = false;
                 float min = 1f;
@@ -137,129 +143,139 @@ namespace OctoAwesome.Runtime
                             if (block == null)
                                 continue;
 
-                            BoundingBox[] boxes = block.GetCollisionBoxes();
+                            Axis? localAxis;
+                            float? localDistance = block.Intersect(playerCorner, move, out localAxis);
 
-                            foreach (var box in boxes)
+                            if (localDistance.HasValue)
                             {
-                                BoundingBox transformedBox = new BoundingBox(
-                                    box.Min + new Vector3(x, y, z),
-                                    box.Max + new Vector3(x, y, z));
-
-                                // (1) Kollisionscheck
-                                bool collisionX = (transformedBox.Min.X <= playerBox.Max.X && transformedBox.Max.X >= playerBox.Min.X);
-                                bool collisionY = (transformedBox.Min.Y <= playerBox.Max.Y && transformedBox.Max.Y >= playerBox.Min.Y);
-                                bool collisionZ = (transformedBox.Min.Z <= playerBox.Max.Z && transformedBox.Max.Z >= playerBox.Min.Z);
-
-                                if (collisionX && collisionY && collisionZ)
-                                {
-                                    collision = true;
-
-                                    // (2) Kollisionszeitpunkt ermitteln
-                                    float max = 0f;
-                                    Axis maxAxis = Axis.None;
-                                    float maxGap = 0f;
-
-                                    float nx = 1f;
-                                    if (move.X > 0)
-                                    {
-                                        float diff = playerBox.Max.X - transformedBox.Min.X;
-                                        if (diff < move.X)
-                                        {
-                                            nx = 1f - (diff / move.X);
-                                            if (nx > max)
-                                            {
-                                                max = nx;
-                                                maxAxis = Axis.X;
-                                                maxGap = -Gap;
-                                            }
-                                        }
-
-                                    }
-                                    else if (move.X < 0)
-                                    {
-                                        float diff = transformedBox.Max.X - playerBox.Min.X;
-                                        if (diff < -move.X)
-                                        {
-                                            nx = 1f - (diff / -move.X);
-                                            if (nx > max)
-                                            {
-                                                max = nx;
-                                                maxAxis = Axis.X;
-                                                maxGap = Gap;
-                                            }
-                                        }
-                                    }
-
-                                    float ny = 1f;
-                                    if (move.Y > 0)
-                                    {
-                                        float diff = playerBox.Max.Y - transformedBox.Min.Y;
-                                        if (diff < move.Y)
-                                        {
-                                            ny = 1f - (diff / move.Y);
-                                            if (ny > max)
-                                            {
-                                                max = ny;
-                                                maxAxis = Axis.Y;
-                                                maxGap = -Gap;
-                                            }
-                                        }
-
-                                    }
-                                    else if (move.Y < 0)
-                                    {
-                                        float diff = transformedBox.Max.Y - playerBox.Min.Y;
-                                        if (diff < -move.Y)
-                                        {
-                                            ny = 1f - (diff / -move.Y);
-                                            if (ny > max)
-                                            {
-                                                max = ny;
-                                                maxAxis = Axis.Y;
-                                                maxGap = Gap;
-                                            }
-                                        }
-                                    }
-
-                                    float nz = 1f;
-                                    if (move.Z > 0)
-                                    {
-                                        float diff = playerBox.Max.Z - transformedBox.Min.Z;
-                                        if (diff < move.Z)
-                                        {
-                                            nz = 1f - (diff / move.Z);
-                                            if (nz > max)
-                                            {
-                                                max = nz;
-                                                maxAxis = Axis.Z;
-                                                maxGap = -Gap;
-                                            }
-                                        }
-
-                                    }
-                                    else if (move.Z < 0)
-                                    {
-                                        float diff = transformedBox.Max.Z - playerBox.Min.Z;
-                                        if (diff < -move.Z)
-                                        {
-                                            nz = 1f - (diff / -move.Z);
-                                            if (nz > max)
-                                            {
-                                                max = nz;
-                                                maxAxis = Axis.Z;
-                                                maxGap = Gap;
-                                            }
-                                        }
-                                    }
-
-                                    if (max < min)
-                                    {
-                                        min = max;
-                                        minAxis = maxAxis;
-                                        minGap = maxGap;
-                                    }
-                                }
+                                min = localDistance.Value;
+                                minAxis = localAxis.Value;
                             }
+
+
+                            //BoundingBox[] boxes = block.GetCollisionBoxes();
+
+                            //foreach (var box in boxes)
+                            //{
+                            //    BoundingBox transformedBox = new BoundingBox(
+                            //        box.Min + new Vector3(x, y, z),
+                            //        box.Max + new Vector3(x, y, z));
+
+                            //    // (1) Kollisionscheck
+                            //    bool collisionX = (transformedBox.Min.X <= playerBox.Max.X && transformedBox.Max.X >= playerBox.Min.X);
+                            //    bool collisionY = (transformedBox.Min.Y <= playerBox.Max.Y && transformedBox.Max.Y >= playerBox.Min.Y);
+                            //    bool collisionZ = (transformedBox.Min.Z <= playerBox.Max.Z && transformedBox.Max.Z >= playerBox.Min.Z);
+
+                            //    if (collisionX && collisionY && collisionZ)
+                            //    {
+                            //        collision = true;
+
+                            //        // (2) Kollisionszeitpunkt ermitteln
+                            //        float max = 0f;
+                            //        Axis maxAxis = Axis.None;
+                            //        float maxGap = 0f;
+
+                            //        float nx = 1f;
+                            //        if (move.X > 0)
+                            //        {
+                            //            float diff = playerBox.Max.X - transformedBox.Min.X;
+                            //            if (diff < move.X)
+                            //            {
+                            //                nx = 1f - (diff / move.X);
+                            //                if (nx > max)
+                            //                {
+                            //                    max = nx;
+                            //                    maxAxis = Axis.X;
+                            //                    maxGap = -Gap;
+                            //                }
+                            //            }
+
+                            //        }
+                            //        else if (move.X < 0)
+                            //        {
+                            //            float diff = transformedBox.Max.X - playerBox.Min.X;
+                            //            if (diff < -move.X)
+                            //            {
+                            //                nx = 1f - (diff / -move.X);
+                            //                if (nx > max)
+                            //                {
+                            //                    max = nx;
+                            //                    maxAxis = Axis.X;
+                            //                    maxGap = Gap;
+                            //                }
+                            //            }
+                            //        }
+
+                            //        float ny = 1f;
+                            //        if (move.Y > 0)
+                            //        {
+                            //            float diff = playerBox.Max.Y - transformedBox.Min.Y;
+                            //            if (diff < move.Y)
+                            //            {
+                            //                ny = 1f - (diff / move.Y);
+                            //                if (ny > max)
+                            //                {
+                            //                    max = ny;
+                            //                    maxAxis = Axis.Y;
+                            //                    maxGap = -Gap;
+                            //                }
+                            //            }
+
+                            //        }
+                            //        else if (move.Y < 0)
+                            //        {
+                            //            float diff = transformedBox.Max.Y - playerBox.Min.Y;
+                            //            if (diff < -move.Y)
+                            //            {
+                            //                ny = 1f - (diff / -move.Y);
+                            //                if (ny > max)
+                            //                {
+                            //                    max = ny;
+                            //                    maxAxis = Axis.Y;
+                            //                    maxGap = Gap;
+                            //                }
+                            //            }
+                            //        }
+
+                            //        float nz = 1f;
+                            //        if (move.Z > 0)
+                            //        {
+                            //            float diff = playerBox.Max.Z - transformedBox.Min.Z;
+                            //            if (diff < move.Z)
+                            //            {
+                            //                nz = 1f - (diff / move.Z);
+                            //                if (nz > max)
+                            //                {
+                            //                    max = nz;
+                            //                    maxAxis = Axis.Z;
+                            //                    maxGap = -Gap;
+                            //                }
+                            //            }
+
+                            //        }
+                            //        else if (move.Z < 0)
+                            //        {
+                            //            float diff = transformedBox.Max.Z - playerBox.Min.Z;
+                            //            if (diff < -move.Z)
+                            //            {
+                            //                nz = 1f - (diff / -move.Z);
+                            //                if (nz > max)
+                            //                {
+                            //                    max = nz;
+                            //                    maxAxis = Axis.Z;
+                            //                    maxGap = Gap;
+                            //                }
+                            //            }
+                            //        }
+
+                            //        if (max < min)
+                            //        {
+                            //            min = max;
+                            //            minAxis = maxAxis;
+                            //            minGap = maxGap;
+                            //        }
+                            //    }
+                            //}
                         }
                     }
                 }
@@ -305,7 +321,7 @@ namespace OctoAwesome.Runtime
 
             #endregion
 
-            #region BlockInteraction
+            #region Block Interaktion
 
             if (lastInteract.HasValue)
             {
@@ -322,7 +338,6 @@ namespace OctoAwesome.Runtime
 
             #endregion
         }
-
         private IChunk loadChunk(Index3 index)
         {
             IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
@@ -374,19 +389,38 @@ namespace OctoAwesome.Runtime
             chunk.SetBlock(coordinate.LocalBlockIndex, block);
         }
 
-        public Coordinate Position { get { return Player.Position; } }
+        public Coordinate Position
+        {
+            get { return Player.Position; }
+        }
 
-        public float Radius { get { return Player.Radius; } }
+        public float Radius
+        {
+            get { return Player.Radius; }
+        }
 
-        public float Angle { get { return Player.Angle; } }
+        public float Angle
+        {
+            get { return Player.Angle; }
+        }
 
-        public float Height { get { return Player.Height; } }
+        public float Height
+        {
+            get { return Player.Height; }
+        }
 
-        public bool OnGround { get { return Player.OnGround; } }
+        public bool OnGround
+        {
+            get { return Player.OnGround; }
+        }
 
-        public float Tilt { get { return Player.Tilt; } }
+        public float Tilt
+        {
+            get { return Player.Tilt; }
+        }
 
         public Vector2 Move { get; set; }
+
         public Vector2 Head { get; set; }
 
         public void Jump()

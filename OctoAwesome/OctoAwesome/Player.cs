@@ -1,4 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -8,7 +14,7 @@ namespace OctoAwesome
 
         public const float POWER = 600f;
 
-        public const float JUMPPOWER = 7000000f;
+        public const float JUMPPOWER = 800000f;
 
         public const float FRICTION = 60f;
 

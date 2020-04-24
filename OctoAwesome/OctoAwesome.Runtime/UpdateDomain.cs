@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace OctoAwesome.Runtime
@@ -13,7 +15,7 @@ namespace OctoAwesome.Runtime
         private Stopwatch watch;
         private Thread thread;
 
-        public List<ActorHost> ActorHosts { get; set; }
+        public List<ActorHost> ActorHosts { get; private set; }
 
         public bool Running { get; set; }
 
@@ -21,9 +23,7 @@ namespace OctoAwesome.Runtime
         {
             this.watch = watch;
             ActorHosts = new List<ActorHost>();
-
             var host = new ActorHost(new Player());
-
             ActorHosts.Add(host);
 
             Running = true;
@@ -38,19 +38,16 @@ namespace OctoAwesome.Runtime
         {
             TimeSpan lastCall = new TimeSpan();
             TimeSpan frameTime = new TimeSpan(0, 0, 0, 0, 16);
-
-            while(Running)
+            while (Running)
             {
-                //GameTime gameTime = new GameTime(watch.Elapsed, watch.Elapsed - lastCall);
-                GameTime gameTime = new GameTime(watch.Elapsed, frameTime);
-
+                GameTime gameTime = new GameTime(
+                    watch.Elapsed, frameTime);
+                //watch.Elapsed - lastCall);
                 lastCall = watch.Elapsed;
 
-                //TODO: Chunk Updates
+                // TODO: Chunk Updates
 
-                //foreach (var actorHost in ActorHosts)
-                //    actorHost.Update(gameTime);
-
+                Console.WriteLine(gameTime.ElapsedGameTime);
                 foreach (var actorHost in ActorHosts)
                     actorHost.Update(gameTime);
 
@@ -63,6 +60,7 @@ namespace OctoAwesome.Runtime
 
         public void Update(GameTime gameTime)
         {
+
             //foreach (var actorHost in ActorHosts)
             //    actorHost.Update(gameTime);
         }
