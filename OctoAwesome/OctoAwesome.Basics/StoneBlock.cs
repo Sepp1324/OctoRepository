@@ -7,7 +7,7 @@ using System.Text;
 
 namespace OctoAwesome.Basics
 {
-    public class StoneBlock : Block
+    public sealed class StoneBlock : Block
     {
     }
 }

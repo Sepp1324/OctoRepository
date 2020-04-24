@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Basics.Properties;
+﻿
+using OctoAwesome.Basics.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

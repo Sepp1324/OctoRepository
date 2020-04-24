@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -316,6 +317,11 @@ namespace OctoAwesome
             return new Index3(i1.X * scale, i1.Y * scale, i1.Z * scale);
         }
 
+        public static Index3 operator *(Index3 i1, Index3 i2)
+        {
+            return new Index3(i1.X * i2.X, i1.Y * i2.Y, i1.Z * i2.Z);
+        }
+
         public static Index3 operator /(Index3 i1, int scale)
         {
             return new Index3(i1.X / scale, i1.Y / scale, i1.Z / scale);
@@ -329,6 +335,11 @@ namespace OctoAwesome
         public static bool operator !=(Index3 i1, Index3 i2)
         {
             return !i1.Equals(i2);
+        }
+
+        public static implicit operator Vector3(Index3 index)
+        {
+            return new Vector3(index.X, index.Y, index.Z);
         }
 
         public override string ToString()
@@ -355,5 +366,30 @@ namespace OctoAwesome
                 (Y << 10) +
                 Z;
         }
+
+        /// <summary>
+        /// Null-Index
+        /// </summary>
+        public static Index3 Zero { get { return new Index3(0, 0, 0); } }
+
+        /// <summary>
+        /// Gibts Index(1,1,1) zurück
+        /// </summary>
+        public static Index3 One { get { return new Index3(1, 1, 1); } }
+
+        /// <summary>
+        /// Einheitsindex für X
+        /// </summary>
+        public static Index3 UnitX { get { return new Index3(1, 0, 0); } }
+
+        /// <summary>
+        /// Einheitsindex für Y
+        /// </summary>
+        public static Index3 UnitY { get { return new Index3(0, 1, 0); } }
+
+        /// <summary>
+        /// Einheitsindex für Z
+        /// </summary>
+        public static Index3 UnitZ { get { return new Index3(0, 0, 1); } }
     }
 }

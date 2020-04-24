@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics
 {
-    public class SandBlock : Block
+    public sealed class SandBlock : Block
     {
     }
 }

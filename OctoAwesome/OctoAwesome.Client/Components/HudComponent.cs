@@ -1,5 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -19,7 +23,8 @@ namespace OctoAwesome.Client.Components
         private double seconds = 0;
         private double lastfps = 0f;
 
-        public HudComponent(Game game, PlayerComponent player) : base(game)
+        public HudComponent(Game game, PlayerComponent player)
+            : base(game)
         {
             this.player = player;
 
@@ -60,7 +65,7 @@ namespace OctoAwesome.Client.Components
             var size = font.MeasureString(pos);
             batch.DrawString(font, pos, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 5), Color.White);
 
-            float deg = (player.Player.Angle / MathHelper.TwoPi) * 360;
+            float grad = (player.Player.Angle / MathHelper.TwoPi) * 360;
 
             string rot = "rot: " +
                 (((player.Player.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
@@ -69,9 +74,20 @@ namespace OctoAwesome.Client.Components
             size = font.MeasureString(rot);
             batch.DrawString(font, rot, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 25), Color.White);
 
+            //string fps = "fps: " + (1f / (framebuffer.Sum() / buffersize)).ToString("0.00");
+            //size = font.MeasureString(fps);
+            //batch.DrawString(font, fps, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 45), Color.White);
+
             string fps = "fps: " + ((int)(1f / lastfps)).ToString("0.00");
             size = font.MeasureString(fps);
             batch.DrawString(font, fps, new Vector2(GraphicsDevice.Viewport.Width - size.X - 5, 45), Color.White);
+
+            if (player.SelectedBox.HasValue)
+            {
+                string selection = "box: " + player.SelectedBox.Value.ToString() + " on " + player.SelectedOrientation.ToString();
+                batch.DrawString(font, selection, new Vector2(5, GraphicsDevice.Viewport.Height - 40), Color.White);
+            }
+
 
             int centerX = GraphicsDevice.Viewport.Width / 2;
             int centerY = GraphicsDevice.Viewport.Height / 2;

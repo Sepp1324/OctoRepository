@@ -55,6 +55,7 @@ namespace OctoAwesome.Basics
                         for (int z = Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
                         {
                             int absoluteZ = (z + (i * Chunk.CHUNKSIZE_Z));
+
                             if (absoluteZ <= localHeightmap[x, y] * localPlanet.Size.Z * Chunk.CHUNKSIZE_Z)
                             {
                                 if (obersteSchicht > 0)
