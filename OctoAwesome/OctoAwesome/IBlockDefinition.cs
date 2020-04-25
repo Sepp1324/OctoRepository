@@ -22,6 +22,18 @@ namespace OctoAwesome
 
         int GetTextureIndexEast(IBlock block);
 
+        int GetTextureRotationTop(IBlock block);
+
+        int GetTextureRotationBottom(IBlock block);
+
+        int GetTextureRotationNorth(IBlock block);
+
+        int GetTextureRotationSouth(IBlock block);
+
+        int GetTextureRotationWest(IBlock block);
+
+        int GetTextureRotationEast(IBlock block);
+
         IBlock GetInstance(OrientationFlags orientation);
 
         Type GetBlockType();
