@@ -27,7 +27,7 @@ namespace OctoAwesome.Basics
             return new WoodBlock() { Orientation = orientation };
         }
 
-        public int GetTextureIndexBottom(IBlock block)
+        public int GetBottomTextureIndex(IBlock block)
         {
             switch (block.Orientation)
             {
@@ -44,16 +44,16 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureIndexEast(IBlock block)
+        public int GetEastTextureIndex(IBlock block)
         {
             switch (block.Orientation)
             {
                 case OrientationFlags.SideNegativeX:
                 case OrientationFlags.SidePositiveX:
-                case OrientationFlags.SideNegativeY:
-                case OrientationFlags.SidePositiveY:
                     return 0;
 
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
                 case OrientationFlags.SideNegativeZ:
                 case OrientationFlags.SidePositiveZ:
                 default:
@@ -61,16 +61,16 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureIndexNorth(IBlock block)
+        public int GetNorthTextureIndex(IBlock block)
         {
             switch (block.Orientation)
             {
-                case OrientationFlags.SideNegativeX:
-                case OrientationFlags.SidePositiveX:
                 case OrientationFlags.SideNegativeY:
                 case OrientationFlags.SidePositiveY:
                     return 0;
 
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
                 case OrientationFlags.SideNegativeZ:
                 case OrientationFlags.SidePositiveZ:
                 default:
@@ -78,16 +78,16 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureIndexSouth(IBlock block)
+        public int GetSouthTextureIndex(IBlock block)
         {
             switch (block.Orientation)
             {
-                case OrientationFlags.SideNegativeX:
-                case OrientationFlags.SidePositiveX:
                 case OrientationFlags.SideNegativeY:
                 case OrientationFlags.SidePositiveY:
                     return 0;
 
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
                 case OrientationFlags.SideNegativeZ:
                 case OrientationFlags.SidePositiveZ:
                 default:
@@ -95,7 +95,7 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureIndexTop(IBlock block)
+        public int GetTopTextureIndex(IBlock block)
         {
             switch (block.Orientation)
             {
@@ -112,16 +112,16 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureIndexWest(IBlock block)
+        public int GetWestTextureIndex(IBlock block)
         {
             switch (block.Orientation)
             {
                 case OrientationFlags.SideNegativeX:
                 case OrientationFlags.SidePositiveX:
-                case OrientationFlags.SideNegativeY:
-                case OrientationFlags.SidePositiveY:
                     return 0;
 
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
                 case OrientationFlags.SideNegativeZ:
                 case OrientationFlags.SidePositiveZ:
                 default:
@@ -129,13 +129,81 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureRotationTop(IBlock block)
+        public int GetTopTextureRotation(IBlock block)
+        {
+            switch (block.Orientation)
+            { 
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
+                    return 1;
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
+                case OrientationFlags.SideNegativeZ:
+                case OrientationFlags.SidePositiveZ:
+                default:
+                    return 0;
+            }
+        }
+
+        public int GetBottomTextureRotation(IBlock block)
+        {
+            switch (block.Orientation)
+            {
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
+                    return 1;
+
+                case OrientationFlags.SideNegativeZ:
+                case OrientationFlags.SidePositiveZ:
+                default:
+                    return 0;
+            }
+        }
+
+        public int GetNorthTextureRotation(IBlock block)
+        {
+            switch (block.Orientation)
+            {
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
+                    return 1;
+
+                case OrientationFlags.SideNegativeZ:
+                case OrientationFlags.SidePositiveZ:
+                default:
+                    return 0;
+            }
+        }
+
+        public int GetSouthTextureRotation(IBlock block)
+        {
+            switch (block.Orientation)
+            {
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
+                    return 1;
+
+                case OrientationFlags.SideNegativeZ:
+                case OrientationFlags.SidePositiveZ:
+                default:
+                    return 0;
+            }
+        }
+
+        public int GetWestTextureRotation(IBlock block)
         {
             switch (block.Orientation)
             {
                 case OrientationFlags.SideNegativeY:
                 case OrientationFlags.SidePositiveY:
                     return 1;
+
                 case OrientationFlags.SideNegativeX:
                 case OrientationFlags.SidePositiveX:
                 case OrientationFlags.SideNegativeZ:
@@ -145,29 +213,21 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public int GetTextureRotationBottom(IBlock block)
+        public int GetEastTextureRotation(IBlock block)
         {
-            return 0;
-        }
+            switch (block.Orientation)
+            {
+                case OrientationFlags.SideNegativeY:
+                case OrientationFlags.SidePositiveY:
+                    return 1;
 
-        public int GetTextureRotationNorth(IBlock block)
-        {
-            return 0;
-        }
-
-        public int GetTextureRotationSouth(IBlock block)
-        {
-            return 0;
-        }
-
-        public int GetTextureRotationWest(IBlock block)
-        {
-            return 0;
-        }
-
-        public int GetTextureRotationEast(IBlock block)
-        {
-            return 0;
+                case OrientationFlags.SideNegativeX:
+                case OrientationFlags.SidePositiveX:
+                case OrientationFlags.SideNegativeZ:
+                case OrientationFlags.SidePositiveZ:
+                default:
+                    return 0;
+            }
         }
     }
 }

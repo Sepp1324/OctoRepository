@@ -10,29 +10,29 @@ namespace OctoAwesome
 
         IEnumerable<Bitmap> Textures { get; }
 
-        int GetTextureIndexTop(IBlock block);
+        int GetTopTextureIndex(IBlock block);
 
-        int GetTextureIndexBottom(IBlock block);
+        int GetBottomTextureIndex(IBlock block);
 
-        int GetTextureIndexNorth(IBlock block);
+        int GetNorthTextureIndex(IBlock block);
 
-        int GetTextureIndexSouth(IBlock block);
+        int GetSouthTextureIndex(IBlock block);
 
-        int GetTextureIndexWest(IBlock block);
+        int GetWestTextureIndex(IBlock block);
 
-        int GetTextureIndexEast(IBlock block);
+        int GetEastTextureIndex(IBlock block);
 
-        int GetTextureRotationTop(IBlock block);
+        int GetTopTextureRotation(IBlock block);
 
-        int GetTextureRotationBottom(IBlock block);
+        int GetBottomTextureRotation(IBlock block);
 
-        int GetTextureRotationNorth(IBlock block);
+        int GetNorthTextureRotation(IBlock block);
 
-        int GetTextureRotationSouth(IBlock block);
+        int GetSouthTextureRotation(IBlock block);
 
-        int GetTextureRotationWest(IBlock block);
+        int GetWestTextureRotation(IBlock block);
 
-        int GetTextureRotationEast(IBlock block);
+        int GetEastTextureRotation(IBlock block);
 
         IBlock GetInstance(OrientationFlags orientation);
 

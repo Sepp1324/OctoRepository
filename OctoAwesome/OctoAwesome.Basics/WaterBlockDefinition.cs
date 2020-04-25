@@ -32,62 +32,62 @@ namespace OctoAwesome.Basics
             return typeof(WaterBlock);
         }
 
-        public int GetTextureIndexTop(IBlock block)
+        public int GetTopTextureIndex(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureIndexBottom(IBlock block)
+        public int GetBottomTextureIndex(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureIndexNorth(IBlock block)
+        public int GetNorthTextureIndex(IBlock block)
         {
             return 1;
         }
 
-        public int GetTextureIndexSouth(IBlock block)
+        public int GetSouthTextureIndex(IBlock block)
         {
             return 1;
         }
 
-        public int GetTextureIndexWest(IBlock block)
+        public int GetWestTextureIndex(IBlock block)
         {
             return 1;
         }
 
-        public int GetTextureIndexEast(IBlock block)
+        public int GetEastTextureIndex(IBlock block)
         {
             return 1;
         }
 
-        public int GetTextureRotationTop(IBlock block)
+        public int GetTopTextureRotation(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureRotationBottom(IBlock block)
+        public int GetBottomTextureRotation(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureRotationNorth(IBlock block)
+        public int GetNorthTextureRotation(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureRotationSouth(IBlock block)
+        public int GetSouthTextureRotation(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureRotationWest(IBlock block)
+        public int GetWestTextureRotation(IBlock block)
         {
             return 0;
         }
 
-        public int GetTextureRotationEast(IBlock block)
+        public int GetEastTextureRotation(IBlock block)
         {
             return 0;
         }

@@ -8,7 +8,7 @@ namespace OctoAwesome
 {
     public interface IBlock
     {
-        OrientationFlags Orientation { get; }
+        OrientationFlags Orientation { get; set; }
 
         BoundingBox[] GetCollisionBoxes();
 

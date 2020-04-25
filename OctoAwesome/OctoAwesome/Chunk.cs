@@ -170,7 +170,10 @@ namespace OctoAwesome
                     if (blocks[i] == null)
                         bw.Write(0);
                     else
+                    {
                         bw.Write(types.IndexOf(blocks[i].GetType()) + 1);
+                        bw.Write((byte)blocks[i].Orientation);
+                    }
                 }
             }
         }
@@ -201,10 +204,13 @@ namespace OctoAwesome
                 for (int i = 0; i < blocks.Length; i++)
                 {
                     int typeIndex = br.ReadInt32();
+
                     if (typeIndex > 0)
                     {
+                        OrientationFlags orientation = (OrientationFlags)br.ReadByte();
                         Type t = types[typeIndex - 1];
                         blocks[i] = (IBlock)Activator.CreateInstance(t);
+                        blocks[i].Orientation = orientation;
                     }
                 }
             }
