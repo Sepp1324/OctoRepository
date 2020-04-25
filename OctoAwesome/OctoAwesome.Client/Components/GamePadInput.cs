@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -65,6 +62,31 @@ namespace OctoAwesome.Client.Components
                 HeadY = gamePadState.ThumbSticks.Right.Y;
             }
             catch (Exception) { }
+        }
+
+        public bool Slot1Trigger
+        {
+            get { return false; }
+        }
+
+        public bool Slot2Trigger
+        {
+            get { return false; }
+        }
+
+        public bool Slot3Trigger
+        {
+            get { return false; }
+        }
+
+        public bool Slot4Trigger
+        {
+            get { return false; }
+        }
+
+        public bool Slot5Trigger
+        {
+            get { return false; }
         }
     }
 }

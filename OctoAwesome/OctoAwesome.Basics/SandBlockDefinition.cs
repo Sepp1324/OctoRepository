@@ -23,7 +23,7 @@ namespace OctoAwesome.Basics
 
         public IBlock GetInstance(OrientationFlags orientation)
         {
-            throw new NotImplementedException();
+            return new SandBlock();
         }
 
         public Type GetBlockType()

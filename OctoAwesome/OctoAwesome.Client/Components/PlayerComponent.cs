@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
+using System.Linq;
 
 namespace OctoAwesome.Client.Components
 {
@@ -20,6 +21,8 @@ namespace OctoAwesome.Client.Components
         public OrientationFlags SelectedEdge { get; set; }
 
         public OrientationFlags SelectedCorner { get; set; }
+
+        public IBlockDefinition BlockTool { get; set; }
 
         public PlayerComponent(Game game, InputComponent input, SimulationComponent simulation)
             : base(game)
@@ -43,6 +46,31 @@ namespace OctoAwesome.Client.Components
             {
                 Player.Apply(SelectedBox.Value, SelectedSide);
             }
+
+            if(input.Slot1Trigger)
+            {
+                Player.BlockTool = BlockDefinitionManager.GetBlockDefinitions().ToArray()[1];
+            }
+
+            if (input.Slot2Trigger)
+            {
+                Player.BlockTool = BlockDefinitionManager.GetBlockDefinitions().ToArray()[2];
+            }
+
+            if (input.Slot3Trigger)
+            {
+                Player.BlockTool = BlockDefinitionManager.GetBlockDefinitions().ToArray()[3];
+            }
+
+            if (input.Slot4Trigger)
+            {
+                Player.BlockTool = BlockDefinitionManager.GetBlockDefinitions().ToArray()[5];
+            }
+
+            //if (input.Slot5Trigger)
+            //{
+            //    Player.BlockTool = BlockDefinitionManager.GetBlockDefinitions().ToArray()[4];
+            //}
         }
     }
 }
