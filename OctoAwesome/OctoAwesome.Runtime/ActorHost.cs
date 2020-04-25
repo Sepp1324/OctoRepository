@@ -15,10 +15,8 @@ namespace OctoAwesome.Runtime
         private bool lastJump = false;
 
         private IBlockDefinition tool = null;
-
         private Index3? lastInteract = null;
         private Index3? lastApply = null;
-
         private OrientationFlags lastOrientation = OrientationFlags.None;
 
         public Player Player { get; private set; }
@@ -130,7 +128,8 @@ namespace OctoAwesome.Runtime
                         for (int x = minx; x <= maxx; x++)
                         {
                             Index3 pos = new Index3(x, y, z);
-                            IBlock block = GetBlock(pos + Player.Position.GlobalBlockIndex);
+                            IBlock block = GetBlock(pos +
+                                Player.Position.GlobalBlockIndex);
                             if (block == null)
                                 continue;
 
@@ -180,7 +179,7 @@ namespace OctoAwesome.Runtime
 
             #endregion
 
-            #region BlockInteraction
+            #region Block Interaktion
 
             if (lastInteract.HasValue)
             {
@@ -195,15 +194,16 @@ namespace OctoAwesome.Runtime
                     Index3 add = new Index3();
                     switch (lastOrientation)
                     {
-                        case OrientationFlags.SideNegativeX: add = new Index3(-1, 0, 0); break;
-                        case OrientationFlags.SidePositiveX: add = new Index3(1, 0, 0); break;
-                        case OrientationFlags.SideNegativeY: add = new Index3(0, -1, 0); break;
-                        case OrientationFlags.SidePositiveY: add = new Index3(0, 1, 0); break;
-                        case OrientationFlags.SideNegativeZ: add = new Index3(0, 0, -1); break;
-                        case OrientationFlags.SidePositiveZ: add = new Index3(0, 0, 1); break;
+                        case OrientationFlags.SideWest: add = new Index3(-1, 0, 0); break;
+                        case OrientationFlags.SideEast: add = new Index3(1, 0, 0); break;
+                        case OrientationFlags.SideSouth: add = new Index3(0, -1, 0); break;
+                        case OrientationFlags.SideNorth: add = new Index3(0, 1, 0); break;
+                        case OrientationFlags.SideBottom: add = new Index3(0, 0, -1); break;
+                        case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    ResourceManager.Instance.SetBlock(planet.Id, lastApply.Value + add, tool.GetInstance(lastOrientation));
+                    ResourceManager.Instance.SetBlock(planet.Id,
+                        lastApply.Value + add, tool.GetInstance(lastOrientation));
                     lastApply = null;
                 }
             }
