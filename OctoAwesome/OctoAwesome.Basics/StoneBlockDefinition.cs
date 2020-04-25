@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -14,20 +12,28 @@ namespace OctoAwesome.Basics
             get { return "Stone"; }
         }
 
-        public Bitmap TopTexture
+        public IEnumerable<Bitmap> Textures
         {
-            get { return Resources.stone_top; }
+            get
+            {
+                return new[] { Resources.stone_top, Resources.stone_side };
+            }
         }
 
-        public Bitmap BottomTexture
-        {
-            get { return Resources.stone_bottom; }
-        }
+        //public Bitmap TopTexture
+        //{
+        //    get { return Resources.stone_top; }
+        //}
 
-        public Bitmap SideTexture
-        {
-            get { return Resources.stone_side; }
-        }
+        //public Bitmap BottomTexture
+        //{
+        //    get { return Resources.stone_bottom; }
+        //}
+
+        //public Bitmap SideTexture
+        //{
+        //    get { return Resources.stone_side; }
+        //}
 
         public IBlock GetInstance()
         {

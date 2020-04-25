@@ -81,30 +81,43 @@ namespace OctoAwesome.Client.Components
 
         protected override void LoadContent()
         {
+            List<Bitmap> bitmaps = new List<Bitmap>();
             var definitions = BlockDefinitionManager.GetBlockDefinitions();
 
-            int size = (int)Math.Ceiling(Math.Sqrt(definitions.Count() * 3));
+            foreach (var definition in definitions)
+                bitmaps.AddRange(definition.Textures);
+
+            int size = (int)Math.Ceiling(Math.Sqrt(bitmaps.Count));
             Bitmap blocks = new Bitmap(size * TEXTURESIZE, size * TEXTURESIZE);
             using (Graphics g = Graphics.FromImage(blocks))
             {
                 int counter = 0;
-                foreach (var definition in definitions)
+
+                foreach(var bitmap in bitmaps)
                 {
                     int x = counter % size;
                     int y = (int)(counter / size);
-                    g.DrawImage(definition.TopTexture, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
-                    counter++;
-
-                    x = counter % size;
-                    y = (int)(counter / size);
-                    g.DrawImage(definition.BottomTexture, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
-                    counter++;
-
-                    x = counter % size;
-                    y = (int)(counter / size);
-                    g.DrawImage(definition.SideTexture, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
+                    g.DrawImage(bitmap, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
                     counter++;
                 }
+
+                //foreach (var definition in definitions)
+                //{
+                //    int x = counter % size;
+                //    int y = (int)(counter / size);
+                //    g.DrawImage(definition.TopTexture, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
+                //    counter++;
+
+                //    x = counter % size;
+                //    y = (int)(counter / size);
+                //    g.DrawImage(definition.BottomTexture, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
+                //    counter++;
+
+                //    x = counter % size;
+                //    y = (int)(counter / size);
+                //    g.DrawImage(definition.SideTexture, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
+                //    counter++;
+                //}
             }
 
             using (MemoryStream stream = new MemoryStream())
