@@ -17,26 +17,11 @@ namespace OctoAwesome.Basics
         {
             get
             {
-                return new[] { Resources.sand_top };
+                return new[] { Resources.sand_bottom };
             }
         }
 
-        //public Bitmap TopTexture
-        //{
-        //    get { return Resources.sand_top; }
-        //}
-
-        //public Bitmap BottomTexture
-        //{
-        //    get { return Resources.sand_bottom; }
-        //}
-
-        //public Bitmap SideTexture
-        //{
-        //    get { return Resources.sand_side; }
-        //}
-
-        public IBlock GetInstance()
+        public IBlock GetInstance(OrientationFlags orientation)
         {
             throw new NotImplementedException();
         }
@@ -44,6 +29,36 @@ namespace OctoAwesome.Basics
         public Type GetBlockType()
         {
             return typeof(SandBlock);
+        }
+
+        public int GetTextureIndexTop(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexBottom(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexNorth(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexSouth(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexWest(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexEast(IBlock block)
+        {
+            throw new NotImplementedException();
         }
     }
 }

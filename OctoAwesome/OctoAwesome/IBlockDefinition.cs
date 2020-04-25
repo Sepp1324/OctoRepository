@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -12,13 +10,19 @@ namespace OctoAwesome
 
         IEnumerable<Bitmap> Textures { get; }
 
-        //Bitmap TopTexture { get; }
+        int GetTextureIndexTop(IBlock block);
 
-        //Bitmap BottomTexture { get; }
+        int GetTextureIndexBottom(IBlock block);
 
-        //Bitmap SideTexture { get; }
+        int GetTextureIndexNorth(IBlock block);
 
-        IBlock GetInstance();
+        int GetTextureIndexSouth(IBlock block);
+
+        int GetTextureIndexWest(IBlock block);
+
+        int GetTextureIndexEast(IBlock block);
+
+        IBlock GetInstance(OrientationFlags orientation);
 
         Type GetBlockType();
     }

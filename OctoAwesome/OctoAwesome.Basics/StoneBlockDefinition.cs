@@ -16,34 +16,47 @@ namespace OctoAwesome.Basics
         {
             get
             {
-                return new[] { Resources.stone_top, Resources.stone_side };
+                return new[] { Resources.stone_bottom, Resources.stone_side };
             }
         }
 
-        //public Bitmap TopTexture
-        //{
-        //    get { return Resources.stone_top; }
-        //}
-
-        //public Bitmap BottomTexture
-        //{
-        //    get { return Resources.stone_bottom; }
-        //}
-
-        //public Bitmap SideTexture
-        //{
-        //    get { return Resources.stone_side; }
-        //}
-
-        public IBlock GetInstance()
+        public IBlock GetInstance(OrientationFlags orientation)
         {
             return new StoneBlock();
         }
-
-
         public Type GetBlockType()
         {
             return typeof(StoneBlock);
+        }
+
+        public int GetTextureIndexTop(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexBottom(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexNorth(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexSouth(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexWest(IBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTextureIndexEast(IBlock block)
+        {
+            throw new NotImplementedException();
         }
     }
 }

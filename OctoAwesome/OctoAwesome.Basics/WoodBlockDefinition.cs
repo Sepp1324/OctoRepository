@@ -5,37 +5,36 @@ using System.Drawing;
 
 namespace OctoAwesome.Basics
 {
-    public sealed class GroundBlockDefinition : IBlockDefinition
+    public sealed class WoodBlockDefinition : IBlockDefinition
     {
         public string Name
         {
-            get { return "Ground"; }
+            get { return "Wood"; }
         }
 
         public IEnumerable<Bitmap> Textures
         {
-            get
-            {
-                return new[] { Resources.ground_bottom };
-            }
-        }
-
-        public IBlock GetInstance(OrientationFlags orientation)
-        {
-            return new GroundBlock();
+            get { return new[] { Resources.wood_bottom, Resources.wood_side }; }
         }
 
         public Type GetBlockType()
         {
-            return typeof(GroundBlock);
+            return typeof(WoodBlock);
         }
 
-        public int GetTextureIndexTop(IBlock block)
+        public IBlock GetInstance(OrientationFlags orientation)
+        {
+            WoodBlock block = new WoodBlock() { Orientation = orientation };
+            block.Update();
+            return block;
+        }
+
+        public int GetTextureIndexBottom(IBlock block)
         {
             throw new NotImplementedException();
         }
 
-        public int GetTextureIndexBottom(IBlock block)
+        public int GetTextureIndexEast(IBlock block)
         {
             throw new NotImplementedException();
         }
@@ -50,12 +49,12 @@ namespace OctoAwesome.Basics
             throw new NotImplementedException();
         }
 
-        public int GetTextureIndexWest(IBlock block)
+        public int GetTextureIndexTop(IBlock block)
         {
             throw new NotImplementedException();
         }
 
-        public int GetTextureIndexEast(IBlock block)
+        public int GetTextureIndexWest(IBlock block)
         {
             throw new NotImplementedException();
         }

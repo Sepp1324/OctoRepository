@@ -20,8 +20,8 @@ namespace OctoAwesome.Runtime
                 definitions.Add(new SandBlockDefinition());
                 definitions.Add(new StoneBlockDefinition());
                 definitions.Add(new WaterBlockDefinition());
+                definitions.Add(new WoodBlockDefinition());
             }
-
             return definitions;
         }
     }
