@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -36,6 +38,8 @@ namespace OctoAwesome.Client.Components
         {
             base.Initialize();
             Tools = BlockDefinitionManager.GetBlockDefinitions().ToArray();
+            if (Tools != null && Tools.Length > 0)
+                Player.ActiveTool = Tools[0];
         }
 
         public override void Update(GameTime gameTime)
