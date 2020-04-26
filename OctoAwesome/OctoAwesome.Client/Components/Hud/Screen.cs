@@ -9,6 +9,8 @@ namespace OctoAwesome.Client.Components.Hud
 {
     internal abstract class Screen : UiElement
     {
+        public bool RequiresPointer { get; set; }
+
         private List<Control> controls = new List<Control>();
 
         protected List<Control> Controls
@@ -21,7 +23,7 @@ namespace OctoAwesome.Client.Components.Hud
 
         public Screen(HudComponent hud) : base(hud)
         {
-
+            RequiresPointer = true;
         }
     }
 }

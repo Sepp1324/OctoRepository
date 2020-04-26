@@ -15,7 +15,6 @@ namespace OctoAwesome.Client.Components
         private SpriteBatch batch;
         private Texture2D pix;
 
-
         private List<Control> controls = new List<Control>();
 
         private Toolbar toolbar;
@@ -23,17 +22,21 @@ namespace OctoAwesome.Client.Components
         private Compass compass;
         private MiniMap miniMap;
 
+        private bool inventoryVisible = false;
+
         private InventoryScreen inventory;
 
         public PlayerComponent Player { get; private set; }
 
+        public InputComponent Input { get; private set; }
+
         public SceneComponent Scene { get; set; }
 
-        public HudComponent(Game game, PlayerComponent player, SceneComponent scene)
-            : base(game)
+        public HudComponent(Game game, PlayerComponent player, SceneComponent scene, InputComponent input) : base(game)
         {
             Player = player;
             Scene = scene;
+            Input = input;
 
             controls.Add(toolbar = new Toolbar(this));
             controls.Add(debugInfos = new DebugInfos(this));
@@ -73,6 +76,13 @@ namespace OctoAwesome.Client.Components
             base.LoadContent();
         }
 
+        public override void Update(GameTime gameTime)
+        {
+            if (Input.InventoryTrigger)
+                inventoryVisible = !inventoryVisible;
+            Input.ScreenMode = inventoryVisible;
+        }
+
         public override void Draw(GameTime gameTime)
         {
             foreach (var control in controls)
@@ -88,7 +98,8 @@ namespace OctoAwesome.Client.Components
 
             batch.End();
 
-            inventory.Draw(batch, gameTime);
+            if (inventoryVisible)
+                inventory.Draw(batch, gameTime);
         }
     }
 }
