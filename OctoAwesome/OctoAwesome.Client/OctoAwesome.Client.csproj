@@ -45,6 +45,7 @@
     <Compile Include="Components\Hud\Compass.cs" />
     <Compile Include="Components\Hud\Control.cs" />
     <Compile Include="Components\Hud\DebugInfos.cs" />
+    <Compile Include="Components\Hud\MiniMap.cs" />
     <Compile Include="Components\Hud\Toolbar.cs" />
     <Compile Include="Components\Input\GamePadInput.cs" />
     <Compile Include="Components\HudComponent.cs" />
