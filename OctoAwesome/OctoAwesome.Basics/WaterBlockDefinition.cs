@@ -18,18 +18,11 @@ namespace OctoAwesome.Basics
         {
             get
             {
-                return new[] { Resources.water_bottom, Resources.water_side };
+                return new[] {
+                    Resources.water_bottom,
+                    Resources.water_side
+                };
             }
-        }
-
-        public IBlock GetInstance(OrientationFlags orientation)
-        {
-            return new WaterBlock();
-        }
-
-        public Type GetBlockType()
-        {
-            return typeof(WaterBlock);
         }
 
         public int GetTopTextureIndex(IBlock block)
@@ -72,6 +65,16 @@ namespace OctoAwesome.Basics
             return 0;
         }
 
+        public int GetEastTextureRotation(IBlock block)
+        {
+            return 0;
+        }
+
+        public int GetWestTextureRotation(IBlock block)
+        {
+            return 0;
+        }
+
         public int GetNorthTextureRotation(IBlock block)
         {
             return 0;
@@ -82,14 +85,44 @@ namespace OctoAwesome.Basics
             return 0;
         }
 
-        public int GetWestTextureRotation(IBlock block)
+        public bool IsTopSolidWall(IBlock block)
         {
-            return 0;
+            return false;
         }
 
-        public int GetEastTextureRotation(IBlock block)
+        public bool IsBottomSolidWall(IBlock block)
         {
-            return 0;
+            return false;
+        }
+
+        public bool IsNorthSolidWall(IBlock block)
+        {
+            return false;
+        }
+
+        public bool IsSouthSolidWall(IBlock block)
+        {
+            return false;
+        }
+
+        public bool IsWestSolidWall(IBlock block)
+        {
+            return false;
+        }
+
+        public bool IsEastSolidWall(IBlock block)
+        {
+            return false;
+        }
+
+        public IBlock GetInstance(OrientationFlags orientation)
+        {
+            return new WaterBlock();
+        }
+
+        public Type GetBlockType()
+        {
+            return typeof(WaterBlock);
         }
     }
 }

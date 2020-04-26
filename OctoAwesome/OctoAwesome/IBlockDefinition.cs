@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -26,13 +28,25 @@ namespace OctoAwesome
 
         int GetBottomTextureRotation(IBlock block);
 
+        int GetEastTextureRotation(IBlock block);
+
+        int GetWestTextureRotation(IBlock block);
+
         int GetNorthTextureRotation(IBlock block);
 
         int GetSouthTextureRotation(IBlock block);
 
-        int GetWestTextureRotation(IBlock block);
+        bool IsTopSolidWall(IBlock block);
 
-        int GetEastTextureRotation(IBlock block);
+        bool IsBottomSolidWall(IBlock block);
+
+        bool IsNorthSolidWall(IBlock block);
+
+        bool IsSouthSolidWall(IBlock block);
+
+        bool IsWestSolidWall(IBlock block);
+
+        bool IsEastSolidWall(IBlock block);
 
         IBlock GetInstance(OrientationFlags orientation);
 

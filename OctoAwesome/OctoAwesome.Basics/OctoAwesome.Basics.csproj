@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\OneDrive\OctoAwesome\bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>..\..\..\..\OneDrive\OctoAwesome\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -98,12 +98,6 @@
     <None Include="Resources\ground_bottom.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\water_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\water_side.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\sand_bottom.png" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +105,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\stone_side.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\water_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\water_side.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\wood_bottom.png" />

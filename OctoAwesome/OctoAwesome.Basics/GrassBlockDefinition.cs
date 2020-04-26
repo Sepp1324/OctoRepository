@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -16,7 +18,11 @@ namespace OctoAwesome.Basics
         {
             get
             {
-                return new[] { Resources.grass_top, Resources.grass_bottom, Resources.grass_side };
+                return new[] {
+                    Resources.grass_top,
+                    Resources.grass_bottom,
+                    Resources.grass_side
+                };
             }
         }
 
@@ -29,6 +35,7 @@ namespace OctoAwesome.Basics
         {
             return typeof(GrassBlock);
         }
+
 
         public int GetTopTextureIndex(IBlock block)
         {
@@ -70,6 +77,16 @@ namespace OctoAwesome.Basics
             return 0;
         }
 
+        public int GetEastTextureRotation(IBlock block)
+        {
+            return 0;
+        }
+
+        public int GetWestTextureRotation(IBlock block)
+        {
+            return 0;
+        }
+
         public int GetNorthTextureRotation(IBlock block)
         {
             return 0;
@@ -80,14 +97,35 @@ namespace OctoAwesome.Basics
             return 0;
         }
 
-        public int GetWestTextureRotation(IBlock block)
+
+        public bool IsTopSolidWall(IBlock block)
         {
-            return 0;
+            return true;
         }
 
-        public int GetEastTextureRotation(IBlock block)
+        public bool IsBottomSolidWall(IBlock block)
         {
-            return 0;
+            return true;
+        }
+
+        public bool IsNorthSolidWall(IBlock block)
+        {
+            return true;
+        }
+
+        public bool IsSouthSolidWall(IBlock block)
+        {
+            return true;
+        }
+
+        public bool IsWestSolidWall(IBlock block)
+        {
+            return true;
+        }
+
+        public bool IsEastSolidWall(IBlock block)
+        {
+            return true;
         }
     }
 }

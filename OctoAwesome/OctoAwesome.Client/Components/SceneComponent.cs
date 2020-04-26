@@ -28,7 +28,6 @@ namespace OctoAwesome.Client.Components
 
         private Queue<ChunkRenderer> freeChunkRenderer = new Queue<ChunkRenderer>();
         private List<ChunkRenderer> activeChunkRenderer = new List<ChunkRenderer>();
-        private Queue<ChunkRenderer> highPrioUpdate = new Queue<ChunkRenderer>();
         private List<Index3> distances = new List<Index3>();
 
         private BasicEffect selectionEffect;
@@ -116,11 +115,7 @@ namespace OctoAwesome.Client.Components
 
             for (int i = 0; i < chunkRenderer.Length; i++)
             {
-                chunkRenderer[i] = new ChunkRenderer(
-                    GraphicsDevice, camera.Projection, blockTextures)
-                {
-                    InUse = false
-                };
+                chunkRenderer[i] = new ChunkRenderer(GraphicsDevice, camera.Projection, blockTextures);
                 freeChunkRenderer.Enqueue(chunkRenderer[i]);
             }
 
@@ -163,14 +158,6 @@ namespace OctoAwesome.Client.Components
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var renderer in chunkRenderer)
-            {
-                if (renderer.NeedUpdate() && !highPrioUpdate.Contains(renderer))
-                    highPrioUpdate.Enqueue(renderer);
-            }
-
-            #region Selektion
-
             Index3 centerblock = player.Player.Position.GlobalBlockIndex;
             Index3 renderOffset = player.Player.Position.ChunkIndex * Chunk.CHUNKSIZE;
 
@@ -263,8 +250,6 @@ namespace OctoAwesome.Client.Components
                 player.SelectedCorner = OrientationFlags.None;
             }
 
-            #endregion
-
             base.Update(gameTime);
         }
 
@@ -284,11 +269,11 @@ namespace OctoAwesome.Client.Components
 
             foreach (var renderer in chunkRenderer)
             {
-                if (!renderer.InUse)
+                if (!renderer.ChunkPosition.HasValue)
                     continue;
 
                 Index3 shift = chunkOffset.ShortestDistanceXY(
-                    renderer.ChunkIndex, new Index2(
+                    renderer.ChunkPosition.Value.ChunkIndex, new Index2(
                         planet.Size.X,
                         planet.Size.Y));
 
@@ -331,79 +316,104 @@ namespace OctoAwesome.Client.Components
             }
         }
 
-        private void FillChunkRenderer()
+        private bool FillChunkRenderer()
         {
             Index3 destinationChunk = player.Player.Position.ChunkIndex;
             IPlanet planet = ResourceManager.Instance.GetPlanet(player.Player.Position.Planet);
             destinationChunk.Z = Math.Max(VIEWHEIGHT, Math.Min(planet.Size.Z - VIEWHEIGHT, destinationChunk.Z));
 
-            HandleHighPrioUpdates();
-
-            if (destinationChunk == currentChunk)
-                return;
-
-            Index3 shift = currentChunk.ShortestDistanceXY(
-                destinationChunk, new Index2(planet.Size.X, planet.Size.Y));
-
-            for (int i = activeChunkRenderer.Count - 1; i >= 0; i--)
+            // Nur ausführen wenn der Spieler den Chunk gewechselt hat
+            if (destinationChunk != currentChunk)
             {
-                ChunkRenderer renderer = activeChunkRenderer[i];
+                #region Shift durchführen
 
-                renderer.RelativeIndex -= shift;
+                Index3 shift = currentChunk.ShortestDistanceXY(
+                    destinationChunk, new Index2(planet.Size.X, planet.Size.Y));
 
-                if (!renderer.InUse ||
-                    renderer.RelativeIndex.X < -VIEWRANGE || renderer.RelativeIndex.X > VIEWRANGE ||
-                    renderer.RelativeIndex.Y < -VIEWRANGE || renderer.RelativeIndex.Y > VIEWRANGE ||
-                    renderer.RelativeIndex.Z < -VIEWHEIGHT || renderer.RelativeIndex.Z > VIEWHEIGHT)
+                for (int i = activeChunkRenderer.Count - 1; i >= 0; i--)
                 {
-                    renderer.InUse = false;
-                    freeChunkRenderer.Enqueue(renderer);
-                    activeChunkRenderer.Remove(renderer);
+                    ChunkRenderer renderer = activeChunkRenderer[i];
+
+                    Index3 absoluteIndex = renderer.ChunkPosition.Value.ChunkIndex;
+                    Index3 relativeIndex = destinationChunk.ShortestDistanceXY(
+                        absoluteIndex, new Index2(
+                            planet.Size.X,
+                            planet.Size.Y));
+
+                    if (!renderer.ChunkPosition.HasValue ||
+                        relativeIndex.X < -VIEWRANGE || relativeIndex.X > VIEWRANGE ||
+                        relativeIndex.Y < -VIEWRANGE || relativeIndex.Y > VIEWRANGE ||
+                        relativeIndex.Z < -VIEWHEIGHT || relativeIndex.Z > VIEWHEIGHT)
+                    {
+                        renderer.SetChunk(null);
+
+                        freeChunkRenderer.Enqueue(renderer);
+                        activeChunkRenderer.Remove(renderer);
+                    }
                 }
-            }
 
-            foreach (var distance in distances)
-            {
-                HandleHighPrioUpdates();
+                #endregion
 
-                Index3 chunkIndex = destinationChunk + distance;
+                #region Ungenutzte Chunks auffüllen
 
-                chunkIndex.NormalizeXY(planet.Size);
-
-                if (!activeChunkRenderer.Any(c => c.RelativeIndex == distance))
+                foreach (var distance in distances)
                 {
-                    IChunk chunk = ResourceManager.Instance.GetChunk(planet.Id, chunkIndex);
-                    if (chunk != null)
+                    Index3 chunkIndex = destinationChunk + distance;
+                    chunkIndex.NormalizeXY(planet.Size);
+
+                    PlanetIndex3 chunkPosition = new PlanetIndex3(
+                        player.Player.Position.Planet, chunkIndex);
+
+                    if (!activeChunkRenderer.Any(c => c.ChunkPosition == chunkPosition))
                     {
                         ChunkRenderer renderer = freeChunkRenderer.Dequeue();
-                        renderer.SetChunk(chunk);
-                        renderer.RelativeIndex = distance;
-                        renderer.InUse = true;
+                        renderer.SetChunk(chunkPosition);
                         activeChunkRenderer.Add(renderer);
                     }
                 }
+
+                #endregion
+
+                currentChunk = destinationChunk;
             }
 
-            currentChunk = destinationChunk;
-        }
+            #region Chunkrenderer updaten
 
-        private void HandleHighPrioUpdates()
-        {
-            // High Prio Interrupt
-            while (highPrioUpdate.Count > 0)
+            int shortestDistance = int.MaxValue;
+            ChunkRenderer updatableRenderer = null;
+            foreach (var renderer in activeChunkRenderer)
             {
-                var renderer = highPrioUpdate.Dequeue();
-                if (activeChunkRenderer.Contains(renderer))
-                    renderer.RegenerateVertexBuffer();
+                if (!renderer.NeedUpdate())
+                    continue;
+
+                Index3 absoluteIndex = renderer.ChunkPosition.Value.ChunkIndex;
+                Index3 relativeIndex = destinationChunk.ShortestDistanceXY(
+                                   absoluteIndex, new Index2(
+                                       planet.Size.X,
+                                       planet.Size.Y));
+
+                int distance = relativeIndex.LengthSquared();
+                if (distance < shortestDistance)
+                {
+                    updatableRenderer = renderer;
+                    shortestDistance = distance;
+                }
             }
+
+            if (updatableRenderer != null)
+                updatableRenderer.RegenerateVertexBuffer();
+
+            #endregion
+
+            return updatableRenderer != null;
         }
 
         private void BackgroundLoop()
         {
             while (true)
             {
-                FillChunkRenderer();
-                Thread.Sleep(1);
+                if (!FillChunkRenderer())
+                    Thread.Sleep(1);
             }
         }
 

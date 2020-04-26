@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OctoAwesome.Client.Components
+namespace OctoAwesome.Client.Components.Input
 {
     /// <summary>
     /// Keyboard-Implementierung der Input-Schnittstelle.
@@ -34,17 +34,38 @@ namespace OctoAwesome.Client.Components
         /// <summary>
         /// Interaktionstrigger (löst eine Interaktion mit dem markierten Element aus)
         /// </summary>
-        public bool InteractTrigger { get; private set; }
+        public Trigger<bool> InteractTrigger { get; private set; }
 
         /// <summary>
         /// Anwendungstrigger (Verwendet das aktuelle Werkzeug auf die markierte Stelle an)
         /// </summary>
-        public bool ApplyTrigger { get; private set; }
+        public Trigger<bool> ApplyTrigger { get; private set; }
 
         /// <summary>
         /// Sprung-Trigger (löst einen Sprung aus)
         /// </summary>
-        public bool JumpTrigger { get; private set; }
+        public Trigger<bool> JumpTrigger { get; private set; }
+
+        public Trigger<bool>[] SlotTrigger { get; private set; }
+
+        public Trigger<bool> SlotLeftTrigger { get; private set; }
+
+        public Trigger<bool> SlotRightTrigger { get; private set; }
+
+        public KeyboardInput()
+        {
+            InteractTrigger = new Trigger<bool>();
+            ApplyTrigger = new Trigger<bool>();
+            JumpTrigger = new Trigger<bool>();
+            SlotLeftTrigger = new Trigger<bool>();
+            SlotRightTrigger = new Trigger<bool>();
+
+            SlotTrigger = new Trigger<bool>[InputComponent.SlotTriggerLength];
+            for (int i = 0; i < SlotTrigger.Length; i++)
+            {
+                SlotTrigger[i] = new Trigger<bool>();
+            }
+        }
 
         /// <summary>
         /// Frame Update zur Ermittlung der Veränderungen.
@@ -57,17 +78,19 @@ namespace OctoAwesome.Client.Components
             MoveY = 0f;
             HeadX = 0f;
             HeadY = 0f;
-
-            InteractTrigger = keyboardState.IsKeyDown(Keys.E);
-            ApplyTrigger = keyboardState.IsKeyDown(Keys.Q);
-            JumpTrigger = keyboardState.IsKeyDown(Keys.Space);
-
-            Slot1Trigger = keyboardState.IsKeyDown(Keys.D1);
-            Slot2Trigger = keyboardState.IsKeyDown(Keys.D2);
-            Slot3Trigger = keyboardState.IsKeyDown(Keys.D3);
-            Slot4Trigger = keyboardState.IsKeyDown(Keys.D4);
-            Slot5Trigger = keyboardState.IsKeyDown(Keys.D5);
-
+            InteractTrigger.Value = keyboardState.IsKeyDown(Keys.E);
+            ApplyTrigger.Value = keyboardState.IsKeyDown(Keys.Q);
+            JumpTrigger.Value = keyboardState.IsKeyDown(Keys.Space);
+            SlotTrigger[0].Value = keyboardState.IsKeyDown(Keys.NumPad1);
+            SlotTrigger[1].Value = keyboardState.IsKeyDown(Keys.D2);
+            SlotTrigger[2].Value = keyboardState.IsKeyDown(Keys.D3);
+            SlotTrigger[3].Value = keyboardState.IsKeyDown(Keys.D4);
+            SlotTrigger[4].Value = keyboardState.IsKeyDown(Keys.D5);
+            SlotTrigger[5].Value = keyboardState.IsKeyDown(Keys.D6);
+            SlotTrigger[6].Value = keyboardState.IsKeyDown(Keys.D7);
+            SlotTrigger[7].Value = keyboardState.IsKeyDown(Keys.D8);
+            SlotTrigger[8].Value = keyboardState.IsKeyDown(Keys.D9);
+            SlotTrigger[9].Value = keyboardState.IsKeyDown(Keys.D0);
             MoveX -= (keyboardState.IsKeyDown(Keys.A) ? 1 : 0);
             MoveX += (keyboardState.IsKeyDown(Keys.D) ? 1 : 0);
             MoveY -= (keyboardState.IsKeyDown(Keys.S) ? 1 : 0);
@@ -77,15 +100,5 @@ namespace OctoAwesome.Client.Components
             HeadY -= (keyboardState.IsKeyDown(Keys.Up) ? 1 : 0);
             HeadY += (keyboardState.IsKeyDown(Keys.Down) ? 1 : 0);
         }
-
-        public bool Slot1Trigger { get; private set; }
-
-        public bool Slot2Trigger { get; private set; }
-
-        public bool Slot3Trigger { get; private set; }
-
-        public bool Slot4Trigger { get; private set; }
-
-        public bool Slot5Trigger { get; private set; }
     }
 }

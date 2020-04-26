@@ -21,7 +21,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\OneDrive\OctoAwesome\bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,7 +30,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>..\..\..\..\OneDrive\OctoAwesome\bin\Release\</OutputPath>
     <DefineConstants>TRACE;WINDOWS</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -42,11 +42,11 @@
   <ItemGroup>
     <Compile Include="Components\ChunkRenderer.cs" />
     <Compile Include="Components\CameraComponent.cs" />
-    <Compile Include="Components\GamePadInput.cs" />
+    <Compile Include="Components\Input\GamePadInput.cs" />
     <Compile Include="Components\HudComponent.cs" />
     <Compile Include="Components\InputComponent.cs" />
-    <Compile Include="Components\KeyBoardInput.cs" />
-    <Compile Include="Components\MouseInput.cs" />
+    <Compile Include="Components\Input\KeyBoardInput.cs" />
+    <Compile Include="Components\Input\MouseInput.cs" />
     <Compile Include="Components\SceneComponent.cs" />
     <Compile Include="Components\PlayerComponent.cs" />
     <Compile Include="Components\SimulationComponent.cs" />
@@ -82,12 +82,10 @@
     <ProjectReference Include="..\OctoAwesome.Runtime\OctoAwesome.Runtime.csproj">
       <Project>{97ad45dd-c29a-4855-a7bd-d1f5125f08de}</Project>
       <Name>OctoAwesome.Runtime</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\OctoAwesome\OctoAwesome.csproj">
       <Project>{6e65b8ea-557e-4be4-b1c8-05439c2945fb}</Project>
       <Name>OctoAwesome</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

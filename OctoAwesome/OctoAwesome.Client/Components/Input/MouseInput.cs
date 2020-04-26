@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OctoAwesome.Client.Components
+namespace OctoAwesome.Client.Components.Input
 {
     /// <summary>
     /// Maus-Implementierung der Input-Schnittstelle.
@@ -16,6 +16,8 @@ namespace OctoAwesome.Client.Components
         /// Geschwindigkeitsmultiplikator für die Kopfbewegung-
         /// </summary>
         private float mouseSpeed = 0.2f;
+
+        private int lastWheelState = 0;
 
         private Game game;
 
@@ -44,17 +46,23 @@ namespace OctoAwesome.Client.Components
         /// <summary>
         /// Interaktionstrigger (löst eine Interaktion mit dem markierten Element aus)
         /// </summary>
-        public bool InteractTrigger { get; private set; }
+        public Trigger<bool> InteractTrigger { get; private set; }
 
         /// <summary>
         /// Anwendungstrigger (Verwendet das aktuelle Werkzeug auf die markierte Stelle an)
         /// </summary>
-        public bool ApplyTrigger { get; private set; }
+        public Trigger<bool> ApplyTrigger { get; private set; }
 
         /// <summary>
         /// Sprung-Trigger (löst einen Sprung aus)
         /// </summary>
-        public bool JumpTrigger { get; private set; }
+        public Trigger<bool> JumpTrigger { get; private set; }
+
+        public Trigger<bool>[] SlotTrigger { get { return null; } }
+
+        public Trigger<bool> SlotLeftTrigger { get; private set; }
+
+        public Trigger<bool> SlotRightTrigger { get; private set; }
 
         /// <summary>
         /// Initialisierung. Benötigt eine Game-Instanz zur Ermittlung der Fenstergröße
@@ -63,6 +71,12 @@ namespace OctoAwesome.Client.Components
         public MouseInput(Game game)
         {
             this.game = game;
+
+            InteractTrigger = new Trigger<bool>();
+            ApplyTrigger = new Trigger<bool>();
+            JumpTrigger = new Trigger<bool>();
+            SlotLeftTrigger = new Trigger<bool>();
+            SlotRightTrigger = new Trigger<bool>();
         }
 
         /// <summary>
@@ -72,8 +86,8 @@ namespace OctoAwesome.Client.Components
         {
             MouseState state = Mouse.GetState();
 
-            InteractTrigger = state.RightButton == ButtonState.Pressed;
-            ApplyTrigger = state.LeftButton == ButtonState.Pressed;
+            InteractTrigger.Value = state.RightButton == ButtonState.Pressed;
+            ApplyTrigger.Value = state.LeftButton == ButtonState.Pressed;
 
             int centerX = game.GraphicsDevice.Viewport.Width / 2;
             int centerY = game.GraphicsDevice.Viewport.Height / 2;
@@ -88,31 +102,10 @@ namespace OctoAwesome.Client.Components
                 HeadY = -deltaY * mouseSpeed;
             }
             init = true;
-        }
 
-        public bool Slot1Trigger
-        {
-            get { return false; }
-        }
-
-        public bool Slot2Trigger
-        {
-            get { return false; }
-        }
-
-        public bool Slot3Trigger
-        {
-            get { return false; }
-        }
-
-        public bool Slot4Trigger
-        {
-            get { return false; }
-        }
-
-        public bool Slot5Trigger
-        {
-            get { return false; }
+            SlotLeftTrigger.Value = state.ScrollWheelValue < lastWheelState;
+            SlotRightTrigger.Value = state.ScrollWheelValue > lastWheelState;
+            lastWheelState = state.ScrollWheelValue;
         }
     }
 }
