@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using OctoAwesome.Client.Components.Hud;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,20 @@ namespace OctoAwesome.Client.Components
         {
             this.input = input;
 
+            this.input.OnKeyDown += input_OnKeyDown;
+            this.input.OnKeyUp += input_OnKeyUp;
+
             screens.Add("inventory", new InventoryScreen(this));
+        }
+
+        private void input_OnKeyUp(Keys keys)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void input_OnKeyDown(Keys keys)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Update(GameTime gameTime)

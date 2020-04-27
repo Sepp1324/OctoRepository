@@ -10,6 +10,9 @@ namespace OctoAwesome.Client.Components.Input
     {
         public Index2 PointerPosition { get; private set; }
 
+        public event OnKeyChange OnKeyDown;
+        public event OnKeyChange OnKeyUp;
+
         public void Update()
         {
             MouseState state = Mouse.GetState();
