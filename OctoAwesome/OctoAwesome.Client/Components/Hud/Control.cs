@@ -13,6 +13,8 @@ namespace OctoAwesome.Client.Components.Hud
 
         public bool Visible { get; set; }
 
+        public bool IsHovered { get; internal set; }
+
         public Control(IScreenManager screenManager) : base(screenManager)
         {
             Enabled = true;

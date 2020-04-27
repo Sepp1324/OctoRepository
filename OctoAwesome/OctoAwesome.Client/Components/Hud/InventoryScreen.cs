@@ -13,6 +13,7 @@ namespace OctoAwesome.Client.Components.Hud
 
         private PanelControl panel;
         private LabelControl headline;
+        private ButtonControl closeButton;
 
         public InventoryScreen(IScreenManager screenManager) : base(screenManager)
         {
@@ -42,6 +43,18 @@ namespace OctoAwesome.Client.Components.Hud
             };
             Controls.Add(headline);
 
+            closeButton = new ButtonControl(ScreenManager)
+            {
+                Background = new SolidColorBrush(ScreenManager) { Color = Color.DarkBlue },
+                Hovered = new SolidColorBrush(ScreenManager) { Color = Color.Blue },
+                Font = ScreenManager.NormalText,
+                Text = "Close",
+                Color = Color.White,
+                Position = new Index2(((ScreenManager.ScreenSize.X - 600) / 2) + 100, ((ScreenManager.ScreenSize.Y - 400) / 2) + 170),
+                Size = new Index2(200, 50)
+            };
+            Controls.Add(closeButton);
+
             foreach (var control in Controls)
                 control.LoadContent();
         }
@@ -49,7 +62,7 @@ namespace OctoAwesome.Client.Components.Hud
         public override void Draw(SpriteBatch batch, GameTime gameTime)
         {
             foreach (var control in Controls)
-                control.Draw(batch, gameTime);            
+                control.Draw(batch, gameTime);
         }
     }
 }

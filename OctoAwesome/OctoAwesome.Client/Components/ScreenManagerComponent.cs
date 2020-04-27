@@ -32,9 +32,10 @@ namespace OctoAwesome.Client.Components
 
         void input_OnKeyUp(Keys key)
         {
-            if(key == Keys.Escape)
+            if (key == Keys.Escape)
             {
                 ActiveScreen = null;
+                input.PointerPosition = ScreenSize / 2;
                 input.ScreenMode = false;
             }
         }
@@ -64,6 +65,14 @@ namespace OctoAwesome.Client.Components
                 input.ScreenMode = true;
             }
 
+            if (ActiveScreen != null)
+            {
+                foreach (var control in ActiveScreen.Controls)
+                {
+                    control.IsHovered = (input.PointerPosition.X >= control.Position.X && input.PointerPosition.X <= control.Position.X + control.Size.X &&
+                        input.PointerPosition.Y >= control.Position.Y && input.PointerPosition.Y <= control.Position.Y + control.Size.Y);
+                }
+            }
             base.Update(gameTime);
         }
 
