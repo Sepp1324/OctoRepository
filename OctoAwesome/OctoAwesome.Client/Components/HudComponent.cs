@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Client.Components.Hud;
 using OctoAwesome.Runtime;
@@ -10,10 +11,9 @@ using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
-    internal sealed class HudComponent : DrawableGameComponent
+    internal sealed class HudComponent : DrawableGameComponent, IScreenManager
     {
         private SpriteBatch batch;
-        private Texture2D pix;
 
         private List<Control> controls = new List<Control>();
 
@@ -21,10 +21,6 @@ namespace OctoAwesome.Client.Components
         private DebugInfos debugInfos;
         private Compass compass;
         private MiniMap miniMap;
-
-        private bool inventoryVisible = false;
-
-        private InventoryScreen inventory;
 
         public PlayerComponent Player { get; private set; }
 
@@ -38,12 +34,10 @@ namespace OctoAwesome.Client.Components
             Scene = scene;
             Input = input;
 
-            controls.Add(toolbar = new Toolbar(this));
-            controls.Add(debugInfos = new DebugInfos(this));
-            controls.Add(compass = new Compass(this));
-            controls.Add(miniMap = new MiniMap(this));
-
-            inventory = new InventoryScreen(this);
+            controls.Add(toolbar = new Toolbar(this, Player));
+            controls.Add(debugInfos = new DebugInfos(this, Player));
+            controls.Add(compass = new Compass(this, Player));
+            controls.Add(miniMap = new MiniMap(this, Scene));
         }
 
         public override void Initialize()
@@ -54,7 +48,8 @@ namespace OctoAwesome.Client.Components
 
         protected override void LoadContent()
         {
-            pix = Game.Content.Load<Texture2D>("Textures/pix");
+            Pix = Game.Content.Load<Texture2D>("Textures/pix");
+            NormalText = Game.Content.Load<SpriteFont>("hud");
 
             toolbar.Position = new Index2(0, GraphicsDevice.Viewport.Height - 100);
             toolbar.Size = new Index2(GraphicsDevice.Viewport.Width, 100);
@@ -71,16 +66,12 @@ namespace OctoAwesome.Client.Components
             foreach (var control in controls)
                 control.LoadContent();
 
-            inventory.LoadContent();
-
             base.LoadContent();
         }
 
         public override void Update(GameTime gameTime) 
         {
-            if (Input.InventoryTrigger)
-                inventoryVisible = !inventoryVisible;
-            Input.ScreenMode = inventoryVisible;
+            
         }
 
         public override void Draw(GameTime gameTime)
@@ -93,13 +84,30 @@ namespace OctoAwesome.Client.Components
             int centerX = GraphicsDevice.Viewport.Width / 2;
             int centerY = GraphicsDevice.Viewport.Height / 2;
 
-            batch.Draw(pix, new Rectangle(centerX - 1, centerY - 15, 2, 30), Color.White * 0.5f);
-            batch.Draw(pix, new Rectangle(centerX - 15, centerY - 1, 30, 2), Color.White * 0.5f);
+            batch.Draw(Pix, new Rectangle(centerX - 1, centerY - 15, 2, 30), Color.White * 0.5f);
+            batch.Draw(Pix, new Rectangle(centerX - 15, centerY - 1, 30, 2), Color.White * 0.5f);
 
             batch.End();
+        }
 
-            if (inventoryVisible)
-                inventory.Draw(batch, gameTime);
+        public Texture2D Pix { get; private set; }
+
+        public SpriteFont NormalText { get; private set; }
+
+        public Index2 ScreenSize
+        {
+            get
+            {
+                return new Index2((int)GraphicsDevice.Viewport.Width, (int)GraphicsDevice.Viewport.Height);
+            }
+        }
+
+        public ContentManager Content
+        {
+            get
+            {
+                return Game.Content;
+            }
         }
     }
 }

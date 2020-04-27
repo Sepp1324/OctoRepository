@@ -21,7 +21,7 @@ namespace OctoAwesome.Client.Components.Hud
             }
         }
 
-        public Screen(HudComponent hud) : base(hud)
+        public Screen(IScreenManager screenManager) : base(screenManager)
         {
             RequiresPointer = true;
         }

@@ -11,7 +11,7 @@ namespace OctoAwesome.Client.Components.Hud
     {
         public Brush Background { get; set; }
 
-        public PanelControl(HudComponent hud) : base(hud)
+        public PanelControl(IScreenManager screenManager) : base(screenManager)
         {
         }
 
