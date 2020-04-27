@@ -10,10 +10,14 @@ namespace OctoAwesome
     {
         Index2 PointerPosition { get; set; }
 
+        event OnMouseKeyChange OnLeftMouseUp;
+
         event OnKeyChange OnKeyDown;
 
         event OnKeyChange OnKeyUp;
     }
 
     public delegate void OnKeyChange(Keys key);
+
+    public delegate void OnMouseKeyChange(Index2 position);
 }

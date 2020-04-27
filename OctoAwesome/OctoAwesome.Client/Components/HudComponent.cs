@@ -90,6 +90,11 @@ namespace OctoAwesome.Client.Components
             batch.End();
         }
 
+        public void Close()
+        {
+            //throw new NotImplementedException();
+        }
+
         public Texture2D Pix { get; private set; }
 
         public SpriteFont NormalText { get; private set; }

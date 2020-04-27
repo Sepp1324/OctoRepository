@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace OctoAwesome.Client.Components.Hud
+﻿namespace OctoAwesome.Client.Components.Hud
 {
     internal abstract class Control : UiElement
     {
@@ -20,5 +17,18 @@ namespace OctoAwesome.Client.Components.Hud
             Enabled = true;
             Visible = true;
         }
+
+        internal void FireMouseUp()
+        {
+            if (MouseUp != null)
+                MouseUp();
+            OnMouseUp();
+        }
+
+        protected virtual void OnMouseUp() { }
+
+        public event MouseEventDelegate MouseUp;
     }
+
+        public delegate void MouseEventDelegate();
 }

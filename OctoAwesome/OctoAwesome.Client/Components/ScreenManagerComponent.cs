@@ -26,6 +26,7 @@ namespace OctoAwesome.Client.Components
 
             this.input.OnKeyDown += input_OnKeyDown;
             this.input.OnKeyUp += input_OnKeyUp;
+            //this.input.OnLeftMouseUp += input_OnLeftMouseUp;
 
             screens.Add("inventory", new InventoryScreen(this));
         }
@@ -34,9 +35,7 @@ namespace OctoAwesome.Client.Components
         {
             if (key == Keys.Escape)
             {
-                ActiveScreen = null;
-                input.PointerPosition = ScreenSize / 2;
-                input.ScreenMode = false;
+                Close();
             }
         }
 
@@ -82,6 +81,13 @@ namespace OctoAwesome.Client.Components
                 ActiveScreen.Draw(batch, gameTime);
 
             base.Draw(gameTime);
+        }
+
+        public void Close()
+        {
+            ActiveScreen = null;
+            input.PointerPosition = ScreenSize / 2;
+            input.ScreenMode = false;
         }
 
         public Texture2D Pix { get; private set; }

@@ -51,7 +51,7 @@ namespace OctoAwesome.Client.Components.Input
         }
 
         public event OnKeyChange OnKeyDown;
-
         public event OnKeyChange OnKeyUp;
+        public event OnMouseKeyChange OnLeftMouseUp;
     }
 }
