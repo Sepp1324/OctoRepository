@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +10,21 @@ namespace OctoAwesome.Client.Components.Input
     internal class KeyboardScreenInput : IScreenInputSet
     {
         private List<Keys> pressedKeys = new List<Keys>();
-        private List<Keys> releasedKeys = new List<Keys>();
+
+        public Index2 PointerPosition
+        {
+            get { return Index2.Zero; }
+        }
 
         public void Update()
         {
             var state = Keyboard.GetState();
-
             Keys[] keys = state.GetPressedKeys();
+
 
             foreach (var key in keys)
             {
-                if(!pressedKeys.Contains(key))
+                if (!pressedKeys.Contains(key))
                 {
                     if (OnKeyDown != null)
                         OnKeyDown(key);
@@ -27,9 +32,10 @@ namespace OctoAwesome.Client.Components.Input
                 }
             }
 
-            foreach (var key in releasedKeys)
+            List<Keys> releasedKeys = new List<Keys>();
+            foreach (var key in pressedKeys)
             {
-                if(!keys.Contains(key))
+                if (!keys.Contains(key))
                 {
                     if (OnKeyUp != null)
                         OnKeyUp(key);
@@ -43,15 +49,8 @@ namespace OctoAwesome.Client.Components.Input
             }
         }
 
-        public Index2 PointerPosition
-        {
-            get
-            {
-                return Index2.Zero;
-            }
-        }
-
         public event OnKeyChange OnKeyDown;
+
         public event OnKeyChange OnKeyUp;
     }
 }

@@ -1,18 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components.Hud
 {
-    class Toolbar : Control
+    internal class Toolbar : Control
     {
         private Texture2D[] toolTextures;
 
         public PlayerComponent Player { get; set; }
 
-        public Toolbar(IScreenManager screenManager, PlayerComponent player) :base(screenManager)
+        public Toolbar(IScreenManager screenManager, PlayerComponent player)
+            : base(screenManager)
         {
             Player = player;
         }
@@ -21,10 +25,9 @@ namespace OctoAwesome.Client.Components.Hud
         {
             toolTextures = new Texture2D[Player.Tools.Length];
             int index = 0;
-
             foreach (var tool in Player.Tools)
             {
-                using(MemoryStream stream = new MemoryStream())
+                using (MemoryStream stream = new MemoryStream())
                 {
                     System.Drawing.Bitmap bitmap = tool.Textures.First();
                     bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);

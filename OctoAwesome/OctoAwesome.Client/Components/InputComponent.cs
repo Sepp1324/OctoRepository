@@ -23,29 +23,17 @@ namespace OctoAwesome.Client.Components
         private KeyboardScreenInput screenKeyboard;
 
         public bool ScreenMode { get; set; }
-
         public Index2 PointerPosition { get; private set; }
-
         public float MoveX { get; private set; }
-
         public float MoveY { get; private set; }
-
         public float HeadX { get; private set; }
-
         public float HeadY { get; private set; }
-
         public Trigger<bool> InteractTrigger { get; private set; }
-
         public Trigger<bool> ApplyTrigger { get; private set; }
-
-        public Trigger<bool> InventoryTrigger { get; private set; }
-
         public Trigger<bool> JumpTrigger { get; private set; }
-
+        public Trigger<bool> InventoryTrigger { get; private set; }
         public Trigger<bool>[] SlotTrigger { get; private set; }
-
         public Trigger<bool> SlotLeftTrigger { get; private set; }
-
         public Trigger<bool> SlotRightTrigger { get; private set; }
 
         public InputComponent(Game game)
@@ -53,19 +41,17 @@ namespace OctoAwesome.Client.Components
         {
             InteractTrigger = new Trigger<bool>();
             ApplyTrigger = new Trigger<bool>();
+            InventoryTrigger = new Trigger<bool>();
             JumpTrigger = new Trigger<bool>();
             SlotLeftTrigger = new Trigger<bool>();
             SlotRightTrigger = new Trigger<bool>();
             SlotTrigger = new Trigger<bool>[SlotTriggerLength];
-            InventoryTrigger = new Trigger<bool>();
-
             for (int i = 0; i < SlotTrigger.Length; i++)
                 SlotTrigger[i] = new Trigger<bool>();
 
             gamepad = new GamePadInput();
             keyboard = new KeyboardInput();
             mouse = new MouseInput(game);
-
             screenMouse = new MouseScreenInput();
             screenKeyboard = new KeyboardScreenInput();
 
@@ -78,10 +64,8 @@ namespace OctoAwesome.Client.Components
                 mouse
             };
 
-            screenInputDevices = new List<IScreenInputSet>
-            {
-                screenMouse,
-                screenKeyboard
+            screenInputDevices = new List<IScreenInputSet>{
+                screenMouse
             };
         }
 
@@ -95,7 +79,6 @@ namespace OctoAwesome.Client.Components
             bool[] nextSlot = new bool[SlotTriggerLength];
             bool nextSlotLeft = false;
             bool nextSlotRight = false;
-
             MoveX = 0f;
             MoveY = 0f;
             HeadX = 0f;
@@ -124,7 +107,6 @@ namespace OctoAwesome.Client.Components
                     nextInventory |= device.InventoryTrigger;
                     nextSlotLeft |= device.SlotLeftTrigger;
                     nextSlotRight |= device.SlotRightTrigger;
-
                     if (device.SlotTrigger != null)
                         for (int i = 0; i < Math.Min(device.SlotTrigger.Length, SlotTriggerLength); i++)
                             nextSlot[i] |= device.SlotTrigger[i];
@@ -137,11 +119,10 @@ namespace OctoAwesome.Client.Components
 
                 InteractTrigger.Value = nextInteract;
                 ApplyTrigger.Value = nextApply;
-                JumpTrigger.Value = nextJump;
                 InventoryTrigger.Value = nextInventory;
+                JumpTrigger.Value = nextJump;
                 SlotLeftTrigger.Value = nextSlotLeft;
                 SlotRightTrigger.Value = nextSlotRight;
-
                 for (int i = 0; i < SlotTriggerLength; i++)
                     SlotTrigger[i].Value = nextSlot[i];
 
@@ -153,6 +134,5 @@ namespace OctoAwesome.Client.Components
         public event OnKeyChange OnKeyDown;
 
         public event OnKeyChange OnKeyUp;
-
     }
 }

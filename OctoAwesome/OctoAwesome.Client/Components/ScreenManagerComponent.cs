@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Input;
 using OctoAwesome.Client.Components.Hud;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 
@@ -20,7 +19,8 @@ namespace OctoAwesome.Client.Components
 
         private Screen ActiveScreen = null;
 
-        public ScreenManagerComponent(Game game, InputComponent input) : base(game)
+        public ScreenManagerComponent(Game game, InputComponent input)
+            : base(game)
         {
             this.input = input;
 
@@ -30,25 +30,18 @@ namespace OctoAwesome.Client.Components
             screens.Add("inventory", new InventoryScreen(this));
         }
 
-        private void input_OnKeyUp(Keys keys)
+        void input_OnKeyUp(Keys key)
         {
-            throw new NotImplementedException();
-        }
-
-        private void input_OnKeyDown(Keys keys)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            if(input.InventoryTrigger)
+            if(key == Keys.Escape)
             {
-                ActiveScreen = screens["inventory"];
-                input.ScreenMode = true;
+                ActiveScreen = null;
+                input.ScreenMode = false;
             }
+        }
 
-            base.Update(gameTime);
+        void input_OnKeyDown(Keys key)
+        {
+            //throw new NotImplementedException();
         }
 
         protected override void LoadContent()
@@ -61,6 +54,17 @@ namespace OctoAwesome.Client.Components
 
             foreach (var screen in screens.Values)
                 screen.LoadContent();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (input.InventoryTrigger)
+            {
+                ActiveScreen = screens["inventory"];
+                input.ScreenMode = true;
+            }
+
+            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -79,24 +83,21 @@ namespace OctoAwesome.Client.Components
         {
             get
             {
-                return new Index2((int)GraphicsDevice.Viewport.Width, (int)GraphicsDevice.Viewport.Height);
+                return new Index2(
+                    (int)GraphicsDevice.Viewport.Width,
+                    (int)GraphicsDevice.Viewport.Height);
             }
         }
 
+
         public ContentManager Content
         {
-            get
-            {
-                return Game.Content;
-            }
+            get { return Game.Content; }
         }
 
         public GraphicsDevice GraphicsDevice
         {
-            get
-            {
-                return base.GraphicsDevice;
-            }
+            get { return base.GraphicsDevice; }
         }
     }
 }

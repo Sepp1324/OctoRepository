@@ -15,5 +15,5 @@ namespace OctoAwesome
         event OnKeyChange OnKeyUp;
     }
 
-    public delegate void OnKeyChange(Keys keys);
+    public delegate void OnKeyChange(Keys key);
 }
