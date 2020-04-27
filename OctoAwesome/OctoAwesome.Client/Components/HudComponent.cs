@@ -76,7 +76,7 @@ namespace OctoAwesome.Client.Components
             base.LoadContent();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime) 
         {
             if (Input.InventoryTrigger)
                 inventoryVisible = !inventoryVisible;
