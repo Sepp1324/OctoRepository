@@ -20,6 +20,8 @@ namespace OctoAwesome.Runtime
 
         public IBlockDefinition ActiveTool { get; set; }
 
+        public WorldState State { get; private set; }
+
         public ActorHost(Player player)
         {
             Player = player;
@@ -27,6 +29,32 @@ namespace OctoAwesome.Runtime
             planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
             ActiveTool = null;
+            State = WorldState.Loading;
+        }
+
+        public void Initialize()
+        {
+            State = WorldState.Loading;
+
+            for(int x = -1; x <= 1; x++)
+            {
+                for(int y = -1; y <= 1; y++)
+                {
+                    for(int z = -1; z <= 1; z++)
+                    {
+                        if (z < 0 || z >= planet.Size.Z)
+                            continue;
+
+                        var chunkPosition = Player.Position.ChunkIndex + new Index3(x, y, z);
+                        chunkPosition.NormalizeXY(planet.Size);
+                        chunkPosition.Z = Math.Max(0, Math.Min(planet.Size.Z, chunkPosition.Z));
+
+                        localChunkCache.Get(chunkPosition);
+                    }
+                }
+            }
+
+            State = WorldState.Running;
         }
 
         public void Update(GameTime frameTime)
