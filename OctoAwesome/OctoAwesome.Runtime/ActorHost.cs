@@ -61,7 +61,7 @@ namespace OctoAwesome.Runtime
         {
             Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
 
-            #region Inputverarbeitung
+            #region Input Processing
 
             Vector3 externalPower = ((Player.ExternalForce * Player.ExternalForce) / (2 * Player.Mass)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
             externalPower *= new Vector3(Math.Sign(Player.ExternalForce.X), Math.Sign(Player.ExternalForce.Y), Math.Sign(Player.ExternalForce.Z));
@@ -104,7 +104,7 @@ namespace OctoAwesome.Runtime
 
             #endregion
 
-            #region Playerbewegung
+            #region Player Movement
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
             IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
@@ -207,11 +207,13 @@ namespace OctoAwesome.Runtime
 
             #endregion
 
-            #region Block Interaktion
+            #region Block Interaction
 
             if (lastInteract.HasValue)
             {
+                IBlock lastBlock = ResourceManager.Instance.GetBlock(planet.Id, lastInteract.Value);
                 ResourceManager.Instance.SetBlock(planet.Id, lastInteract.Value, null);
+                Player.Inventory.Add(lastBlock);
                 lastInteract = null;
             }
 

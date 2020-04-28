@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace OctoAwesome
 {
@@ -23,10 +25,14 @@ namespace OctoAwesome
 
         public float Tilt { get; set; }
 
+        [XmlIgnore]
+        public List<IBlock> Inventory { get; set; }
+
         public Player()
         {
             Position = new Coordinate(0, new Index3(82109, 74365, 45), Vector3.Zero);
             Velocity = new Vector3(0, 0, 0);
+            Inventory = new List<IBlock>();
             Radius = 0.75f;
             Angle = 0f;
             Height = 3.5f;
