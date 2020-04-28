@@ -1,11 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace OctoAwesome
 {
     public abstract class Block : IBlock
     {
         public OrientationFlags Orientation { get; set; }
+
+        public List<IResource> Resources { get; private set; }
+
+        public Block()
+        {
+            Resources = new List<IResource>();
+        }
 
         public virtual BoundingBox[] GetCollisionBoxes()
         {

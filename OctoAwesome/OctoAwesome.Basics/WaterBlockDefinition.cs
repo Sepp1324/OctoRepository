@@ -16,7 +16,7 @@ namespace OctoAwesome.Basics
 
         public Bitmap Icon
         {
-            get { return Resources.wood_bottom; }
+            get { return Resources.water_bottom; }
         }
 
         public IEnumerable<Bitmap> Textures
@@ -28,6 +28,17 @@ namespace OctoAwesome.Basics
                     Resources.water_side
                 };
             }
+        }
+
+        public PhysicalProperties GetProperties(IBlock block)
+        {
+            return new PhysicalProperties()
+            {
+                Density = 0.3f,
+                FractureToughness = 0.3f,
+                Granularity = 0.9f,
+                Hardness = 0.1f
+            };
         }
 
         public int GetTopTextureIndex(IBlock block)
