@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -35,20 +38,17 @@ namespace OctoAwesome.Runtime
         public void Initialize()
         {
             State = WorldState.Loading;
-
-            for(int x = -1; x <= 1; x++)
+            for (int x = -1; x <= 1; x++)
             {
-                for(int y = -1; y <= 1; y++)
+                for (int y = -1; y <= 1; y++)
                 {
-                    for(int z = -1; z <= 1; z++)
+                    for (int z = -1; z <= 1; z++)
                     {
                         if (z < 0 || z >= planet.Size.Z)
                             continue;
 
                         var chunkPosition = Player.Position.ChunkIndex + new Index3(x, y, z);
                         chunkPosition.NormalizeXY(planet.Size);
-                        chunkPosition.Z = Math.Max(0, Math.Min(planet.Size.Z, chunkPosition.Z));
-
                         localChunkCache.Get(chunkPosition);
                     }
                 }
@@ -61,7 +61,7 @@ namespace OctoAwesome.Runtime
         {
             Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
 
-            #region Input Processing
+            #region Inputverarbeitung
 
             Vector3 externalPower = ((Player.ExternalForce * Player.ExternalForce) / (2 * Player.Mass)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
             externalPower *= new Vector3(Math.Sign(Player.ExternalForce.X), Math.Sign(Player.ExternalForce.Y), Math.Sign(Player.ExternalForce.Z));
@@ -104,7 +104,7 @@ namespace OctoAwesome.Runtime
 
             #endregion
 
-            #region Player Movement
+            #region Playerbewegung
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
             IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
@@ -213,7 +213,21 @@ namespace OctoAwesome.Runtime
             {
                 IBlock lastBlock = ResourceManager.Instance.GetBlock(planet.Id, lastInteract.Value);
                 ResourceManager.Instance.SetBlock(planet.Id, lastInteract.Value, null);
-                Player.Inventory.Add(lastBlock);
+
+                if (lastBlock != null)
+                {
+                    var slot = Player.Inventory.SingleOrDefault(s => s.ItemType == lastBlock.GetType());
+                    if (slot == null)
+                    {
+                        slot = new InventorySlot()
+                        {
+                            ItemType = lastBlock.GetType(),
+                            Amount = 0
+                        };
+                        Player.Inventory.Add(slot);
+                    }
+                    slot.Amount++;
+                }
                 lastInteract = null;
             }
 
