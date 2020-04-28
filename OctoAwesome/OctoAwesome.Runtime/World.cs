@@ -15,14 +15,13 @@ namespace OctoAwesome.Runtime
 
         private UpdateDomain[] updateDomains;
 
-        public ActorHost Player { get { return updateDomains[0].ActorHosts[0]; } }
-
         public World()
         {
             watch.Start();
             updateDomains = new UpdateDomain[1];
             updateDomains[0] = new UpdateDomain(watch);
         }
+
 
         public void Update(GameTime frameTime)
         {
@@ -33,6 +32,14 @@ namespace OctoAwesome.Runtime
         {
             updateDomains[0].Running = false;
             ResourceManager.Instance.Save();
+        }
+
+        public ActorHost InjectPlayer(Player player)
+        {
+            var host = new ActorHost(player);
+
+            updateDomains[0].ActorHosts.Add(host);
+            return host;
         }
     }
 }

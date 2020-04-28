@@ -11,11 +11,15 @@ namespace OctoAwesome.Client.Components
     {
         public World World { get; private set; }
 
+        public ActorHost Player { get; private set; }
+
         public SimulationComponent(Game game) : base(game) { }
 
         public override void Initialize()
         {
             World = new World();
+            Player = World.InjectPlayer(new Player());
+
             base.Initialize();
         }
 
