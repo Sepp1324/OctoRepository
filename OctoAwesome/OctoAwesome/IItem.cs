@@ -5,7 +5,10 @@ using System.Text;
 
 namespace OctoAwesome
 {
-    public interface IResource
+    public interface IItem
     {
+        IEnumerable<IResource> Resources { get; }
+
+        void Hit(IItem item);
     }
 }
