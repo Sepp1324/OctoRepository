@@ -56,11 +56,6 @@
     <Compile Include="WorldState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OctoAwesome.Basics\OctoAwesome.Basics.csproj">
-      <Project>{7c95ec87-26ec-4d09-a245-b09836587f73}</Project>
-      <Name>OctoAwesome.Basics</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\OctoAwesome\OctoAwesome.csproj">
       <Project>{6e65b8ea-557e-4be4-b1c8-05439c2945fb}</Project>
       <Name>OctoAwesome</Name>
