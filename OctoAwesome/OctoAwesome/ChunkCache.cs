@@ -31,16 +31,13 @@ namespace OctoAwesome
         }
         public void Release(Index3 idx)
         {
-            _chunks.Remove(idx);
+            IChunk chunk;
+            
+            if(_chunks.TryGetValue(idx, out chunk))
+            {
+                _saveDelegate(idx, chunk);
+                _chunks.Remove(idx);
+            }
         }
-    }
-
-    public interface IChunkCache
-    {
-        IChunk Get(Index3 idx);
-
-        void EnsureLoaded(Index3 idx);
-
-        void Release(Index3 idx);
     }
 }
