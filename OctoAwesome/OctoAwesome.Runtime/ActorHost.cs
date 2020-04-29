@@ -221,9 +221,9 @@ namespace OctoAwesome.Runtime
                     {
                         var definition = BlockDefinitionManager.GetBlockDefinitions().SingleOrDefault(d => d.GetBlockType() == lastBlock.GetType());
 
+                        // TODO: ItemDefinition finden
                         slot = new InventorySlot()
                         {
-                            //TODO: ItemDefinition finden
                             Definition = null,
                             Amount = 0
                         };
@@ -249,10 +249,15 @@ namespace OctoAwesome.Runtime
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    //ResourceManager.Instance.SetBlock(planet.Id,
-                    //    lastApply.Value + add, ActiveTool.GetInstance(lastOrientation));
-                    lastApply = null;
+                    IBlock block = ResourceManager.Instance.GetBlock(planet.Id, lastApply.Value);
+                    IBlockDefinition blockDefinition = BlockDefinitionManager.GetBlockDefinitions().FirstOrDefault(d => d.GetBlockType() == block.GetType());
+                    IItemDefinition itemDefinition = ActiveTool.Definition;
+
+                    blockDefinition.Hit(block, itemDefinition.GetProperties(null));
+                    itemDefinition.Hit(null, blockDefinition.GetProperties(block));
                 }
+
+                lastApply = null;
             }
 
             #endregion

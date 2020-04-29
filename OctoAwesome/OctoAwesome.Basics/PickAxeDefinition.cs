@@ -9,19 +9,19 @@ namespace OctoAwesome.Basics
 {
     public class PickaxeDefinition : IItemDefinition
     {
-        public string Name
-        {
-            get
-            {
-                return "Pickaxe";
-            }
-        }
-
         public Bitmap Icon
         {
             get
             {
                 return Resources.pick_iron;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return "Pickaxe";
             }
         }
 
@@ -34,6 +34,11 @@ namespace OctoAwesome.Basics
                 Granularity = 1f,
                 Hardness = 1f
             };
+        }
+
+        public void Hit(IItem item, PhysicalProperties itemProperties)
+        {
+            // item.Condition--;
         }
     }
 }

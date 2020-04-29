@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -9,11 +10,17 @@ namespace OctoAwesome
     {
         public OrientationFlags Orientation { get; set; }
 
+        /// <summary>
+        /// Zustand des Blocks im Wertebereich von 0...99
+        /// </summary>
+        public int Condition { get; set; }
+
         public List<IResource> Resources { get; private set; }
 
         public Block()
         {
             Resources = new List<IResource>();
+            Condition = 99;
         }
 
         public virtual BoundingBox[] GetCollisionBoxes()

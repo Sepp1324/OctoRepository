@@ -16,8 +16,9 @@ namespace OctoAwesome.Basics
 
         public Bitmap Icon
         {
-            get { return Resources.sand_bottom; }
+            get { return Resources.wood_bottom; }
         }
+
 
         public IEnumerable<Bitmap> Textures
         {
@@ -38,6 +39,11 @@ namespace OctoAwesome.Basics
                 Granularity = 0.9f,
                 Hardness = 0.1f
             };
+        }
+
+        public void Hit(IBlock block, PhysicalProperties itemProperties)
+        {
+            throw new NotImplementedException();
         }
 
         public int GetTopTextureIndex(IBlock block)

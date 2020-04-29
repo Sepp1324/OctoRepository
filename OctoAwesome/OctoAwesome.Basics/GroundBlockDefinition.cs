@@ -16,8 +16,9 @@ namespace OctoAwesome.Basics
 
         public Bitmap Icon
         {
-            get { return Resources.ground_bottom; }
+            get { return Resources.wood_bottom; }
         }
+
 
         public IEnumerable<Bitmap> Textures
         {
@@ -39,6 +40,12 @@ namespace OctoAwesome.Basics
                 Hardness = 0.1f
             };
         }
+
+        public void Hit(IBlock block, PhysicalProperties itemProperties)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public int GetTopTextureIndex(IBlock block)
         {
