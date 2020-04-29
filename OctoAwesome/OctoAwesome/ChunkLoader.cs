@@ -8,8 +8,8 @@ namespace OctoAwesome
         private readonly IChunkCache _cache;
         private readonly int _maxRange;
         private Index3 _center;
-        private CancellationTokenSource _cancellationToken;
         private Task _loadingTask;
+        private CancellationTokenSource _cancellationToken;
 
         public ChunkLoader(IChunkCache cache, int range, Index3 center)
         {
@@ -71,13 +71,14 @@ namespace OctoAwesome
                             _cache.EnsureLoaded(new Index3(_center.X - i, _center.Y - j, _center.Z - k));
                             if (token.IsCancellationRequested) return;
                         }
+
         }
     }
 
     public interface IChunkLoader
     {
         /// <summary>
-        /// Chunk-Index
+        /// Chunk index
         /// </summary>
         /// <param name="i"></param>
         /// <param name="j"></param>

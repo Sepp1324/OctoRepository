@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
     public class ChunkCache : IChunkCache
     {
-        private IDictionary<Index3, IChunk> _chunks = new Dictionary<Index3, IChunk>();
-        private Func<Index3, IChunk> _loadDelegate;
-        private Action<Index3, IChunk> _saveDelegate;
+        private readonly IDictionary<Index3, IChunk> _chunks = new Dictionary<Index3, IChunk>();
+        private readonly Func<Index3, IChunk> _loadDelegate;
+        private readonly Action<Index3, IChunk> _saveDelegate;
 
         public ChunkCache(Func<Index3, IChunk> loadDelegate, Action<Index3, IChunk> saveDelegate)
         {
@@ -32,12 +30,18 @@ namespace OctoAwesome
         public void Release(Index3 idx)
         {
             IChunk chunk;
-            
-            if(_chunks.TryGetValue(idx, out chunk))
+
+            if (_chunks.TryGetValue(idx, out chunk))
             {
                 _saveDelegate(idx, chunk);
                 _chunks.Remove(idx);
             }
+        }
+
+        public void Flush()
+        {
+            foreach (var chunk in _chunks)
+                _saveDelegate(chunk.Key, chunk.Value);
         }
     }
 }
