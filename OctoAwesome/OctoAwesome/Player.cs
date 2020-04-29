@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace OctoAwesome
 {
-    public sealed class Player : Item
+    public sealed class Player : Entity
     {
         public const int SELECTIONRANGE = 8;
 
@@ -16,7 +16,7 @@ namespace OctoAwesome
 
         public float Radius { get; set; }
 
-        // TODO: Angle immer hübsch kürzen
+        // TODO: Angle kürzen
         public float Angle { get; set; }
 
         public float Height { get; set; }

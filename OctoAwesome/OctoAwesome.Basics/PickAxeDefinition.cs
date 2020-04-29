@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OctoAwesome.Basics.Properties;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -16,7 +17,13 @@ namespace OctoAwesome.Basics
             }
         }
 
-        public Bitmap Icon => throw new NotImplementedException();
+        public Bitmap Icon
+        {
+            get
+            {
+                return Resources.pick_iron;
+            }
+        }
 
         public PhysicalProperties GetProperties(IItem item)
         {

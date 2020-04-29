@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace OctoAwesome
 {
-    public abstract class Item
+    public abstract class Entity
     {
         public Coordinate Position { get; set; }
 

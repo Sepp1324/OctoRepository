@@ -22,8 +22,14 @@ namespace OctoAwesome.Client.Components
         public override void Initialize()
         {
             World = new World();
-
+      
             var p = Load();
+
+            foreach (var item in ItemDefinitionManager.GetItemDefinitions())
+            {
+                p.Inventory.Add(new InventorySlot() { Definition = item, Amount = 1 });
+            }
+
             Player = World.InjectPlayer(p);
 
             Player.Initialize();

@@ -40,6 +40,7 @@ namespace OctoAwesome.Client.Components
             Tools = new List<InventorySlot>(); //= BlockDefinitionManager.GetBlockDefinitions().ToArray();
             //if (Tools != null && Tools.Length > 0)
             //    ActorHost.ActiveTool = Tools[0];
+            Tools.AddRange(ActorHost.Player.Inventory);
         }
 
         public override void Update(GameTime gameTime)
