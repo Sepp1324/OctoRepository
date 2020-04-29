@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OctoAwesome
 {
     public abstract class Item : IItem
     {
+        public int Condition { get; set; }
+
+        public Coordinate? Position { get; set; }
+
+        public List<IResource> Resources { get; private set; }
 
         public Item()
         {
             Resources = new List<IResource>();
             Condition = 99;
         }
-
-        public List<IResource> Resources { get; private set; }
-
-        public Coordinate? Position { get; set; }
-
-        public int Condition { get; set; }
 
         public abstract void Hit(IItem item);
     }

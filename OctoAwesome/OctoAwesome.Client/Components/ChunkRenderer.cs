@@ -96,9 +96,9 @@ namespace OctoAwesome.Client.Components
                 return;
 
             effect.World = Matrix.CreateTranslation(
-                shift.X * Chunk.CHUNKSIZE_X,
-                shift.Y * Chunk.CHUNKSIZE_Y,
-                shift.Z * Chunk.CHUNKSIZE_Z);
+                shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
+                shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z);
             effect.Projection = projection;
             effect.View = view;
             effect.Texture = textures;
@@ -118,33 +118,6 @@ namespace OctoAwesome.Client.Components
                 }
             }
         }
-
-        //public void DrawMinimap(BasicEffect effect, Index3 shift)
-        //{
-        //    if (chunk == null)
-        //        return;
-
-        //    effect.World = Matrix.CreateTranslation(
-        //        shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
-        //        shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
-        //        shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z);
-        //    effect.Texture = textures;
-
-        //    lock (this)
-        //    {
-        //        if (vb == null)
-        //            return;
-
-        //        graphicsDevice.SetVertexBuffer(vb);
-        //        graphicsDevice.Indices = ib;
-
-        //        foreach (var pass in effect.CurrentTechnique.Passes)
-        //        {
-        //            pass.Apply();
-        //            graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexCount, 0, indexCount / 3);
-        //        }
-        //    }
-        //}
 
         public void RegenerateVertexBuffer()
         {

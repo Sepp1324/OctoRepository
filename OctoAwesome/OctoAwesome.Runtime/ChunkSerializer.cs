@@ -38,7 +38,7 @@ namespace OctoAwesome.Runtime
                     chunk.MetaData[i] = br.ReadInt32();
                     if (typeIndex > 0)
                     {
-                        //chunk.Blocks[i] = map[typeIndex];
+                        chunk.Blocks[i] = map[typeIndex];
                     }
                 }
             }

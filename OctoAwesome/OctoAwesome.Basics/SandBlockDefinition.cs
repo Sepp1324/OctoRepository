@@ -16,7 +16,7 @@ namespace OctoAwesome.Basics
 
         public Bitmap Icon
         {
-            get { return Resources.wood_bottom; }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/sand.png"); }
         }
 
 
@@ -25,7 +25,7 @@ namespace OctoAwesome.Basics
             get
             {
                 return new[] {
-                    Resources.sand_bottom
+                    (Bitmap)Bitmap.FromFile("./Assets/sand.png")
                 };
             }
         }
