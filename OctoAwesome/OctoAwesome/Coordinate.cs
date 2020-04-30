@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -41,10 +38,7 @@ namespace OctoAwesome
         {
             get
             {
-                return new Index3(
-                    (int)Math.Floor((double)block.X / Chunk.CHUNKSIZE_X),
-                    (int)Math.Floor((double)block.Y / Chunk.CHUNKSIZE_Y),
-                    (int)Math.Floor((double)block.Z / Chunk.CHUNKSIZE_Z));
+                return new Index3(block.X >> Chunk.LimitX, block.Y >> Chunk.LimitY, block.Z >> Chunk.LimitZ);
             }
             set
             {
