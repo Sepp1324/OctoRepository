@@ -34,6 +34,8 @@ namespace OctoAwesome.Runtime
             Player = player;
             planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
+            _oldIndex = Player.Position.ChunkIndex;
+
             ActiveTool = null;
             State = WorldState.Loading;
         }
@@ -58,6 +60,7 @@ namespace OctoAwesome.Runtime
             }
 
             State = WorldState.Running;
+            _chunkLoader.UpdatePosition(0, 0, 0);
         }
 
         public void Update(GameTime frameTime)

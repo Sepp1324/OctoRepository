@@ -162,7 +162,6 @@ namespace OctoAwesome.Runtime
                 result[index.Z].ChangeCounter = 0;
                 return result[index.Z];
             }
-
             return null;
         }
 
