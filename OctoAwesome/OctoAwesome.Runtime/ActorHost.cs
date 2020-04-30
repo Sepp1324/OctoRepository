@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -20,6 +18,8 @@ namespace OctoAwesome.Runtime
         private OrientationFlags lastOrientation = OrientationFlags.None;
 
         private Index3 _oldIndex;
+
+        private IPlanetResourceManager _manager;
 
         public Player Player { get; private set; }
 
@@ -42,23 +42,8 @@ namespace OctoAwesome.Runtime
 
         public void Initialize()
         {
-            State = WorldState.Loading;
-            for (int x = -1; x <= 1; x++)
-            {
-                for (int y = -1; y <= 1; y++)
-                {
-                    for (int z = -1; z <= 1; z++)
-                    {
-                        if (z < 0 || z >= planet.Size.Z)
-                            continue;
-
-                        var chunkPosition = Player.Position.ChunkIndex + new Index3(x, y, z);
-                        chunkPosition.NormalizeXY(planet.Size);
-                        ResourceManager.Instance.GetChunk(planet.Id, chunkPosition);
-                    }
-                }
-            }
-
+            _manager = ResourceManager.Instance.GetManagerForPlanet(planet.Id);
+            
             State = WorldState.Running;
             _chunkLoader.UpdatePosition(0, 0, 0);
         }
@@ -113,7 +98,6 @@ namespace OctoAwesome.Runtime
             #region Playerbewegung
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
-            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
             Player.OnGround = false;
             bool collision = false;
@@ -224,8 +208,8 @@ namespace OctoAwesome.Runtime
 
             if (lastInteract.HasValue)
             {
-                IBlock lastBlock = ResourceManager.Instance.GetBlock(planet.Id, lastInteract.Value);
-                ResourceManager.Instance.SetBlock(planet.Id, lastInteract.Value, null);
+                IBlock lastBlock = _manager.GetBlock(lastInteract.Value);
+                _manager.SetBlock(lastInteract.Value, null);
 
                 if (lastBlock != null)
                 {
@@ -262,7 +246,7 @@ namespace OctoAwesome.Runtime
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    IBlock block = ResourceManager.Instance.GetBlock(planet.Id, lastApply.Value);
+                    IBlock block = _manager.GetBlock(lastApply.Value);
                     IBlockDefinition blockDefinition = BlockDefinitionManager.GetBlockDefinitions().FirstOrDefault(d => d.GetBlockType() == block.GetType());
                     IItemDefinition itemDefinition = ActiveTool.Definition;
 
@@ -283,7 +267,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Block oder null, falls dort kein Block existiert</returns>
         public IBlock GetBlock(Index3 index)
         {
-            return ResourceManager.Instance.GetBlock(planet.Id, index);
+            return _manager.GetBlock(index);
         }
 
         /// <summary>
@@ -293,7 +277,7 @@ namespace OctoAwesome.Runtime
         /// <param name="block">Neuer Block oder null, falls der alte Bock gelöscht werden soll.</param>
         public void SetBlock(Index3 index, IBlock block)
         {
-            ResourceManager.Instance.SetBlock(planet.Id, index, block);
+            _manager.SetBlock(index, block);
         }
 
         public Coordinate Position

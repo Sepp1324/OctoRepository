@@ -132,5 +132,10 @@ namespace OctoAwesome.Runtime
         {
             return _managers[planet];
         }
+
+        public IChunkCache GetCacheForPlanet(int planet)
+        {
+            return _managers[planet].ChunkCache;
+        }
     }
 }

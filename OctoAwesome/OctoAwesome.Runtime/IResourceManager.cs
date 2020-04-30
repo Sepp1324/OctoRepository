@@ -6,6 +6,6 @@
 
         IPlanet GetPlanet(int id);
 
-        IPlanetResourceManager Get(int planetId);
+        IPlanetResourceManager GetManagerForPlanet(int planetId);
     }
 }

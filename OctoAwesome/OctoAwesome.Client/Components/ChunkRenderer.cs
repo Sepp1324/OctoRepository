@@ -30,10 +30,7 @@ namespace OctoAwesome.Client.Components
         private int indexCount;
         private int lastReset;
 
-        /// <summary>
-        /// Referenz auf den aktuell gerenderten Chunk
-        /// </summary>
-
+        private IPlanetResourceManager _manager;
 
         /// <summary>
         /// Adresse des aktuellen Chunks
@@ -66,6 +63,11 @@ namespace OctoAwesome.Client.Components
             ChunkPosition = index;
             chunkLoaded = false;
             chunk = null;
+
+            if (index != null)
+                _manager = ResourceManager.Instance.GetManagerForPlanet(index.Value.Planet);
+            else
+                _manager = null;
         }
 
         public bool NeedUpdate()
@@ -123,9 +125,7 @@ namespace OctoAwesome.Client.Components
             // Chunk nachladen
             if (!chunkLoaded)
             {
-                chunk = ResourceManager.Instance.GetChunk(
-                    ChunkPosition.Value.Planet,
-                    ChunkPosition.Value.ChunkIndex);
+                chunk = _manager.GetChunk(ChunkPosition.Value.ChunkIndex);
                 chunkLoaded = true;
             }
 
@@ -175,7 +175,7 @@ namespace OctoAwesome.Client.Components
                         Vector2 textureSize = new Vector2(textureWidth - 0.005f, textureWidth - 0.005f);
 
 
-                        IBlock topBlock = ResourceManager.Instance.GetBlock(ChunkPosition.Value.Planet, (ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z + 1));
+                        IBlock topBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z + 1));
 
                         // Top
                         if (topBlock == null || (!definitionMapping[topBlock.GetType()].IsBottomSolidWall(topBlock) && topBlock.GetType() != block.GetType()))
@@ -205,7 +205,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock bottomBlock = ResourceManager.Instance.GetBlock(ChunkPosition.Value.Planet, (ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z - 1));
+                        IBlock bottomBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z - 1));
 
                         // Unten
                         if (bottomBlock == null || (!definitionMapping[bottomBlock.GetType()].IsTopSolidWall(bottomBlock) && bottomBlock.GetType() != block.GetType()))
@@ -235,7 +235,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock southBlock = ResourceManager.Instance.GetBlock(ChunkPosition.Value.Planet, (ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y + 1, z));
+                        IBlock southBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y + 1, z));
 
                         // South
                         if (southBlock == null || (!definitionMapping[southBlock.GetType()].IsNorthSolidWall(southBlock) && southBlock.GetType() != block.GetType()))
@@ -266,7 +266,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock northBlock = ResourceManager.Instance.GetBlock(ChunkPosition.Value.Planet, (ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y - 1, z));
+                        IBlock northBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y - 1, z));
 
                         // North
                         if (northBlock == null || (!definitionMapping[northBlock.GetType()].IsSouthSolidWall(northBlock) && northBlock.GetType() != block.GetType()))
@@ -296,7 +296,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock westBlock = ResourceManager.Instance.GetBlock(ChunkPosition.Value.Planet, (ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x - 1, y, z));
+                        IBlock westBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x - 1, y, z));
 
                         // West
                         if (westBlock == null || (!definitionMapping[westBlock.GetType()].IsEastSolidWall(westBlock) && westBlock.GetType() != block.GetType()))
@@ -326,7 +326,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock eastBlock = ResourceManager.Instance.GetBlock(ChunkPosition.Value.Planet, (ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x + 1, y, z));
+                        IBlock eastBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x + 1, y, z));
 
                         // Ost
                         if (eastBlock == null || (!definitionMapping[eastBlock.GetType()].IsWestSolidWall(eastBlock) && eastBlock.GetType() != block.GetType()))

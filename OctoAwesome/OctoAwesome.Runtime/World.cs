@@ -39,7 +39,7 @@ namespace OctoAwesome.Runtime
 
         public ActorHost InjectPlayer(Player player)
         {
-            var cache = ResourceManager.Instance.GetManagerForPlanet(player.Position.Planet);
+            var cache = ResourceManager.Instance.GetCacheForPlanet(player.Position.Planet);
             var loader = new ChunkLoader(cache, 14, player.Position.ChunkIndex);
 
             cache.EnsureLoaded(player.Position.ChunkIndex);
