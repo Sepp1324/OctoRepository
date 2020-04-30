@@ -3,7 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -29,8 +33,12 @@ namespace OctoAwesome.Client.Components
         private int vertexCount;
         private int indexCount;
         private int lastReset;
-
         private IPlanetResourceManager _manager;
+
+        /// <summary>
+        /// Referenz auf den aktuell gerenderten Chunk
+        /// </summary>
+
 
         /// <summary>
         /// Adresse des aktuellen Chunks
@@ -54,8 +62,8 @@ namespace OctoAwesome.Client.Components
 
             effect.FogEnabled = true;
             effect.FogColor = new Color(181, 224, 255).ToVector3();
-            effect.FogStart = SceneComponent.VIEWRANGE * Chunk.CHUNKSIZE_X * 0.5f;
-            effect.FogEnd = SceneComponent.VIEWRANGE * Chunk.CHUNKSIZE_X * 0.9f;
+            effect.FogStart = SceneComponent.VIEWRANGE * OctoAwesome.Chunk.CHUNKSIZE_X * 0.5f;
+            effect.FogEnd = SceneComponent.VIEWRANGE * OctoAwesome.Chunk.CHUNKSIZE_X * 0.9f;
         }
 
         public void SetChunk(PlanetIndex3? index)
@@ -94,9 +102,9 @@ namespace OctoAwesome.Client.Components
                 return;
 
             effect.World = Matrix.CreateTranslation(
-                shift.X * Chunk.CHUNKSIZE_X,
-                shift.Y * Chunk.CHUNKSIZE_Y,
-                shift.Z * Chunk.CHUNKSIZE_Z);
+                shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
+                shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z);
             effect.Projection = projection;
             effect.View = view;
             effect.Texture = textures;
@@ -151,11 +159,11 @@ namespace OctoAwesome.Client.Components
                 definitionIndex += textureCount;
             }
 
-            for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
+            for (int z = 0; z < OctoAwesome.Chunk.CHUNKSIZE_Z; z++)
             {
-                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                for (int y = 0; y < OctoAwesome.Chunk.CHUNKSIZE_Y; y++)
                 {
-                    for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+                    for (int x = 0; x < OctoAwesome.Chunk.CHUNKSIZE_X; x++)
                     {
                         IBlock block = chunk.GetBlock(x, y, z);
                         if (block == null)
