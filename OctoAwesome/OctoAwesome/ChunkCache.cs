@@ -9,8 +9,8 @@ namespace OctoAwesome
         private readonly Func<Index3, IChunk> _loadDelegate;
         private readonly Action<Index3, IChunk> _saveDelegate;
 
-        private const int XLimit = 5;
-        private const int YLimit = 5;
+        private const int LimitX = 5;
+        private const int LimitY = 5;
         //private const int ZLimit = 5;
 
         private const int XMask = 31;
@@ -79,7 +79,7 @@ namespace OctoAwesome
 
         private int FlatIndex(int x, int y, int z)
         {
-            return ((z & (ZMask)) << (XLimit + YLimit)) | ((y & (YMask)) << XLimit) | ((x & (XMask)));
+            return ((z & (ZMask)) << (LimitX + LimitY)) | ((y & (YMask)) << LimitX) | ((x & (XMask)));
         }
     }
 }

@@ -54,9 +54,7 @@ namespace OctoAwesome
 
         bool IsEastSolidWall(IBlock block);
 
-        //bool IsEastSolidWall(IBlock block, int x, int y, int z);
-
-        IBlock GetInstance(OrientationFlags orientation);
+        //IBlock GetInstance(OrientationFlags orientation);
 
         Type GetBlockType();
     }
