@@ -1,99 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
     public class ChunkSerializer : IChunkSerializer
     {
-        public IChunk Deserialize(Stream stream, PlanetIndex3 position)
-        {
-            Chunk chunk = new Chunk(position.ChunkIndex, position.Planet);
-
-            using (BinaryReader br = new BinaryReader(stream))
-            {
-                List<IBlockDefinition> types = new List<IBlockDefinition>();
-                Dictionary<ushort, ushort> map = new Dictionary<ushort, ushort>();
-                int typecount = br.ReadInt32();
-
-                // Im Falle eines Luftchunks
-                if (typecount == 0)
-                    return chunk;
-
-                for (int i = 0; i < typecount; i++)
-                {
-                    string typeName = br.ReadString();
-                    IBlockDefinition[] definitions = BlockDefinitionManager.GetBlockDefinitions().ToArray();
-                    var blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
-                    types.Add(blockDefinition);
-
-                    map.Add((ushort)(types.Count - 1), (ushort)Array.IndexOf(definitions, blockDefinition));
-                }
-
-                for (int i = 0; i < chunk.Blocks.Length; i++)
-                {
-                    ushort typeIndex = br.ReadUInt16();
-                    chunk.MetaData[i] = br.ReadInt32();
-                    if (typeIndex > 0)
-                    {
-                        chunk.Blocks[i] = map[typeIndex];
-                    }
-                }
-            }
-
-            return chunk;
-        }
-
         public void Serialize(Stream stream, IChunk chunk)
         {
             using (BinaryWriter bw = new BinaryWriter(stream))
             {
-                List<IBlockDefinition> definitions = new List<IBlockDefinition>();
+                List<Type> types = new List<Type>();
 
                 // Types sammeln
-                for (int i = 0; i < chunk.Blocks.Length; i++)
+                for (int i = 0; i < _blocks.Length; i++)
                 {
-                    if (chunk.Blocks[i] != 0)
+                    if (_blocks[i] != null)
                     {
-                        IBlockDefinition definition = BlockDefinitionManager.GetForType(chunk.Blocks[i]);
-                        if (!definitions.Contains(definition))
-                            definitions.Add(definition);
+                        Type t = _blocks[i].GetType();
+                        if (!types.Contains(t))
+                            types.Add(t);
                     }
                 }
 
                 // Schreibe Phase 1
-                bw.Write(definitions.Count);
+                bw.Write(types.Count);
 
                 // Im Falle eines Luft-Chunks...
-                if (definitions.Count == 0)
+                if (types.Count == 0)
                     return;
 
-                foreach (var definition in definitions)
+                foreach (var t in types)
                 {
-                    bw.Write(definition.GetType().FullName);
+                    bw.Write(t.FullName);
                 }
 
                 // Schreibe Phase 2
-                for (int i = 0; i < chunk.Blocks.Length; i++)
+                for (int i = 0; i < _blocks.Length; i++)
                 {
-                    if (chunk.Blocks[i] == 0)
-                    {
-                        // Definition Index (Air)
-                        bw.Write((ushort)0);
-
-                        // Meta Data
+                    if (_blocks[i] == null)
                         bw.Write(0);
-                    }
                     else
                     {
-                        // Definition Index
-                        IBlockDefinition definition = BlockDefinitionManager.GetForType(chunk.Blocks[i]);
-                        bw.Write((ushort)definitions.IndexOf(definition) + 1);
+                        bw.Write(types.IndexOf(_blocks[i].GetType()) + 1);
 
-                        // Meta Data
-                        bw.Write(chunk.MetaData[i]);
+                        //TODO: Rework for Meta-Infos
+                        //bw.Write((byte)_blocks[i].Orientation);
+                    }
+                }
+            }
+        }
+
+        public IChunk Deserialize(Stream stream)
+        {
+            using (BinaryReader br = new BinaryReader(stream))
+            {
+                List<Type> types = new List<Type>();
+                int typecount = br.ReadInt32();
+
+                // Im Falle eines Luftchunks
+                if (typecount == 0)
+                    return;
+
+                for (int i = 0; i < typecount; i++)
+                {
+                    string typeName = br.ReadString();
+                    var blockDefinition = knownBlocks.First(d => d.GetBlockType().FullName == typeName);
+                    types.Add(blockDefinition.GetBlockType());
+                }
+
+                for (int i = 0; i < _blocks.Length; i++)
+                {
+                    int typeIndex = br.ReadInt32();
+
+                    if (typeIndex > 0)
+                    {
+                        OrientationFlags orientation = (OrientationFlags)br.ReadByte();
+                        Type t = types[typeIndex - 1];
+                        //_blocks[i].Orientation = orientation;
                     }
                 }
             }

@@ -67,9 +67,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SandBlock.cs" />
     <Compile Include="SandBlockDefinition.cs" />
-    <Compile Include="StoneBlock.cs" />
     <Compile Include="StoneBlockDefinition.cs" />
     <Compile Include="WaterBlock.cs" />
     <Compile Include="WaterBlockDefinition.cs" />

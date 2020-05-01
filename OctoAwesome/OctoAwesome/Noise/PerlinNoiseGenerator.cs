@@ -529,8 +529,5 @@ namespace OctoAwesome.Noise
         {
             throw new NotImplementedException();
         }
-
-
-
     }
 }

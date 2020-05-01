@@ -3,11 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -102,9 +98,9 @@ namespace OctoAwesome.Client.Components
                 return;
 
             effect.World = Matrix.CreateTranslation(
-                shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
-                shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z);
+                shift.X * Chunk.CHUNKSIZE_X,
+                shift.Y * Chunk.CHUNKSIZE_Y,
+                shift.Z * Chunk.CHUNKSIZE_Z);
             effect.Projection = projection;
             effect.View = view;
             effect.Texture = textures;
@@ -159,13 +155,13 @@ namespace OctoAwesome.Client.Components
                 definitionIndex += textureCount;
             }
 
-            for (int z = 0; z < OctoAwesome.Chunk.CHUNKSIZE_Z; z++)
+            for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
             {
-                for (int y = 0; y < OctoAwesome.Chunk.CHUNKSIZE_Y; y++)
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
-                    for (int x = 0; x < OctoAwesome.Chunk.CHUNKSIZE_X; x++)
+                    for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     {
-                        IBlock block = chunk.GetBlock(x, y, z);
+                        ushort block = chunk.GetBlock(x, y, z);
                         if (block == null)
                             continue;
 

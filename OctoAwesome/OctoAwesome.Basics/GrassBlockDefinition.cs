@@ -1,13 +1,10 @@
-﻿using OctoAwesome.Basics.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
-    public sealed class GrassBlockDefinition : IBlockDefinition
+    public sealed class GrassBlockDefinition : BlockDefinition
     {
         public string Name
         {
@@ -23,8 +20,6 @@ namespace OctoAwesome.Basics
         {
             get
             {
-
-
                 return new[] {
                     (Bitmap)Bitmap.FromFile("./Assets/grass_top.png"),
                     (Bitmap)Bitmap.FromFile("./Assets/dirt.png"),
