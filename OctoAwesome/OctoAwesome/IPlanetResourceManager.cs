@@ -4,9 +4,9 @@
     {
         IChunk GetChunk(Index3 index);
 
-        IBlock GetBlock(Index3 index);
+        BlockDefinition GetBlock(Index3 index);
 
-        IBlock GetBlock(int x, int y, int z);
+        BlockDefinition GetBlock(int x, int y, int z);
 
         void SetBlock(Index3 index, IBlock block);
 

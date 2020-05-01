@@ -8,7 +8,7 @@ namespace OctoAwesome
 
         Bitmap Icon { get; }
 
-        void Hit(BlockDefinition block, PhysicalProperties itemProperties);
+        void Hit(IBlockDefinition block, PhysicalProperties itemProperties);
 
         Bitmap[] Textures { get; }
 

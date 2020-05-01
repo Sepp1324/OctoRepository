@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -9,7 +6,7 @@ namespace OctoAwesome
     /// Liste von Flags zur Beschreibung der Block-Ausrichtung.
     /// </summary>
     [Flags]
-    public enum OrientationFlags
+    public enum OrientationFlags : byte
     {
         None,
 

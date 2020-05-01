@@ -12,7 +12,7 @@ namespace OctoAwesome
 
         public abstract PhysicalProperties GetProperties(IPlanetResourceManager manager, int x, int y, int z);
 
-        public abstract void Hit(BlockDefinition block, PhysicalProperties itemProperties);
+        public abstract void Hit(IBlockDefinition block, PhysicalProperties itemProperties);
 
         public virtual int GetTopTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
         {
