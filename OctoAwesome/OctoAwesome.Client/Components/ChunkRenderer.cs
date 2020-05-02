@@ -3,11 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -17,11 +13,6 @@ namespace OctoAwesome.Client.Components
         private GraphicsDevice graphicsDevice;
 
         private Texture2D textures;
-
-        /// <summary>
-        /// Gibt an ob der aktuelle Chunk geladen wurde
-        /// </summary>
-        private bool chunkLoaded;
 
         /// <summary>
         /// Referenz auf den aktuellen Chunk (falls vorhanden)
@@ -36,14 +27,9 @@ namespace OctoAwesome.Client.Components
         private IPlanetResourceManager _manager;
 
         /// <summary>
-        /// Referenz auf den aktuell gerenderten Chunk
-        /// </summary>
-
-
-        /// <summary>
         /// Adresse des aktuellen Chunks
         /// </summary>
-        public PlanetIndex3? ChunkPosition { get; private set; }
+        public Index3? ChunkPosition { get; private set; }
 
         public ChunkRenderer(GraphicsDevice graphicsDevice, Matrix projection, Texture2D textures)
         {
@@ -62,20 +48,21 @@ namespace OctoAwesome.Client.Components
 
             effect.FogEnabled = true;
             effect.FogColor = new Color(181, 224, 255).ToVector3();
-            effect.FogStart = SceneComponent.VIEWRANGE * OctoAwesome.Chunk.CHUNKSIZE_X * 0.5f;
-            effect.FogEnd = SceneComponent.VIEWRANGE * OctoAwesome.Chunk.CHUNKSIZE_X * 0.9f;
+            effect.FogStart = SceneComponent.VIEWRANGE * Chunk.CHUNKSIZE_X * 0.5f;
+            effect.FogEnd = SceneComponent.VIEWRANGE * Chunk.CHUNKSIZE_X * 0.9f;
         }
 
         public void SetChunk(IPlanetResourceManager manager, int x, int y, int z)
         {
-            var newPosition = new PlanetIndex3(0, new Index3(x, y, z));
+            var newPosition = new Index3(x, y, z);
 
-            if (newPosition == ChunkPosition) return;
+            if (_manager == manager && newPosition == ChunkPosition) 
+                return;
 
-            ChunkPosition = newPosition;
-            chunkLoaded = false;
-            chunk = null;
             _manager = manager;
+            ChunkPosition = newPosition;
+            chunk = null;
+            
         }
 
         public bool NeedUpdate()
@@ -84,13 +71,9 @@ namespace OctoAwesome.Client.Components
             if (!ChunkPosition.HasValue)
                 return false;
 
-            // Selektierter Chunk noch nicht geladen -> Update
-            if (!chunkLoaded)
-                return true;
-
             // Chunk vollständig geladen aber nicht vorahden -> kein Update
             if (chunk == null)
-                return false;
+                return true;
 
             // Chunk geladen und existient -> nur Update, wenn sich seit dem letzten Reset was verändert hat.
             return chunk.ChangeCounter != lastReset;
@@ -102,9 +85,9 @@ namespace OctoAwesome.Client.Components
                 return;
 
             effect.World = Matrix.CreateTranslation(
-                shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
-                shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
-                shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z);
+                shift.X * Chunk.CHUNKSIZE_X,
+                shift.Y * Chunk.CHUNKSIZE_Y,
+                shift.Z * Chunk.CHUNKSIZE_Z);
             effect.Projection = projection;
             effect.View = view;
             effect.Texture = textures;
@@ -131,17 +114,15 @@ namespace OctoAwesome.Client.Components
                 return;
 
             // Chunk nachladen
-            if (!chunkLoaded)
-            {
-                chunk = _manager.GetChunk(ChunkPosition.Value.ChunkIndex);
-                if (chunk == null) return;
-
-                chunkLoaded = true;
-            }
-
-            // Ignorieren, falls 
             if (chunk == null)
-                return;
+            {
+                chunk = _manager.GetChunk(ChunkPosition.Value);
+
+                if (chunk == null)
+                {
+                    return;
+                }
+            }
 
             List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
             List<int> index = new List<int>();
@@ -160,11 +141,11 @@ namespace OctoAwesome.Client.Components
                 definitionIndex += textureCount;
             }
 
-            for (int z = 0; z < OctoAwesome.Chunk.CHUNKSIZE_Z; z++)
+            for (int z = 0; z < Chunk.CHUNKSIZE_Z; z++)
             {
-                for (int y = 0; y < OctoAwesome.Chunk.CHUNKSIZE_Y; y++)
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
-                    for (int x = 0; x < OctoAwesome.Chunk.CHUNKSIZE_X; x++)
+                    for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     {
                         ushort block = chunk.GetBlock(x, y, z);
                         if (block == 0)
@@ -183,7 +164,7 @@ namespace OctoAwesome.Client.Components
                         Vector2 textureSize = new Vector2(textureWidth - 0.005f, textureWidth - 0.005f);
 
 
-                        ushort topBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z + 1));
+                        ushort topBlock = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x, y, z + 1));
                         IBlockDefinition topBlockDefintion = BlockDefinitionManager.GetForType(topBlock);
 
                         // Top
@@ -214,7 +195,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        ushort bottomBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z - 1));
+                        ushort bottomBlock = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x, y, z - 1));
                         IBlockDefinition bottomBlockDefintion = BlockDefinitionManager.GetForType(bottomBlock);
 
 
@@ -246,7 +227,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        ushort southBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y + 1, z));
+                        ushort southBlock = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x, y + 1, z));
                         IBlockDefinition southBlockDefintion = BlockDefinitionManager.GetForType(southBlock);
 
                         // South
@@ -278,7 +259,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        ushort northBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y - 1, z));
+                        ushort northBlock = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x, y - 1, z));
                         IBlockDefinition northBlockDefintion = BlockDefinitionManager.GetForType(northBlock);
 
                         // North
@@ -309,7 +290,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        ushort westBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x - 1, y, z));
+                        ushort westBlock = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x - 1, y, z));
                         IBlockDefinition westBlockDefintion = BlockDefinitionManager.GetForType(westBlock);
 
                         // West
@@ -340,7 +321,7 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        ushort eastBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x + 1, y, z));
+                        ushort eastBlock = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x + 1, y, z));
                         IBlockDefinition eastBlockDefintion = BlockDefinitionManager.GetForType(eastBlock);
 
                         // Ost

@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -83,7 +80,7 @@ namespace OctoAwesome.Runtime
             var cache = new ChunkCache(idx => loadChunk(index, idx), (_, chunk) => saveChunk(index, chunk));
             _managers[index] = new PlanetResourceManager(cache);
 
-            return mapGenerator.GeneratePlanet(universe.Id, index);
+            return mapGenerator.GeneratePlanet(universe.Id, 4567);
         }
 
         private void savePlanet(int index, IPlanet value)
