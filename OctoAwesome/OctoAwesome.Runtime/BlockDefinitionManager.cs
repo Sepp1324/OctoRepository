@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -13,6 +16,7 @@ namespace OctoAwesome.Runtime
             {
                 _definitions = ExtensionManager.GetInstances<IBlockDefinition>().ToArray();
             }
+
             return _definitions;
         }
 

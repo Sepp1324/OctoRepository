@@ -11,7 +11,7 @@ namespace OctoAwesome.Client.Components.Hud
 {
     internal class Toolbar : Control
     {
-        //private Texture2D[] toolTextures;
+        // private Texture2D[] toolTextures;
         private Dictionary<IItemDefinition, Texture2D> toolTextures;
 
         public PlayerComponent Player { get; set; }
@@ -25,9 +25,9 @@ namespace OctoAwesome.Client.Components.Hud
 
         public override void LoadContent()
         {
-            //toolTextures = new Texture2D[Player.Tools.Length];
-            //int index = 0;
-            foreach (var item in ItemDefinitionManager.GetItemDefinitions())
+            // toolTextures = new Texture2D[Player.Tools.Length];
+            // int index = 0;
+            foreach (var item in ItemDefinitionManager.GetBlockDefinitions())
             {
                 using (MemoryStream stream = new MemoryStream())
                 {
@@ -63,6 +63,7 @@ namespace OctoAwesome.Client.Components.Hud
                     index++;
                 }
             }
+
             batch.End();
         }
     }

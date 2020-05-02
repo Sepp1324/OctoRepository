@@ -9,13 +9,14 @@ namespace OctoAwesome.Runtime
     {
         private static List<IItemDefinition> definitions;
 
-        public static IEnumerable<IItemDefinition> GetItemDefinitions()
+        public static IEnumerable<IItemDefinition> GetBlockDefinitions()
         {
-            if(definitions == null)
+            if (definitions == null)
             {
                 definitions = new List<IItemDefinition>();
                 definitions.AddRange(ExtensionManager.GetInstances<IItemDefinition>());
             }
+
             return definitions;
         }
     }

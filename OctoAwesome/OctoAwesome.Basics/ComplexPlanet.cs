@@ -13,7 +13,7 @@ namespace OctoAwesome.Basics
 
         public float[,] Heightmap { get; private set; }
 
-        public float[, ,] CloudMap { get; private set; }
+        public float[,,] CloudMap { get; private set; }
 
         public SurfaceBiomeGenerator BiomeGenerator { get; private set; }
 

@@ -41,9 +41,14 @@ namespace OctoAwesome
         Trigger<bool> ApplyTrigger { get; }
 
         /// <summary>
-        /// Inventory-Trigger
+        /// Inventartrigger
         /// </summary>
         Trigger<bool> InventoryTrigger { get; }
+
+        /// <summary>
+        /// Aktiviert und deaktiviert den Flymode
+        /// </summary>
+        Trigger<bool> ToggleFlyMode { get; }
 
         /// <summary>
         /// Sprung-Trigger (löst einen Sprung aus)

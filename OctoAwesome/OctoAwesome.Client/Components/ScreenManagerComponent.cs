@@ -37,8 +37,10 @@ namespace OctoAwesome.Client.Components
             {
                 foreach (var control in ActiveScreen.Controls)
                 {
-                    if (position.X >= control.Position.X && position.X <= control.Position.X + control.Size.X &&
-                        position.Y >= control.Position.Y && position.Y <= control.Position.Y + control.Size.Y)
+                    if (position.X >= control.Position.X &&
+                        position.X <= control.Position.X + control.Size.X &&
+                        position.Y >= control.Position.Y &&
+                        position.Y <= control.Position.Y + control.Size.Y)
                     {
                         control.FireMouseUp();
                     }
@@ -56,7 +58,7 @@ namespace OctoAwesome.Client.Components
 
         void input_OnKeyDown(Keys key)
         {
-            
+
         }
 
         protected override void LoadContent()
@@ -83,10 +85,13 @@ namespace OctoAwesome.Client.Components
             {
                 foreach (var control in ActiveScreen.Controls)
                 {
-                    control.IsHovered = (input.PointerPosition.X >= control.Position.X && input.PointerPosition.X <= control.Position.X + control.Size.X &&
-                        input.PointerPosition.Y >= control.Position.Y && input.PointerPosition.Y <= control.Position.Y + control.Size.Y);
+                    control.IsHovered = (input.PointerPosition.X >= control.Position.X &&
+                        input.PointerPosition.X <= control.Position.X + control.Size.X &&
+                        input.PointerPosition.Y >= control.Position.Y &&
+                        input.PointerPosition.Y <= control.Position.Y + control.Size.Y);
                 }
             }
+
             base.Update(gameTime);
         }
 
@@ -96,13 +101,6 @@ namespace OctoAwesome.Client.Components
                 ActiveScreen.Draw(batch, gameTime);
 
             base.Draw(gameTime);
-        }
-
-        public void Close()
-        {
-            ActiveScreen = null;
-            input.PointerPosition = ScreenSize / 2;
-            input.ScreenMode = false;
         }
 
         public Texture2D Pix { get; private set; }
@@ -128,6 +126,14 @@ namespace OctoAwesome.Client.Components
         public GraphicsDevice GraphicsDevice
         {
             get { return base.GraphicsDevice; }
+        }
+
+
+        public void Close()
+        {
+            ActiveScreen = null;
+            input.PointerPosition = ScreenSize / 2;
+            input.ScreenMode = false;
         }
     }
 }

@@ -11,9 +11,9 @@ namespace OctoAwesome
 
         void Hit(IBlockDefinition block, PhysicalProperties itemProperties);
 
-        BoundingBox[] GetCollisionBoxes(IPlanetResourceManager manager, int x, int y, int z);
-
         Bitmap[] Textures { get; }
+
+        BoundingBox[] GetCollisionBoxes(IPlanetResourceManager manager, int x, int y, int z);
 
         PhysicalProperties GetProperties(IPlanetResourceManager manager, int x, int y, int z);
 

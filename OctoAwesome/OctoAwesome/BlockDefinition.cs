@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Drawing;
 
 namespace OctoAwesome
@@ -27,27 +28,27 @@ namespace OctoAwesome
 
         public virtual int GetBottomTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
         {
-            return 1;
+            return 0;
         }
 
         public virtual int GetNorthTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
         {
-            return 2;
+            return 0;
         }
 
         public virtual int GetSouthTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
         {
-            return 2;
+            return 0;
         }
 
         public virtual int GetWestTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
         {
-            return 2;
+            return 0;
         }
 
         public virtual int GetEastTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
         {
-            return 2;
+            return 0;
         }
 
         public virtual int GetTopTextureRotation(IPlanetResourceManager manager, int x, int y, int z)
@@ -79,7 +80,6 @@ namespace OctoAwesome
         {
             return 0;
         }
-
 
         public virtual bool IsTopSolidWall(IPlanetResourceManager manager, int x, int y, int z)
         {

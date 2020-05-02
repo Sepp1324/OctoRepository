@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -16,7 +19,6 @@ namespace OctoAwesome.Runtime
         private Index3? lastInteract = null;
         private Index3? lastApply = null;
         private OrientationFlags lastOrientation = OrientationFlags.None;
-
         private Index3 _oldIndex;
 
         private IPlanetResourceManager _manager;
@@ -27,9 +29,9 @@ namespace OctoAwesome.Runtime
 
         public WorldState State { get; private set; }
 
-        public ActorHost(Player player, IChunkLoader loader)
+        public ActorHost(Player player, IChunkLoader chunkLoader)
         {
-            _chunkLoader = loader;
+            _chunkLoader = chunkLoader;
 
             Player = player;
             planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
@@ -45,12 +47,20 @@ namespace OctoAwesome.Runtime
             _manager = ResourceManager.Instance.GetManagerForPlanet(planet.Id);
 
             State = WorldState.Running;
+
             _chunkLoader.UpdatePosition(0, 0, 0);
         }
 
         public void Update(GameTime frameTime)
         {
-            Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
+            if (!Player.FlyMode)
+            {
+                Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
+            }
+            else
+            {
+                Player.ExternalForce = Vector3.Zero;
+            }
 
             #region Inputverarbeitung
 
@@ -72,6 +82,12 @@ namespace OctoAwesome.Runtime
 
             Vector3 Friction = new Vector3(1, 1, 0.1f) * Player.FRICTION;
             Vector3 powerdirection = new Vector3();
+
+            if (Player.FlyMode)
+            {
+                VelocityDirection += new Vector3(0, 0, (float)Math.Sin(Player.Tilt) * Move.Y);
+                Friction = Vector3.One * Player.FRICTION;
+            }
 
             powerdirection += externalPower;
             powerdirection += (Player.POWER * VelocityDirection);
@@ -148,13 +164,14 @@ namespace OctoAwesome.Runtime
                             Index3 pos = new Index3(x, y, z);
                             Index3 blockPos = pos + Player.Position.GlobalBlockIndex;
                             ushort block = _manager.GetBlock(blockPos);
-
                             if (block == 0)
                                 continue;
 
                             Axis? localAxis;
                             IBlockDefinition blockDefinition = BlockDefinitionManager.GetForType(block);
-                            float? moveFactor = Block.Intersect(blockDefinition.GetCollisionBoxes(_manager, blockPos.X, blockPos.Y, blockPos.Z), pos, playerBox, move, out localAxis);
+                            float? moveFactor = Block.Intersect(
+                                blockDefinition.GetCollisionBoxes(_manager, blockPos.X, blockPos.Y, blockPos.Z),
+                                pos, playerBox, move, out localAxis);
 
                             if (moveFactor.HasValue && moveFactor.Value < min)
                             {
@@ -199,7 +216,8 @@ namespace OctoAwesome.Runtime
 
             if (Player.Position.ChunkIndex != _oldIndex)
             {
-                //TODO: Planeten-Rundung beachten
+                //TODO: Planeten rundung beachten :)
+
                 _chunkLoader.UpdatePosition(Player.Position.ChunkIndex.X - _oldIndex.X, Player.Position.ChunkIndex.Y - _oldIndex.Y, Player.Position.ChunkIndex.Z - _oldIndex.Z);
                 _oldIndex = Player.Position.ChunkIndex;
             }
@@ -219,7 +237,8 @@ namespace OctoAwesome.Runtime
                     if (slot == null)
                     {
                         // TODO: ItemDefinition finden
-                        //var definition = BlockDefinitionManager.GetBlockDefinitions().SingleOrDefault(d => d.GetBlockType() == lastBlock.GetType());
+                        // var definition = BlockDefinitionManager.GetBlockDefinitions().SingleOrDefault(d => d.GetBlockType() == lastBlock.GetType());
+
 
                         slot = new InventorySlot()
                         {
@@ -248,7 +267,7 @@ namespace OctoAwesome.Runtime
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    //TODO: FIX INTERACTION
+                    // TODO: Fix Interaction ;)
                     ushort block = _manager.GetBlock(lastApply.Value);
                     IBlockDefinition blockDefinition = BlockDefinitionManager.GetForType(block);
                     IItemDefinition itemDefinition = ActiveTool.Definition;

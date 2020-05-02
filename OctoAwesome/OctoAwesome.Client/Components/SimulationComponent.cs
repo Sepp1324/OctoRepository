@@ -22,17 +22,16 @@ namespace OctoAwesome.Client.Components
         public override void Initialize()
         {
             World = new World();
-      
-            var p = Load();
 
-            foreach (var item in ItemDefinitionManager.GetItemDefinitions())
+            var p = Load();
+            foreach (var item in ItemDefinitionManager.GetBlockDefinitions())
             {
                 p.Inventory.Add(new InventorySlot() { Definition = item, Amount = 1 });
             }
 
             Player = World.InjectPlayer(p);
-
             Player.Initialize();
+
             base.Initialize();
         }
 
@@ -64,7 +63,7 @@ namespace OctoAwesome.Client.Components
             string filename = "player.info";
 
             if (!File.Exists(root.FullName + Path.DirectorySeparatorChar + filename))
-                return null;
+                return new Player();
 
             using (Stream stream = File.Open(root.FullName + Path.DirectorySeparatorChar + filename, FileMode.Open, FileAccess.Read))
             {
@@ -74,6 +73,7 @@ namespace OctoAwesome.Client.Components
                     return (Player)serializer.Deserialize(stream);
                 }
                 catch (Exception) { }
+
                 return new Player();
             }
         }

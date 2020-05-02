@@ -1,6 +1,9 @@
-﻿using System;
+﻿using OctoAwesome.Noise;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics
 {
@@ -24,19 +27,19 @@ namespace OctoAwesome.Basics
         public IChunk[] GenerateChunk(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, Index2 index)
         {
             IBlockDefinition sandDefinition = blockDefinitions.FirstOrDefault(d => typeof(SandBlockDefinition) == d.GetType());
-            ushort sandIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), sandDefinition) + 1); 
+            ushort sandIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), sandDefinition) + 1);
 
             IBlockDefinition groundDefinition = blockDefinitions.FirstOrDefault(d => typeof(GroundBlockDefinition) == d.GetType());
             ushort groundIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), groundDefinition) + 1);
 
-            IBlockDefinition grassDefinition = blockDefinitions.FirstOrDefault(d => typeof(GrassBlockDefinition) == d.GetType());
-            ushort grassIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), grassDefinition) + 1);
+            IBlockDefinition stoneDefinition = blockDefinitions.FirstOrDefault(d => typeof(StoneBlockDefinition) == d.GetType());
+            ushort stoneIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), stoneDefinition) + 1);
 
             IBlockDefinition waterDefinition = blockDefinitions.FirstOrDefault(d => typeof(WaterBlockDefinition) == d.GetType());
             ushort waterIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), waterDefinition) + 1);
 
-            IBlockDefinition stoneDefinition = blockDefinitions.FirstOrDefault(d => typeof(StoneBlockDefinition) == d.GetType());
-            ushort stoneIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), stoneDefinition) + 1);
+            IBlockDefinition grassDefinition = blockDefinitions.FirstOrDefault(d => typeof(GrassBlockDefinition) == d.GetType());
+            ushort grassIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), grassDefinition) + 1);
 
             if (!(planet is ComplexPlanet))
                 throw new ArgumentException("planet is not a Type of ComplexPlanet");
@@ -150,7 +153,7 @@ namespace OctoAwesome.Basics
             //                {
             //                    if (blockValue.IsDessert || (grass | sand) && (z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel && (z + (i * Chunk.CHUNKSIZE_Z)) >= localPlanet.BiomeGenerator.SeaLevel - 2)
             //                    {
-            //                        chunks[i].SetBlock(new Index3(x, y, z), sandIndex);
+            //                        chunks[i].SetBlock(new Index3(x, y, z), new SandBlock());
             //                        grass = false;
             //                        sand = true;
             //                    }

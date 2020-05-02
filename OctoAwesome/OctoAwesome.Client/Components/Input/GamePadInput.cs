@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components.Input
 {
@@ -39,15 +42,14 @@ namespace OctoAwesome.Client.Components.Input
         /// </summary>
         public Trigger<bool> ApplyTrigger { get; private set; }
 
-        /// <summary>
-        /// Inventory-Trigger (Opens a Inventory)
-        /// </summary>
         public Trigger<bool> InventoryTrigger { get; private set; }
 
         /// <summary>
         /// Sprung-Trigger (löst einen Sprung aus)
         /// </summary>
         public Trigger<bool> JumpTrigger { get; private set; }
+
+        public Trigger<bool> ToggleFlyMode { get; private set; }
 
         public Trigger<bool>[] SlotTrigger { get { return null; } }
 
@@ -63,6 +65,7 @@ namespace OctoAwesome.Client.Components.Input
             SlotLeftTrigger = new Trigger<bool>();
             SlotRightTrigger = new Trigger<bool>();
             InventoryTrigger = new Trigger<bool>();
+            ToggleFlyMode = new Trigger<bool>();
         }
 
         /// <summary>
@@ -78,6 +81,7 @@ namespace OctoAwesome.Client.Components.Input
                 ApplyTrigger.Value = gamePadState.Buttons.A == ButtonState.Pressed;
                 InventoryTrigger.Value = gamePadState.Buttons.Back == ButtonState.Pressed;
                 JumpTrigger.Value = gamePadState.Buttons.Y == ButtonState.Pressed;
+                ToggleFlyMode.Value = gamePadState.Buttons.LeftStick == ButtonState.Pressed;
                 SlotLeftTrigger.Value = gamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
                 SlotRightTrigger.Value = gamePadState.Buttons.RightShoulder == ButtonState.Pressed;
                 MoveX = gamePadState.ThumbSticks.Left.X;

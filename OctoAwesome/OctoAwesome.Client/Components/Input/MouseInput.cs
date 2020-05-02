@@ -53,15 +53,14 @@ namespace OctoAwesome.Client.Components.Input
         /// </summary>
         public Trigger<bool> ApplyTrigger { get; private set; }
 
-        /// <summary>
-        /// Inventory-Trigger (Opens a Inventory)
-        /// </summary>
         public Trigger<bool> InventoryTrigger { get; private set; }
 
         /// <summary>
         /// Sprung-Trigger (löst einen Sprung aus)
         /// </summary>
         public Trigger<bool> JumpTrigger { get; private set; }
+
+        public Trigger<bool> ToggleFlyMode { get; private set; }
 
         public Trigger<bool>[] SlotTrigger { get { return null; } }
 
@@ -79,10 +78,11 @@ namespace OctoAwesome.Client.Components.Input
 
             InteractTrigger = new Trigger<bool>();
             ApplyTrigger = new Trigger<bool>();
+            InventoryTrigger = new Trigger<bool>();
             JumpTrigger = new Trigger<bool>();
             SlotLeftTrigger = new Trigger<bool>();
             SlotRightTrigger = new Trigger<bool>();
-            InventoryTrigger = new Trigger<bool>();
+            ToggleFlyMode = new Trigger<bool>();
         }
 
         /// <summary>

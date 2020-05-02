@@ -16,7 +16,7 @@ namespace OctoAwesome
 
         public float Radius { get; set; }
 
-        // TODO: Angle kürzen
+        // TODO: Angle immer hübsch kürzen
         public float Angle { get; set; }
 
         public float Height { get; set; }
@@ -27,18 +27,21 @@ namespace OctoAwesome
 
         public int InventorySlots { get; set; }
 
+        public bool FlyMode { get; set; }
+
         [XmlIgnore]
         public List<InventorySlot> Inventory { get; set; }
 
         public Player()
         {
-            Position = new Coordinate(0, new Index3(82109, 74365, 45), Vector3.Zero);
+            Position = new Coordinate(0, new Index3(8038, 73908, 80), Vector3.Zero);
             Velocity = new Vector3(0, 0, 0);
             Inventory = new List<InventorySlot>();
             Radius = 0.75f;
             Angle = 0f;
             Height = 3.5f;
             Mass = 100;
+            FlyMode = false;
         }
     }
 }

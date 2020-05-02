@@ -26,6 +26,11 @@ namespace OctoAwesome.Basics
             }
         }
 
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
+        {
+            throw new NotImplementedException();
+        }
+
         public override PhysicalProperties GetProperties(IPlanetResourceManager manager, int x, int y, int z)
         {
             return new PhysicalProperties()
@@ -35,11 +40,6 @@ namespace OctoAwesome.Basics
                 Granularity = 0.9f,
                 Hardness = 0.1f
             };
-        }
-
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
         }
     }
 }

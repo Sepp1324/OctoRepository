@@ -19,6 +19,8 @@ namespace OctoAwesome.Basics
         {
             get
             {
+
+
                 return new[] {
                     (Bitmap)Bitmap.FromFile("./Assets/grass_top.png"),
                     (Bitmap)Bitmap.FromFile("./Assets/dirt.png"),
@@ -67,5 +69,7 @@ namespace OctoAwesome.Basics
         {
             return 2;
         }
+
+
     }
 }

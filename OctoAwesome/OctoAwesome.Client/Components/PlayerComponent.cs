@@ -37,10 +37,7 @@ namespace OctoAwesome.Client.Components
         public override void Initialize()
         {
             base.Initialize();
-            Tools = new List<InventorySlot>(); //= BlockDefinitionManager.GetBlockDefinitions().ToArray();
-            //if (Tools != null && Tools.Length > 0)
-            //    ActorHost.ActiveTool = Tools[0];
-            Tools.AddRange(ActorHost.Player.Inventory);
+            Tools = new List<InventorySlot>(ActorHost.Player.Inventory);
         }
 
         public override void Update(GameTime gameTime)
@@ -57,6 +54,10 @@ namespace OctoAwesome.Client.Components
             if (input.ApplyTrigger && SelectedBox.HasValue)
             {
                 ActorHost.Apply(SelectedBox.Value, SelectedSide);
+            }
+            if (input.ToggleFlyMode)
+            {
+                ActorHost.Player.FlyMode = !ActorHost.Player.FlyMode;
             }
 
             if (Tools != null && Tools.Count > 0 && input.SlotTrigger != null)

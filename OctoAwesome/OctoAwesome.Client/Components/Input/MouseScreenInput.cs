@@ -12,9 +12,13 @@ namespace OctoAwesome.Client.Components.Input
 
         private bool mouseDown = false;
 
-        public Index2 PointerPosition { 
-            get { return mousePointer; } 
-            set { Mouse.SetPosition(value.X, value.Y); } 
+        public Index2 PointerPosition
+        {
+            get { return mousePointer; }
+            set
+            {
+                Mouse.SetPosition(value.X, value.Y);
+            }
         }
 
         public void Update()
@@ -22,7 +26,7 @@ namespace OctoAwesome.Client.Components.Input
             MouseState state = Mouse.GetState();
             mousePointer = new Index2(state.X, state.Y);
 
-            if(state.LeftButton == ButtonState.Pressed)
+            if (state.LeftButton == ButtonState.Pressed)
             {
                 if (!mouseDown)
                 {
@@ -31,10 +35,9 @@ namespace OctoAwesome.Client.Components.Input
             }
             else
             {
-                if(mouseDown)
+                if (mouseDown)
                 {
                     mouseDown = false;
-
                     if (OnLeftMouseUp != null)
                         OnLeftMouseUp(mousePointer);
                 }
@@ -42,7 +45,9 @@ namespace OctoAwesome.Client.Components.Input
         }
 
         public event OnKeyChange OnKeyDown;
+
         public event OnKeyChange OnKeyUp;
+
         public event OnMouseKeyChange OnLeftMouseUp;
     }
 }

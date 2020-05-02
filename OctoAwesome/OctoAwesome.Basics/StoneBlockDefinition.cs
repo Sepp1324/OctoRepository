@@ -15,6 +15,7 @@ namespace OctoAwesome.Basics
             get { return (Bitmap)Bitmap.FromFile("./Assets/stone.png"); }
         }
 
+
         public override Bitmap[] Textures
         {
             get
