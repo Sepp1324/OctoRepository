@@ -1,4 +1,8 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -8,8 +12,11 @@ namespace OctoAwesome
 
         Bitmap Icon { get; }
 
-        PhysicalProperties GetProperties(IItem item);
+        int StackLimit { get; }
 
-        void Hit(IItem item, PhysicalProperties itemProperties);
+
+        //PhysicalProperties GetProperties(IItem item);
+
+        //void Hit(IItem item, PhysicalProperties itemProperties);
     }
 }
