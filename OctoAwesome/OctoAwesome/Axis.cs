@@ -1,30 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
     /// <summary>
-    /// Flag List for aivailable Axis.
+    /// Flag Liste für die verfügbaren Achsen.
     /// </summary>
     [Flags]
     public enum Axis
     {
         /// <summary>
-        /// No Axis
+        /// Keine Achse
         /// </summary>
         None = 0,
 
         /// <summary>
-        /// X Axis (Eas-West-Axis)
+        /// X Achse (Ost-West-Achse)
         /// </summary>
         X = 1,
 
         /// <summary>
-        /// Y Axis (North-South-Axis)
+        /// Y Achse (Nord-Süd-Achse)
         /// </summary>
         Y = 2,
 
         /// <summary>
-        /// Z Axis (Height-Axis)
+        /// Z Achse (Höhen-Achse)
         /// </summary>
         Z = 4
     }

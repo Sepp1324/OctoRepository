@@ -12,11 +12,12 @@ namespace OctoAwesome.Runtime
 
         public static IEnumerable<IMapGenerator> GetMapGenerators()
         {
-            if(mapGenerators == null)
+            if (mapGenerators == null)
             {
                 mapGenerators = new List<IMapGenerator>();
                 mapGenerators.AddRange(ExtensionManager.GetInstances<IMapGenerator>());
             }
+
             return mapGenerators;
         }
     }

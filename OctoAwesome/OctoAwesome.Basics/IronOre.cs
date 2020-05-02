@@ -7,6 +7,5 @@ namespace OctoAwesome.Basics
 {
     public class IronOre : IResource
     {
-        
     }
 }

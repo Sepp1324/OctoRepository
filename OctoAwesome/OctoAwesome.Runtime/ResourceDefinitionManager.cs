@@ -9,13 +9,14 @@ namespace OctoAwesome.Runtime
     {
         private static List<IResourceDefinition> definitions;
 
-        public static IEnumerable<IResourceDefinition> GetResourceDefinitions()
+        public static IEnumerable<IResourceDefinition> GetBlockDefinitions()
         {
             if (definitions == null)
             {
                 definitions = new List<IResourceDefinition>();
                 definitions.AddRange(ExtensionManager.GetInstances<IResourceDefinition>());
             }
+
             return definitions;
         }
     }

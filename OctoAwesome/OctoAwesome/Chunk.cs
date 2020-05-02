@@ -1,4 +1,10 @@
-﻿namespace OctoAwesome
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome
 {
     /// <summary>
     /// Repräsentiert einen Karten-Abschnitt innerhalb des Planeten.

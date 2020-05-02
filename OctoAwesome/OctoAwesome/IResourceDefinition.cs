@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -9,7 +12,7 @@ namespace OctoAwesome
 
         Bitmap Icon { get; }
 
-        IResource GetInstance { get; }
+        IResource GetInstance();
 
         Type GetResourceType();
     }

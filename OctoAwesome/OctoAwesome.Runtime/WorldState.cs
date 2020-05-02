@@ -7,9 +7,9 @@ namespace OctoAwesome.Runtime
 {
     public enum WorldState
     {
-        Loading, 
+        Loading,
         Running,
         Paused,
-        ShuttingDown
+        ShuttingDown,
     }
 }

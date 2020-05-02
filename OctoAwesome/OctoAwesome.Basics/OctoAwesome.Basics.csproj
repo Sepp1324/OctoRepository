@@ -56,7 +56,7 @@
     <Compile Include="GrassBlockDefinition.cs" />
     <Compile Include="GroundBlockDefinition.cs" />
     <Compile Include="IronOre.cs" />
-    <Compile Include="IronOreResource.cs" />
+    <Compile Include="IronOreDefinition.cs" />
     <Compile Include="Pickaxe.cs" />
     <Compile Include="PickaxeDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,44 +80,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\grass_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\grass_side.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\grass_top.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ground_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sand_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\stone_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\stone_side.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\water_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\water_side.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\wood_bottom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\wood_side.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\pick_iron.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
