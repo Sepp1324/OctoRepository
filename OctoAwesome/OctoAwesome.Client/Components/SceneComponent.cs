@@ -3,20 +3,16 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class SceneComponent : DrawableGameComponent
     {
-        public static int VIEWRANGE = 2; // Anzahl Chunks als Potenz (Volle Sichtweite)
+        public static int VIEWRANGE = 4; // Anzahl Chunks als Potenz (Volle Sichtweite)
         public static int TEXTURESIZE = 64;
 
         private PlayerComponent player;
@@ -282,13 +278,13 @@ namespace OctoAwesome.Client.Components
 
                 BoundingBox chunkBox = new BoundingBox(
                 new Vector3(
-                    shift.X * Chunk.CHUNKSIZE_X,
-                    shift.Y * Chunk.CHUNKSIZE_Y,
-                    shift.Z * Chunk.CHUNKSIZE_Z),
+                    shift.X * OctoAwesome.Chunk.CHUNKSIZE_X,
+                    shift.Y * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                    shift.Z * OctoAwesome.Chunk.CHUNKSIZE_Z),
                 new Vector3(
-                    (shift.X + 1) * Chunk.CHUNKSIZE_X,
-                    (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
-                    (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
+                    (shift.X + 1) * OctoAwesome.Chunk.CHUNKSIZE_X,
+                    (shift.Y + 1) * OctoAwesome.Chunk.CHUNKSIZE_Y,
+                    (shift.Z + 1) * OctoAwesome.Chunk.CHUNKSIZE_Z));
 
                 if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera.View, camera.Projection, shift);
@@ -358,33 +354,36 @@ namespace OctoAwesome.Client.Components
 
             #region Chunkrenderer updaten
 
-            int shortestDistance = int.MaxValue;
-            ChunkRenderer updatableRenderer = null;
+            //            int shortestDistance = int.MaxValue;
+            //            ChunkRenderer updatableRenderer = null;
             foreach (var renderer in chunkRenderer)
             {
                 if (!renderer.NeedUpdate())
                     continue;
 
-                Index2 absoluteIndex = new Index2(renderer.ChunkPosition.Value);
-                Index2 relativeIndex = destinationChunk.ShortestDistanceXY(
-                                   absoluteIndex, new Index2(
-                                       planet.Size.X,
-                                       planet.Size.Y));
+                renderer.RegenerateVertexBuffer();
 
-                int distance = relativeIndex.LengthSquared();
-                if (distance < shortestDistance)
-                {
-                    updatableRenderer = renderer;
-                    shortestDistance = distance;
-                }
+                //                Index2 absoluteIndex = new Index2(renderer.ChunkPosition.Value);
+                //                Index2 relativeIndex = destinationChunk.ShortestDistanceXY(
+                //                                   absoluteIndex, new Index2(
+                //                                       planet.Size.X,
+                //                                       planet.Size.Y));
+                //
+                //                int distance = relativeIndex.LengthSquared();
+                //                if (distance < shortestDistance)
+                //                {
+                //                    updatableRenderer = renderer;
+                //                    shortestDistance = distance;
+                //                }
             }
 
-            if (updatableRenderer != null)
-                updatableRenderer.RegenerateVertexBuffer();
+            //            if (updatableRenderer != null)
+            //                updatableRenderer.RegenerateVertexBuffer();
 
             #endregion
 
-            return updatableRenderer != null;
+            return true;
+            //            return updatableRenderer != null;
         }
 
         private void BackgroundLoop()

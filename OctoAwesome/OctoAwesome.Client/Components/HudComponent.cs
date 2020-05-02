@@ -48,7 +48,8 @@ namespace OctoAwesome.Client.Components
 
         protected override void LoadContent()
         {
-            Pix = Game.Content.Load<Texture2D>("Textures/pix");
+            Pix = new Texture2D(GraphicsDevice, 1, 1);
+            Pix.SetData(new[] { Color.White });
             NormalText = Game.Content.Load<SpriteFont>("hud");
 
             toolbar.Position = new Index2(0, GraphicsDevice.Viewport.Height - 100);
@@ -69,9 +70,9 @@ namespace OctoAwesome.Client.Components
             base.LoadContent();
         }
 
-        public override void Update(GameTime gameTime) 
+        public override void Update(GameTime gameTime)
         {
-            
+
         }
 
         public override void Draw(GameTime gameTime)
