@@ -15,17 +15,15 @@ namespace OctoAwesome.Runtime
 
         private UpdateDomain[] updateDomains;
 
-        public WorldState State { get; set; }
+        public WorldState State { get; private set; }
 
         public World()
         {
             watch.Start();
             updateDomains = new UpdateDomain[1];
             updateDomains[0] = new UpdateDomain(watch);
-
             State = WorldState.Running;
         }
-
 
         public void Update(GameTime frameTime)
         {
@@ -44,12 +42,9 @@ namespace OctoAwesome.Runtime
 
             cache.EnsureLoaded(player.Position.ChunkIndex);
             cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(0, 0, 1));
-            //cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(0, 1, 1));
-            //cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(0, -1, 1));
-            //cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(1, 0, 0));
+            cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(0, 0, -1));
 
             var host = new ActorHost(player, loader);
-
             updateDomains[0].ActorHosts.Add(host);
             return host;
         }
