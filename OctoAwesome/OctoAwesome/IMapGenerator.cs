@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OctoAwesome
 {
@@ -11,6 +8,6 @@ namespace OctoAwesome
 
         IPlanet GeneratePlanet(int universe, int seed);
 
-        IChunk[] GenerateChunk(BlockDefinition[] blockDefinitions, IPlanet planet, Index2 index);
+        IChunk[] GenerateChunk(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, Index2 index);
     }
 }

@@ -1,8 +1,6 @@
-﻿using OctoAwesome.Basics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -18,10 +16,10 @@ namespace OctoAwesome.Basics
             return new Planet(0, universe, new Index3(1000, 1000, 3), seed);
         }
 
-        public IChunk[] GenerateChunk(BlockDefinition[] blockDefinitions, IPlanet planet, Index2 index)
+        public IChunk[] GenerateChunk(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, Index2 index)
         {
             IBlockDefinition sandDefinition = blockDefinitions.FirstOrDefault(d => typeof(SandBlockDefinition) == d.GetType());
-            ushort sandIndex = (ushort)Array.IndexOf(blockDefinitions, sandDefinition);
+            ushort sandIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), sandDefinition) + 1);
 
             IChunk[] result = new IChunk[planet.Size.Z];
 

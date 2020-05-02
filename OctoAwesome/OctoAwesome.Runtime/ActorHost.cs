@@ -7,7 +7,7 @@ namespace OctoAwesome.Runtime
     public class ActorHost : IPlayerController
     {
         private readonly IChunkLoader _chunkLoader;
-        private readonly float Gap = 0.00001f;
+        private readonly float Gap = 0.001f;
 
         private IPlanet planet;
 
@@ -43,7 +43,7 @@ namespace OctoAwesome.Runtime
         public void Initialize()
         {
             _manager = ResourceManager.Instance.GetManagerForPlanet(planet.Id);
-            
+
             State = WorldState.Running;
             _chunkLoader.UpdatePosition(0, 0, 0);
         }
@@ -146,13 +146,15 @@ namespace OctoAwesome.Runtime
                         for (int x = minx; x <= maxx; x++)
                         {
                             Index3 pos = new Index3(x, y, z);
-                            IBlock block = GetBlock(pos +
-                                Player.Position.GlobalBlockIndex);
-                            if (block == null)
+                            Index3 blockPos = pos + Player.Position.GlobalBlockIndex;
+                            ushort block = _manager.GetBlock(blockPos);
+
+                            if (block == 0)
                                 continue;
 
                             Axis? localAxis;
-                            float? moveFactor = block.Intersect(pos, playerBox, move, out localAxis);
+                            IBlockDefinition blockDefinition = BlockDefinitionManager.GetForType(block);
+                            float? moveFactor = Block.Intersect(blockDefinition.GetCollisionBoxes(_manager, blockPos.X, blockPos.Y, blockPos.Z), pos, playerBox, move, out localAxis);
 
                             if (moveFactor.HasValue && moveFactor.Value < min)
                             {
@@ -195,7 +197,7 @@ namespace OctoAwesome.Runtime
             }
             while (collision && loop < 3);
 
-            if(Player.Position.ChunkIndex != _oldIndex)
+            if (Player.Position.ChunkIndex != _oldIndex)
             {
                 //TODO: Planeten-Rundung beachten
                 _chunkLoader.UpdatePosition(Player.Position.ChunkIndex.X - _oldIndex.X, Player.Position.ChunkIndex.Y - _oldIndex.Y, Player.Position.ChunkIndex.Z - _oldIndex.Z);
@@ -208,17 +210,17 @@ namespace OctoAwesome.Runtime
 
             if (lastInteract.HasValue)
             {
-                IBlock lastBlock = _manager.GetBlock(lastInteract.Value);
-                _manager.SetBlock(lastInteract.Value, null);
+                ushort lastBlock = _manager.GetBlock(lastInteract.Value);
+                _manager.SetBlock(lastInteract.Value, 0);
 
-                if (lastBlock != null)
+                if (lastBlock != 0)
                 {
                     var slot = Player.Inventory.SingleOrDefault(s => s.Definition == lastBlock.GetType());
                     if (slot == null)
                     {
-                        var definition = BlockDefinitionManager.GetBlockDefinitions().SingleOrDefault(d => d.GetBlockType() == lastBlock.GetType());
-
                         // TODO: ItemDefinition finden
+                        //var definition = BlockDefinitionManager.GetBlockDefinitions().SingleOrDefault(d => d.GetBlockType() == lastBlock.GetType());
+
                         slot = new InventorySlot()
                         {
                             Definition = null,
@@ -246,38 +248,19 @@ namespace OctoAwesome.Runtime
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    IBlock block = _manager.GetBlock(lastApply.Value);
-                    IBlockDefinition blockDefinition = BlockDefinitionManager.GetBlockDefinitions().FirstOrDefault(d => d.GetBlockType() == block.GetType());
+                    //TODO: FIX INTERACTION
+                    ushort block = _manager.GetBlock(lastApply.Value);
+                    IBlockDefinition blockDefinition = BlockDefinitionManager.GetForType(block);
                     IItemDefinition itemDefinition = ActiveTool.Definition;
 
-                    blockDefinition.Hit(block, itemDefinition.GetProperties(null));
-                    itemDefinition.Hit(null, blockDefinition.GetProperties(block));
+                    //blockDefinition.Hit(blockDefinition, itemDefinition.GetProperties(null));
+                    //itemDefinition.Hit(null, blockDefinition.GetProperties(block));
                 }
 
                 lastApply = null;
             }
 
             #endregion
-        }
-
-        /// <summary>
-        /// Liefert den Block an der angegebenen Block-Koodinate zurück.
-        /// </summary>
-        /// <param name="index">Block Index</param>
-        /// <returns>Block oder null, falls dort kein Block existiert</returns>
-        public IBlock GetBlock(Index3 index)
-        {
-            return _manager.GetBlock(index);
-        }
-
-        /// <summary>
-        /// Überschreibt den Block an der angegebenen Koordinate.
-        /// </summary>
-        /// <param name="index">Block-Koordinate</param>
-        /// <param name="block">Neuer Block oder null, falls der alte Bock gelöscht werden soll.</param>
-        public void SetBlock(Index3 index, IBlock block)
-        {
-            _manager.SetBlock(index, block);
         }
 
         public Coordinate Position

@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -15,6 +12,7 @@ namespace OctoAwesome.Runtime
 
         private IMapGenerator mapGenerator = null;
         private IChunkPersistence chunkPersistence = null;
+        private IChunkSerializer chunkSerializer = null;
 
         /// <summary>
         /// Planet Cache.
@@ -48,7 +46,8 @@ namespace OctoAwesome.Runtime
         private ResourceManager()
         {
             mapGenerator = MapGeneratorManager.GetMapGenerators().First();
-            chunkPersistence = new ChunkDiskPersistence();
+            chunkSerializer = new ChunkSerializer();
+            chunkPersistence = new ChunkDiskPersistence(chunkSerializer);
 
             _managers = new Dictionary<int, PlanetResourceManager>();
             _planets = new[] { loadPlanet(0) };
@@ -69,7 +68,7 @@ namespace OctoAwesome.Runtime
         public IPlanet GetPlanet(int id)
         {
             return _planets[id];
-        }     
+        }
 
         private IPlanet loadPlanet(int index)
         {
@@ -93,10 +92,12 @@ namespace OctoAwesome.Runtime
 
             // Load from disk
             IChunk first = chunkPersistence.Load(universe.Id, planetId, index);
+            
             if (first != null)
                 return first;
 
-            IChunk[] result = mapGenerator.GenerateChunk(planet, new Index2(index.X, index.Y));
+            IChunk[] result = mapGenerator.GenerateChunk(BlockDefinitionManager.GetBlockDefinitions(), planet, new Index2(index.X, index.Y));
+            
             if (result != null && result.Length > index.Z && index.Z >= 0)
             {
                 result[index.Z].ChangeCounter = 0;

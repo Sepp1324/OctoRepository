@@ -6,6 +6,6 @@ namespace OctoAwesome
     {
         void Serialize(Stream stream, IChunk chunk);
 
-        IChunk Deserialize(Stream stream);
+        IChunk Deserialize(Stream stream, PlanetIndex3 position);
     }
 }

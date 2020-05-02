@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace OctoAwesome.Runtime
 {
@@ -10,77 +11,93 @@ namespace OctoAwesome.Runtime
         {
             using (BinaryWriter bw = new BinaryWriter(stream))
             {
-                List<Type> types = new List<Type>();
+                List<IBlockDefinition> definitions = new List<IBlockDefinition>();
 
                 // Types sammeln
-                for (int i = 0; i < _blocks.Length; i++)
+                for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
-                    if (_blocks[i] != null)
+                    if (chunk.Blocks[i] != 0)
                     {
-                        Type t = _blocks[i].GetType();
-                        if (!types.Contains(t))
-                            types.Add(t);
+                        IBlockDefinition definition = BlockDefinitionManager.GetForType(chunk.Blocks[i]);
+                        
+                        if (!definitions.Contains(definition))
+                            definitions.Add(definition);
                     }
                 }
 
                 // Schreibe Phase 1
-                bw.Write(types.Count);
+                bw.Write(definitions.Count);
 
                 // Im Falle eines Luft-Chunks...
-                if (types.Count == 0)
+                if (definitions.Count == 0)
                     return;
 
-                foreach (var t in types)
+                foreach (var definition in definitions)
                 {
-                    bw.Write(t.FullName);
+                    bw.Write(definition.GetType().FullName);
                 }
 
                 // Schreibe Phase 2
-                for (int i = 0; i < _blocks.Length; i++)
+                for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
-                    if (_blocks[i] == null)
+                    if (chunk.Blocks[i] == 0)
+                    {
+                        //Definition-Index (Air)
+                        bw.Write((ushort)0);
+
+                        //Meta Data
                         bw.Write(0);
+                    }
                     else
                     {
-                        bw.Write(types.IndexOf(_blocks[i].GetType()) + 1);
+                        //Definition-Index
+                        IBlockDefinition definition = BlockDefinitionManager.GetForType(chunk.Blocks[i]);
+                        bw.Write((ushort)definitions.IndexOf(definition) + 1);
 
-                        //TODO: Rework for Meta-Infos
-                        //bw.Write((byte)_blocks[i].Orientation);
+                        //Meta Data
+                        bw.Write(chunk.MetaData[i]);
                     }
                 }
             }
         }
 
-        public IChunk Deserialize(Stream stream)
+        public IChunk Deserialize(Stream stream, PlanetIndex3 position)
         {
+            Chunk chunk = new Chunk(position.ChunkIndex, position.Planet);
+
             using (BinaryReader br = new BinaryReader(stream))
             {
-                List<Type> types = new List<Type>();
+                List<IBlockDefinition> types = new List<IBlockDefinition>();
+                Dictionary<ushort, ushort> map = new Dictionary<ushort, ushort>();
+
                 int typecount = br.ReadInt32();
 
                 // Im Falle eines Luftchunks
                 if (typecount == 0)
-                    return;
+                    return chunk;
 
                 for (int i = 0; i < typecount; i++)
                 {
                     string typeName = br.ReadString();
-                    var blockDefinition = knownBlocks.First(d => d.GetBlockType().FullName == typeName);
-                    types.Add(blockDefinition.GetBlockType());
+                    IBlockDefinition[] definitions = BlockDefinitionManager.GetBlockDefinitions().ToArray();
+                    var blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
+
+                    types.Add(blockDefinition);
+                    map.Add((ushort)(types.Count - 1), (ushort)Array.IndexOf(definitions, blockDefinition));
                 }
 
-                for (int i = 0; i < _blocks.Length; i++)
+                for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
-                    int typeIndex = br.ReadInt32();
+                    ushort typeIndex = br.ReadUInt16();
+                    chunk.MetaData[i] = br.ReadInt32();
 
                     if (typeIndex > 0)
                     {
-                        OrientationFlags orientation = (OrientationFlags)br.ReadByte();
-                        Type t = types[typeIndex - 1];
-                        //_blocks[i].Orientation = orientation;
+                        chunk.Blocks[i] = map[typeIndex];
                     }
                 }
             }
+            return chunk;
         }
     }
 }
