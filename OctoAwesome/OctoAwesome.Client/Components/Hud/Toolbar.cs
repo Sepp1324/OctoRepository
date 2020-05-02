@@ -1,18 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Components.Hud
 {
     internal class Toolbar : Control
     {
         // private Texture2D[] toolTextures;
-        private Dictionary<IItemDefinition, Texture2D> toolTextures;
+        //private Dictionary<IItemDefinition, Texture2D> toolTextures;
+        private Dictionary<string, Texture2D> toolTextures;
 
         public PlayerComponent Player { get; set; }
 
@@ -20,7 +18,7 @@ namespace OctoAwesome.Client.Components.Hud
             : base(screenManager)
         {
             Player = player;
-            toolTextures = new Dictionary<IItemDefinition, Texture2D>();
+            toolTextures = new Dictionary<string, Texture2D>();
         }
 
         public override void LoadContent()
@@ -35,7 +33,7 @@ namespace OctoAwesome.Client.Components.Hud
                     bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    toolTextures.Add(item, Texture2D.FromStream(ScreenManager.GraphicsDevice, stream));
+                    toolTextures.Add(item.GetType().FullName, Texture2D.FromStream(ScreenManager.GraphicsDevice, stream));
                 }
             }
         }
@@ -57,13 +55,12 @@ namespace OctoAwesome.Client.Components.Hud
                 {
                     batch.Draw(ScreenManager.Pix, new Rectangle(offset + (index * 42) - 2 + Position.X, Size.Y - 60 - 2 + Position.Y, 36, 36),
                         Player.ActorHost.ActiveTool == tool ? Color.White : new Color(Color.White, 0.3f));
-                    batch.Draw(toolTextures[tool.Definition], new Rectangle(offset + (index * 42) + Position.X, Size.Y - 60 + Position.Y, 32, 32),
+                    batch.Draw(toolTextures[tool.Definition.GetType().FullName], new Rectangle(offset + (index * 42) + Position.X, Size.Y - 60 + Position.Y, 32, 32),
                         Player.ActorHost.ActiveTool == tool ? Color.White : new Color(Color.White, 0.3f));
 
                     index++;
                 }
             }
-
             batch.End();
         }
     }
