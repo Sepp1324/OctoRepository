@@ -143,15 +143,14 @@ namespace OctoAwesome.Client.Components
             float textureWidth = 1f / textureColumns;
 
             // BlockTypes sammlen
-            var definitions = BlockDefinitionManager.GetBlockDefinitions();
-            Dictionary<Type, int> typeMapping = new Dictionary<Type, int>();
-            Dictionary<Type, IBlockDefinition> definitionMapping = new Dictionary<Type, IBlockDefinition>();
+            Dictionary<IBlockDefinition, int> textureOffsets = new Dictionary<IBlockDefinition, int>();
+            //Dictionary<Type, BlockDefinition> definitionMapping = new Dictionary<Type, BlockDefinition>();
             int definitionIndex = 0;
-            foreach (var definition in definitions)
+            foreach (var definition in BlockDefinitionManager.GetBlockDefinitions())
             {
                 int textureCount = definition.Textures.Count();
-                typeMapping.Add(definition.GetBlockType(), definitionIndex);
-                definitionMapping.Add(definition.GetBlockType(), definition);
+                textureOffsets.Add(definition, definitionIndex);
+                //definitionMapping.Add(definition.GetBlockType(), definition);
                 definitionIndex += textureCount;
             }
 
@@ -162,31 +161,33 @@ namespace OctoAwesome.Client.Components
                     for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     {
                         ushort block = chunk.GetBlock(x, y, z);
-                        if (block == null)
+
+                        if (block == 0)
                             continue;
 
-                        if (!typeMapping.ContainsKey(block.GetType()))
+                        IBlockDefinition blockDefinition = BlockDefinitionManager.GetForType(block);
+
+                        if (blockDefinition == null)
                             continue;
 
                         int textureIndex;
-                        if (!typeMapping.TryGetValue(block.GetType(), out textureIndex))
-                            continue;
 
-                        IBlockDefinition definition = definitionMapping[block.GetType()];
+                        if (!textureOffsets.TryGetValue(blockDefinition, out textureIndex))
+                            continue;
 
                         // Textur-Koordinate "berechnen"
                         Vector2 textureOffset = new Vector2();
                         Vector2 textureSize = new Vector2(textureWidth - 0.005f, textureWidth - 0.005f);
 
-
-                        IBlock topBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z + 1));
+                        ushort topBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z + 1));
+                        IBlockDefinition topBlockDefinition = BlockDefinitionManager.GetForType(topBlock);
 
                         // Top
-                        if (topBlock == null || (!definitionMapping[topBlock.GetType()].IsBottomSolidWall(topBlock) && topBlock.GetType() != block.GetType()))
+                        if (topBlock == 0 || (!topBlockDefinition.IsBottomSolidWall(_manager, x, y, z + 1) && topBlock != block))
                         {
                             textureOffset = new Vector2(
-                                (((textureIndex + definition.GetTopTextureIndex(block)) % textureColumns) * textureWidth) + 0.002f,
-                                ((int)((textureIndex + definition.GetTopTextureIndex(block)) / textureColumns) * textureWidth) + 0.002f);
+                                (((textureIndex + blockDefinition.GetTopTextureIndex(_manager, x, y, z)) % textureColumns) * textureWidth) + 0.002f,
+                                ((textureIndex + blockDefinition.GetTopTextureIndex(_manager, x, y, z)) / textureColumns * textureWidth) + 0.002f);
 
                             Vector2[] points = new[] {
                                 textureOffset,
@@ -194,7 +195,7 @@ namespace OctoAwesome.Client.Components
                                 textureOffset + textureSize,
                                 new Vector2(textureOffset.X, textureOffset.Y + textureSize.X)
                             };
-                            int rotation = -definition.GetTopTextureRotation(block);
+                            int rotation = -blockDefinition.GetTopTextureRotation(_manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 1), new Vector3(0, 0, 1), points[(4 + rotation) % 4]));
@@ -209,14 +210,15 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock bottomBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z - 1));
+                        ushort bottomBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y, z - 1));
+                        IBlockDefinition bottomBlockDefinition = BlockDefinitionManager.GetForType(bottomBlock);
 
                         // Unten
-                        if (bottomBlock == null || (!definitionMapping[bottomBlock.GetType()].IsTopSolidWall(bottomBlock) && bottomBlock.GetType() != block.GetType()))
+                        if (bottomBlock == 0 || (!bottomBlockDefinition.IsTopSolidWall(_manager, x, y, z - 1) && bottomBlock != block))
                         {
                             textureOffset = new Vector2(
-                                (((textureIndex + definition.GetBottomTextureIndex(block)) % textureColumns) * textureWidth) + 0.002f,
-                                ((int)((textureIndex + definition.GetBottomTextureIndex(block)) / textureColumns) * textureWidth) + 0.002f);
+                                (((textureIndex + blockDefinition.GetBottomTextureIndex(_manager, x, y, z)) % textureColumns) * textureWidth) + 0.002f,
+                                ((textureIndex + blockDefinition.GetBottomTextureIndex(_manager, x, y, z)) / textureColumns * textureWidth) + 0.002f);
 
                             Vector2[] points = new[] {
                                 textureOffset,
@@ -224,7 +226,7 @@ namespace OctoAwesome.Client.Components
                                 textureOffset + textureSize,
                                 new Vector2(textureOffset.X, textureOffset.Y + textureSize.X)
                             };
-                            int rotation = -definition.GetBottomTextureRotation(block);
+                            int rotation = -blockDefinition.GetBottomTextureRotation(_manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 0), new Vector3(0, 0, -1), points[(6 + rotation) % 4]));
@@ -239,14 +241,15 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock southBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y + 1, z));
+                        ushort southBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y + 1, z));
+                        IBlockDefinition southBlockDefinition = BlockDefinitionManager.GetForType(southBlock);
 
                         // South
-                        if (southBlock == null || (!definitionMapping[southBlock.GetType()].IsNorthSolidWall(southBlock) && southBlock.GetType() != block.GetType()))
+                        if (southBlock == 0 || (!southBlockDefinition.IsNorthSolidWall(_manager, x, y + 1, z) && southBlock != block))
                         {
                             textureOffset = new Vector2(
-                                (((textureIndex + definition.GetSouthTextureIndex(block)) % textureColumns) * textureWidth) + 0.002f,
-                                ((int)((textureIndex + definition.GetSouthTextureIndex(block)) / textureColumns) * textureWidth) + 0.002f);
+                                (((textureIndex + blockDefinition.GetSouthTextureIndex(_manager, x, y, z)) % textureColumns) * textureWidth) + 0.002f,
+                                ((textureIndex + blockDefinition.GetSouthTextureIndex(_manager, x, y, z)) / textureColumns * textureWidth) + 0.002f);
 
                             Vector2[] points = new[] {
                                 textureOffset,
@@ -255,7 +258,7 @@ namespace OctoAwesome.Client.Components
                                 new Vector2(textureOffset.X, textureOffset.Y + textureSize.X)
                             };
 
-                            int rotation = -definition.GetSouthTextureRotation(block);
+                            int rotation = -blockDefinition.GetSouthTextureRotation(_manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), new Vector3(0, 1, 0), points[(6 + rotation) % 4]));
@@ -270,14 +273,15 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock northBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y - 1, z));
+                        ushort northBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x, y - 1, z));
+                        IBlockDefinition northBlockDefinition = BlockDefinitionManager.GetForType(northBlock);
 
                         // North
-                        if (northBlock == null || (!definitionMapping[northBlock.GetType()].IsSouthSolidWall(northBlock) && northBlock.GetType() != block.GetType()))
+                        if (northBlock == 0 || (!northBlockDefinition.IsSouthSolidWall(_manager, x, y - 1, z) && northBlock != block))
                         {
                             textureOffset = new Vector2(
-                                (((textureIndex + definition.GetNorthTextureIndex(block)) % textureColumns) * textureWidth) + 0.002f,
-                                ((int)((textureIndex + definition.GetNorthTextureIndex(block)) / textureColumns) * textureWidth) + 0.002f);
+                                (((textureIndex + blockDefinition.GetNorthTextureIndex(_manager, x, y, z)) % textureColumns) * textureWidth) + 0.002f,
+                                ((textureIndex + blockDefinition.GetNorthTextureIndex(_manager, x, y, z)) / textureColumns * textureWidth) + 0.002f);
 
                             Vector2[] points = new[] {
                                 textureOffset,
@@ -285,7 +289,7 @@ namespace OctoAwesome.Client.Components
                                 textureOffset + textureSize,
                                 new Vector2(textureOffset.X, textureOffset.Y + textureSize.X)
                             };
-                            int rotation = -definition.GetNorthTextureRotation(block);
+                            int rotation = -blockDefinition.GetNorthTextureRotation(_manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 0, z + 1), new Vector3(0, -1, 0), points[(4 + rotation) % 4]));
@@ -300,14 +304,15 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock westBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x - 1, y, z));
+                        ushort westBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x - 1, y, z));
+                        IBlockDefinition westBlockDefinition = BlockDefinitionManager.GetForType(westBlock);
 
                         // West
-                        if (westBlock == null || (!definitionMapping[westBlock.GetType()].IsEastSolidWall(westBlock) && westBlock.GetType() != block.GetType()))
+                        if (westBlock == 0 || (!westBlockDefinition.IsEastSolidWall(_manager, x - 1, y, z) && westBlock != block))
                         {
                             textureOffset = new Vector2(
-                                (((textureIndex + definition.GetWestTextureIndex(block)) % textureColumns) * textureWidth) + 0.002f,
-                                ((int)((textureIndex + definition.GetWestTextureIndex(block)) / textureColumns) * textureWidth) + 0.002f);
+                                (((textureIndex + blockDefinition.GetWestTextureIndex(_manager, x, y, z)) % textureColumns) * textureWidth) + 0.002f,
+                                ((textureIndex + blockDefinition.GetWestTextureIndex(_manager, x, y, z)) / textureColumns * textureWidth) + 0.002f);
 
                             Vector2[] points = new[] {
                                 textureOffset,
@@ -315,7 +320,7 @@ namespace OctoAwesome.Client.Components
                                 textureOffset + textureSize,
                                 new Vector2(textureOffset.X, textureOffset.Y + textureSize.X)
                             };
-                            int rotation = -definition.GetWestTextureRotation(block);
+                            int rotation = -blockDefinition.GetWestTextureRotation(_manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 0, y + 1, z + 0), new Vector3(-1, 0, 0), points[(7 + rotation) % 4]));
@@ -330,14 +335,15 @@ namespace OctoAwesome.Client.Components
                             index.Add(localOffset + 2);
                         }
 
-                        IBlock eastBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x + 1, y, z));
+                        ushort eastBlock = _manager.GetBlock((ChunkPosition.Value.ChunkIndex * Chunk.CHUNKSIZE) + new Index3(x + 1, y, z));
+                        IBlockDefinition eastBlockDefinition = BlockDefinitionManager.GetForType(eastBlock);
 
                         // Ost
-                        if (eastBlock == null || (!definitionMapping[eastBlock.GetType()].IsWestSolidWall(eastBlock) && eastBlock.GetType() != block.GetType()))
+                        if (eastBlock == 0 || (!eastBlockDefinition.IsWestSolidWall(_manager, x + 1, y, z) && eastBlock != block))
                         {
                             textureOffset = new Vector2(
-                                (((textureIndex + definition.GetEastTextureIndex(block)) % textureColumns) * textureWidth) + 0.002f,
-                                ((int)((textureIndex + definition.GetEastTextureIndex(block)) / textureColumns) * textureWidth) + 0.002f);
+                                (((textureIndex + blockDefinition.GetEastTextureIndex(_manager, x, y, z)) % textureColumns) * textureWidth) + 0.002f,
+                                ((textureIndex + blockDefinition.GetEastTextureIndex(_manager, x, y, z)) / textureColumns * textureWidth) + 0.002f);
 
                             Vector2[] points = new[] {
                                 textureOffset,
@@ -346,7 +352,7 @@ namespace OctoAwesome.Client.Components
                                 new Vector2(textureOffset.X, textureOffset.Y + textureSize.X)
                             };
 
-                            int rotation = -definition.GetEastTextureRotation(block);
+                            int rotation = -blockDefinition.GetEastTextureRotation(_manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(new VertexPositionNormalTexture(new Vector3(x + 1, y + 1, z + 1), new Vector3(1, 0, 0), points[(5 + rotation) % 4]));

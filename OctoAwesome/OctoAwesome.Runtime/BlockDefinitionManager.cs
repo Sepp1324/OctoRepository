@@ -18,7 +18,10 @@ namespace OctoAwesome.Runtime
 
         public static IBlockDefinition GetForType(ushort type)
         {
-            return _definitions[type & Blocks.TypeMask];
+            if (type == 0)
+                return null;
+
+            return _definitions[(type & Blocks.TypeMask) - 1];
         }
     }
 }
