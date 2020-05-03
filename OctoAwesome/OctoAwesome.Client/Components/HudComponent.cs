@@ -2,12 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Client.Components.Hud;
-using OctoAwesome.Runtime;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Components
 {

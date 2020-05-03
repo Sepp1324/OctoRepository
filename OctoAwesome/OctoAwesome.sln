@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome", "OctoAwesome\OctoAwesome.csproj", "{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}"
 EndProject
@@ -10,34 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Runtime", "OctoAwesome.Runtime\OctoAwesome.Runtime.csproj", "{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Client", "OctoAwesome.Client\OctoAwesome.Client.csproj", "{0FBACE48-1F20-45F6-84D1-9318ECB89E15}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{3B44ED58-4A32-4CEA-9338-44BCF37D82E5}"
-	ProjectSection(SolutionItems) = preProject
-		lib\Lidgren.Network.dll = lib\Lidgren.Network.dll
-		lib\Lidgren.Network.xml = lib\Lidgren.Network.xml
-		lib\MonoGame.Framework.dll = lib\MonoGame.Framework.dll
-		lib\MonoGame.Framework.Net.dll = lib\MonoGame.Framework.Net.dll
-		lib\MonoGame.Framework.Net.xml = lib\MonoGame.Framework.Net.xml
-		lib\MonoGame.Framework.xml = lib\MonoGame.Framework.xml
-		lib\SharpDX.Direct2D1.dll = lib\SharpDX.Direct2D1.dll
-		lib\SharpDX.Direct2D1.xml = lib\SharpDX.Direct2D1.xml
-		lib\SharpDX.Direct3D11.dll = lib\SharpDX.Direct3D11.dll
-		lib\SharpDX.Direct3D11.xml = lib\SharpDX.Direct3D11.xml
-		lib\SharpDX.Direct3D9.dll = lib\SharpDX.Direct3D9.dll
-		lib\SharpDX.Direct3D9.xml = lib\SharpDX.Direct3D9.xml
-		lib\SharpDX.dll = lib\SharpDX.dll
-		lib\SharpDX.DXGI.dll = lib\SharpDX.DXGI.dll
-		lib\SharpDX.DXGI.xml = lib\SharpDX.DXGI.xml
-		lib\SharpDX.MediaFoundation.dll = lib\SharpDX.MediaFoundation.dll
-		lib\SharpDX.MediaFoundation.xml = lib\SharpDX.MediaFoundation.xml
-		lib\SharpDX.RawInput.dll = lib\SharpDX.RawInput.dll
-		lib\SharpDX.RawInput.xml = lib\SharpDX.RawInput.xml
-		lib\SharpDX.XAudio2.dll = lib\SharpDX.XAudio2.dll
-		lib\SharpDX.XAudio2.xml = lib\SharpDX.XAudio2.xml
-		lib\SharpDX.XInput.dll = lib\SharpDX.XInput.dll
-		lib\SharpDX.XInput.xml = lib\SharpDX.XInput.xml
-		lib\SharpDX.xml = lib\SharpDX.xml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1F64A624-6227-4FC8-86F2-B2ED18EBDDC9}"
 EndProject

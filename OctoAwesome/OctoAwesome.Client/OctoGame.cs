@@ -1,12 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using OctoAwesome;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
 using System;
 using System.Configuration;
-using System.Linq;
 
 namespace OctoAwesome.Client
 {
