@@ -3,10 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -34,8 +38,12 @@ namespace OctoAwesome.Client.Components
 
         private Thread backgroundThread;
         private IPlanetResourceManager _manager;
+        private Effect simpleShader;
 
         public RenderTarget2D MiniMapTexture { get; set; }
+
+        private float sunPosition = 0f;
+        private float sunRadius = 1000f;
 
         public SceneComponent(Game game, PlayerComponent player, CameraComponent camera)
             : base(game)
@@ -47,7 +55,7 @@ namespace OctoAwesome.Client.Components
 
         protected override void LoadContent()
         {
-            Effect simpleShader = Game.Content.Load<Effect>("simple");
+            simpleShader = Game.Content.Load<Effect>("simple");
 
             List<Bitmap> bitmaps = new List<Bitmap>();
             var definitions = BlockDefinitionManager.GetBlockDefinitions();
@@ -130,6 +138,8 @@ namespace OctoAwesome.Client.Components
 
         public override void Update(GameTime gameTime)
         {
+            sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
+
             Index3 centerblock = player.ActorHost.Position.GlobalBlockIndex;
             Index3 renderOffset = player.ActorHost.Position.ChunkIndex * Chunk.CHUNKSIZE;
 
@@ -229,10 +239,32 @@ namespace OctoAwesome.Client.Components
 
         public override void Draw(GameTime gameTime)
         {
-            //Index3 chunkOffset = player.ActorHost.Position.ChunkIndex;
-            Index3 chunkOffset = camera.CameraChunk;
+            float octoDaysPerEarthDay = 4f;
+            float propensityVariance = MathHelper.Pi / 3f;
 
-            Microsoft.Xna.Framework.Color background = new Microsoft.Xna.Framework.Color(181, 224, 255);
+            float playerPosX = ((float)player.ActorHost.Player.Position.ChunkIndex.X / planet.Size.X) * MathHelper.TwoPi;
+            float playerPosY = ((float)player.ActorHost.Player.Position.ChunkIndex.Y / planet.Size.Y) * MathHelper.TwoPi;
+
+            Vector3 sunDirection = new Vector3(0, 0, 1);
+
+            TimeSpan diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
+
+            float propensity = ((float)Math.Sin(playerPosY) * propensityVariance) + MathHelper.Pi / 6f;
+
+            Matrix sunMovement = Matrix.CreateRotationX(propensity) * Matrix.CreateRotationY((float)diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi);
+
+            sunDirection = Vector3.Transform(sunDirection, sunMovement);
+
+            simpleShader.Parameters["DiffuseColor"].SetValue(new Microsoft.Xna.Framework.Color(190, 190, 190).ToVector4());
+            simpleShader.Parameters["DiffuseIntensity"].SetValue(0.6f);
+            simpleShader.Parameters["DiffuseDirection"].SetValue(sunDirection);
+
+            //Console.WriteLine(direction + " | " + direction.Length());
+
+            // Index3 chunkOffset = player.ActorHost.Position.ChunkIndex;
+            Index3 chunkOffset = camera.CameraChunk;
+            Microsoft.Xna.Framework.Color background =
+                new Microsoft.Xna.Framework.Color(181, 224, 255);
 
             GraphicsDevice.SetRenderTarget(MiniMapTexture);
             GraphicsDevice.Clear(background);
@@ -295,7 +327,7 @@ namespace OctoAwesome.Client.Components
 
             if (player.SelectedBox.HasValue)
             {
-                //Index3 offset = player.ActorHost.Position.ChunkIndex * Chunk.CHUNKSIZE;
+                // Index3 offset = player.ActorHost.Position.ChunkIndex * Chunk.CHUNKSIZE;
                 Index3 offset = camera.CameraChunk * Chunk.CHUNKSIZE;
                 Index3 planetSize = planet.Size * Chunk.CHUNKSIZE;
                 Index3 relativePosition = new Index3(

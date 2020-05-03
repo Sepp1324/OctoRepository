@@ -30,5 +30,5 @@
         public event MouseEventDelegate MouseUp;
     }
 
-        public delegate void MouseEventDelegate();
+    public delegate void MouseEventDelegate();
 }

@@ -46,7 +46,7 @@ namespace OctoAwesome.Client.Components
         {
             var newPosition = new Index3(x, y, z);
 
-            if (_manager == manager && newPosition == ChunkPosition) 
+            if (_manager == manager && newPosition == ChunkPosition)
                 return;
 
             _manager = manager;
@@ -84,10 +84,6 @@ namespace OctoAwesome.Client.Components
 
             simple.Parameters["AmbientIntensity"].SetValue(0.4f);
             simple.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
-
-            simple.Parameters["DiffuseColor"].SetValue(new Color(190, 190, 190).ToVector4());
-            simple.Parameters["DiffuseIntensity"].SetValue(0.6f);
-            simple.Parameters["DiffuseDirection"].SetValue(new Vector3(1, 1, -1));
 
             lock (this)
             {

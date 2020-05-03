@@ -6,7 +6,7 @@ namespace OctoAwesome.Client.Components.Hud
     public interface IScreenManager
     {
         Texture2D Pix { get; }
-    
+
         SpriteFont NormalText { get; }
 
         Index2 ScreenSize { get; }
