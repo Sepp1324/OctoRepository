@@ -1,9 +1,5 @@
-﻿using OctoAwesome.Basics.Properties;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -18,6 +14,8 @@ namespace OctoAwesome.Basics
         {
             get { return (Bitmap)Bitmap.FromFile("./Assets/wood_top.png"); }
         }
+
+        public override bool HasMetaData { get { return true; } }
 
         public override Bitmap[] Textures
         {
