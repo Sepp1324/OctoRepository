@@ -54,6 +54,8 @@ namespace OctoAwesome.Client.Components
             this.simulation = simulation;
         }
 
+        //CONTINUE 281
+
         public override void Initialize()
         {
             base.Initialize();
