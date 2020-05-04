@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace OctoAwesome.Runtime
 {
     internal class UpdateDomain
     {
-        private IUniverse universe;
-
         private Stopwatch watch;
         private Thread thread;
         private World world;
@@ -40,7 +39,7 @@ namespace OctoAwesome.Runtime
             while (Running)
             {
                 GameTime gameTime = new GameTime(
-                    watch.Elapsed, frameTime);
+                    watch.Elapsed, frameTime); 
                 lastCall = watch.Elapsed;
 
                 if (!world.Paused)
@@ -50,12 +49,11 @@ namespace OctoAwesome.Runtime
                 }
 
                 TimeSpan diff = frameTime - (watch.Elapsed - lastCall);
-
                 if (diff > TimeSpan.Zero)
                     Thread.Sleep(diff);
             }
 
-            foreach (var actorHost in ActorHosts) 
+            foreach (var actorHost in ActorHosts)
                 actorHost.Unload();
         }
     }

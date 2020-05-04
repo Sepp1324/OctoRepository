@@ -21,7 +21,7 @@ namespace OctoAwesome
         private int mask;
         private int range;
 
-        private bool writeable;
+        private bool writable;
 
         /// <summary>
         /// Instanziert einen neuen local Chunk Cache.
@@ -29,18 +29,19 @@ namespace OctoAwesome
         /// <param name="globalCache">Referenz auf global Chunk Cache</param>
         /// <param name="dimensions">Größe des Caches in Zweierpotenzen</param>
         /// <param name="range">Gibt die Range in alle Richtungen an.</param>
-        public LocalChunkCache(IGlobalChunkCache globalCache, int dimensions, int range, bool writeable)
+        public LocalChunkCache(IGlobalChunkCache globalCache, int dimensions, int range, bool writable)
         {
             if (1 << dimensions < (range * 2) + 1)
                 throw new ArgumentException("Range too big");
 
             this.globalCache = globalCache;
             this.range = range;
-            this.writeable = writeable;
 
             limit = dimensions;
             mask = (1 << limit) - 1;
             chunks = new IChunk[(mask + 1) * (mask + 1)][];
+
+            this.writable = writable;
         }
 
         private Task _loadingTask;
@@ -104,7 +105,7 @@ namespace OctoAwesome
                 // Alten Chunk entfernen, falls notwendig
                 if (chunk != null && chunk.Index != chunkIndex)
                 {
-                    globalCache.Release(new PlanetIndex3(planet.Id, chunk.Index), writeable);
+                    globalCache.Release(new PlanetIndex3(planet.Id, chunk.Index), writable);
                     chunks[flatIndex][chunkIndex.Z] = null;
                     chunk = null;
                 }
@@ -119,7 +120,7 @@ namespace OctoAwesome
                 // Neuen Chunk laden
                 if (chunk == null)
                 {
-                    chunk = globalCache.Subscribe(new PlanetIndex3(planet.Id, chunkIndex), writeable);
+                    chunk = globalCache.Subscribe(new PlanetIndex3(planet.Id, chunkIndex), writable);
                     chunks[flatIndex][chunkIndex.Z] = chunk;
                 }
 
@@ -225,7 +226,7 @@ namespace OctoAwesome
                     IChunk chunk = chunks[i][h];
                     if (chunk != null)
                     {
-                        globalCache.Release(new PlanetIndex3(chunk.Planet, chunk.Index), writeable);
+                        globalCache.Release(new PlanetIndex3(chunk.Planet, chunk.Index), writable);
                         chunks[i][h] = null;
                     }
                 }
@@ -235,6 +236,22 @@ namespace OctoAwesome
         private int FlatIndex(int x, int y)
         {
             return (((y & (mask)) << limit) | ((x & (mask))));
+        }
+
+        public int GetBlockMeta(Index3 index, int meta)
+        {
+            IChunk chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
+            if (chunk != null)
+                return chunk.GetBlockMeta(index.X, index.Y, index.Z);
+
+            return 0;
+        }
+
+        public void SetBlockMeta(Index3 index, int meta)
+        {
+            IChunk chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
+            if (chunk != null)
+                chunk.SetBlockMeta(index.X, index.Y, index.Z, meta);
         }
     }
 }

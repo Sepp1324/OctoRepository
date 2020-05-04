@@ -1,0 +1,81 @@
+﻿Plan für die kommenden Folgen:
+==============================
+
+5 Performance Optimierung VertexBuffer-Generierung
+  - Block-Visibility Berücksichtigen
+  - Flackern bei Chunkwechsel
+  - Chunk-Render optimierung
+  LocalChunkCache -> 2D-Array vs. 1D-Array
+ILocalChunkCache Interface implementieren
+ResourceManager.Save() verarbeiten (Caches leeren)
+
+======================================
+Langzeit-TODOs
+======================================
+
+Map Layout
+==========
+- Blocks
+  x Simple Textures
+  - komplexere Texturen
+  - Orientierungen
+  - Dynamische Blocks (Wasser, Lava)
+  x Weitere Basis-Blocks (Stein, Sand, Erde, Gras, Kies, Wasser)
+- Map Generator
+  X Schnittstelle -> umbauen auf IChunk[] GenerateChunks(IPlanet planet, Index2 index)
+- Serializer
+
+Extension Framework
+===================
+- DLLs nachladen
+- Schnittstellen
+  - Blocks
+  - Map Generators
+  - Items
+  - NPCs
+
+Physik
+======
+- Blockbewegung
+  - Fallende Blöcke (instabile Materialien wie Sand)
+  - Aktive Blöcke (Türen, Truhen,...)
+- Kollision
+  x simple kollision mit Blöcken
+  - Kollision auf Basis einer variablen Körperform (ducken, drehen(Körper breiter als tief))
+  - Automatischer Step-up bei Hindernissen, die einen bestimmten Höhenunterschied nicht überschreiten (50cm)
+  - Kletter-Modus (höhere Hindernisse, Leitern)
+  - Kollision mit beweglichen Blöcken (Türen, Truhen, fallende Materialien,...)
+  - Kollision mit anderen Items
+
+Game Model
+==========
+- Datenstruktur
+  - Planeten
+    x Definition
+	- Zeitzonen
+	- Klimazonen / Biome
+	x Kontinente
+  - Maps
+    x Chunks
+
+Rendering
+=========
+- Terrain
+  x mehrere Chunks
+  - dynamisches Scrolling der Map
+- Items
+  - statische Items (Blümchen)
+- Shader
+  - Terrain (simple)
+  - Terrain (lighing)
+  - Skybox
+
+HUD & UI
+========
+- Controls
+- Screens
+
+Multiplayer
+===========
+- Client/Server Verbindungen
+x Welt-Kapselung

@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="position">Position des Chunks</param>
         /// <returns></returns>
-        IChunk Subscribe(PlanetIndex3 position, bool writeable);
+        IChunk Subscribe(PlanetIndex3 position, bool writable);
 
         int LoadedChunks { get; }
 
@@ -15,6 +15,6 @@
         /// Gibt einen abonnierten Chunk wieder frei.
         /// </summary>
         /// <param name="position"></param>
-        void Release(PlanetIndex3 position, bool writeable);
+        void Release(PlanetIndex3 position, bool writable);
     }
 }

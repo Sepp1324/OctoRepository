@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -37,7 +39,7 @@ namespace OctoAwesome
         /// Abonniert einen Chunk.
         /// </summary>
         /// <param name="position">Position des Chunks</param>
-        /// <param name="writeable">Gibt an, ob der Subscriber schreibend zugreifen will/muss</param>
+        /// <param name="writeable">Gibt an, ob der Subscriber schreibend zugreifen will</param>
         /// <returns></returns>
         public IChunk Subscribe(PlanetIndex3 position, bool writeable)
         {
@@ -56,10 +58,7 @@ namespace OctoAwesome
                     cache.Add(position, cacheItem);
                 }
                 cacheItem.References++;
-
-                if (writeable)
-                    cacheItem.WriteableReferences++; 
-
+                if (writeable) cacheItem.WritableReferences++;
                 return cacheItem.Chunk;
             }
         }
@@ -80,11 +79,9 @@ namespace OctoAwesome
                 }
 
                 cacheItem.References--;
+                if (writeable) cacheItem.WritableReferences--;
 
-                if (writeable)
-                    cacheItem.WriteableReferences--;
-
-                if(cacheItem.WriteableReferences <= 0)
+                if (cacheItem.WritableReferences <= 0)
                 {
                     saveDelegate(position, cacheItem.Chunk);
                 }
@@ -103,7 +100,7 @@ namespace OctoAwesome
 
             public int References { get; set; }
 
-            public int WriteableReferences { get; set; }
+            public int WritableReferences { get; set; }
 
             public IChunk Chunk { get; set; }
         }

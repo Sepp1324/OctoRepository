@@ -10,9 +10,11 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class SimulationComponent : GameComponent
     {
+        private ActorHost host;
+
         public World World { get; private set; }
 
-        public ActorHost Player { get; private set; }
+        public IPlayerController Player { get { return host; } }
         
         public SimulationComponent(Game game) : base(game) { }
 
@@ -21,15 +23,15 @@ namespace OctoAwesome.Client.Components
             World = new World();
 
             var p = Load();
-            Player = World.InjectPlayer(p);
-            Player.Initialize();
+            host = World.InjectPlayer(p);
+            host.Initialize();
 
             base.Initialize();
         }
 
         internal void Save()
         {
-            Save(Player.Player);
+            Save(host.Player);
         }
 
         public void Save(Player player)

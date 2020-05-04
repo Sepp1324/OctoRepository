@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using System.Collections.Generic;
 using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
-using System;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -58,7 +56,7 @@ namespace OctoAwesome.Client.Controls
 
             //Creating all Labels
             devText = new Label(ScreenManager);
-            devText.Text = "Developement Version";
+            devText.Text = Languages.OctoClient.DevelopmentVersion;
             leftView.Controls.Add(devText);
 
             loadedChunks = new Label(ScreenManager);
@@ -135,7 +133,7 @@ namespace OctoAwesome.Client.Controls
             bufferindex %= buffersize;
 
             //Draw Control Info
-            controlInfo.Text = "Active Controls: " + ScreenManager.ActiveScreen.Controls.Count;
+            controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
 
             //Draw Position
             string pos = "pos: " + Player.ActorHost.Position.ToString();
@@ -153,20 +151,20 @@ namespace OctoAwesome.Client.Controls
             fps.Text = fpsString;
 
             //Draw Loaded Chunks
-            loadedChunks.Text = "Loaded Chunks: " + resMan.GlobalChunkCache.LoadedChunks;
+            loadedChunks.Text = Languages.OctoClient.LoadedChunks + ": " + resMan.GlobalChunkCache.LoadedChunks;
 
             //Get Number of Loaded Items/Blocks
-            loadedInfo.Text = "" + (DefinitionManager.GetItemDefinitions() as IList<IItemDefinition>).Count + " Items - " +
-                (DefinitionManager.GetBlockDefinitions() as IList<IItemDefinition>).Count + " Blocks";
+            loadedInfo.Text = "" + (DefinitionManager.GetItemDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Items + " - " +
+                (DefinitionManager.GetBlockDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Blocks;
 
             //Additional Play Information
 
             //Active Tool
-            if (Player.ActorHost.ActiveTool != null)
-                activeTool.Text = "Active Item/Tool: " + Player.ActorHost.ActiveTool.Definition.Name;
+            if (Player.ActiveTool != null)
+                activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.ActiveTool.Definition.Name;
 
                 //Fly Info
-                if (Player.ActorHost.Player.FlyMode) flyInfo.Text = "Flymode enabled";
+                if (Player.ActorHost.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
                 else flyInfo.Text = "";
 
             //Draw Box Information

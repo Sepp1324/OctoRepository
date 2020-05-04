@@ -3,16 +3,16 @@ using System.Drawing;
 
 namespace OctoAwesome.Basics
 {
-    public sealed class GroundBlockDefinition : BlockDefinition
+    public sealed class SandBlockDefinition : BlockDefinition
     {
         public override string Name
         {
-            get { return "Ground"; }
+            get { return Languages.OctoBasics.RedCotton; }
         }
 
         public override Bitmap Icon
         {
-            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/dirt.png"); }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/sand.png"); }
         }
 
 
@@ -21,25 +21,26 @@ namespace OctoAwesome.Basics
             get
             {
                 return new[] {
-                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/dirt.png")
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/sand.png")
                 };
             }
+        }
+
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
+        {
+            throw new NotImplementedException();
         }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
             return new PhysicalProperties()
             {
-                Density = 2f,
+                //Schüttdichte
+                Density = 1.5f,
                 FractureToughness = 0.3f,
                 Granularity = 0.9f,
                 Hardness = 0.1f
             };
-        }
-
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
         }
     }
 }

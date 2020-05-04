@@ -1,37 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
-    public class SnowBlockDefinition : BlockDefinition
+    public sealed class GrassBlockDefinition : BlockDefinition
     {
         public override string Name
         {
-            get
-            {
-                return "Snow";
-            }
+            get { return Languages.OctoBasics.Grass; }
         }
 
         public override Bitmap Icon
         {
-            get
-            {
-                return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/snow.png"); 
-            }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/grass_top.png"); }
         }
 
         public override Bitmap[] Textures
         {
             get
             {
+                
+
                 return new[] {
-                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/snow.png"),
-                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/dirt.png"),
-                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/dirt_snow.png"),
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/grass_top.png"),
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/dirt.png"),
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/dirt_grass.png"),
                 };
             }
         }
@@ -40,10 +33,10 @@ namespace OctoAwesome.Basics
         {
             return new PhysicalProperties()
             {
-                Density = 1.5f,
-                FractureToughness = 0.2f,
+                Density = 2f,
+                FractureToughness = 0.3f,
                 Granularity = 0.9f,
-                Hardness = 0.05f
+                Hardness = 0.1f
             };
         }
 
@@ -76,5 +69,7 @@ namespace OctoAwesome.Basics
         {
             return 2;
         }
+
+        
     }
 }
