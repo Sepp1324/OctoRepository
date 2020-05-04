@@ -3,10 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -250,7 +254,7 @@ namespace OctoAwesome.Client.Components
 
         public override void Draw(GameTime gameTime)
         {
-            float octoDaysPerEarthDay = 3600f;
+            float octoDaysPerEarthDay = 360f;
             float inclinationVariance = MathHelper.Pi / 3f;
 
             float playerPosX = ((float)player.ActorHost.Player.Position.GlobalBlockIndex.X / (planet.Size.X * Chunk.CHUNKSIZE_X)) * MathHelper.TwoPi;
