@@ -56,10 +56,16 @@ namespace OctoAwesome.Client
             Nicol.Description = "Beste Designerin wo gibt <3";
             Nicol.Alias = "Nici";
             Nicol.Picture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/Crew/Nicol.jpg", manager.GraphicsDevice);
-
             Nicol.Urls = new Dictionary<string, string> { { "Blog", "www.google.at" } };
             Nicol.AchievementList = new List<Achievements> { Achievements.Designer };
             crew.Add(Nicol);
+
+            CrewMember Marie = new CrewMember("Marie");
+            Marie.Description = "Supportet auch occasionally wenn ich versteh worum es geht";
+            Marie.Picture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/Crew/marie.png", manager.GraphicsDevice);
+            Marie.Urls = new Dictionary<string, string> { { "Test", "www.google.at" } };
+            Marie.AchievementList = new List<Achievements> { Achievements.Supporter };
+            crew.Add(Marie);
 
             CrewMember Christian = new CrewMember("Christian");
             Christian.Description = "Tester und zukünftiger Refaktorisierer von OctoAwesome.";
