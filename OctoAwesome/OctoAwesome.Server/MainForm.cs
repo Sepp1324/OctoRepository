@@ -14,7 +14,7 @@ namespace OctoAwesome.Server
 
         private void startButton_Click(object sender, System.EventArgs e)
         {
-            world = new World();
+            world = new World(); //CONTINUE 280
         }
     }
 }
