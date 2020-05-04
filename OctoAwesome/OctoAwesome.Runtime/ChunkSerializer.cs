@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -27,7 +28,7 @@ namespace OctoAwesome.Runtime
                 for (int i = 0; i < typecount; i++)
                 {
                     string typeName = br.ReadString();
-                    IBlockDefinition[] definitions = BlockDefinitionManager.GetBlockDefinitions().ToArray();
+                    IBlockDefinition[] definitions = DefinitionManager.GetBlockDefinitions().ToArray();
                     var blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
                     types.Add(blockDefinition);
 
@@ -37,20 +38,18 @@ namespace OctoAwesome.Runtime
                 for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
                     ushort typeIndex = longIndex ? br.ReadUInt16() : br.ReadByte();
-
                     chunk.MetaData[i] = 0;
-
                     if (typeIndex > 0)
                     {
                         chunk.Blocks[i] = map[typeIndex];
 
-                        var definition = BlockDefinitionManager.GetForType(map[typeIndex]);
-
+                        var definition = DefinitionManager.GetBlockDefinitionByIndex(map[typeIndex]);
                         if (definition.HasMetaData)
                             chunk.MetaData[i] = br.ReadInt32();
                     }
                 }
             }
+
             return chunk;
         }
 
@@ -65,7 +64,7 @@ namespace OctoAwesome.Runtime
                 {
                     if (chunk.Blocks[i] != 0)
                     {
-                        IBlockDefinition definition = BlockDefinitionManager.GetForType(chunk.Blocks[i]);
+                        IBlockDefinition definition = DefinitionManager.GetBlockDefinitionByIndex(chunk.Blocks[i]);
                         if (!definitions.Contains(definition))
                             definitions.Add(definition);
                     }
@@ -103,7 +102,7 @@ namespace OctoAwesome.Runtime
                     else
                     {
                         // Definition Index
-                        IBlockDefinition definition = BlockDefinitionManager.GetForType(chunk.Blocks[i]);
+                        IBlockDefinition definition = DefinitionManager.GetBlockDefinitionByIndex(chunk.Blocks[i]);
 
                         if (longIndex)
                             bw.Write((ushort)(definitions.IndexOf(definition) + 1));

@@ -36,13 +36,13 @@ namespace OctoAwesome
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte</param>
-        public Index2(Index2 value) : this(value.X, value.Y) { }
+        public Index2(Index2 value) : this(value.X, value.Y) {}
 
         /// <summary>
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte (X und Y Anteil wird übernommen)</param>
-        public Index2(Index3 value) : this(value.X, value.Y) { }
+        public Index2(Index3 value) : this(value.X, value.Y) {}
 
         /// <summary>
         /// Normalisiert die X-Achse auf die angegebene Größe.
@@ -158,7 +158,7 @@ namespace OctoAwesome
         public Index2 ShortestDistanceXY(Index2 destination, Index2 size)
         {
             return new Index2(
-                ShortestDistanceX(destination.X, size.X),
+                ShortestDistanceX(destination.X, size.X), 
                 ShortestDistanceY(destination.Y, size.Y));
         }
 
@@ -272,8 +272,8 @@ namespace OctoAwesome
 
         public override int GetHashCode()
         {
-            return
-                (X << 16) +
+            return 
+                (X << 16) + 
                 Y;
         }
 

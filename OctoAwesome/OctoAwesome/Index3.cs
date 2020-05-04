@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OctoAwesome
 {
-    /// <summary>
+/// <summary>
     /// Struktur zur Definierung einer dreidimensionalen Index-Position.
     /// </summary>
     public struct Index3
@@ -280,7 +280,7 @@ namespace OctoAwesome
         public double Length()
         {
             return Math.Sqrt(LengthSquared());
-
+            
         }
 
         /// <summary>
@@ -354,16 +354,16 @@ namespace OctoAwesome
 
             Index3 other = (Index3)obj;
             return (
-                other.X == this.X &&
-                other.Y == this.Y &&
+                other.X == this.X && 
+                other.Y == this.Y && 
                 other.Z == this.Z);
         }
 
         public override int GetHashCode()
         {
-            return
-                (X << 20) +
-                (Y << 10) +
+            return 
+                (X << 20) + 
+                (Y << 10) + 
                 Z;
         }
 

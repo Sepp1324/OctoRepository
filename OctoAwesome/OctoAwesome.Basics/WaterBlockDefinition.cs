@@ -12,10 +12,10 @@ namespace OctoAwesome.Basics
 
         public override Bitmap Icon
         {
-            get { return (Bitmap)Bitmap.FromFile("./Assets/water.png"); }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/water.png"); }
         }
 
-        public override PhysicalProperties GetProperties(IPlanetResourceManager manager, int x, int y, int z)
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
             return new PhysicalProperties()
             {
@@ -37,37 +37,37 @@ namespace OctoAwesome.Basics
             get
             {
                 return new[] {
-                    (Bitmap)Bitmap.FromFile("./Assets/water.png")
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/water.png")
                 };
             }
         }
 
-        public override bool IsTopSolidWall(IPlanetResourceManager manager, int x, int y, int z)
+        public override bool IsTopSolidWall(ILocalChunkCache manager, int x, int y, int z)
         {
             return false;
         }
 
-        public override bool IsBottomSolidWall(IPlanetResourceManager manager, int x, int y, int z)
+        public override bool IsBottomSolidWall(ILocalChunkCache manager, int x, int y, int z)
         {
             return false;
         }
 
-        public override bool IsNorthSolidWall(IPlanetResourceManager manager, int x, int y, int z)
+        public override bool IsNorthSolidWall(ILocalChunkCache manager, int x, int y, int z)
         {
             return false;
         }
 
-        public override bool IsSouthSolidWall(IPlanetResourceManager manager, int x, int y, int z)
+        public override bool IsSouthSolidWall(ILocalChunkCache manager, int x, int y, int z)
         {
             return false;
         }
 
-        public override bool IsWestSolidWall(IPlanetResourceManager manager, int x, int y, int z)
+        public override bool IsWestSolidWall(ILocalChunkCache manager, int x, int y, int z)
         {
             return false;
         }
 
-        public override bool IsEastSolidWall(IPlanetResourceManager manager, int x, int y, int z)
+        public override bool IsEastSolidWall(ILocalChunkCache manager, int x, int y, int z)
         {
             return false;
         }

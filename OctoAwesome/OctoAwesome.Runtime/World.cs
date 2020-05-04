@@ -1,11 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace OctoAwesome.Runtime
 {
@@ -15,18 +8,13 @@ namespace OctoAwesome.Runtime
 
         private UpdateDomain[] updateDomains;
 
-        public WorldState State { get; private set; }
+        public bool Paused { get; set; }
 
         public World()
         {
             watch.Start();
             updateDomains = new UpdateDomain[1];
-            updateDomains[0] = new UpdateDomain(watch);
-            State = WorldState.Running;
-        }
-
-        public void Update(GameTime frameTime)
-        {
+            updateDomains[0] = new UpdateDomain(this, watch);
         }
 
         public void Save()
@@ -37,14 +25,7 @@ namespace OctoAwesome.Runtime
 
         public ActorHost InjectPlayer(Player player)
         {
-            var cache = ResourceManager.Instance.GetCacheForPlanet(player.Position.Planet);
-            var loader = new ChunkLoader(cache, 14, player.Position.ChunkIndex);
-
-            cache.EnsureLoaded(player.Position.ChunkIndex);
-            cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(0, 0, 1));
-            cache.EnsureLoaded(player.Position.ChunkIndex + new Index3(0, 0, -1));
-
-            var host = new ActorHost(player, loader);
+            var host = new ActorHost(player);
             updateDomains[0].ActorHosts.Add(host);
             return host;
         }

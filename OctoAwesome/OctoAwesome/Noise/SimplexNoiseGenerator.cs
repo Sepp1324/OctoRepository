@@ -73,7 +73,7 @@ namespace OctoAwesome.Noise
 
         #endregion
 
-        public SimplexNoiseGenerator(int seed, float frequencyX = 1f, float frequencyY = 1f, float frequencyZ = 1f, float frequencyW = 1f)
+        public SimplexNoiseGenerator(int seed,float frequencyX=1f,float frequencyY=1f,float frequencyZ=1f,float frequencyW=1f)
         {
             this.Seed = seed;
             this.Octaves = 5;
@@ -199,9 +199,9 @@ namespace OctoAwesome.Noise
         /// <param name="height">Höhe der Noise-Map</param>
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück</returns>
-        public float[,,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth)
+        public float[, ,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth)
         {
-            float[,,] noise = new float[width, height, depth];
+            float[, ,] noise = new float[width, height, depth];
 
 
             Parallel.For(0, width, x =>
@@ -244,9 +244,9 @@ namespace OctoAwesome.Noise
         /// <param name="tileSizeX">Breite der Kachel</param>
         /// <param name="tileSizeY">Höhe der Kachel</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück, welche in X und Y Richtung kachelbar ist</returns>
-        public float[,,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
+        public float[, ,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
         {
-            float[,,] noise = new float[width, height, depth];
+            float[, ,] noise = new float[width, height, depth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)
@@ -299,9 +299,9 @@ namespace OctoAwesome.Noise
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <param name="thickness">Dicke(Tiefe 2.Grades) der Noise-Map</param>
         /// <returns>Gibt ein 4D-float-Array einer 4D-Noise zurück</returns>
-        public float[,,,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
+        public float[, , ,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
         {
-            float[,,,] noise = new float[width, height, depth, wDepth];
+            float[, , ,] noise = new float[width, height, depth, wDepth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)

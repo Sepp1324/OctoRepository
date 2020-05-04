@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -57,7 +60,7 @@ namespace OctoAwesome.Client.Components
                     player.ActorHost.Position.LocalPosition.Y,
                     0f),
                 new Vector3(
-                    (float)Math.Cos(player.ActorHost.Angle),
+                    (float)Math.Cos(player.ActorHost.Angle), 
                     (float)Math.Sin(-player.ActorHost.Angle), 0f));
 
             float centerX = GraphicsDevice.Viewport.Width / 2;

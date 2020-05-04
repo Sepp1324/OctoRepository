@@ -1,8 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using OctoAwesome;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Controls;
 using OctoAwesome.Runtime;
 using System;
 using System.Configuration;
+using System.Linq;
 
 namespace OctoAwesome.Client
 {
@@ -15,25 +20,22 @@ namespace OctoAwesome.Client
         GraphicsDeviceManager graphics;
 
         CameraComponent camera;
-        InputComponent input;
-        SceneComponent scene;
-        PlayerComponent playerComponent;
-        HudComponent hud;
-        ScreenManagerComponent screenManager;
+        PlayerComponent player;
         SimulationComponent simulation;
+        ScreenComponent screens;
 
         public OctoGame()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            this.Window.Title = "OctoAwesome";
+            Window.Title = "OctoAwesome";
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
-            this.IsMouseVisible = false;
-            this.Window.AllowUserResizing = true;
+            IsMouseVisible = true;
+            Window.AllowUserResizing = false;
 
-            this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
+            TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             int viewrange;
             if (int.TryParse(ConfigurationManager.AppSettings["Viewrange"], out viewrange))
@@ -41,7 +43,7 @@ namespace OctoAwesome.Client
                 if (viewrange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneComponent.VIEWRANGE = viewrange;
+                SceneControl.VIEWRANGE = viewrange;
             }
 
             //int viewheight;
@@ -55,44 +57,30 @@ namespace OctoAwesome.Client
 
             ResourceManager.CacheSize = ((viewrange * 2) + 1) * ((viewrange * 2) + 1) * 5 * 2;
 
-            input = new InputComponent(this);
-            input.UpdateOrder = 1;
-            Components.Add(input);
-
             simulation = new SimulationComponent(this);
-            simulation.UpdateOrder = 3;
+            simulation.UpdateOrder = 4;
             Components.Add(simulation);
 
-            playerComponent = new PlayerComponent(this, input, simulation);
-            playerComponent.UpdateOrder = 2;
-            Components.Add(playerComponent);
+            player = new PlayerComponent(this, simulation);
+            player.UpdateOrder = 2;
+            Components.Add(player);
 
 
-            camera = new CameraComponent(this, playerComponent);
-            camera.UpdateOrder = 4;
+            camera = new CameraComponent(this, player);
+            camera.UpdateOrder = 3;
             Components.Add(camera);
 
-            scene = new SceneComponent(this, playerComponent, camera);
-            scene.UpdateOrder = 5;
-            scene.DrawOrder = 1;
-            Components.Add(scene);
-
-            hud = new HudComponent(this, playerComponent, scene, input);
-            hud.UpdateOrder = 6;
-            hud.DrawOrder = 2;
-            Components.Add(hud);
-
-            screenManager = new ScreenManagerComponent(this, input, playerComponent);
-            screenManager.UpdateOrder = 7;
-            screenManager.DrawOrder = 3;
-            Components.Add(screenManager);
+            screens = new ScreenComponent(this, player, camera);
+            screens.UpdateOrder = 1;
+            screens.DrawOrder = 1;
+            Components.Add(screens);
         }
 
         protected override void OnExiting(object sender, EventArgs args)
         {
             simulation.Save();
-
             simulation.World.Save();
+
             base.OnExiting(sender, args);
         }
     }

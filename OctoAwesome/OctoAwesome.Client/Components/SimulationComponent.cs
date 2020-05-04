@@ -1,9 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
@@ -13,7 +17,7 @@ namespace OctoAwesome.Client.Components
         public World World { get; private set; }
 
         public ActorHost Player { get; private set; }
-
+        
         public SimulationComponent(Game game) : base(game) { }
 
         public override void Initialize()
@@ -21,20 +25,10 @@ namespace OctoAwesome.Client.Components
             World = new World();
 
             var p = Load();
-            //foreach (var item in ItemDefinitionManager.GetBlockDefinitions())
-            //{
-            //    p.Inventory.Add(new InventorySlot() { Definition = item, Amount = 1 });
-            //}
-
             Player = World.InjectPlayer(p);
             Player.Initialize();
 
             base.Initialize();
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            World.Update(gameTime);
         }
 
         internal void Save()

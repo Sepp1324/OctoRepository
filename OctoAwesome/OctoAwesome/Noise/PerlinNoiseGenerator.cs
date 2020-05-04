@@ -19,7 +19,7 @@ namespace OctoAwesome.Noise
             return PerlinNoise2(startX, startY, width, heigth);
         }
 
-        public float[,,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int heigth, int depth)
+        public float[, ,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int heigth, int depth)
         {
             return PerlinNoise3(startX, startY, startZ, width, heigth, depth);
         }
@@ -333,7 +333,7 @@ namespace OctoAwesome.Noise
         public float[,] PerlinNoise2(int startX, int startY, int width, int heigth)
         {
 
-            float[,,] noiseLayers = new float[Octaves, width, heigth];
+            float[, ,] noiseLayers = new float[Octaves, width, heigth];
 
             if (Sizefactor < 1) Sizefactor = 1;
 
@@ -369,10 +369,10 @@ namespace OctoAwesome.Noise
             return finishLayer;
         }
 
-        public float[,,] PerlinNoise3(int startX, int startY, int startZ, int width, int heigth, int depth)
+        public float[, ,] PerlinNoise3(int startX, int startY, int startZ, int width, int heigth, int depth)
         {
 
-            float[,,,] noiseLayers = new float[Octaves, width, heigth, depth];
+            float[, , ,] noiseLayers = new float[Octaves, width, heigth, depth];
 
             if (Sizefactor < 1) Sizefactor = 1;
 
@@ -395,7 +395,7 @@ namespace OctoAwesome.Noise
                 }
             }
 
-            float[,,] finishLayer = new float[width, heigth, depth];
+            float[, ,] finishLayer = new float[width, heigth, depth];
 
             for (int x = 0; x < width; x++)
             {
@@ -479,7 +479,7 @@ namespace OctoAwesome.Noise
         #endregion
 
 
-        public float[,,,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
+        public float[, , ,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
         {
             throw new NotImplementedException();
         }
@@ -489,7 +489,7 @@ namespace OctoAwesome.Noise
             throw new NotImplementedException();
         }
 
-        public float[,,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
+        public float[, ,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
         {
             throw new NotImplementedException();
         }

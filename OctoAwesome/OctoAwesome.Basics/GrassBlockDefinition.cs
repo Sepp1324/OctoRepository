@@ -12,22 +12,24 @@ namespace OctoAwesome.Basics
 
         public override Bitmap Icon
         {
-            get { return (Bitmap)Bitmap.FromFile("./Assets/grass_top.png"); }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/grass_top.png"); }
         }
 
         public override Bitmap[] Textures
         {
             get
             {
+                
+
                 return new[] {
-                    (Bitmap)Bitmap.FromFile("./Assets/grass_top.png"),
-                    (Bitmap)Bitmap.FromFile("./Assets/dirt.png"),
-                    (Bitmap)Bitmap.FromFile("./Assets/dirt_grass.png"),
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/grass_top.png"),
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/dirt.png"),
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/dirt_grass.png"),
                 };
             }
         }
 
-        public override PhysicalProperties GetProperties(IPlanetResourceManager manager, int x, int y, int z)
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
             return new PhysicalProperties()
             {
@@ -43,31 +45,31 @@ namespace OctoAwesome.Basics
             throw new NotImplementedException();
         }
 
-        public override int GetBottomTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
+        public override int GetBottomTextureIndex(ILocalChunkCache manager, int x, int y, int z)
         {
             return 1;
         }
 
-        public override int GetNorthTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
+        public override int GetNorthTextureIndex(ILocalChunkCache manager, int x, int y, int z)
         {
             return 2;
         }
 
-        public override int GetSouthTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
+        public override int GetSouthTextureIndex(ILocalChunkCache manager, int x, int y, int z)
         {
             return 2;
         }
 
-        public override int GetWestTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
+        public override int GetWestTextureIndex(ILocalChunkCache manager, int x, int y, int z)
         {
             return 2;
         }
 
-        public override int GetEastTextureIndex(IPlanetResourceManager manager, int x, int y, int z)
+        public override int GetEastTextureIndex(ILocalChunkCache manager, int x, int y, int z)
         {
             return 2;
         }
 
-
+        
     }
 }

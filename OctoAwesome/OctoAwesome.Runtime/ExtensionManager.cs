@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -20,7 +18,7 @@ namespace OctoAwesome.Runtime
                 assemblies = new List<Assembly>();
                 Errors = new List<Exception>();
                 DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
-
+                
                 foreach (var file in dir.GetFiles("*.dll"))
                 {
                     try

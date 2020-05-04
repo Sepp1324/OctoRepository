@@ -12,7 +12,7 @@ namespace OctoAwesome.Basics
 
         public override Bitmap Icon
         {
-            get { return (Bitmap)Bitmap.FromFile("./Assets/sand.png"); }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/sand.png"); }
         }
 
 
@@ -21,7 +21,7 @@ namespace OctoAwesome.Basics
             get
             {
                 return new[] {
-                    (Bitmap)Bitmap.FromFile("./Assets/sand.png")
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/sand.png")
                 };
             }
         }
@@ -31,10 +31,11 @@ namespace OctoAwesome.Basics
             throw new NotImplementedException();
         }
 
-        public override PhysicalProperties GetProperties(IPlanetResourceManager manager, int x, int y, int z)
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
             return new PhysicalProperties()
             {
+                //Schüttdichte
                 Density = 1.5f,
                 FractureToughness = 0.3f,
                 Granularity = 0.9f,

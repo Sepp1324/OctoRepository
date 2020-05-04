@@ -1,19 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome", "OctoAwesome\OctoAwesome.csproj", "{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome", "OctoAwesome\OctoAwesome.csproj", "{93601DB8-F134-418E-8B35-11E30CFEC31C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Basics", "OctoAwesome.Basics\OctoAwesome.Basics.csproj", "{7C95EC87-26EC-4D09-A245-B09836587F73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Basics", "OctoAwesome.Basics\OctoAwesome.Basics.csproj", "{739F0779-A605-49C9-A298-FE30DC628C9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Runtime", "OctoAwesome.Runtime\OctoAwesome.Runtime.csproj", "{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Runtime", "OctoAwesome.Runtime\OctoAwesome.Runtime.csproj", "{31D774C6-E5D9-40B7-8D63-942E28FE1D94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Client", "OctoAwesome.Client\OctoAwesome.Client.csproj", "{0FBACE48-1F20-45F6-84D1-9318ECB89E15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Tests", "OctoAwesome.Tests\OctoAwesome.Tests.csproj", "{0468B67C-E076-4B19-833C-382513606A5A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1F64A624-6227-4FC8-86F2-B2ED18EBDDC9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D269F5F0-2B6A-471A-8A44-253DEF5D98A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Tests", "OctoAwesome.Tests\OctoAwesome.Tests.csproj", "{6EF56EB9-0C8B-4391-84EF-B9AED0095265}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Client", "OctoAwesome.Client\OctoAwesome.Client.csproj", "{FBCB341A-ACD0-4511-AD71-006779B90151}"
+	ProjectSection(ProjectDependencies) = postProject
+		{739F0779-A605-49C9-A298-FE30DC628C9E} = {739F0779-A605-49C9-A298-FE30DC628C9E}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E2A2D607-9959-4BAD-AE4D-238B9B951BC6}"
+	ProjectSection(SolutionItems) = preProject
+		libs\MonoGameUi.dll = libs\MonoGameUi.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,34 +29,31 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E65B8EA-557E-4BE4-B1C8-05439C2945FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C95EC87-26EC-4D09-A245-B09836587F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C95EC87-26EC-4D09-A245-B09836587F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C95EC87-26EC-4D09-A245-B09836587F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C95EC87-26EC-4D09-A245-B09836587F73}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97AD45DD-C29A-4855-A7BD-D1F5125F08DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0FBACE48-1F20-45F6-84D1-9318ECB89E15}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EF56EB9-0C8B-4391-84EF-B9AED0095265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EF56EB9-0C8B-4391-84EF-B9AED0095265}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EF56EB9-0C8B-4391-84EF-B9AED0095265}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EF56EB9-0C8B-4391-84EF-B9AED0095265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93601DB8-F134-418E-8B35-11E30CFEC31C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93601DB8-F134-418E-8B35-11E30CFEC31C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93601DB8-F134-418E-8B35-11E30CFEC31C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93601DB8-F134-418E-8B35-11E30CFEC31C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{739F0779-A605-49C9-A298-FE30DC628C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{739F0779-A605-49C9-A298-FE30DC628C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{739F0779-A605-49C9-A298-FE30DC628C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{739F0779-A605-49C9-A298-FE30DC628C9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31D774C6-E5D9-40B7-8D63-942E28FE1D94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31D774C6-E5D9-40B7-8D63-942E28FE1D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31D774C6-E5D9-40B7-8D63-942E28FE1D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31D774C6-E5D9-40B7-8D63-942E28FE1D94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0468B67C-E076-4B19-833C-382513606A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0468B67C-E076-4B19-833C-382513606A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0468B67C-E076-4B19-833C-382513606A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0468B67C-E076-4B19-833C-382513606A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBCB341A-ACD0-4511-AD71-006779B90151}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBCB341A-ACD0-4511-AD71-006779B90151}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBCB341A-ACD0-4511-AD71-006779B90151}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBCB341A-ACD0-4511-AD71-006779B90151}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6EF56EB9-0C8B-4391-84EF-B9AED0095265} = {1F64A624-6227-4FC8-86F2-B2ED18EBDDC9}
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EC127C3B-1A1C-4B73-84DB-A51078412A92}
+		{0468B67C-E076-4B19-833C-382513606A5A} = {D269F5F0-2B6A-471A-8A44-253DEF5D98A1}
 	EndGlobalSection
 EndGlobal
