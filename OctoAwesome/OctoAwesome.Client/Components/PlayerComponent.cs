@@ -2,8 +2,6 @@
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
@@ -33,7 +31,7 @@ namespace OctoAwesome.Client.Components
 
         #endregion
 
-        public ActorHost ActorHost { get { return simulation.Player; } }
+        public ActorHost ActorHost { get { return simulation.Player; } } //CONTINUE 279 - 7:00
 
         public Index3? SelectedBox { get; set; }
 
