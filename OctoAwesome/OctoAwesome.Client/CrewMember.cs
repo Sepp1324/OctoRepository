@@ -11,10 +11,13 @@ namespace OctoAwesome.Client
         {
             Entwickler,
             Designer,
-            Tester
+            Tester,
+            Supporter,
+            Kritiker
         };
 
         public string Username { get; set; }
+
         public string Alias { get; set; }
 
         public string Description { get; set; }
@@ -65,6 +68,21 @@ namespace OctoAwesome.Client
             Christian.Urls = new Dictionary<string, string> { { "Test", "www.google.at" } };
             Christian.AchievementList = new List<Achievements> { Achievements.Tester};
             crew.Add(Christian);
+
+            CrewMember Manu = new CrewMember("Manu");
+            Manu.Description = "Tatkräftiger Unterstützer von OctoAwesome.";
+            Manu.Picture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/Crew/Christian.jpg", manager.GraphicsDevice);
+            Manu.Urls = new Dictionary<string, string> { { "Test", "www.google.at" } };
+            Manu.AchievementList = new List<Achievements> { Achievements.Supporter };
+            crew.Add(Manu);
+
+            CrewMember Dave = new CrewMember("Dave");
+            Dave.Description = "Hat immer ein kritisches Auge auf Manu";
+            Dave.Alias = "Grafhugo";
+            Dave.Picture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/Crew/Hugo.png", manager.GraphicsDevice);
+            Dave.Urls = new Dictionary<string, string> { { "Test", "www.google.at" } };
+            Dave.AchievementList = new List<Achievements> { Achievements.Kritiker };
+            crew.Add(Dave);
 
             //crew.Sort();
             return crew;

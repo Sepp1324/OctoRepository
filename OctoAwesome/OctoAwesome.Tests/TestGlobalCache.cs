@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Tests
 {
@@ -33,12 +31,12 @@ namespace OctoAwesome.Tests
             Loaded.Clear();
         }
 
-        public void Release(PlanetIndex3 position)
+        public void Release(PlanetIndex3 position, bool writable = true)
         {
             SaveCounter++;
         }
 
-        public IChunk Subscribe(PlanetIndex3 position)
+        public IChunk Subscribe(PlanetIndex3 position, bool writable = true)
         {
             LoadCounter++;
             return new TestChunk(position);

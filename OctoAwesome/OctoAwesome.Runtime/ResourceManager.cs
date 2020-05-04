@@ -1,9 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -116,24 +112,6 @@ namespace OctoAwesome.Runtime
                 chunkPersistence.Save(universe.Id, planetId, value);
                 value.ChangeCounter = 0;
             }
-        }
-
-        public IChunk SubscribeChunk(PlanetIndex3 index)
-        {
-            return globalChunkCache.Subscribe(index);
-        }
-
-        public void ReleaseChunk(PlanetIndex3 index)
-        {
-            globalChunkCache.Release(index);
-        }
-
-        /// <summary>
-        /// Persistiert den Planeten.
-        /// </summary>
-        public void Save()
-        {
-            // TODO: handle Save (Flush in Global Cache vielleicht)
         }
     }
 }
