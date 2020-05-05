@@ -1,4 +1,6 @@
 ﻿using OctoAwesome.Runtime;
+using System;
+using System.ServiceModel;
 using System.Windows.Forms;
 
 namespace OctoAwesome.Server
@@ -10,11 +12,23 @@ namespace OctoAwesome.Server
         public MainForm()
         {
             InitializeComponent();
+
+            string server = "localhost";
+            int port = 8888;
+            string name = "Octo";
+
+            string address = string.Format("net.tcp://{0}:{1}/{2}", server, port, name);
+
+            NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
+
+            ServiceHost host = new ServiceHost(typeof(Client), new Uri(address));
+            host.AddServiceEndpoint(typeof(IClient), binding, address);
+            host.Open();
         }
 
-        private void startButton_Click(object sender, System.EventArgs e)
+        private void startButton_Click(object sender, EventArgs e)
         {
-            world = new World(); //CONTINUE 280
+            world = new World(); 
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace OctoAwesome.Runtime
 {
     [ServiceContract(CallbackContract = typeof(IClientCallback), SessionMode = SessionMode.Required)]
-    internal interface IClient
+    public interface IClient
     {
         [OperationContract(IsInitiating = true, IsTerminating = false, IsOneWay = true)]
         void Connect(string playername);
