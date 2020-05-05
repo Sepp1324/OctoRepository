@@ -136,14 +136,14 @@ namespace OctoAwesome.Client.Controls
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
 
             //Draw Position
-            string pos = "pos: " + Player.ActorHost.Position.ToString();
+            string pos = "pos: " + Player.PlayerController.Position.ToString();
             position.Text = pos;
 
             //Draw Rotation
-            float grad = (Player.ActorHost.Angle / MathHelper.TwoPi) * 360;
+            float grad = (Player.PlayerController.Angle / MathHelper.TwoPi) * 360;
             string rot = "rot: " +
-                (((Player.ActorHost.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
-                ((Player.ActorHost.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+                (((Player.PlayerController.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((Player.PlayerController.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
             rotation.Text = rot;
 
             //Draw Fps
@@ -164,7 +164,7 @@ namespace OctoAwesome.Client.Controls
                 activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.ActiveTool.Definition.Name;
 
                 //Fly Info
-                if (Player.ActorHost.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
+                if (Player.PlayerController.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
                 else flyInfo.Text = "";
 
             //Draw Box Information

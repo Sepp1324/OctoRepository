@@ -1,13 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using OctoAwesome;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Runtime;
 using System;
 using System.Configuration;
-using System.Linq;
 
 namespace OctoAwesome.Client
 {
@@ -24,8 +20,7 @@ namespace OctoAwesome.Client
         SimulationComponent simulation;
         ScreenComponent screens;
 
-        public OctoGame()
-            : base()
+        public OctoGame() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -57,14 +52,18 @@ namespace OctoAwesome.Client
 
             ResourceManager.CacheSize = ((viewrange * 2) + 1) * ((viewrange * 2) + 1) * 5 * 2;
 
-            simulation = new SimulationComponent(this);
-            simulation.UpdateOrder = 4;
-            Components.Add(simulation);
+            //Lokale Spiele (Singleplayer)
+            //simulation = new SimulationComponent(this);
+            //simulation.UpdateOrder = 4;
+            //Components.Add(simulation);
 
-            player = new PlayerComponent(this, simulation);
+            //Netzwerkspiel (Multiplayer)
+            ClientComponent client = new ClientComponent(this);
+            Components.Add(client);
+
+            player = new PlayerComponent(this, client.PlayerController);
             player.UpdateOrder = 2;
             Components.Add(player);
-
 
             camera = new CameraComponent(this, player);
             camera.UpdateOrder = 3;
@@ -74,9 +73,6 @@ namespace OctoAwesome.Client
             screens.UpdateOrder = 1;
             screens.DrawOrder = 1;
             Components.Add(screens);
-
-            ClientComponent client = new ClientComponent(this);
-            Components.Add(client);
         }
 
         protected override void OnExiting(object sender, EventArgs args)
