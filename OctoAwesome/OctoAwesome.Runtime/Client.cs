@@ -6,7 +6,7 @@ namespace OctoAwesome.Runtime
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
     public class Client : IClient
     {
-        private IClientCallback callback;
+        public IClientCallback Callback { get; private set; }
 
         public Guid ConnectionId { get; private set; }
 
@@ -14,7 +14,7 @@ namespace OctoAwesome.Runtime
 
         public Client()
         {
-            callback = OperationContext.Current.GetCallbackChannel<IClientCallback>();
+            Callback = OperationContext.Current.GetCallbackChannel<IClientCallback>();
             ConnectionId = Guid.NewGuid();
         }
 

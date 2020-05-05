@@ -7,9 +7,13 @@ namespace OctoAwesome.Client.Components
 {
     internal class ClientComponent : GameComponent, IClientCallback
     {
+        private Guid connectionId;
+
+        private IClient client;
+
         public ClientComponent(OctoGame game) : base(game)
         {
-            
+
         }
 
         public override void Initialize()
@@ -20,16 +24,29 @@ namespace OctoAwesome.Client.Components
 
             DuplexChannelFactory<IClient> factory = new DuplexChannelFactory<IClient>(this, binding);
             EndpointAddress endpoint = new EndpointAddress("net.tcp://localhost:8888/Octo");
-            IClient client = factory.CreateChannel(endpoint);
+            client = factory.CreateChannel(endpoint);
 
             try
             {
-                client.Connect("test");
+                connectionId = client.Connect("test");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (client != null)
+            {
+                try
+                {
+                    client.Disconnect();
+                }
+                catch (Exception) { }
+            }
+            base.Dispose(disposing);
         }
 
         public void Relocation(int x, int y, int z)
