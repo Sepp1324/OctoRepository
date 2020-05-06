@@ -11,7 +11,7 @@ namespace OctoAwesome.Runtime
         private bool disablePersistence = false;
 
         private IMapGenerator mapGenerator = null;
-        private IChunkPersistence chunkPersistence = null;
+        private IPersistenceManager chunkPersistence = null;
         private IChunkSerializer chunkSerializer = null;
 
         private GlobalChunkCache globalChunkCache = null;
@@ -46,7 +46,7 @@ namespace OctoAwesome.Runtime
         {
             mapGenerator = MapGeneratorManager.GetMapGenerators().First();
             chunkSerializer = new ChunkSerializer();
-            chunkPersistence = new ChunkDiskPersistence(chunkSerializer);
+            chunkPersistence = new DiskPersistenceManager(null, null, null, chunkSerializer);
 
             globalChunkCache = new GlobalChunkCache(
                 (p, i) => loadChunkColumn(p, i),

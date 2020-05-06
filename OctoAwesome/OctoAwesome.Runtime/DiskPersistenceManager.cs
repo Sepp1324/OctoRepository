@@ -1,31 +1,48 @@
-﻿using OctoAwesome.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
-    public class ChunkDiskPersistence : IChunkPersistence
+    public class DiskPersistenceManager : IPersistenceManager
     {
+        private IUniverseSerializer universeSerializer;
+        private IPlanetSerializer planetSerializer;
+        private IColumnSerializer columnSerializer;
         private IChunkSerializer serializer;
-        public ChunkDiskPersistence(IChunkSerializer serializer)
+        
+        public DiskPersistenceManager(IUniverseSerializer universeSerializer, IPlanetSerializer planetSerializer, IColumnSerializer columnSerializer, IChunkSerializer serializer)
         {
+            this.universeSerializer = universeSerializer;
+            this.planetSerializer = planetSerializer;
+            this.columnSerializer = columnSerializer;
             this.serializer = serializer;
         }
 
         public void Save(int universe, int planet, IChunk chunk)
         {
             var root = GetRoot();
-            
+
             string filename = planet.ToString() + "_" + chunk.Index.X + "_" + chunk.Index.Y + "_" + chunk.Index.Z + ".chunk";
             using (Stream stream = File.Open(root.FullName + Path.DirectorySeparatorChar + filename, FileMode.Create, FileAccess.Write))
             {
                 serializer.Serialize(stream, chunk);
             }
+        }
+
+        public void SaveUniverse(IUniverse universe)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SavePlanet(int universe, IPlanet planet)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SaveColumn(int universe, int planet, IChunkColumn column)
+        {
+            throw new System.NotImplementedException();
         }
 
         public IChunk Load(int universe, int planet, Index3 index)
@@ -40,6 +57,26 @@ namespace OctoAwesome.Runtime
             {
                 return serializer.Deserialize(stream, new PlanetIndex3(planet, index));
             }
+        }
+
+        public IUniverse[] ListUniverses()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IUniverse LoadUniverse(int universe)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IPlanet LoadPlanet(int universe, int planet)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IChunkColumn LoadColumn(int universe, int planet, Index2 index)
+        {
+            throw new System.NotImplementedException();
         }
 
         private DirectoryInfo root;
