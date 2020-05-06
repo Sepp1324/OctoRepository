@@ -1,51 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace OctoAwesome
 {
-    /// <summary>
-    /// Basis-Schnittstelle für alle Implementierungen eines Chunks.
-    /// </summary>
-    public interface IChunk
+    public interface IChunkColumn
     {
+        bool Populated { get; set; }
 
-
-        /// <summary>
-        /// Referenz auf den Planeten.
-        /// </summary>
         int Planet { get; }
+        Index2 Index { get; }
 
-        /// <summary>
-        /// Chunk-Position innerhalb des Planeten.
-        /// </summary>
-        Index3 Index { get; }
-
-        /// <summary>
-        /// Array das alle Blöcke eines Chunks enthält. Jeder eintrag entspricht einer Block-ID.
-        /// Der Index ist derselbe wie bei <see cref="MetaData"/> und <see cref="Resources"/>.
-        /// </summary>
-        ushort[] Blocks { get; }
-
-        /// <summary>
-        /// Array, das die Metadaten zu den Blöcken eines Chunks enthält.
-        /// Der Index ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
-        /// </summary>
-        int[] MetaData { get; }
-
-        /// <summary>
-        /// Verzweigtes Array, das die Ressourcen zu den Blöcken eines Chunks enthält.
-        /// Der Index der ersten Dimension ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
-        /// </summary>
-        ushort[][] Resources { get; }
-
-        /// <summary>
-        /// Veränderungs-Counter zur Ermittlung von Änderungen.<para/>
-        /// TODO: ChangeCounter überdenken, eventuell eine bool
-        /// </summary>
-        int ChangeCounter { get; set; }
+        IChunk[] Chunks { get; }
 
         /// <summary>
         /// Liefet den Block an der angegebenen Koordinate zurück.

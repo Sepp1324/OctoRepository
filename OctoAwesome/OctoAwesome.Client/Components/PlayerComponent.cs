@@ -2,11 +2,15 @@
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class PlayerComponent : GameComponent
     {
+        private SimulationComponent simulation;
+
         #region External Input
 
         public Vector2 HeadInput { get; set; }
@@ -29,8 +33,7 @@ namespace OctoAwesome.Client.Components
 
         #endregion
 
-        public IPlayerController PlayerController { get; private set; }
-
+        public ActorHost ActorHost { get { return simulation.Player; } }
 
         public Index3? SelectedBox { get; set; }
 
@@ -44,12 +47,10 @@ namespace OctoAwesome.Client.Components
 
         public List<InventorySlot> Tools { get; set; }
 
-        public InventorySlot ActiveTool { get; set; }
-
-        public PlayerComponent(Game game, IPlayerController playerController)
+        public PlayerComponent(Game game, SimulationComponent simulation)
             : base(game)
         {
-            PlayerController = playerController;
+            this.simulation = simulation;
         }
 
         public override void Initialize()
@@ -61,48 +62,48 @@ namespace OctoAwesome.Client.Components
         public override void Update(GameTime gameTime)
         {
             Tools.Clear();
-            Tools.AddRange(PlayerController.Inventory);
+            Tools.AddRange(ActorHost.Player.Inventory);
 
-            PlayerController.Head = HeadInput;
+            ActorHost.Head = HeadInput;
             HeadInput = Vector2.Zero;
 
-            PlayerController.Move = MoveInput;
+            ActorHost.Move = MoveInput;
             MoveInput = Vector2.Zero;
 
             if (JumpInput)
-                PlayerController.Jump();
+                ActorHost.Jump();
             JumpInput = false;
 
             if (InteractInput && SelectedBox.HasValue)
-                PlayerController.Interact(SelectedBox.Value);
+                ActorHost.Interact(SelectedBox.Value);
             InteractInput = false;
 
             if (ApplyInput && SelectedBox.HasValue)
-                PlayerController.Apply(SelectedBox.Value, ActiveTool, SelectedSide);
+                ActorHost.Apply(SelectedBox.Value, SelectedSide);
             ApplyInput = false;
 
             if (FlymodeInput)
-                PlayerController.FlyMode = !PlayerController.FlyMode;
+                ActorHost.Player.FlyMode = !ActorHost.Player.FlyMode;
             FlymodeInput = false;
 
             if (Tools != null && Tools.Count > 0)
             {
-                if (ActiveTool == null) ActiveTool = Tools[0];
+                if (ActorHost.ActiveTool == null) ActorHost.ActiveTool = Tools[0];
                 for (int i = 0; i < Math.Min(Tools.Count, SlotInput.Length); i++)
                 {
                     if (SlotInput[i])
-                        ActiveTool = Tools[i];
+                        ActorHost.ActiveTool = Tools[i];
                     SlotInput[i] = false;
                 }
             }
 
             // Index des aktiven Werkzeugs ermitteln
             int activeTool = -1;
-            if (Tools != null && ActiveTool != null)
+            if (Tools != null && ActorHost.ActiveTool != null)
             {
                 for (int i = 0; i < Tools.Count; i++)
                 {
-                    if (Tools[i] == ActiveTool)
+                    if (Tools[i] == ActorHost.ActiveTool)
                     {
                         activeTool = i;
                         break;
@@ -121,7 +122,7 @@ namespace OctoAwesome.Client.Components
                 SlotRightInput = false;
 
                 activeTool = (activeTool + Tools.Count) % Tools.Count;
-                ActiveTool = Tools[activeTool];
+                ActorHost.ActiveTool = Tools[activeTool];
             }
         }
     }

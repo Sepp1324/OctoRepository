@@ -361,7 +361,7 @@ namespace OctoAwesome.Client.Components
                 try
                 {
                     vb2 = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount, BufferUsage.WriteOnly);
-                    vb2.SetData<VertexPositionNormalTexture>(vertices.ToArray());
+                    vb2.SetData(vertices.ToArray());
 
                     ib2 = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indexCount, BufferUsage.WriteOnly);
                     ib2.SetData<int>(index.ToArray());

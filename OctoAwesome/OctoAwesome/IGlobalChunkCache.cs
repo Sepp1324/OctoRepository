@@ -6,15 +6,20 @@
         /// Abonniert einen Chunk.
         /// </summary>
         /// <param name="position">Position des Chunks</param>
-        /// <returns></returns>
-        IChunk Subscribe(PlanetIndex3 position, bool writable);
+        /// <returns>Den abonnierten Chunk</returns>
+        IChunkColumn Subscribe(int planet,Index2 position, bool writable);
 
-        int LoadedChunks { get; }
+        IChunkColumn Peek(int planet, Index2 position);
+
+        /// <summary>
+        /// Die Zahl der geladenen Chunks zurück
+        /// </summary>
+        int LoadedChunkColumns { get; }
 
         /// <summary>
         /// Gibt einen abonnierten Chunk wieder frei.
         /// </summary>
-        /// <param name="position"></param>
-        void Release(PlanetIndex3 position, bool writable);
+        /// <param name="position">Position des Chunks</param>       
+        void Release(int planet,Index2 position, bool writable);
     }
 }

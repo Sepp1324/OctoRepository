@@ -50,15 +50,15 @@ namespace OctoAwesome.Runtime
             chunkPersistence = new ChunkDiskPersistence(chunkSerializer);
 
             globalChunkCache = new GlobalChunkCache(
-                (i) => loadChunk(i.Planet, i.ChunkIndex), 
-                (i, c) => saveChunk(i.Planet, c));
+                (p, i) => loadChunkColumn(p, i),
+                (p, i, c) => saveChunkColumn(p, i, c));
 
-            _planets = new[] {loadPlanet(0)};
+            _planets = new[] { loadPlanet(0) };
 
             //planetCache = new Cache<int, IPlanet>(1, loadPlanet, savePlanet);
             //chunkCache = new Cache<PlanetIndex3, IChunk>(CacheSize, loadChunk, saveChunk);
 
-            bool.TryParse(ConfigurationManager.AppSettings["DisablePersistence"], out disablePersistence); 
+            bool.TryParse(ConfigurationManager.AppSettings["DisablePersistence"], out disablePersistence);
         }
 
         public IGlobalChunkCache GlobalChunkCache { get { return globalChunkCache; } }
@@ -87,34 +87,91 @@ namespace OctoAwesome.Runtime
         {
         }
 
-        private IChunk loadChunk(int planetId, Index3 index)
+        private IChunkColumn loadChunkColumn(int planetId, Index2 index)
         {
             IUniverse universe = GetUniverse(0);
             IPlanet planet = GetPlanet(planetId);
 
             // Load from disk
-            IChunk first = chunkPersistence.Load(universe.Id, planetId, index);
-            if (first != null)
-                return first;
-
-            IChunk[] result = mapGenerator.GenerateChunk(DefinitionManager.GetBlockDefinitions(), planet, new Index2(index.X, index.Y));
-            if (result != null && result.Length > index.Z && index.Z >= 0)
+            IChunk[] chunks = new IChunk[planet.Size.Z];
+            bool full = true;
+            for (int z = 0; z < planet.Size.Z; z++)
             {
-                result[index.Z].ChangeCounter = 0;
-                return result[index.Z];
+                IChunk chunk = chunkPersistence.Load(universe.Id, planetId, new Index3(index, z));
+                if (chunk == null)
+                    full = false;
+                chunks[z] = chunk;
             }
 
-            return null;
+            if (!full)
+            {
+                IChunk[] generated = mapGenerator.GenerateChunk(DefinitionManager.GetBlockDefinitions(), planet, new Index2(index.X, index.Y));
+                for (int z = 0; z < planet.Size.Z; z++)
+                {
+                    if (chunks[z] == null)
+                        chunks[z] = generated[z];
+                }
+            }
+
+            IChunkColumn column0 = GlobalChunkCache.Peek(planet.Id, index + new Index2(-1, -1));
+            IChunkColumn column1 = GlobalChunkCache.Peek(planet.Id, index + new Index2(0, -1));
+            IChunkColumn column2 = GlobalChunkCache.Peek(planet.Id, index + new Index2(1, -1));
+
+            IChunkColumn column3 = GlobalChunkCache.Peek(planet.Id, index + new Index2(-1, 0));
+            IChunkColumn column5 = GlobalChunkCache.Peek(planet.Id, index + new Index2(1, 0));
+
+            IChunkColumn column6 = GlobalChunkCache.Peek(planet.Id, index + new Index2(-1, 1));
+            IChunkColumn column7 = GlobalChunkCache.Peek(planet.Id, index + new Index2(0, 1));
+            IChunkColumn column8 = GlobalChunkCache.Peek(planet.Id, index + new Index2(1, 1));
+
+            IChunkColumn column4 = new ChunkColumn(chunks, planet.Id, index);
+
+            IMapPopulator pop = ExtensionManager.GetInstances<IMapPopulator>().First();
+
+            var definitions = DefinitionManager.GetBlockDefinitions();
+
+            // Zentrum
+            if (!column4.Populated && column5 != null && column7 != null && column8 != null)
+            {
+                pop.Populate(definitions, planet, column4, column5, column7, column8);
+                column4.Populated = true;
+            }
+
+            // Links oben
+            if (column0 != null && !column0.Populated && column1 != null && column3 != null)
+            {
+                pop.Populate(definitions, planet, column0, column1, column3, column4);
+                column0.Populated = true;
+            }
+
+            // Oben
+            if (column1 != null && !column1.Populated && column2 != null && column5 != null)
+            {
+                pop.Populate(definitions, planet, column1, column2, column4, column5);
+                column1.Populated = true;
+            }
+
+            // Links
+            if (column3 != null && !column3.Populated && column6 != null && column7 != null)
+            {
+                pop.Populate(definitions, planet, column3, column4, column6, column7);
+                column3.Populated = true;
+            }
+
+            return column4;
         }
 
-        private void saveChunk(int planetId, IChunk value)
+        private void saveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
             IUniverse universe = GetUniverse(0);
 
-            if (!disablePersistence && value.ChangeCounter > 0)
+            foreach(IChunk chunk in value.Chunks)
             {
-                chunkPersistence.Save(universe.Id, planetId, value);
-                value.ChangeCounter = 0;
+                if (!disablePersistence && chunk.ChangeCounter > 0)
+                {
+                    chunkPersistence.Save(universe.Id, planetId, chunk);
+                    chunk.ChangeCounter = 0;
+                }
             }
         }
     }
