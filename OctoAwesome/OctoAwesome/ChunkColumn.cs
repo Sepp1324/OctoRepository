@@ -7,12 +7,38 @@ namespace OctoAwesome
 {
     public class ChunkColumn : IChunkColumn
     {
-        public ChunkColumn(IChunk[] chunks,int planet,Index2 columnIndex)
+        public ChunkColumn(IChunk[] chunks, int planet, Index2 columnIndex)
         {
             Planet = planet;
             Chunks = chunks;
             Index = columnIndex;
+
+            Heights = new int[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
+            for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+            {
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                {
+                    Heights[x, y] = getTopBlockHeight(x, y);
+                }
+            }
+
+
         }
+
+        private int getTopBlockHeight(int x, int y)
+        {
+            for (int z = Chunks.Length * Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
+            {
+
+                if (GetBlock(x, y, z) != 0)
+                {
+                    return z;
+                }
+            }
+            return -1;
+        }
+
+        public int[,] Heights { get; private set; }
 
         public IChunk[] Chunks
         {
@@ -35,7 +61,7 @@ namespace OctoAwesome
             get;
             private set;
         }
-        
+
 
         public ushort GetBlock(Index3 index)
         {
@@ -72,14 +98,14 @@ namespace OctoAwesome
         {
             int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
-            Chunks[index].SetBlock(x, y, z,block,meta);
+            Chunks[index].SetBlock(x, y, z, block, meta);
         }
 
         public void SetBlockMeta(int x, int y, int z, int meta)
         {
             int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
-            Chunks[index].SetBlockMeta(x, y, z,  meta);
+            Chunks[index].SetBlockMeta(x, y, z, meta);
         }
 
         public void SetBlockResources(int x, int y, int z, ushort[] resources)
