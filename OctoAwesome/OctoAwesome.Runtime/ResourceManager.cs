@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -18,6 +15,8 @@ namespace OctoAwesome.Runtime
         private IChunkSerializer chunkSerializer = null;
 
         private GlobalChunkCache globalChunkCache = null;
+
+        private List<IMapPopulator> populators = null;
 
         /// <summary>
         /// Planet Cache.
@@ -126,35 +125,41 @@ namespace OctoAwesome.Runtime
 
             IChunkColumn column11 = new ChunkColumn(chunks, planet.Id, index);
 
-            IMapPopulator pop = ExtensionManager.GetInstances<IMapPopulator>().First();
+            //Populatoren erzeugen
+            if (populators == null)
+                populators = ExtensionManager.GetInstances<IMapPopulator>().OrderBy(p => p.Order).ToList();
 
             var definitions = DefinitionManager.GetBlockDefinitions();
 
             // Zentrum
             if (!column11.Populated && column21 != null && column12 != null && column22 != null)
             {
-                pop.Populate(definitions, planet, column11, column21, column12, column22);
+                foreach (var populator in populators)
+                    populator.Populate(definitions, planet, column11, column21, column12, column22);
                 column11.Populated = true;
             }
 
             // Links oben
             if (column00 != null && !column00.Populated && column10 != null && column01 != null)
             {
-                pop.Populate(definitions, planet, column00, column10, column01, column11);
+                foreach (var populator in populators)
+                    populator.Populate(definitions, planet, column00, column10, column01, column11);
                 column00.Populated = true;
             }
 
             // Oben
             if (column10 != null && !column10.Populated && column20 != null && column21 != null)
             {
-                pop.Populate(definitions, planet, column10, column20, column11, column21);
+                foreach (var populator in populators)
+                    populator.Populate(definitions, planet, column10, column20, column11, column21);
                 column10.Populated = true;
             }
 
             // Links
             if (column01 != null && !column01.Populated && column02 != null && column12 != null)
             {
-                pop.Populate(definitions, planet, column01, column11, column02, column12);
+                foreach (var populator in populators)
+                    populator.Populate(definitions, planet, column01, column11, column02, column12);
                 column01.Populated = true;
             }
 
