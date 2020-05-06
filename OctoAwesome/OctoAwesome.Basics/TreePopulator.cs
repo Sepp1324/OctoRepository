@@ -41,7 +41,7 @@ namespace OctoAwesome.Basics
                 else
                     column = column00;
 
-                
+
                 return column;
             }
 
@@ -55,6 +55,21 @@ namespace OctoAwesome.Basics
                 x %= Chunk.CHUNKSIZE_X;
                 y %= Chunk.CHUNKSIZE_Y;
                 column.SetBlock(x, y, z, block, meta);
+            }
+
+            public void FillSphere(int x, int y, int z, int radius, ushort block, int meta = 0)
+            {
+                for (int i = -radius; i <= radius; i++)
+                {
+                    for (int j = -radius; j <= radius; j++)
+                    {
+                        for (int k = -radius; k <= radius; k++)
+                        {
+                            if (i * i + j * j + k < 1.5f * radius)
+                                SetBlock(x + i, y + j, z + k, block, meta);
+                        }
+                    }
+                }
             }
 
             public ushort GetBlock(int x, int y, int z)
@@ -78,15 +93,28 @@ namespace OctoAwesome.Basics
             return -1;
         }
 
+        private void PlantTree(PopulationHelper helper, int x, int y, int z, int height, int radius, ushort woodIndex, ushort leaveIndex)
+        {
+            helper.FillSphere(x, y, z + height, radius, leaveIndex);
+
+            for (int i = 0; i < height + 2; i++)
+                helper.SetBlock(x, y, z + i, woodIndex);
+        }
+
         public void Populate(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, IChunkColumn column00, IChunkColumn column01, IChunkColumn column10, IChunkColumn column11)
         {
             IBlockDefinition woodDefinition = blockDefinitions.FirstOrDefault(d => typeof(WoodBlockDefinition) == d.GetType());
             ushort woodIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), woodDefinition) + 1);
-            int treeCount = 1;//random.Next(0, 8);
+
+            IBlockDefinition leaveDefinition = blockDefinitions.FirstOrDefault(d => typeof(LeavesBlockDefinition) == d.GetType());
+            ushort leaveIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), leaveDefinition) + 1);
+
+            int treeCount = 1;// random.Next(0, 8);
+            
             for (int i = 0; i < treeCount; i++)
             {
-                int x = Chunk.CHUNKSIZE_X / 2;//random.Next(Chunk.CHUNKSIZE_X / 2, Chunk.CHUNKSIZE_X * 3 / 2);
-                int y = Chunk.CHUNKSIZE_Y / 2;//random.Next(Chunk.CHUNKSIZE_Y / 2, Chunk.CHUNKSIZE_Y * 3 / 2);
+                int x = Chunk.CHUNKSIZE_X - 1; //random.Next(Chunk.CHUNKSIZE_X / 2, Chunk.CHUNKSIZE_X * 3 / 2);
+                int y = Chunk.CHUNKSIZE_Y - 1; //random.Next(Chunk.CHUNKSIZE_Y / 2, Chunk.CHUNKSIZE_Y * 3 / 2);
 
                 IChunkColumn curColumn = PopulationHelper.getColumn(column00, column01, column10, column11, x, y);
                 int z = getTopBlockHeight(curColumn, x, y);
@@ -94,8 +122,7 @@ namespace OctoAwesome.Basics
                     continue;
 
                 PopulationHelper helper = new PopulationHelper(x, y, z + 1, column00, column01, column10, column11);
-
-                helper.SetBlock(0, 0, 0, woodIndex);
+                PlantTree(helper, 0, 0, 0, random.Next(4, 7), random.Next(3, 6), woodIndex, leaveIndex);
 
             }
         }
