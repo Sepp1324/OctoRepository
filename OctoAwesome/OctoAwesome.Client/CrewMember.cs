@@ -9,16 +9,11 @@ namespace OctoAwesome.Client
     {
         public enum Achievements
         {
-            Patron,
-            Streamer,
-            HardwareDealer,
-            Coder,
-            Livegast,
-            Tools,
-            EmailJoker,
-            Musik,
-            Grafik,
-            WikiAdmin
+            Entwickler,
+            Designerin,
+            Supporter,
+            Tester,
+            Testerin
         };
 
         public string Username { get; set; }

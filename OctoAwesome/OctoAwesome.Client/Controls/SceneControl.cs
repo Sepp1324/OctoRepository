@@ -264,7 +264,8 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnPreDraw(GameTime gameTime)
         {
-            if (player.ActorHost == null) return;
+            if (player.ActorHost == null) 
+                return;
 
             if (ControlTexture == null)
             {

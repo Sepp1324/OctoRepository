@@ -44,13 +44,13 @@ namespace OctoAwesome.Client.Screens
             };
             stack.Controls.Add(creditsButton);
 
-            Button webButton = Button.TextButton(manager, "Octoawesome.net");
+            Button webButton = Button.TextButton(manager, "IchBinToll");
             webButton.VerticalAlignment = VerticalAlignment.Bottom;
             webButton.HorizontalAlignment = HorizontalAlignment.Right;
             webButton.Margin = new Border(10, 10, 10, 10);
             webButton.LeftMouseClick += (s, e) =>
             {
-                Process.Start("http://octoawesome.net/");
+                Process.Start("www.google.at");
             };
             Controls.Add(webButton);
 

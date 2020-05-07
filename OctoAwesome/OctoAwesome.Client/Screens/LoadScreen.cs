@@ -3,9 +3,7 @@ using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Screens
 {
