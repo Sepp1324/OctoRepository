@@ -20,7 +20,6 @@ namespace OctoAwesome.Client.Screens
         ToolbarControl toolbar;
         MinimapControl minimap;
         CrosshairControl crosshair;
-        HealthBarControl healthbar;
 
         public GameScreen(ScreenComponent manager) : base(manager)
         {
@@ -42,9 +41,8 @@ namespace OctoAwesome.Client.Screens
             compass = new CompassControl(manager);
             compass.HorizontalAlignment = HorizontalAlignment.Center;
             compass.VerticalAlignment = VerticalAlignment.Top;
-            compass.Margin = Border.All(10);
             compass.Width = 300;
-            compass.Height = 50;
+            compass.Height = 30;
             Controls.Add(compass);
 
             toolbar = new ToolbarControl(manager);
@@ -60,16 +58,6 @@ namespace OctoAwesome.Client.Screens
             minimap.Height = 128;
             minimap.Margin = Border.All(5);
             Controls.Add(minimap);
-
-            healthbar = new HealthBarControl(manager);
-            healthbar.HorizontalAlignment = HorizontalAlignment.Left;
-            healthbar.VerticalAlignment = VerticalAlignment.Bottom;
-            healthbar.Width = 240;
-            healthbar.Height = 78;
-            healthbar.Maximum = 100;
-            healthbar.Value = 40;
-            healthbar.Margin = Border.All(20, 30);
-            Controls.Add(healthbar);
 
             crosshair = new CrosshairControl(manager);
             crosshair.HorizontalAlignment = HorizontalAlignment.Center;
@@ -306,15 +294,6 @@ namespace OctoAwesome.Client.Screens
                     Manager.FreeMouse();
                 else
                     Manager.CaptureMouse();
-            });
-            Manager.Game.KeyMapper.AddAction("octoawesome:teleport", type =>
-            {
-                if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
-                Manager.NavigateToScreen(new TargetScreen(Manager, (x, y) => {
-                    Manager.Game.Player.ActorHost.Player.Position = new Coordinate(0, new Index3(x, y, 300), new Vector3());
-                    Manager.NavigateBack();
-                    }, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.X, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.Y));
-                
             });
         }
 
