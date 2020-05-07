@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -18,7 +15,7 @@ namespace OctoAwesome
         /// <summary>
         /// Id des Parent Universe
         /// </summary>
-        int Universe { get; }
+        Guid Universe { get; }
 
         /// <summary>
         /// Seed des Zufallsgenerators dieses Planeten.

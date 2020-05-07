@@ -7,6 +7,6 @@ namespace OctoAwesome
     {
         void Serialize(Stream stream, IUniverse universe);
 
-        IUniverse Deserialize(Stream stream, Guid universeId);
+        IUniverse Deserialize(Stream stream);
     }
 }

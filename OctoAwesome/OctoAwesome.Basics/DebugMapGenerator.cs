@@ -1,19 +1,17 @@
-﻿using OctoAwesome.Basics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
     public class DebugMapGenerator : IMapGenerator
     {
-        public IUniverse GenerateUniverse(int id)
+        public IUniverse GenerateUniverse(Guid id)
         {
             return new Universe(id, "Milchstrasse");
         }
 
-        public IPlanet GeneratePlanet(int universe, int seed)
+        public IPlanet GeneratePlanet(Guid universe, int seed)
         {
             return new Planet(0, universe, new Index3(1000, 1000, 3), seed);
         }
