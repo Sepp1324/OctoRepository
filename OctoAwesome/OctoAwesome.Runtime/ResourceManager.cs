@@ -7,11 +7,14 @@ using System.Text;
 
 namespace OctoAwesome.Runtime
 {
+    /// <summary>
+    /// Manager für die Weltelemente im Spiel.
+    /// </summary>
     public class ResourceManager : IResourceManager
     {
         private Guid DEFAULT_UNIVERSE = Guid.Parse("{3C4B1C38-70DC-4B1D-B7BE-7ED9F4B1A66D}");
 
-        public static int CacheSize = 10000;
+        //public static int CacheSize = 10000;
 
         private bool disablePersistence = false;
 
@@ -25,16 +28,24 @@ namespace OctoAwesome.Runtime
 
         private IUniverse universe;
 
-        /// <summary>
+        /*/// <summary>
         /// Planet Cache.
         /// </summary>
-        // private Cache<int, IPlanet> planetCache;
+        private Cache<int, IPlanet> planetCache;*/
 
         private Dictionary<int, IPlanet> planets;
+
+        /// <summary>
+        /// Das aktuell geladene Universum.
+        /// </summary>
+        public IUniverse CurrentUniverse { get { return universe; } }
 
         #region Singleton
 
         private static ResourceManager instance = null;
+        /// <summary>
+        /// Die Instanz des ResourceManagers.
+        /// </summary>
         public static ResourceManager Instance
         {
             get
@@ -61,24 +72,39 @@ namespace OctoAwesome.Runtime
             //planetCache = new Cache<int, IPlanet>(1, loadPlanet, savePlanet);
             //chunkCache = new Cache<PlanetIndex3, IChunk>(CacheSize, loadChunk, saveChunk);
 
-            bool.TryParse(ConfigurationManager.AppSettings["DisablePersistence"], out disablePersistence);
+            bool.TryParse(SettingsManager.Get("DisablePersistence"), out disablePersistence);
         }
 
+        /// <summary>
+        /// Der <see cref="IGlobalChunkCache"/>, der im Spiel verwendet werden soll.
+        /// </summary>
         public IGlobalChunkCache GlobalChunkCache { get { return globalChunkCache; } }
 
+        /// <summary>
+        /// Erzuegt ein neues Universum.
+        /// </summary>
+        /// <param name="name">Name des neuen Universums.</param>
+        /// <param name="seed">Weltgenerator-Seed für das neue Universum.</param>
         public void NewUniverse(string name, int seed)
         {
-            
-            // universe = new Universe(Guid.NewGuid(), name, seed);
-            universe = new Universe(DEFAULT_UNIVERSE, name, seed);
-            persistenceManager.SaveUniverse(universe);
-        }
+            universe = new Universe(Guid.NewGuid(), name, seed);
+                persistenceManager.SaveUniverse(universe);
+            }
 
+        /// <summary>
+        /// Gibt alle Universen zurück, die geladen werden können.
+        /// </summary>
+        /// <returns>Die Liste der Universen.</returns>
         public IUniverse[] ListUniverses()
         {
             return persistenceManager.ListUniverses();
         }
 
+        /// <summary>
+        /// Lädt das Universum mit der angegebenen Guid.
+        /// </summary>
+        /// <param name="universeId">Die Guid des Universums.</param>
+        /// <returns>Das geladene Universum.</returns>
         public void LoadUniverse(Guid universeId)
         {
             // Alte Daten entfernen
@@ -91,15 +117,44 @@ namespace OctoAwesome.Runtime
                 throw new Exception();
         }
 
+        /// <summary>
+        /// Entlädt das aktuelle Universum.
+        /// </summary>
         public void UnloadUniverse()
         {
+            // TODO: Save und Unload
+            // TODO: Unload Chunks
+            globalChunkCache.Clear();
+            // TODO: Unload Planets
+            // TODO: Unload Universe;
         }
 
+        /// <summary>
+        /// Entlädt das aktuelle Universum
+        /// </summary>
+        /// <returns>Das gewünschte Universum, falls es existiert</returns>
         public IUniverse GetUniverse()
         {
             return universe;
         }
 
+        /// <summary>
+        /// Löscht ein Universum.
+        /// </summary>
+        /// <param name="id">Die Guid des Universums.</param>
+        public void DeleteUniverse(Guid id)
+        {
+            if (universe != null && universe.Id == id)
+                throw new Exception("Universe ist bereits geladen");
+
+            persistenceManager.DeleteUniverse(id);
+        }
+
+        /// <summary>
+        /// Gibt den Planeten mit der angegebenen ID zurück
+        /// </summary>
+        /// <param name="id">Die Planteten-ID des gewünschten Planeten</param>
+        /// <returns>Der gewünschte Planet, falls er existiert</returns>
         public IPlanet GetPlanet(int id)
         {
             if (universe == null)
@@ -133,6 +188,34 @@ namespace OctoAwesome.Runtime
             }
 
             return planet;
+        }
+
+        /// <summary>
+        /// Lädt einen Player.
+        /// </summary>
+        /// <param name="playername">Der Name des Players.</param>
+        /// <returns></returns>
+        public Player LoadPlayer(string playername)
+        {
+            if (universe == null)
+                throw new Exception("No Universe loaded");
+
+            Player player = persistenceManager.LoadPlayer(universe.Id, playername);
+            if (player == null)
+                player = new Player();
+            return player;
+        }
+
+        /// <summary>
+        /// Speichert einen Player.
+        /// </summary>
+        /// <param name="player">Der Player.</param>
+        public void SavePlayer(Player player)
+        {
+            if (universe == null)
+                throw new Exception("No Universe loaded");
+
+            persistenceManager.SavePlayer(universe.Id, player);
         }
 
         private IChunkColumn loadChunkColumn(int planetId, Index2 index)
@@ -207,8 +290,8 @@ namespace OctoAwesome.Runtime
             if (!disablePersistence && value.Chunks.Any(c => c.ChangeCounter > 0))
             {
                 persistenceManager.SaveColumn(universe.Id, planetId, value);
-                foreach (var chunk in value.Chunks)
-                    chunk.ChangeCounter = 0;
+                //foreach (var chunk in value.Chunks)
+                //    chunk.ChangeCounter = 0;
             }
         }
     }

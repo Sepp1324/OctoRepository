@@ -65,10 +65,13 @@
     <Compile Include="OctoGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screens\BaseScreen.cs" />
+    <Compile Include="Screens\CreateUniverseScreen.cs" />
     <Compile Include="Screens\CreditsScreen.cs" />
     <Compile Include="Screens\CrewMemberScreen.cs" />
     <Compile Include="Screens\GameScreen.cs" />
     <Compile Include="Screens\InventoryScreen.cs" />
+    <Compile Include="Screens\LoadScreen.cs" />
     <Compile Include="Screens\MainScreen.cs" />
     <Compile Include="Screens\OptionsScreen.cs" />
   </ItemGroup>
@@ -139,7 +142,11 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="CompiledContent\BoldFont.xnb" />
+    <None Include="CompiledContent\GameFont.xnb" />
+    <None Include="CompiledContent\HeadlineFont.xnb" />
     <None Include="CompiledContent\Hud.xnb" />
+    <None Include="CompiledContent\simple.xnb" />
     <None Include="Content\BoldFont.spritefont" />
     <None Include="Content\GameFont.spritefont" />
     <None Include="Content\HeadlineFont.spritefont" />

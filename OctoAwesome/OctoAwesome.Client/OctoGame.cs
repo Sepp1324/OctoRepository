@@ -14,31 +14,34 @@ namespace OctoAwesome.Client
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class OctoGame : Game
+    internal class OctoGame : Game
     {
-
         GraphicsDeviceManager graphics;
 
-        CameraComponent camera;
-        PlayerComponent player;
-        SimulationComponent simulation;
-        ScreenComponent screens;
+        public CameraComponent Camera { get; private set; }
+
+        public PlayerComponent Player { get; private set; }
+
+        public SimulationComponent Simulation { get; private set; }
+
+        public ScreenComponent Screen { get; private set; }
 
         public OctoGame()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1080;
+            graphics.PreferredBackBufferHeight = 720;
+
             Content.RootDirectory = "Content";
             Window.Title = "OctoAwesome";
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
             IsMouseVisible = true;
-            Window.AllowUserResizing = false;
+            Window.AllowUserResizing = true;
 
             TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             int viewrange;
-            if (int.TryParse(ConfigurationManager.AppSettings["Viewrange"], out viewrange))
+            if (int.TryParse(SettingsManager.Get("Viewrange"), out viewrange))
             {
                 if (viewrange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
@@ -46,40 +49,39 @@ namespace OctoAwesome.Client
                 SceneControl.VIEWRANGE = viewrange;
             }
 
-            //int viewheight;
-            //if (int.TryParse(ConfigurationManager.AppSettings["Viewheight"], out viewheight))
-            //{
-            //    if (viewheight < 1)
-            //        throw new NotSupportedException("Viewheight in app.config darf nicht kleiner 1 sein");
+            Simulation = new SimulationComponent(this);
+            Simulation.UpdateOrder = 4;
+            Components.Add(Simulation);
 
-            //    SceneComponent.VIEWHEIGHT = viewheight;
-            //}
+            Player = new PlayerComponent(this);
+            Player.UpdateOrder = 2;
+            Components.Add(Player);
 
-            ResourceManager.CacheSize = ((viewrange * 2) + 1) * ((viewrange * 2) + 1) * 5 * 2;
+            Camera = new CameraComponent(this);
+            Camera.UpdateOrder = 3;
+            Components.Add(Camera);
 
-            simulation = new SimulationComponent(this);
-            simulation.UpdateOrder = 4;
-            Components.Add(simulation);
+            Screen = new ScreenComponent(this);
+            Screen.UpdateOrder = 1;
+            Screen.DrawOrder = 1;
+            Components.Add(Screen);
 
-            player = new PlayerComponent(this, simulation);
-            player.UpdateOrder = 2;
-            Components.Add(player);
+            Window.ClientSizeChanged += (s, e) =>
+            {
+                if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
+                   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
+                    return;
 
-
-            camera = new CameraComponent(this, player);
-            camera.UpdateOrder = 3;
-            Components.Add(camera);
-
-            screens = new ScreenComponent(this, player, camera);
-            screens.UpdateOrder = 1;
-            screens.DrawOrder = 1;
-            Components.Add(screens);
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                graphics.ApplyChanges();
+            };
         }
 
         protected override void OnExiting(object sender, EventArgs args)
         {
-            simulation.Save();
-            simulation.World.Save();
+            Player.RemovePlayer();
+            Simulation.ExitGame();
 
             base.OnExiting(sender, args);
         }

@@ -10,10 +10,10 @@ namespace OctoAwesome.Client.Components
     {
         private PlayerComponent player;
 
-        public CameraComponent(Game game, PlayerComponent player)
+        public CameraComponent(OctoGame game)
             : base(game)
         {
-            this.player = player;
+            player = game.Player;
         }
 
         public override void Initialize()
@@ -26,6 +26,12 @@ namespace OctoAwesome.Client.Components
 
         public override void Update(GameTime gameTime)
         {
+            if (!Enabled)
+                return;
+
+            if (player == null || player.ActorHost == null)
+                return;
+
             CameraChunk = player.ActorHost.Position.ChunkIndex;
 
             CameraPosition = new Vector3(

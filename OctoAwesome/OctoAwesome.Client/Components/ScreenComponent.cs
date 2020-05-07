@@ -7,14 +7,15 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class ScreenComponent : BaseScreenComponent
     {
-        public PlayerComponent Player { get; private set; }
+        public new OctoGame Game { get; private set; }
 
-        public CameraComponent Camera { get; private set; }
+        public PlayerComponent Player { get { return Game.Player; } }
 
-        public ScreenComponent(Game game, PlayerComponent player, CameraComponent camera) : base(game)
+        public CameraComponent Camera { get { return Game.Camera; } }
+
+        public ScreenComponent(OctoGame game) : base(game)
         {
-            Player = player;
-            Camera = camera;
+            Game = game;
             TitlePrefix = "OctoAwesome";
         }
 

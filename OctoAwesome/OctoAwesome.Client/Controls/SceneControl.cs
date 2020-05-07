@@ -112,13 +112,6 @@ namespace OctoAwesome.Client.Controls
                 }
             }
 
-            // Entfernungsarray erzeugen
-            //for (int x = -VIEWRANGE; x <= VIEWRANGE; x++)
-            //    for (int y = -VIEWRANGE; y <= VIEWRANGE; y++)
-            //        for (int z = 0; z <= planet.Size.Z; z++)
-            //            distances.Add(new Index3(x, y, z));
-            //distances = distances.OrderBy(d => d.LengthSquared()).ToList();
-
             backgroundThread = new Thread(BackgroundLoop);
             backgroundThread.Priority = ThreadPriority.Lowest;
             backgroundThread.IsBackground = true;
@@ -407,6 +400,9 @@ namespace OctoAwesome.Client.Controls
 
         private bool FillChunkRenderer()
         {
+            if (player.ActorHost == null)
+                return false;
+
             Index2 destinationChunk = new Index2(player.ActorHost.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
