@@ -24,7 +24,7 @@ namespace OctoAwesome.Client.Controls
         public PlayerComponent Player { get; set; }
 
         StackPanel leftView, rightView;
-        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, activeTool, loadedInfo, flyInfo;
+        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo;
 
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
@@ -76,9 +76,18 @@ namespace OctoAwesome.Client.Controls
 
             controlInfo = new Label(ScreenManager);
             leftView.Controls.Add(controlInfo);
+          
+            temperatureInfo = new Label(ScreenManager);
+            rightView.Controls.Add(temperatureInfo);
+
+            precipitationInfo = new Label(ScreenManager);
+            rightView.Controls.Add(precipitationInfo);
 
             activeTool = new Label(ScreenManager);
             rightView.Controls.Add(activeTool);
+
+            toolCount = new Label(ScreenManager);
+            rightView.Controls.Add(toolCount);
 
             flyInfo = new Label(ScreenManager);
             rightView.Controls.Add(flyInfo);
@@ -167,11 +176,20 @@ namespace OctoAwesome.Client.Controls
 
             //Active Tool
             if (Player.ActorHost.ActiveTool != null)
-                activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.ActorHost.ActiveTool.Definition.Name;
+                activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.ActorHost.ActiveTool.Definition.Name + " | " + Player.Tools.FindIndex(i => i.Definition == Player.ActorHost.ActiveTool.Definition);
+
+            toolCount.Text = Languages.OctoClient.ToolCount + ": " + Player.Tools.Count;
 
             //Fly Info
             if (Player.ActorHost.Player.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
             else flyInfo.Text = "";
+
+            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.ActorHost.Position.Planet);
+            // Temperature Info
+            temperatureInfo.Text = Languages.OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.ActorHost.Position.GlobalBlockIndex);
+
+            // Precipitation Info
+            precipitationInfo.Text = "Precipitation: " + planet.ClimateMap.GetPrecipitation(Player.ActorHost.Position.GlobalBlockIndex);
 
             //Draw Box Information
             if (Player.SelectedBox.HasValue)

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace OctoAwesome
 {
     /// <summary>
     /// Verwaltet die Anwendungseinstellungen.
+    /// TODO: In den Client verschieben
     /// </summary>
     public static class SettingsManager
     {
@@ -42,8 +40,11 @@ namespace OctoAwesome
         public static void Set(string key, string value)
         {
             var config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
-            config.AppSettings.Settings[key].Value = value;
-            config.Save(ConfigurationSaveMode.Full, true);
+            if (config.AppSettings.Settings.AllKeys.Contains(key))
+                config.AppSettings.Settings[key].Value = value;
+            else
+                config.AppSettings.Settings.Add(key, value);
+            config.Save(ConfigurationSaveMode.Modified, false);
         }
     }
 }

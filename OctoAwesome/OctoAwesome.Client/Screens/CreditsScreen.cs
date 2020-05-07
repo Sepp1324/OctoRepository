@@ -19,21 +19,7 @@ namespace OctoAwesome.Client.Screens
 
             Title = Languages.OctoClient.CreditsCrew;
 
-            Image background = new Image(manager);
-            background.Texture = Manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background_notext.png", Manager.GraphicsDevice);
-            background.VerticalAlignment = VerticalAlignment.Stretch;
-            background.HorizontalAlignment = HorizontalAlignment.Stretch;
-            Controls.Add(background);
-
-            Button backButton = Button.TextButton(manager, Languages.OctoClient.Back);
-            backButton.VerticalAlignment = VerticalAlignment.Top;
-            backButton.HorizontalAlignment = HorizontalAlignment.Left;
-            backButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateBack();
-            };
-            backButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(backButton);
+            SetDefaultBackground();
 
             List<CrewMember> crew = CrewMember.getCrew(manager);
 
@@ -53,32 +39,16 @@ namespace OctoAwesome.Client.Screens
 
             foreach(CrewMember member in crew)
             {
-                Panel memberPanel = new Panel(manager)
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    MinHeight = 30,
-                    Background = new BorderBrush(Color.White),
-                    Margin = new Border(5, 5, 5, 5),
-                    HoveredBackground = new BorderBrush(Color.LightGray)
+                Button memberButton = Button.TextButton(manager, member.Username);
+                memberButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+                memberButton.Margin = new Border(5, 5, 5, 5);
 
-                };
-
-                memberPanel.LeftMouseClick += (s, e) =>
+                memberButton.LeftMouseClick += (s, e) =>
                 {
                     manager.NavigateToScreen(new CrewMemberScreen(manager, member));
                 };
 
-                Label name = new Label(manager)
-                {
-                    Text = member.Username,
-                    VerticalAlignment = VerticalAlignment.Stretch,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Padding = new Border(5, 5, 5, 5)
-                };
-
-                memberPanel.Controls.Add(name);
-                crewList.Controls.Add(memberPanel);
-
+                crewList.Controls.Add(memberButton);
             }
             
 

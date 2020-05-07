@@ -13,21 +13,16 @@ namespace OctoAwesome.Client.Screens
     {
         public CrewMemberScreen(ScreenComponent manager, CrewMember member) : base(manager)
         {
-            VerticalAlignment = VerticalAlignment.Center;
-            HorizontalAlignment = HorizontalAlignment.Center;
+            VerticalAlignment = VerticalAlignment.Stretch;
+            HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            SpriteFont boldFont = manager.Content.Load<SpriteFont>("BoldFont");
+            Title = Languages.OctoClient.CreditsCrew + ": " + member.Username;
+
+            SpriteFont boldFont = manager.Content.Load<SpriteFont>("BoldFont");            
 
             Padding = new Border(0, 0, 0, 0);
 
-            //The Background Image
-            Image background = new Image(manager)
-            {
-                Texture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background_notext.png", manager.GraphicsDevice),
-                VerticalAlignment = VerticalAlignment.Stretch,
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            Controls.Add(background);
+            SetDefaultBackground();
 
             //The Panel
             Texture2D panelBackground = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/panel.png", manager.GraphicsDevice);
@@ -48,8 +43,6 @@ namespace OctoAwesome.Client.Screens
                 Orientation = Orientation.Vertical,
             };
             // panel.Controls.Add(verticalStack);
-
-
 
             //The Main Stack - Split the Panel in half Horizontal
             StackPanel horizontalStack = new StackPanel(manager)
@@ -73,8 +66,6 @@ namespace OctoAwesome.Client.Screens
                 profileImage.Texture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/Crew/base.png", manager.GraphicsDevice);
             else profileImage.Texture = manager.Content.LoadTexture2DFromFile(member.PictureFilename, manager.GraphicsDevice);
             horizontalStack.Controls.Add(profileImage);
-
-
 
             //The Text Stack
             StackPanel textStack = new StackPanel(manager);
@@ -122,8 +113,6 @@ namespace OctoAwesome.Client.Screens
             achievementStack.Controls.Add(achievementsTitle);
             achievementStack.Controls.Add(achievements);
 
-
-
             Panel DescriptionPanel = new Panel(manager)
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -146,18 +135,6 @@ namespace OctoAwesome.Client.Screens
 
             panel.Width = 700;
 
-            //The Back Button
-            Button backButton = Button.TextButton(manager, Languages.OctoClient.Back);
-            backButton.VerticalAlignment = VerticalAlignment.Top;
-            backButton.HorizontalAlignment = HorizontalAlignment.Left;
-            backButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateBack();
-            };
-            backButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(backButton);
-
-            Title = member.Alias;
         }
     }
 }

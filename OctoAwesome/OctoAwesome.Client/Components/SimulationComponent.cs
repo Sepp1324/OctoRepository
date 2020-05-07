@@ -19,7 +19,7 @@ namespace OctoAwesome.Client.Components
 
         public SimulationComponent(Game game) : base(game) { }
 
-        public void NewGame(string name, int? seed = null)
+        public Guid NewGame(string name, int? seed = null)
         {
             if (Simulation != null)
             {
@@ -28,7 +28,7 @@ namespace OctoAwesome.Client.Components
             }
 
             Simulation = new Simulation();
-            Simulation.NewGame(name, seed);
+            return Simulation.NewGame(name, seed);
         }
 
         public void LoadGame(Guid guid)
@@ -41,14 +41,6 @@ namespace OctoAwesome.Client.Components
 
             Simulation = new Simulation();
             Simulation.LoadGame(guid);
-        }
-
-        public void SaveGame()
-        {
-            if (Simulation == null)
-                return;
-
-            Simulation.SaveGame();
         }
 
         public void ExitGame()

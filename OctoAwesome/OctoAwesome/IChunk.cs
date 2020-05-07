@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-namespace OctoAwesome
+﻿namespace OctoAwesome
 {
     /// <summary>
     /// Basis-Schnittstelle für alle Implementierungen eines Chunks.
@@ -41,7 +35,6 @@ namespace OctoAwesome
 
         /// <summary>
         /// Veränderungs-Counter zur Ermittlung von Änderungen.<para/>
-        /// TODO: ChangeCounter überdenken, eventuell eine bool
         /// </summary>
         int ChangeCounter { get; set; }
 

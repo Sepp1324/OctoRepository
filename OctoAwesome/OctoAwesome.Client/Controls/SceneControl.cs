@@ -1,8 +1,6 @@
 ﻿using MonoGameUi;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
@@ -94,7 +92,7 @@ namespace OctoAwesome.Client.Controls
             // TODO: evtl. Cache-Size (Dimensions) VIEWRANGE + 1
 
             int range = ((int)Math.Pow(2, VIEWRANGE) - 2) / 2;
-            localChunkCache = new LocalChunkCache(ResourceManager.Instance.GlobalChunkCache, VIEWRANGE, range, false);
+            localChunkCache = new LocalChunkCache(ResourceManager.Instance.GlobalChunkCache, VIEWRANGE, range);
 
             chunkRenderer = new ChunkRenderer[
                 (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE),
@@ -158,11 +156,27 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnDrawContent(SpriteBatch batch, Microsoft.Xna.Framework.Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            batch.Draw(ControlTexture, contentArea, Microsoft.Xna.Framework.Color.White * alpha);
+            if (ControlTexture != null)
+                batch.Draw(ControlTexture, contentArea, Microsoft.Xna.Framework.Color.White * alpha);
+        }
+
+        public override void OnResolutionChanged()
+        {
+            base.OnResolutionChanged();
+
+            if (ControlTexture != null)
+            {
+                ControlTexture.Dispose();
+                ControlTexture = null;
+            }
+
+            Manager.Game.Camera.RecreateProjection();
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
+            if (player.ActorHost == null) return;
+
             sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
 
             Index3 centerblock = player.ActorHost.Position.GlobalBlockIndex;
@@ -264,6 +278,8 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnPreDraw(GameTime gameTime)
         {
+            if (player.ActorHost == null) return;
+
             if (ControlTexture == null)
             {
                 ControlTexture = new RenderTarget2D(Manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
