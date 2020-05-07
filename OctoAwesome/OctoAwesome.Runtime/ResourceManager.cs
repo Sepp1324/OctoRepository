@@ -1,33 +1,36 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
     public class ResourceManager : IResourceManager
     {
-        public static int CacheSize = 10000;
+        private Guid DEFAULT_UNIVERSE = Guid.Parse("{3C4B1C38-70DC-4B1D-B7BE-7ED9F4B1A66D}");
 
-        private Guid DEFAULT_UNIVERSE = Guid.Parse("{9EAC0932-113A-403D-8E36-404EC30114A0}");
+        public static int CacheSize = 10000;
 
         private bool disablePersistence = false;
 
-        private IMapGenerator mapGenerator = null;
-        private IPersistenceManager chunkPersistence = null;
+        // private IMapGenerator mapGenerator = null;
+
+        private IPersistenceManager persistenceManager = null;
 
         private GlobalChunkCache globalChunkCache = null;
 
         private List<IMapPopulator> populators = null;
+
+        private IUniverse universe;
 
         /// <summary>
         /// Planet Cache.
         /// </summary>
         // private Cache<int, IPlanet> planetCache;
 
-        private IPlanet[] _planets;
-
-        private IUniverse universeCache;
+        private Dictionary<int, IPlanet> planets;
 
         #region Singleton
 
@@ -46,14 +49,14 @@ namespace OctoAwesome.Runtime
 
         private ResourceManager()
         {
-            mapGenerator = MapGeneratorManager.GetMapGenerators().First();
-            chunkPersistence = new DiskPersistenceManager(new UniverseSerializer(), new PlanetSerializer(), new ColumnSerializer());
+            // mapGenerator = MapGeneratorManager.GetMapGenerators().First();
+            persistenceManager = new DiskPersistenceManager();
 
             globalChunkCache = new GlobalChunkCache(
                 (p, i) => loadChunkColumn(p, i),
                 (p, i, c) => saveChunkColumn(p, i, c));
 
-            _planets = new[] { loadPlanet(0) };
+            planets = new Dictionary<int, IPlanet>();
 
             //planetCache = new Cache<int, IPlanet>(1, loadPlanet, savePlanet);
             //chunkCache = new Cache<PlanetIndex3, IChunk>(CacheSize, loadChunk, saveChunk);
@@ -63,56 +66,85 @@ namespace OctoAwesome.Runtime
 
         public IGlobalChunkCache GlobalChunkCache { get { return globalChunkCache; } }
 
-        public IUniverse GetUniverse(Guid id)
+        public void NewUniverse(string name, int seed)
         {
-            if (universeCache == null)
-                universeCache = mapGenerator.GenerateUniverse(id);
+            
+            // universe = new Universe(Guid.NewGuid(), name, seed);
+            universe = new Universe(DEFAULT_UNIVERSE, name, seed);
+            persistenceManager.SaveUniverse(universe);
+        }
 
-            return universeCache;
+        public IUniverse[] ListUniverses()
+        {
+            return persistenceManager.ListUniverses();
+        }
+
+        public void LoadUniverse(Guid universeId)
+        {
+            // Alte Daten entfernen
+            if (universe != null)
+                UnloadUniverse();
+
+            // Neuen Daten loaden/generieren
+            universe = persistenceManager.LoadUniverse(universeId);
+            if (universe == null)
+                throw new Exception();
+        }
+
+        public void UnloadUniverse()
+        {
+        }
+
+        public IUniverse GetUniverse()
+        {
+            return universe;
         }
 
         public IPlanet GetPlanet(int id)
         {
-            return _planets[id];
-        }
+            if (universe == null)
+                throw new Exception("No Universe loaded");
 
-        private IPlanet loadPlanet(int index)
-        {
-            IUniverse universe = GetUniverse(DEFAULT_UNIVERSE);
+            IPlanet planet;
+            if (!planets.TryGetValue(id, out planet))
+            {
+                // Versuch vorhandenen Planeten zu laden
+                planet = persistenceManager.LoadPlanet(universe.Id, id);
+                if (planet == null)
+                {
+                    // Keiner da -> neu erzeugen
+                    Random rand = new Random(universe.Seed + id);
+                    var generators = MapGeneratorManager.GetMapGenerators().ToArray();
+                    int index = rand.Next(generators.Length - 1);
+                    IMapGenerator generator = generators[index];
+                    planet = generator.GeneratePlanet(universe.Id, id, universe.Seed + id);
+                    // persistenceManager.SavePlanet(universe.Id, planet);
+                }
 
-            return mapGenerator.GeneratePlanet(universe.Id, 4567);
-        }
+                planets.Add(id, planet);
 
-        private void savePlanet(int index, IPlanet value)
-        {
+                // TODO: Serializer überarbeiten
+                //planet = persistenceManager.LoadPlanet(universe.Id, id);
+                //if (planet == null)
+                //{
+                //    planet = mapGenerator.GeneratePlanet(universe.Id, id, universe.Seed + id);
+                //    persistenceManager.SavePlanet(universe.Id, planet);
+                //}
+            }
+
+            return planet;
         }
 
         private IChunkColumn loadChunkColumn(int planetId, Index2 index)
         {
-            IUniverse universe = GetUniverse(DEFAULT_UNIVERSE);
             IPlanet planet = GetPlanet(planetId);
 
             // Load from disk
-            IChunk[] chunks = new IChunk[planet.Size.Z];
-            bool full = true;
-            IChunkColumn column = chunkPersistence.LoadColumn(universe.Id, planetId, index);
-
-            //for (int z = 0; z < planet.Size.Z; z++)
-            //{
-            //    IChunk chunk = chunkPersistence.Load(universe.Id, planetId, new Index3(index, z));
-            //    if (chunk == null)
-            //        full = false;
-            //    chunks[z] = chunk;
-            //}
-
-            if (column == null)
+            IChunkColumn column11 = persistenceManager.LoadColumn(universe.Id, planet, index);
+            if (column11 == null)
             {
-                IChunk[] generated = mapGenerator.GenerateChunk(DefinitionManager.GetBlockDefinitions(), planet, new Index2(index.X, index.Y));
-                for (int z = 0; z < planet.Size.Z; z++)
-                {
-                    if (chunks[z] == null)
-                        chunks[z] = generated[z];
-                }
+                IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager.Instance.GetBlockDefinitions(), planet, new Index2(index.X, index.Y));
+                column11 = column;
             }
 
             IChunkColumn column00 = GlobalChunkCache.Peek(planet.Id, Index2.NormalizeXY(index + new Index2(-1, -1), planet.Size));
@@ -126,19 +158,19 @@ namespace OctoAwesome.Runtime
             IChunkColumn column12 = GlobalChunkCache.Peek(planet.Id, Index2.NormalizeXY(index + new Index2(0, 1), planet.Size));
             IChunkColumn column22 = GlobalChunkCache.Peek(planet.Id, Index2.NormalizeXY(index + new Index2(1, 1), planet.Size));
 
-            IChunkColumn column11 = new ChunkColumn(chunks, planet.Id, index);
-
-            //Populatoren erzeugen
+            // Populatoren erzeugen
             if (populators == null)
                 populators = ExtensionManager.GetInstances<IMapPopulator>().OrderBy(p => p.Order).ToList();
 
-            var definitions = DefinitionManager.GetBlockDefinitions();
+
+            var definitions = DefinitionManager.Instance.GetBlockDefinitions();
 
             // Zentrum
             if (!column11.Populated && column21 != null && column12 != null && column22 != null)
             {
                 foreach (var populator in populators)
                     populator.Populate(definitions, planet, column11, column21, column12, column22);
+
                 column11.Populated = true;
             }
 
@@ -147,6 +179,7 @@ namespace OctoAwesome.Runtime
             {
                 foreach (var populator in populators)
                     populator.Populate(definitions, planet, column00, column10, column01, column11);
+
                 column00.Populated = true;
             }
 
@@ -171,12 +204,9 @@ namespace OctoAwesome.Runtime
 
         private void saveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
-            IUniverse universe = GetUniverse(DEFAULT_UNIVERSE);
-
             if (!disablePersistence && value.Chunks.Any(c => c.ChangeCounter > 0))
             {
-                chunkPersistence.SaveColumn(universe.Id, planetId, value);
-
+                persistenceManager.SaveColumn(universe.Id, planetId, value);
                 foreach (var chunk in value.Chunks)
                     chunk.ChangeCounter = 0;
             }

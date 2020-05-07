@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using System.Collections.Generic;
 using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
+using System;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -154,8 +156,8 @@ namespace OctoAwesome.Client.Controls
             loadedChunks.Text = Languages.OctoClient.LoadedChunks + ": " + resMan.GlobalChunkCache.LoadedChunkColumns;//TODO: Übersetzung anpassen
 
             //Get Number of Loaded Items/Blocks
-            loadedInfo.Text = "" + (DefinitionManager.GetItemDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Items + " - " +
-                (DefinitionManager.GetBlockDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Blocks;
+            loadedInfo.Text = "" + (DefinitionManager.Instance.GetItemDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Items + " - " +
+                (DefinitionManager.Instance.GetBlockDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Blocks;
 
             //Additional Play Information
 

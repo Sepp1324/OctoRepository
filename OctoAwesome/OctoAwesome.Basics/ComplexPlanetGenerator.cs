@@ -1,26 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-
-        public IUniverse GenerateUniverse(Guid id)
-        {
-            return new Universe(id, "Milchstrasse");
-        }
-
-        public IPlanet GeneratePlanet(Guid universe, int seed)
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
             Index3 size = new Index3(12, 12, 3);
-            ComplexPlanet planet = new ComplexPlanet(0, universe, size, this, seed);
-
+            ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed);
+            planet.Generator = this;
             return planet;
         }
 
-        public IChunk[] GenerateChunk(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, Index2 index)
+        public IChunkColumn GenerateColumn(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, Index2 index)
         {
             IBlockDefinition sandDefinition = blockDefinitions.FirstOrDefault(d => typeof(SandBlockDefinition) == d.GetType());
             ushort sandIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), sandDefinition) + 1);
@@ -196,7 +191,23 @@ namespace OctoAwesome.Basics
             //});
 
 
-            return chunks;
+            ChunkColumn column = new ChunkColumn(chunks, planet.Id, index);
+            column.CalculateHeights();
+            return column;
+        }
+
+        public IPlanet GeneratePlanet(Stream stream)
+        {
+            IPlanet planet = new ComplexPlanet();
+            planet.Deserialize(stream);
+            return planet;
+        }
+
+        public IChunkColumn GenerateColumn(Stream stream, IDefinitionManager definitionManager, int planetId, Index2 index)
+        {
+            IChunkColumn column = new ChunkColumn();
+            column.Deserialize(stream, definitionManager, planetId, index);
+            return column;
         }
     }
 }

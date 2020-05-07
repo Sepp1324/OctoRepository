@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -19,5 +20,11 @@ namespace OctoAwesome
         /// Der Name des Universums
         /// </summary>
         string Name { get; }
+
+        int Seed { get; }
+
+        void Serialize(Stream stream);
+
+        void Deserialize(Stream stream);
     }
 }

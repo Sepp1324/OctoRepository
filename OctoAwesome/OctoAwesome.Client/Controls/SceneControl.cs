@@ -1,6 +1,8 @@
 ﻿using MonoGameUi;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
@@ -62,7 +64,7 @@ namespace OctoAwesome.Client.Controls
             sunTexture = manager.Game.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/sun.png", manager.GraphicsDevice);
 
             List<Bitmap> bitmaps = new List<Bitmap>();
-            var definitions = DefinitionManager.GetBlockDefinitions();
+            var definitions = DefinitionManager.Instance.GetBlockDefinitions();
             foreach (var definition in definitions)
                 bitmaps.AddRange(definition.Textures);
 
@@ -189,7 +191,7 @@ namespace OctoAwesome.Client.Controls
                         if (block == 0)
                             continue;
 
-                        IBlockDefinition blockDefinition = DefinitionManager.GetBlockDefinitionByIndex(block);
+                        IBlockDefinition blockDefinition = DefinitionManager.Instance.GetBlockDefinitionByIndex(block);
 
                         Axis? collisionAxis;
                         float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out collisionAxis);

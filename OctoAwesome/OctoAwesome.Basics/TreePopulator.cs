@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -80,11 +81,10 @@ namespace OctoAwesome.Basics
                 helper.SetBlock(x, y, z + i, woodIndex);
             }
         }
-        
+
         public override void Populate(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
             int salt = (column00.Index.X & 0xffff) + ((column00.Index.Y & 0xffff) << 16);
-
             Random random = new Random(planet.Seed + salt);
 
             IBlockDefinition woodDefinition = blockDefinitions.FirstOrDefault(d => typeof(WoodBlockDefinition) == d.GetType());
@@ -92,7 +92,6 @@ namespace OctoAwesome.Basics
             IBlockDefinition leaveDefinition = blockDefinitions.FirstOrDefault(d => typeof(LeavesBlockDefinition) == d.GetType());
             ushort leaveIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), leaveDefinition) + 1);
             int treeCount = random.Next(4, 12);
-
             for (int i = 0; i < treeCount; i++)
             {
                 int x = random.Next(Chunk.CHUNKSIZE_X / 2, Chunk.CHUNKSIZE_X * 3 / 2);
@@ -100,10 +99,8 @@ namespace OctoAwesome.Basics
 
                 IChunkColumn curColumn = PopulationHelper.getColumn(column00, column10, column01, column11, x, y);
                 int z = curColumn.Heights[x % Chunk.CHUNKSIZE_X, y % Chunk.CHUNKSIZE_Y];
-
                 if (z == -1)
                     continue;
-                
                 PopulationHelper helper = new PopulationHelper(x, y, z + 1, column00, column10, column01, column11);
                 int height = random.Next(6, 16);
                 PlantTree(helper, 0, 0, 0, height, random.Next(3, height - 2), woodIndex, leaveIndex);
