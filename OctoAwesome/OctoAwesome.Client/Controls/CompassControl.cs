@@ -15,6 +15,12 @@ namespace OctoAwesome.Client.Controls
         public CompassControl(ScreenComponent screenManager) : base(screenManager)
         {
             Player = screenManager.Player;
+            Padding = Border.All(7);
+            //Margin = new Border(Margin.Left, 10, Margin.Right, 0);
+
+            Background = NineTileBrush.FromSingleTexture(
+                screenManager.Game.Screen.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/UI/buttonLong_brown.png",
+                screenManager.GraphicsDevice), 7, 7);
 
             compassTexture = ScreenManager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/compass.png", ScreenManager.GraphicsDevice);
         }
@@ -33,7 +39,7 @@ namespace OctoAwesome.Client.Controls
             offset -= contentArea.Width / 2;
             int offsetY = (-compassTexture.Height - contentArea.Height) / 2;
 
-            batch.Draw(compassTexture, contentArea, new Rectangle(offset, offsetY, contentArea.Width, contentArea.Height), Color.White);
+            batch.Draw(compassTexture, contentArea, new Rectangle(offset, offsetY, contentArea.Width, contentArea.Height), Color.White * alpha);
         }
     }
 }
