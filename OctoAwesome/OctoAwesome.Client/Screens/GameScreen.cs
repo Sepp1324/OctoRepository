@@ -1,10 +1,10 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Client.Components;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
 using System;
 using OctoAwesome.Client.Components.OctoAwesome.Client.Components;
+using engenious;
+using engenious.Input;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -20,7 +20,7 @@ namespace OctoAwesome.Client.Screens
         ToolbarControl toolbar;
         MinimapControl minimap;
         CrosshairControl crosshair;
-        HealthBarControl healthBar;
+        HealthBarControl healthbar;
 
         public GameScreen(ScreenComponent manager) : base(manager)
         {
@@ -62,15 +62,15 @@ namespace OctoAwesome.Client.Screens
             minimap.Margin = Border.All(5);
             Controls.Add(minimap);
 
-            healthBar = new HealthBarControl(manager);
-            healthBar.HorizontalAlignment = HorizontalAlignment.Left;
-            healthBar.VerticalAlignment = VerticalAlignment.Bottom;
-            healthBar.Width = 240;
-            healthBar.Height = 78;
-            healthBar.Maximum = 100;
-            healthBar.Value = 40;
-            healthBar.Margin = Border.All(20, 30);
-            Controls.Add(healthBar);
+            healthbar = new HealthBarControl(manager);
+            healthbar.HorizontalAlignment = HorizontalAlignment.Left;
+            healthbar.VerticalAlignment = VerticalAlignment.Bottom;
+            healthbar.Width = 240;
+            healthbar.Height = 78;
+            healthbar.Maximum = 100;
+            healthbar.Value = 40;
+            healthbar.Margin = Border.All(20, 30);
+            Controls.Add(healthbar);
 
             crosshair = new CrosshairControl(manager);
             crosshair.HorizontalAlignment = HorizontalAlignment.Center;
@@ -314,8 +314,8 @@ namespace OctoAwesome.Client.Screens
                 Manager.NavigateToScreen(new TargetScreen(Manager, (x, y) => {
                     Manager.Game.Player.ActorHost.Player.Position = new Coordinate(0, new Index3(x, y, 300), new Vector3());
                     Manager.NavigateBack();
-                }, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.X, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.Y));
-
+                    }, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.X, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.Y));
+                
             });
         }
 
@@ -339,7 +339,7 @@ namespace OctoAwesome.Client.Screens
             GamePadState gamePadState = new GamePadState();
             try
             {
-                gamePadState = GamePad.GetState(PlayerIndex.One);
+                gamePadState = GamePad.GetState(0);
                 succeeded = true;
             }
             catch (Exception) { }
