@@ -1,28 +1,12 @@
 ﻿using System;
-using System.Drawing;
 
 namespace OctoAwesome
 {
     /// <summary>
     /// Interface für die Definition eînes Items
     /// </summary>
-    public interface IItemDefinition
+    public interface IItemDefinition : IDefinition
     {
-        /// <summary>
-        /// Der Name des Items
-        /// </summary>
-        string Name { get; }
-
-        /// <summary>
-        /// Bild, das das Item repräsentiert
-        /// </summary>
-        Bitmap Icon { get; }
-
-        /// <summary>
-        /// Gibt das Volumen für eine Einheit an.
-        /// </summary>
-        float VolumePerUnit { get; }
-
         /// <summary>
         /// Gibt an, wie viele dieses Items im Inventar in einem Slot gestapelt werden können
         /// </summary>

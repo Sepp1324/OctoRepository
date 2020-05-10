@@ -1,12 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using engenious;
+using engenious.Graphics;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -21,6 +16,8 @@ namespace OctoAwesome.Client.Controls
 
         public InventoryControl(ScreenComponent manager, int columns = COLUMNS) : base(manager)
         {
+            
+
             ScrollContainer scroll = new ScrollContainer(manager)
             {
                 Margin = new Border(0, 0, 0, 0),
@@ -35,23 +32,15 @@ namespace OctoAwesome.Client.Controls
             };
             for (int i = 0; i < columns; i++)
                 grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            int rows = (int)System.Math.Ceiling((float)manager.Game.Player.ActorHost.Player.Inventory.Count / columns);
+            int rows = (int)System.Math.Ceiling((float)manager.Game.Player.Inventory.Inventory.Count / columns);
             for (int i = 0; i < rows; i++)
                 grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 50 });
 
             int column = 0;
             int row = 0;
-            foreach (var item in manager.Game.Player.ActorHost.Player.Inventory)
+            foreach (var item in manager.Game.Player.Inventory.Inventory)
             {
-                Texture2D texture;
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    System.Drawing.Bitmap bitmap = item.Definition.Icon;
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    stream.Seek(0, SeekOrigin.Begin);
-
-                    texture = Texture2D.FromStream(ScreenManager.GraphicsDevice, stream);
-                }
+                Texture2D texture = manager.Game.Assets.LoadTexture(item.Definition.GetType(), item.Definition.Icon);
 
                 var image = new Image(manager) { Texture = texture, Width = 42, Height = 42, VerticalAlignment = VerticalAlignment.Center };
                 image.MouseEnter += (s, e) => { HoveredSlot = item; };

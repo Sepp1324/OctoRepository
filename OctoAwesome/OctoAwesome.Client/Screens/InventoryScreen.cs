@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGameUi;
+﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Client.Controls;
-using OctoAwesome.Runtime;
+using engenious.Graphics;
+using engenious.Input;
 using System.Collections.Generic;
-using System.IO;
+using OctoAwesome.Client.Controls;
+using engenious;
+using OctoAwesome.Runtime;
+using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -14,7 +14,10 @@ namespace OctoAwesome.Client.Screens
     {
         private Dictionary<string, Texture2D> toolTextures = new Dictionary<string, Texture2D>();
 
+
         private PlayerComponent player;
+
+        private AssetComponent assets;
 
         private InventoryControl inventory;
 
@@ -32,26 +35,26 @@ namespace OctoAwesome.Client.Screens
 
         public InventoryScreen(ScreenComponent manager) : base(manager)
         {
-            foreach (var item in DefinitionManager.Instance.GetItemDefinitions())
-            {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    System.Drawing.Bitmap bitmap = item.Icon;
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    stream.Seek(0, SeekOrigin.Begin);
+            assets = manager.Game.Assets;
 
-                    toolTextures.Add(item.GetType().FullName, Texture2D.FromStream(ScreenManager.GraphicsDevice, stream));
-                }
+            foreach (var item in manager.Game.DefinitionManager.GetDefinitions())
+            {
+                Texture2D texture = manager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
+                toolTextures.Add(item.GetType().FullName, texture);
             }
 
+
+
             player = manager.Player;
+
             IsOverlay = true;
-            Background = new BorderBrush(Color.Black * 0.5f);
+
+            Background = new BorderBrush(Color.Black * 0.3f);
 
             backgroundBrush = new BorderBrush(Color.Black);
             hoverBrush = new BorderBrush(Color.Brown);
 
-            Texture2D panelBackground = manager.Game.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/panel.png", manager.GraphicsDevice);
+            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
 
             Grid grid = new Grid(manager)
             {
@@ -103,13 +106,13 @@ namespace OctoAwesome.Client.Screens
             };
 
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            for (int i = 0; i < Player.TOOLCOUNT; i++)
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
                 toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
             toolbar.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
 
-            images = new Image[Player.TOOLCOUNT];
-            for (int i = 0; i < Player.TOOLCOUNT; i++)
+            images = new Image[ToolBarComponent.TOOLCOUNT];
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 Image image = images[i] = new Image(manager)
                 {
@@ -123,7 +126,7 @@ namespace OctoAwesome.Client.Screens
 
                 image.StartDrag += (e) =>
                 {
-                    InventorySlot slot = player.ActorHost.Player.Tools[(int)image.Tag];
+                    InventorySlot slot = player.Toolbar.Tools[(int)image.Tag];
                     if (slot != null)
                     {
                         e.Handled = true;
@@ -143,13 +146,13 @@ namespace OctoAwesome.Client.Screens
                     {
                         // Swap
                         int targetIndex = (int)image.Tag;
-                        InventorySlot targetSlot = player.ActorHost.Player.Tools[targetIndex];
+                        InventorySlot targetSlot = player.Toolbar.Tools[targetIndex];
                         int sourceIndex = -1;
                         InventorySlot sourceSlot = e.Content as InventorySlot;
 
-                        for (int j = 0; j < player.ActorHost.Player.Tools.Length; j++)
+                        for (int j = 0; j < player.Toolbar.Tools.Length; j++)
                         {
-                            if (player.ActorHost.Player.Tools[j] == sourceSlot)
+                            if (player.Toolbar.Tools[j] == sourceSlot)
                             {
                                 sourceIndex = j;
                                 break;
@@ -181,10 +184,10 @@ namespace OctoAwesome.Client.Screens
             if (args.Sender is Grid)
             {
                 InventorySlot slot = args.Content as InventorySlot;
-                for (int i = 0; i < player.ActorHost.Player.Tools.Length; i++)
+                for (int i = 0; i < player.Toolbar.Tools.Length; i++)
                 {
-                    if (player.ActorHost.Player.Tools[i] == slot)
-                        player.ActorHost.Player.Tools[i] = null;
+                    if (player.Toolbar.Tools[i] == slot)
+                        player.Toolbar.Tools[i] = null;
                 }
             }
         }
@@ -218,13 +221,13 @@ namespace OctoAwesome.Client.Screens
         private void SetTool(InventorySlot slot, int index)
         {
             // Alle Slots entfernen die das selbe Tool enthalten
-            for (int i = 0; i < player.ActorHost.Player.Tools.Length; i++)
+            for (int i = 0; i < player.Toolbar.Tools.Length; i++)
             {
-                if (player.ActorHost.Player.Tools[i] == slot)
-                    player.ActorHost.Player.Tools[i] = null;
+                if (player.Toolbar.Tools[i] == slot)
+                    player.Toolbar.Tools[i] = null;
             }
 
-            player.ActorHost.Player.Tools[index] = slot;
+            player.Toolbar.Tools[index] = slot;
         }
 
         protected override void OnUpdate(GameTime gameTime)
@@ -235,17 +238,16 @@ namespace OctoAwesome.Client.Screens
             massLabel.Text = inventory.HoveredSlot != null ? inventory.HoveredSlot.Amount.ToString() : string.Empty;
             volumeLabel.Text = inventory.HoveredSlot != null ? inventory.HoveredSlot.Amount.ToString() : string.Empty;
 
-            if (player.ActorHost == null) return;
 
             // Aktualisierung des aktiven Buttons
-            for (int i = 0; i < Player.TOOLCOUNT; i++)
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
-                if (player.ActorHost.Player.Tools != null &&
-                    player.ActorHost.Player.Tools.Length > i &&
-                    player.ActorHost.Player.Tools[i] != null &&
-                    player.ActorHost.Player.Tools[i].Definition != null)
+                if (player.Toolbar.Tools != null &&
+                    player.Toolbar.Tools.Length > i &&
+                    player.Toolbar.Tools[i] != null &&
+                    player.Toolbar.Tools[i].Definition != null)
                 {
-                    images[i].Texture = toolTextures[player.ActorHost.Player.Tools[i].Definition.GetType().FullName];
+                    images[i].Texture = toolTextures[player.Toolbar.Tools[i].Definition.GetType().FullName];
                 }
                 else
                 {

@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGameUi;
+﻿using MonoGameUi;
 using System.Collections.Generic;
 using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
 using System;
+using engenious;
+using engenious.Graphics;
+using System.Linq;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -19,21 +19,22 @@ namespace OctoAwesome.Client.Controls
         private double seconds = 0;
         private double lastfps = 0f;
 
-        ResourceManager resMan;
+        AssetComponent assets;
 
         public PlayerComponent Player { get; set; }
 
+        private readonly ScreenComponent manager;
+
         StackPanel leftView, rightView;
-        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo;
+        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, loadedTextures, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo;
 
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
         {
             framebuffer = new float[buffersize];
             Player = screenManager.Player;
-
-            //Get ResourceManager for further Information later...
-            resMan = ResourceManager.Instance;
+            manager = screenManager;
+            assets = screenManager.Game.Assets;
 
             //Brush for Debug Background
             BorderBrush bg = new BorderBrush(Color.Black * 0.2f);
@@ -61,6 +62,9 @@ namespace OctoAwesome.Client.Controls
 
             loadedChunks = new Label(ScreenManager);
             leftView.Controls.Add(loadedChunks);
+
+            loadedTextures = new Label(ScreenManager);
+            leftView.Controls.Add(loadedTextures);
 
             loadedInfo = new Label(ScreenManager);
             leftView.Controls.Add(loadedInfo);
@@ -125,10 +129,10 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (!Visible || !Enabled)
+            if (!Visible || !Enabled || !assets.Ready)
                 return;
 
-            if (Player == null || Player.ActorHost == null)
+            if (Player == null || Player.CurrentEntity == null)
                 return;
 
             //Calculate FPS
@@ -148,14 +152,14 @@ namespace OctoAwesome.Client.Controls
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
 
             //Draw Position
-            string pos = "pos: " + Player.ActorHost.Position.ToString();
+            string pos = "pos: " + Player.Position.Position.ToString();
             position.Text = pos;
 
             //Draw Rotation
-            float grad = (Player.ActorHost.Angle / MathHelper.TwoPi) * 360;
+            float grad = (Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360;
             string rot = "rot: " +
-                (((Player.ActorHost.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
-                ((Player.ActorHost.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+                (((Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((Player.CurrentEntityHead.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
             rotation.Text = rot;
 
             //Draw Fps
@@ -165,31 +169,35 @@ namespace OctoAwesome.Client.Controls
             //Draw Loaded Chunks
             loadedChunks.Text = string.Format("{0}: {1}/{2}", 
                 Languages.OctoClient.LoadedChunks, 
-                resMan.GlobalChunkCache.DirtyChunkColumn, 
-                resMan.GlobalChunkCache.LoadedChunkColumns);
+                manager.Game.ResourceManager.GlobalChunkCache.DirtyChunkColumn,
+                manager.Game.ResourceManager.GlobalChunkCache.LoadedChunkColumns);
+
+            // Draw Loaded Textures
+            loadedTextures.Text = string.Format("Loaded Textures: {0}",
+                assets.LoadedTextures);
 
             //Get Number of Loaded Items/Blocks
-            loadedInfo.Text = "" + (DefinitionManager.Instance.GetItemDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Items + " - " +
-                (DefinitionManager.Instance.GetBlockDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Blocks;
+            loadedInfo.Text = "" + manager.Game.DefinitionManager.GetItemDefinitions().Count() + " " + Languages.OctoClient.Items + " - " +
+                manager.Game.DefinitionManager.GetBlockDefinitions().Count() + " " + Languages.OctoClient.Blocks;
 
             //Additional Play Information
 
-            //Active Tool
-            if (Player.ActorHost.ActiveTool != null)
-                activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.ActorHost.ActiveTool.Definition.Name + " | " + Array.FindIndex(Player.ActorHost.Player.Tools, (i => i.Definition == Player.ActorHost.ActiveTool.Definition));
+            ////Active Tool
+            //if (Player.ActorHost.ActiveTool != null)
+            //    activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.ActorHost.ActiveTool.Definition.Name + " | " + Array.FindIndex(Player.ActorHost.Player.Tools, (i => i.Definition == Player.ActorHost.ActiveTool.Definition));
 
-            toolCount.Text = Languages.OctoClient.ToolCount + ": " + Player.ActorHost.Player.Tools.Length;
+            // toolCount.Text = Languages.OctoClient.ToolCount + ": " + Player.ActorHost.Player.Tools.Length;
 
-            //Fly Info
-            if (Player.ActorHost.Player.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
-            else flyInfo.Text = "";
+            ////Fly Info
+            //if (Player.ActorHost.Player.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
+            //else flyInfo.Text = "";
 
-            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.ActorHost.Position.Planet);
+            IPlanet planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
             // Temperature Info
-            temperatureInfo.Text = Languages.OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.ActorHost.Position.GlobalBlockIndex);
+            temperatureInfo.Text = Languages.OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.Position.Position.GlobalBlockIndex);
 
             // Precipitation Info
-            precipitationInfo.Text = "Precipitation: " + planet.ClimateMap.GetPrecipitation(Player.ActorHost.Position.GlobalBlockIndex);
+            precipitationInfo.Text = "Precipitation: " + planet.ClimateMap.GetPrecipitation(Player.Position.Position.GlobalBlockIndex);
 
             //Draw Box Information
             if (Player.SelectedBox.HasValue)

@@ -1,10 +1,9 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Client.Components;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
 using System;
-using OctoAwesome.Client.Components.OctoAwesome.Client.Components;
+using engenious;
+using engenious.Input;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -274,7 +273,7 @@ namespace OctoAwesome.Client.Screens
             Manager.Game.KeyMapper.AddAction("octoawesome:debug.allblocks", type =>
             {
                 if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
-                Manager.Player.ActorHost.AllBlocksDebug();
+                Manager.Player.AllBlocksDebug();
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:debug.control", type =>
             {
@@ -312,9 +311,9 @@ namespace OctoAwesome.Client.Screens
             {
                 if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
                 Manager.NavigateToScreen(new TargetScreen(Manager, (x, y) => {
-                    Manager.Game.Player.ActorHost.Player.Position = new Coordinate(0, new Index3(x, y, 300), new Vector3());
+                    Manager.Game.Player.Position.Position = new Coordinate(0, new Index3(x, y, 300), new Vector3());
                     Manager.NavigateBack();
-                    }, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.X, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.Y));
+                    }, Manager.Game.Player.Position.Position.GlobalBlockIndex.X, Manager.Game.Player.Position.Position.GlobalBlockIndex.Y));
                 
             });
         }
@@ -339,7 +338,7 @@ namespace OctoAwesome.Client.Screens
             GamePadState gamePadState = new GamePadState();
             try
             {
-                gamePadState = GamePad.GetState(PlayerIndex.One);
+                gamePadState = GamePad.GetState(0);
                 succeeded = true;
             }
             catch (Exception) { }

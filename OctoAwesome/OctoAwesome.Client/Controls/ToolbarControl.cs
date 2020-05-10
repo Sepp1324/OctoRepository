@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGameUi;
+﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
 using System;
@@ -8,6 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using engenious;
+using engenious.Graphics;
+using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -15,9 +16,9 @@ namespace OctoAwesome.Client.Controls
     {
         private Dictionary<string, Texture2D> toolTextures;
 
-        private Button[] buttons = new Button[OctoAwesome.Player.TOOLCOUNT];
+        private Button[] buttons = new Button[ToolBarComponent.TOOLCOUNT];
 
-        private Image[] images = new Image[OctoAwesome.Player.TOOLCOUNT];
+        private Image[] images = new Image[ToolBarComponent.TOOLCOUNT];
 
         private Brush buttonBackgroud;
 
@@ -36,16 +37,10 @@ namespace OctoAwesome.Client.Controls
             buttonBackgroud = new BorderBrush(Color.Black);
             activeBackground = new BorderBrush(Color.Red);
 
-            foreach (var item in DefinitionManager.Instance.GetItemDefinitions())
+            foreach (var item in screenManager.Game.DefinitionManager.GetDefinitions())
             {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    System.Drawing.Bitmap bitmap = item.Icon;
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    stream.Seek(0, SeekOrigin.Begin);
-
-                    toolTextures.Add(item.GetType().FullName, Texture2D.FromStream(ScreenManager.GraphicsDevice, stream));
-                }
+                Texture2D texture = screenManager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
+                toolTextures.Add(item.GetType().FullName, texture);
             }
 
             Grid grid = new Grid(screenManager)
@@ -59,7 +54,7 @@ namespace OctoAwesome.Client.Controls
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 50 });
 
-            for (int i = 0; i < OctoAwesome.Player.TOOLCOUNT; i++)
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
             }
@@ -69,9 +64,9 @@ namespace OctoAwesome.Client.Controls
             activeToolLabel.HorizontalAlignment = HorizontalAlignment.Center;
             activeToolLabel.Background = new BorderBrush(Color.Black * 0.3f);
             activeToolLabel.TextColor = Color.White;
-            grid.AddControl(activeToolLabel, 0, 0, OctoAwesome.Player.TOOLCOUNT);
+            grid.AddControl(activeToolLabel, 0, 0, ToolBarComponent.TOOLCOUNT);
 
-            for (int i = 0; i < OctoAwesome.Player.TOOLCOUNT; i++)
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 buttons[i] = new Button(screenManager)
                 {
@@ -95,19 +90,19 @@ namespace OctoAwesome.Client.Controls
             if (!Visible || !Enabled)
                 return;
 
-            if (Player.ActorHost == null) return;
+            if (Player.CurrentEntity == null) return;
 
-            // Aktualisierung des aktiven Buttons
-            for (int i = 0; i < OctoAwesome.Player.TOOLCOUNT; i++)
+           // Aktualisierung des aktiven Buttons
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
-                if (Player.ActorHost.Player.Tools != null && 
-                    Player.ActorHost.Player.Tools.Length > i && 
-                    Player.ActorHost.Player.Tools[i] != null && 
-                    Player.ActorHost.Player.Tools[i].Definition != null)
+                if (Player.Toolbar.Tools != null &&
+                    Player.Toolbar.Tools.Length > i &&
+                    Player.Toolbar.Tools[i] != null &&
+                    Player.Toolbar.Tools[i].Definition != null)
                 {
-                    images[i].Texture = toolTextures[Player.ActorHost.Player.Tools[i].Definition.GetType().FullName];
+                    images[i].Texture = toolTextures[Player.Toolbar.Tools[i].Definition.GetType().FullName];
 
-                    if (Player.ActorHost.ActiveTool == Player.ActorHost.Player.Tools[i])
+                    if (Player.Toolbar.ActiveTool == Player.Toolbar.Tools[i])
                         buttons[i].Background = activeBackground;
                     else
                         buttons[i].Background = buttonBackgroud;
@@ -120,9 +115,11 @@ namespace OctoAwesome.Client.Controls
             }
 
             // Aktualisierung des ActiveTool Labels
-            activeToolLabel.Text = Player.ActorHost.ActiveTool != null ? 
-                string.Format("{0} ({1})", Player.ActorHost.ActiveTool.Definition.Name, Player.ActorHost.ActiveTool.Amount) : 
+            activeToolLabel.Text = Player.Toolbar.ActiveTool != null ?
+                string.Format("{0} ({1})", Player.Toolbar.ActiveTool.Definition.Name, Player.Toolbar.ActiveTool.Amount) :
                 string.Empty;
+
+            activeToolLabel.Visible = !(activeToolLabel.Text == string.Empty);
 
             base.OnUpdate(gameTime);
         }
