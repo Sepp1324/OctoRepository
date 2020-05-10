@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using MonoGameUi;
 using KeyEventArgs = MonoGameUi.KeyEventArgs;
-using Keys = engenious.Input.Keys;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace OctoAwesome.Client.Components
 {
@@ -15,17 +15,13 @@ namespace OctoAwesome.Client.Components
         {
             private Dictionary<string, Binding> bindings;
             
-            public Dictionary<string, Binding> Bindings { get {return bindings;} }
+            public Dictionary<string, Binding> Bindings { get {return bindings;} } 
 
-            private ISettings settings; 
-
-            public KeyMapper(BaseScreenComponent manager, ISettings settings)
+            public KeyMapper(IScreenManager manager)
             {
                 manager.KeyDown += KeyDown;
                 manager.KeyUp += KeyUp;
                 manager.KeyPress += KeyPressed;
-
-                this.settings = settings;
 
                 bindings = new Dictionary<string, Binding>();
             }
@@ -128,11 +124,11 @@ namespace OctoAwesome.Client.Components
             {
                 foreach (var id in standardKeys.Keys)
                 {
-                    if (settings.KeyExists("KeyMapper-" + id))
+                    if (SettingsManager.KeyExists("KeyMapper-" + id))
                     {
                         try
                         {
-                            string val = settings.Get<string>("KeyMapper-" + id);
+                            string val = SettingsManager.Get("KeyMapper-" + id);
                             Keys key = (Keys)Enum.Parse(typeof(Keys), val);
                             AddKey(id, key);
                         }

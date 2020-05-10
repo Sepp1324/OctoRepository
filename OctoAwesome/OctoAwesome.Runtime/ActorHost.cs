@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
 using System.Linq;
-using engenious;
-using engenious.Input;
 
 namespace OctoAwesome.Runtime
 {
@@ -11,7 +11,6 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class ActorHost : IPlayerController
     {
-
         private IPlanet planet;
 
         private bool lastJump = false;
@@ -291,9 +290,7 @@ namespace OctoAwesome.Runtime
                         foreach (var box in boxes)
                         {
                             var newBox = new BoundingBox(idx + box.Min, idx + box.Max);
-                            if (newBox.Min.X < playerBox.Max.X && newBox.Max.X > playerBox.Min.X &&
-                                newBox.Min.Y < playerBox.Max.Y && newBox.Max.X > playerBox.Min.Y &&
-                                newBox.Min.Z < playerBox.Max.Z && newBox.Max.X > playerBox.Min.Z)
+                            if (newBox.Intersects(playerBox))
                                 intersects = true;
                         }
 

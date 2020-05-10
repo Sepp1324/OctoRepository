@@ -21,22 +21,14 @@ namespace OctoAwesome.Runtime
 
         private const string ColumnFilename = "column_{0}_{1}.dat";
 
-        private DirectoryInfo root;
-        private ISettings Settings;
-
-
-
-        public DiskPersistenceManager(ISettings Settings)
-        {
-            this.Settings = Settings;
-        }
+        private DirectoryInfo root;        
 
         private string GetRoot()
         {
             if (root != null)
                 return root.FullName;
 
-            string appconfig = Settings.Get<string>("ChunkRoot");
+            string appconfig = SettingsManager.Get("ChunkRoot");
             if (!string.IsNullOrEmpty(appconfig))
             {
                 root = new DirectoryInfo(appconfig);
@@ -141,7 +133,7 @@ namespace OctoAwesome.Runtime
             List<IUniverse> universes = new List<IUniverse>();
             foreach (var folder in Directory.GetDirectories(root))
             {
-                string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
+                string id = folder.Replace(root + "\\", "");
                 Guid guid;
                 if (Guid.TryParse(id, out guid))
                     universes.Add(LoadUniverse(guid));
@@ -266,7 +258,7 @@ namespace OctoAwesome.Runtime
                     }
                     catch (Exception)
                     {
-                        // File.Delete(file);
+                        File.Delete(file);
                     }
                 }
             }

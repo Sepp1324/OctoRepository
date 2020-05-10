@@ -4,13 +4,13 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace OctoAwesome.Basics.Definitions.Blocks
+namespace OctoAwesome.Basics
 {
     public class CactusBlockDefinition : BlockDefinition
     {
-        public override string Icon
+        public override Bitmap Icon
         {
-            get { return "cactus_inside"; }
+            get { return Textures[0]; }
         }
 
         public override string Name
@@ -18,14 +18,14 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return Languages.OctoBasics.Cactus; }
         }
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {
                 return new[] {
-                    "cactus_inside",
-                    "cactus_side",
-                    "cactus_top"
+                    (Bitmap)Image.FromFile("./Assets/OctoAwesome.Basics/Blocks/cactus_inside.png"),
+                    (Bitmap)Image.FromFile("./Assets/OctoAwesome.Basics/Blocks/cactus_side.png"),
+                    (Bitmap)Image.FromFile("./Assets/OctoAwesome.Basics/Blocks/cactus_top.png")
                 };
             }
         }

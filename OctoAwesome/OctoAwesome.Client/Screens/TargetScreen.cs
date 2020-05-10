@@ -1,5 +1,5 @@
-﻿using engenious;
-using engenious.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
@@ -8,17 +8,13 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class TargetScreen : Screen
     {
-        private AssetComponent assets;
-
         public TargetScreen(ScreenComponent manager, Action<int, int> tp, int x, int y) : base(manager)
         {
-            assets = manager.Game.Assets;
-
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.5f);
             Title = "Select target";
 
-            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            Texture2D panelBackground = manager.Game.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/panel.png", manager.GraphicsDevice);
             Panel panel = new Panel(manager)
             {
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
@@ -43,39 +39,23 @@ namespace OctoAwesome.Client.Screens
             vstack.Orientation = Orientation.Vertical;
             spanel.Controls.Add(vstack);
 
-            StackPanel xStack = new StackPanel(manager);
-            xStack.Orientation = Orientation.Horizontal;
-            vstack.Controls.Add(xStack);
-
-            Label xLabel = new Label(manager);
-            xLabel.Text = "X:";
-            xStack.Controls.Add(xLabel);
-
             Textbox xText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
-                Margin = new Border(2, 10, 2, 10),
+                Margin = new Border(10, 10, 10, 10),
                 Text = x.ToString()
             };
-            xStack.Controls.Add(xText);
-
-            StackPanel yStack = new StackPanel(manager);
-            yStack.Orientation = Orientation.Horizontal;
-            vstack.Controls.Add(yStack);
-
-            Label yLabel = new Label(manager);
-            yLabel.Text = "Y:";
-            yStack.Controls.Add(yLabel);
+            vstack.Controls.Add(xText);
 
             Textbox yText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
-                Margin = new Border(2, 10, 2, 10),
+                Margin = new Border(10, 10, 10, 10),
                 Text = y.ToString()
             };
-            yStack.Controls.Add(yText);
+            vstack.Controls.Add(yText);
 
             Button closeButton = Button.TextButton(manager, "Teleport");
             closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace OctoAwesome.Basics.Definitions.Blocks
+namespace OctoAwesome.Basics
 {
     public sealed class BlueCottonBlockDefinition : BlockDefinition
     {
@@ -10,18 +10,18 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return Languages.OctoBasics.BlueCotton; }
         }
 
-        public override string Icon
+        public override Bitmap Icon
         {
-            get { return "cotton_blue"; }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/cotton_blue.png"); }
         }
 
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {
                 return new[] {
-                    "cotton_blue"
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/cotton_blue.png")
                 };
             }
         }

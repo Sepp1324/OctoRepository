@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using engenious;
+﻿using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace OctoAwesome
 {
@@ -16,7 +16,7 @@ namespace OctoAwesome
         /// <summary>
         /// Icon für die Toolbar
         /// </summary>
-        public abstract string Icon { get; }
+        public abstract Bitmap Icon { get; }
 
         /// <summary>
         /// Die maximale Stackgrösse
@@ -31,7 +31,7 @@ namespace OctoAwesome
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
         /// </summary>
-        public abstract string[] Textures { get; }
+        public abstract Bitmap[] Textures { get; }
 
         /// <summary>
         /// Zeigt, ob der Block-Typ Metadaten besitzt

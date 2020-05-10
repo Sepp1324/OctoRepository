@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace OctoAwesome.Basics.Definitions.Blocks
+namespace OctoAwesome.Basics
 {
     public sealed class BrickBlockDefinition : BlockDefinition
     {
@@ -10,18 +10,18 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return Languages.OctoBasics.Brick; }
         }
 
-        public override string Icon
+        public override Bitmap Icon
         {
-            get { return "brick_red"; }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/brick_red.png"); }
         }
 
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {
                 return new[] {
-                    "brick_red",
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/brick_red.png"),
                 };
             }
         }

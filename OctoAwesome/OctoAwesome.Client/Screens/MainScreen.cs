@@ -1,20 +1,17 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
+using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class MainScreen : BaseScreen
     {
-        private AssetComponent assets;
-
         public MainScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
-
             Padding = new Border(0,0,0,0);
 
-            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
+            Background = new TextureBrush(manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background.png", manager.GraphicsDevice), TextureBrushMode.Stretch);
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);

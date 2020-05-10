@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using engenious;
+﻿using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace OctoAwesome
 {
@@ -18,7 +18,7 @@ namespace OctoAwesome
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
         /// </summary>
-        string[] Textures { get; }
+        Bitmap[] Textures { get; }
 
         /// <summary>
         /// Zeigt, ob der Block-Typ Metadaten besitzt

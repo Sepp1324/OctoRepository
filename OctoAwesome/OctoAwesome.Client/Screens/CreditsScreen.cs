@@ -1,11 +1,13 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework.Storage;
 using OctoAwesome.Client.Components;
 using MonoGameUi;
-using engenious;
-using OctoAwesome.Client.Crew;
+using Microsoft.Xna.Framework.Input;
 
 namespace OctoAwesome.Client.Screens
 {

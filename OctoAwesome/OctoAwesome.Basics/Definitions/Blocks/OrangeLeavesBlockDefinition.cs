@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace OctoAwesome.Basics.Definitions.Blocks
+namespace OctoAwesome.Basics
 {
     public sealed class OrangeLeavesBlockDefinition : BlockDefinition
     {
@@ -10,18 +10,18 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return Languages.OctoBasics.OrangeLeaves; }
         }
 
-        public override string Icon
+        public override Bitmap Icon
         {
-            get { return "leaves_orange"; }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/leaves_orange.png"); }
         }
 
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {
                 return new[] {
-                    "leaves_orange"
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/leaves_orange.png")
                 };
             }
         }

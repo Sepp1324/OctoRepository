@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace OctoAwesome.Basics.Definitions.Blocks
+namespace OctoAwesome.Basics
 {
     public sealed class WoodBlockDefinition : BlockDefinition
     {
@@ -14,20 +14,20 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return Languages.OctoBasics.Wood; }
         }
 
-        public override string Icon
+        public override Bitmap Icon
         {
-            get { return "wood_top"; }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/wood_top.png"); }
         }
 
         public override bool HasMetaData { get { return true; } }
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {
                 return new[] {
-                "wood_top",
-                "wood_side" };
+                (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/wood_top.png"),
+                (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/wood_side.png") };
             }
         }
 

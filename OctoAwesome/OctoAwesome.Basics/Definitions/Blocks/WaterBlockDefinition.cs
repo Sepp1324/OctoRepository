@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace OctoAwesome.Basics.Definitions.Blocks
+namespace OctoAwesome.Basics
 {
     public sealed class WaterBlockDefinition : BlockDefinition
     {
@@ -10,9 +10,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return Languages.OctoBasics.Water; }
         }
 
-        public override string Icon
+        public override Bitmap Icon
         {
-            get { return "water"; }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/water.png"); }
         }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
@@ -32,12 +32,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         }
 
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {
                 return new[] {
-                    "water"
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/water.png")
                 };
             }
         }

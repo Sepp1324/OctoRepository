@@ -1,10 +1,11 @@
-﻿using MonoGameUi;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGameUi;
 using System.Collections.Generic;
 using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
 using System;
-using engenious;
-using engenious.Graphics;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -19,12 +20,11 @@ namespace OctoAwesome.Client.Controls
         private double lastfps = 0f;
 
         ResourceManager resMan;
-        AssetComponent assets;
 
         public PlayerComponent Player { get; set; }
 
         StackPanel leftView, rightView;
-        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, loadedTextures, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo;
+        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo;
 
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
@@ -34,7 +34,6 @@ namespace OctoAwesome.Client.Controls
 
             //Get ResourceManager for further Information later...
             resMan = ResourceManager.Instance;
-            assets = screenManager.Game.Assets;
 
             //Brush for Debug Background
             BorderBrush bg = new BorderBrush(Color.Black * 0.2f);
@@ -62,9 +61,6 @@ namespace OctoAwesome.Client.Controls
 
             loadedChunks = new Label(ScreenManager);
             leftView.Controls.Add(loadedChunks);
-
-            loadedTextures = new Label(ScreenManager);
-            leftView.Controls.Add(loadedTextures);
 
             loadedInfo = new Label(ScreenManager);
             leftView.Controls.Add(loadedInfo);
@@ -129,7 +125,7 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (!Visible || !Enabled || !assets.Ready)
+            if (!Visible || !Enabled)
                 return;
 
             if (Player == null || Player.ActorHost == null)
@@ -171,10 +167,6 @@ namespace OctoAwesome.Client.Controls
                 Languages.OctoClient.LoadedChunks, 
                 resMan.GlobalChunkCache.DirtyChunkColumn, 
                 resMan.GlobalChunkCache.LoadedChunkColumns);
-
-            // Draw Loaded Textures
-            loadedTextures.Text = string.Format("Loaded Textures: {0}",
-                assets.LoadedTextures);
 
             //Get Number of Loaded Items/Blocks
             loadedInfo.Text = "" + (DefinitionManager.Instance.GetItemDefinitions() as IList<IItemDefinition>).Count + " " + Languages.OctoClient.Items + " - " +
