@@ -20,6 +20,7 @@ namespace OctoAwesome.Client.Screens
         ToolbarControl toolbar;
         MinimapControl minimap;
         CrosshairControl crosshair;
+        HealthBarControl healthBar;
 
         public GameScreen(ScreenComponent manager) : base(manager)
         {
@@ -59,6 +60,16 @@ namespace OctoAwesome.Client.Screens
             minimap.Height = 128;
             minimap.Margin = Border.All(5);
             Controls.Add(minimap);
+
+            healthBar = new HealthBarControl(manager);
+            healthBar.HorizontalAlignment = HorizontalAlignment.Left;
+            healthBar.VerticalAlignment = VerticalAlignment.Bottom;
+            healthBar.Width = 240;
+            healthBar.Height = 78;
+            healthBar.Maximum = 100;
+            healthBar.Value = 40;
+            healthBar.Margin = Border.All(20, 30);
+            Controls.Add(healthBar);
 
             crosshair = new CrosshairControl(manager);
             crosshair.HorizontalAlignment = HorizontalAlignment.Center;
