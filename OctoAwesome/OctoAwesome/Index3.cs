@@ -1,5 +1,8 @@
-﻿using System;
-using engenious;
+﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -421,9 +424,9 @@ namespace OctoAwesome
 
             Index3 other = (Index3)obj;
             return (
-                other.X == X &&
-                other.Y == Y &&
-                other.Z == Z);
+                other.X == this.X &&
+                other.Y == this.Y &&
+                other.Z == this.Z);
         }
 
         /// <summary>

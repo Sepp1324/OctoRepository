@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace OctoAwesome.Tests
 {
     public sealed class TestBlockDefinition : BlockDefinition
     {
-        public override string Icon
+        public override Bitmap Icon
         {
             get
             {
@@ -23,7 +24,7 @@ namespace OctoAwesome.Tests
             }
         }
 
-        public override string[] Textures
+        public override Bitmap[] Textures
         {
             get
             {

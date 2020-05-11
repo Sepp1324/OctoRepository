@@ -1,4 +1,9 @@
-﻿namespace OctoAwesome
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome
 {
     /// <summary>
     /// Basisinterface für eine Klimakarte eines Planeten

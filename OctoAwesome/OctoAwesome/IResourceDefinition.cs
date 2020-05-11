@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Drawing;
 
 namespace OctoAwesome
 {
     /// <summary>
     /// Interface für die Definition einer Ressource
-    /// TODO: Das hier ist ja inzwischen etwas aus der Mode gekommen -> Siehe BlockDefinition
     /// </summary>
-    public interface IResourceDefinition : IDefinition
+    public interface IResourceDefinition : IItemDefinition
     {
         /// <summary>
         /// Liefert eine Instanz der Ressource

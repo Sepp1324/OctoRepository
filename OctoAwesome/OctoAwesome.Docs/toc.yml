@@ -1,7 +1,0 @@
-
-- name: Dokumentation (master)
-  href: api/master/
-  homepage: api/master/index.md
-- name: Dokumentation (develop)
-  href: api/develop/
-  homepage: api/develop/index.md

@@ -1,98 +1,121 @@
-﻿using MonoGameUi;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGameUi;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Client.Controls;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
-using engenious.Graphics;
-using engenious;
-using engenious.Input;
+using System.IO;
+using System.Text;
+using System.Windows;
 
 namespace OctoAwesome.Client.Screens
 {
-    internal sealed class OptionsScreen : BaseScreen
+    class OptionsScreen : BaseScreen
     {
-        private AssetComponent assets;
+        private OctoGame game;
+        private Button exitButton, deleteButton;
+        private Label rangeTitle, persistenceTitle;
+        private Textbox mapPath;
 
-        private Button exitButton;
+        private bool deleteState;
+
+        Configuration config;
 
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
-
+            game = (OctoGame)manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
             Title = Languages.OctoClient.Options;
 
-            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            ////////////////////////////////////////////Background////////////////////////////////////////////
+            Image background = new Image(manager);
+            background.Texture = Manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background_notext.png", Manager.GraphicsDevice);
+            background.VerticalAlignment = VerticalAlignment.Stretch;
+            background.HorizontalAlignment = HorizontalAlignment.Stretch;
+            Controls.Add(background);
 
-            SetDefaultBackground();
-
-            TabControl tabs = new TabControl(manager)
+            ////////////////////////////////////////////Back Button////////////////////////////////////////////
+            Button backButton = Button.TextButton(manager, Languages.OctoClient.Back);
+            backButton.VerticalAlignment = VerticalAlignment.Top;
+            backButton.HorizontalAlignment = HorizontalAlignment.Left;
+            backButton.LeftMouseClick += (s, e) =>
             {
-                Padding = new Border(20, 20, 20, 20),
-                Width = 700,
-                TabPageBackground = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
-                TabBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown"), 15, 15),
-                TabActiveBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "buttonLong_beige"), 15, 15),
+                manager.NavigateBack();
             };
-            Controls.Add(tabs);
+            backButton.Margin = new Border(10, 10, 10, 10);
+            Controls.Add(backButton);
 
-            #region OptionsPage
+            ////////////////////////////////////////////Settings Stack////////////////////////////////////////////
+            StackPanel settingsStack = new StackPanel(manager);
+            settingsStack.Orientation = Orientation.Vertical;
+            Texture2D panelBackground = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/panel.png", manager.GraphicsDevice);
+            settingsStack.Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30);
+            settingsStack.Padding = new Border(20, 20, 20, 20);
+            Controls.Add(settingsStack);
 
-            TabPage optionsPage = new TabPage(manager, Languages.OctoClient.Options);
-            tabs.Pages.Add(optionsPage);
 
-            OptionsOptionControl optionsOptions = new OptionsOptionControl(manager, this)
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-            };
-            optionsPage.Controls.Add(optionsOptions);
+            //////////////////////Viewrange//////////////////////
+            string viewrange = ConfigurationManager.AppSettings["Viewrange"];
 
-            #endregion
+            rangeTitle = new Label(manager);
+            rangeTitle.Text = Languages.OctoClient.Viewrange + ": " + viewrange;
+            settingsStack.Controls.Add(rangeTitle);
 
-            #region BindingsPage
+            Slider viewrangeSlider = new Slider(manager);
+            viewrangeSlider.HorizontalAlignment = HorizontalAlignment.Stretch;
+            viewrangeSlider.Height = 20;
+            viewrangeSlider.Range = 9;
+            viewrangeSlider.Value = int.Parse(viewrange) - 1;
+            viewrangeSlider.ValueChanged += (value) => SetViewrange(value + 1);
+            settingsStack.Controls.Add(viewrangeSlider);
 
-            TabPage bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings);
-            tabs.Pages.Add(bindingsPage);
 
-            BindingsOptionControl bindingsOptions = new BindingsOptionControl(manager)
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-            };
-            bindingsPage.Controls.Add(bindingsOptions);
+            //////////////////////Persistence//////////////////////
+            StackPanel persistenceStack = new StackPanel(manager);
+            persistenceStack.Orientation = Orientation.Horizontal;
+            persistenceStack.Margin = new Border(0, 10, 0, 0);
+            settingsStack.Controls.Add(persistenceStack);
 
-            #endregion
+            persistenceTitle = new Label(manager);
+            persistenceTitle.Text = Languages.OctoClient.DisablePersistence + ":";
+            persistenceStack.Controls.Add(persistenceTitle);
 
-            #region TexturePackPage
+            Checkbox disablePersistence = new Checkbox(manager);
+            disablePersistence.Checked = bool.Parse(ConfigurationManager.AppSettings["DisablePersistence"]);
+            disablePersistence.CheckedChanged += (state) => SetPersistence(state);
+            persistenceStack.Controls.Add(disablePersistence);
 
-            TabPage resourcePackPage = new TabPage(manager, "Resource Packs");
-            tabs.Pages.Add(resourcePackPage);
+            //////////////////////Map Path//////////////////////
+            StackPanel mapPathStack = new StackPanel(manager);
+            mapPathStack.Orientation = Orientation.Horizontal;
+            mapPathStack.Margin = new Border(0, 10, 0, 0);
+            mapPathStack.HorizontalAlignment = HorizontalAlignment.Stretch;
+            settingsStack.Controls.Add(mapPathStack);
 
-            ResourcePacksOptionControl resourcePacksOptions = new ResourcePacksOptionControl(manager)
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-            };
-            resourcePackPage.Controls.Add(resourcePacksOptions);
+            mapPath = new Textbox(manager);
+            // mapPath.HorizontalAlignment = HorizontalAlignment.Stretch;
+            mapPath.Text = ConfigurationManager.AppSettings["ChunkRoot"];
+            mapPath.Enabled = false;
+            mapPath.Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray);
+            mapPathStack.Controls.Add(mapPath);
 
-            #endregion
+            Button changePath = Button.TextButton(manager, Languages.OctoClient.ChangePath);
+            changePath.Height = 31;
+            changePath.LeftMouseClick += (s, e) => ChangePath();
+            mapPathStack.Controls.Add(changePath);
 
-            #region ExtensionPage
 
-            TabPage extensionPage = new TabPage(manager, Languages.OctoClient.Extensions);
-            tabs.Pages.Add(extensionPage);
+            //////////////////////Delete Map//////////////////////
+            deleteButton = Button.TextButton(manager, Languages.OctoClient.DeleteMap);
+            deleteButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            deleteButton.Margin = new Border(0, 10, 0, 0);
+            deleteButton.LeftMouseClick += (s, e) => deleteMap();
+            settingsStack.Controls.Add(deleteButton);
 
-            ExtensionsOptionControl extensionOptions = new ExtensionsOptionControl(manager)
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-            };
-            extensionPage.Controls.Add(extensionOptions);
-
-            #endregion
 
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
             exitButton = Button.TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
@@ -100,15 +123,71 @@ namespace OctoAwesome.Client.Screens
             exitButton.HorizontalAlignment = HorizontalAlignment.Right;
             exitButton.Enabled = false;
             exitButton.Visible = false;
-            exitButton.LeftMouseClick += (s, e) => Program.Restart();
+            exitButton.LeftMouseClick += (s, e) =>
+            {
+                Process.Start(System.Reflection.Assembly.GetEntryAssembly().Location);
+                game.Exit();
+            };
             exitButton.Margin = new Border(10, 10, 10, 10);
             Controls.Add(exitButton);
         }
 
-        public void NeedRestart()
+        private void SetViewrange(int newRange)
         {
+            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
+
+            rangeTitle.Text = Languages.OctoClient.Viewrange + ": " + newRange;
+
+            config.AppSettings.Settings["Viewrange"].Value = newRange.ToString();
+            config.Save(ConfigurationSaveMode.Modified);
+
             exitButton.Visible = true;
             exitButton.Enabled = true;
-        }        
+        }
+
+        private void ChangePath()
+        {
+            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
+            System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            folderBrowser.SelectedPath = ConfigurationManager.AppSettings["ChunkRoot"];
+
+            if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string path = folderBrowser.SelectedPath;
+                config.AppSettings.Settings["ChunkRoot"].Value = path;
+                config.Save();
+                mapPath.Text = path;
+
+                exitButton.Visible = true;
+                exitButton.Enabled = true;
+            }
+        }
+
+        private void SetPersistence(bool state)
+        {
+            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
+            config.AppSettings.Settings["DisablePersistence"].Value = state.ToString();
+            config.Save(ConfigurationSaveMode.Modified);
+
+            exitButton.Visible = true;
+            exitButton.Enabled = true;
+        }
+
+        private void deleteMap()
+        {
+            if (deleteState)
+            {
+                deleteState = false;
+                ((Label)(deleteButton.Content)).Text = Languages.OctoClient.Deleted;
+                deleteButton.Enabled = false;
+                try { Directory.Delete(@"D:\OctoMap"); } catch { } //TODO: Unlock files to delete Directory
+            }
+            else
+            {
+                ((Label)(deleteButton.Content)).Text = Languages.OctoClient.Really;
+                deleteButton.InvalidateDimensions();
+                deleteState = true;
+            }
+        }
     }
 }

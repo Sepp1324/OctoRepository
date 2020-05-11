@@ -1,24 +1,13 @@
-﻿using engenious;
-using System;
+﻿using Microsoft.Xna.Framework;
+using System.Drawing;
 
 namespace OctoAwesome
 {
     /// <summary>
     /// Basisinterface für eine Blockdefinition
     /// </summary>
-    public interface IBlockDefinition : IDefinition
+    public interface IBlockDefinition : IItemDefinition
     {
-        /// <summary>
-        /// Gibt das Volumen für eine Einheit an.
-        /// </summary>
-        float VolumePerUnit { get; }
-
-        /// <summary>
-        /// Gibt an, wie viele dieses Items im Inventar in einem Slot gestapelt werden können
-        /// </summary>
-        [Obsolete]
-        int StackLimit { get; }
-
         /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
         /// </summary>
@@ -29,7 +18,7 @@ namespace OctoAwesome
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
         /// </summary>
-        string[] Textures { get; }
+        Bitmap[] Textures { get; }
 
         /// <summary>
         /// Zeigt, ob der Block-Typ Metadaten besitzt
@@ -176,8 +165,64 @@ namespace OctoAwesome
         /// <returns>Rotation der Textur in 90° Schritten</returns>
         int GetSouthTextureRotation(ILocalChunkCache manager, int x, int y, int z);
 
-        uint SolidWall { get; }
+        /// <summary>
+        /// Gibt an, ob die Oberseite (Positiv Z) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>True, wenn die Wand undurchsichtig ist</returns>
+        bool IsTopSolidWall(ILocalChunkCache manager, int x, int y, int z);
 
-        bool IsSolidWall(Wall wall);
+        /// <summary>
+        /// Gibt an, ob die Unterseite (Negativ Z) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>True, wenn die Wand undurchsichtig ist</returns>
+        bool IsBottomSolidWall(ILocalChunkCache manager, int x, int y, int z);
+
+        /// <summary>
+        /// Gibt an, ob die Nordseite (Positiv Y) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>True, wenn die Wand undurchsichtig ist</returns>
+        bool IsNorthSolidWall(ILocalChunkCache manager, int x, int y, int z);
+
+        /// <summary>
+        /// Gibt an, ob die Südseite (Negativ Y) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>True, wenn die Wand undurchsichtig ist</returns>
+        bool IsSouthSolidWall(ILocalChunkCache manager, int x, int y, int z);
+
+        /// <summary>
+        /// Gibt an, ob die Westseite (Positiv X) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>True, wenn die Wand undurchsichtig ist</returns>
+        bool IsWestSolidWall(ILocalChunkCache manager, int x, int y, int z);
+
+        /// <summary>
+        /// Gibt an, ob die Ostseite (Negativ X) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>True, wenn die Wand undurchsichtig ist</returns>
+        bool IsEastSolidWall(ILocalChunkCache manager, int x, int y, int z);
     }
 }

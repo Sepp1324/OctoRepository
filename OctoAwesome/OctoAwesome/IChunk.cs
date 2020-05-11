@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -37,6 +41,7 @@ namespace OctoAwesome
 
         /// <summary>
         /// Veränderungs-Counter zur Ermittlung von Änderungen.<para/>
+        /// TODO: ChangeCounter überdenken, eventuell eine bool
         /// </summary>
         int ChangeCounter { get; set; }
 
@@ -109,7 +114,5 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         void SetBlockResources(int x, int y, int z, ushort[] resources);
-
-        event Action<IChunk, int> Changed;
     }
 }

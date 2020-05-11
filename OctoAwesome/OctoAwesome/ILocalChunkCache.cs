@@ -8,11 +8,6 @@ namespace OctoAwesome
     public interface ILocalChunkCache
     {
         /// <summary>
-        /// Aktueller Planet auf dem sich der Cache bezieht.
-        /// </summary>
-        IPlanet Planet { get; }
-
-        /// <summary>
         /// Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
         /// </summary>
         /// <param name="index">Chunk Index</param>
@@ -20,31 +15,12 @@ namespace OctoAwesome
         IChunk GetChunk(Index3 index);
 
         /// <summary>
-        /// Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
-        /// </summary>
-        /// <param name="x">X Koordinate</param>
-        /// <param name="y">Y Koordinate</param>
-        /// <param name="z">Z Koordinate</param>
-        /// <returns>Instanz des Chunks</returns>
-        IChunk GetChunk(int x, int y, int z);
-
-        IPlanet LoadPlanet(int id);
-
-        /// <summary>
         /// Setzt den Zentrums-Chunk für diesen lokalen Cache.
         /// </summary>
         /// <param name="planet">Der Planet, auf dem sich der Chunk befindet</param>
         /// <param name="index">Die Koordinaten an der sich der Chunk befindet</param>
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
-        bool SetCenter(IPlanet planet, Index2 index, Action<bool> successCallback = null);
-
-        /// <summary>
-        /// Setzt den Zentrums-Chunk für diesen lokalen Cache.
-        /// </summary>
-        /// <param name="planetid">ID des Planet, auf dem sich der Chunk befindet</param>
-        /// <param name="index">Die Koordinaten an der sich der Chunk befindet</param>
-        /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
-        bool SetCenter(int planetid, Index2 index, Action<bool> successCallback = null);
+        void SetCenter(IPlanet planet, Index2 index, Action<bool> successCallback = null);
 
         /// <summary>
         /// Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
@@ -97,8 +73,10 @@ namespace OctoAwesome
         /// Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
+        /// <param name="meta">[Bitte ergänzen - Parameter wird in der Implementierung nicht verwendet]</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
-        int GetBlockMeta(Index3 index);
+        int GetBlockMeta(Index3 index, int meta);
+        //TODO: Meta Parameter entfernen?
 
         /// <summary>
         /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 

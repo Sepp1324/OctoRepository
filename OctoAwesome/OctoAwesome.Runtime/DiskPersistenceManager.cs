@@ -1,9 +1,12 @@
-﻿using System;
+﻿using OctoAwesome.Runtime;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace OctoAwesome.Runtime
@@ -22,28 +25,13 @@ namespace OctoAwesome.Runtime
         private const string ColumnFilename = "column_{0}_{1}.dat";
 
         private DirectoryInfo root;
-        private ISettings Settings;
-
-        private IDefinitionManager definitionManager;
-        private IExtensionResolver extensionResolver;
-        private IResourceManager manager;
-
-
-
-        public DiskPersistenceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, IResourceManager manager, ISettings Settings)
-        {
-            this.extensionResolver = extensionResolver;
-            this.definitionManager = definitionManager;
-            this.Settings = Settings;
-            this.manager = manager;
-        }
 
         private string GetRoot()
         {
             if (root != null)
                 return root.FullName;
 
-            string appconfig = Settings.Get<string>("ChunkRoot");
+            string appconfig = ConfigurationManager.AppSettings["ChunkRoot"];
             if (!string.IsNullOrEmpty(appconfig))
             {
                 root = new DirectoryInfo(appconfig);
@@ -78,10 +66,6 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        /// <summary>
-        /// Löscht ein Universum.
-        /// </summary>
-        /// <param name="universeGuid">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid universeGuid)
         {
             string path = Path.Combine(GetRoot(), universeGuid.ToString());
@@ -133,7 +117,7 @@ namespace OctoAwesome.Runtime
             {
                 using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
                 {
-                    column.Serialize(zip, definitionManager);
+                    column.Serialize(zip, DefinitionManager.Instance);
                 }
             }
         }
@@ -148,7 +132,7 @@ namespace OctoAwesome.Runtime
             List<IUniverse> universes = new List<IUniverse>();
             foreach (var folder in Directory.GetDirectories(root))
             {
-                string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
+                string id = folder.Replace(root + "\\", "");
                 Guid guid;
                 if (Guid.TryParse(id, out guid))
                     universes.Add(LoadUniverse(guid));
@@ -198,7 +182,7 @@ namespace OctoAwesome.Runtime
                 using (BinaryReader bw = new BinaryReader(stream))
                 {
                     string generatorName = bw.ReadString();
-                    generator = extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
+                    generator = MapGeneratorManager.GetMapGenerators().FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
                 }
             }
 
@@ -228,14 +212,13 @@ namespace OctoAwesome.Runtime
             if (!File.Exists(file))
                 return null;
 
-            try
+            try {
+            using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
+                using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
-                    {
-                        return planet.Generator.GenerateColumn(zip, definitionManager, planet.Id, columnIndex);
-                    }
+                    return planet.Generator.GenerateColumn(zip, DefinitionManager.Instance, planet.Id, columnIndex);
+                }
                 }
             }
             catch (IOException)
@@ -249,12 +232,6 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        /// <summary>
-        /// Lädt einen Player.
-        /// </summary>
-        /// <param name="universeGuid">Die Guid des Universums.</param>
-        /// <param name="playername">Der Name des Spielers.</param>
-        /// <returns></returns>
         public Player LoadPlayer(Guid universeGuid, string playername)
         {
             // TODO: Später durch Playername ersetzen
@@ -264,29 +241,19 @@ namespace OctoAwesome.Runtime
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                using (BinaryReader reader = new BinaryReader(stream))
+                try {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Player));
+                    return (Player)serializer.Deserialize(stream);
+                }
+                catch (Exception)
                 {
-                    try
-                    {
-                        Player player = new Player();
-                        player.Deserialize(reader, definitionManager);
-                        return player;
-                    }
-                    catch (Exception)
-                    {
-                        // File.Delete(file);
-                    }
+                    File.Delete(file);
                 }
             }
 
             return null;
         }
 
-        /// <summary>
-        /// Speichert einen Player
-        /// </summary>
-        /// <param name="universeGuid">Die Guid des Universums.</param>
-        /// <param name="player">Der Player.</param>
         public void SavePlayer(Guid universeGuid, Player player)
         {
             string path = Path.Combine(GetRoot(), universeGuid.ToString());
@@ -296,10 +263,8 @@ namespace OctoAwesome.Runtime
             string file = Path.Combine(path, "player.info");
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
             {
-                using (BinaryWriter writer = new BinaryWriter(stream))
-                {
-                    player.Serialize(writer, definitionManager);
-                }
+                XmlSerializer serializer = new XmlSerializer(typeof(Player));
+                serializer.Serialize(stream, player);
             }
         }
     }

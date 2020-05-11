@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OctoAwesome
+﻿namespace OctoAwesome
 {
     /// <summary>
     /// Basisinterface für einen Globalen Chunkcache
@@ -12,17 +10,9 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Position des Chunks</param>
+        /// <param name="writable">Gibt an, ob der Subscriber schreibend zugreifen will</param>
         /// <returns>Den neu abonnierten Chunk</returns>
-        IChunkColumn Subscribe(int planet,Index2 position,bool passive);
-
-        /// <summary>
-        /// Gibt einen Planenten anhand seiner ID zurück
-        /// </summary>
-        /// <param name="id">ID des Planeten</param>
-        /// <returns>Planet</returns>
-        IPlanet GetPlanet(int id);
-
-        bool IsChunkLoaded(int planet, Index2 position);
+        IChunkColumn Subscribe(int planet,Index2 position, bool writable);
 
         /// <summary>
         /// Liefert den Chunk, sofern geladen.
@@ -36,25 +26,14 @@ namespace OctoAwesome
         /// Die Zahl der geladenen Chunks zurück
         /// </summary>
         int LoadedChunkColumns { get; }
-
-        /// <summary>
-        /// Anzahl der noch nicht gespeicherten ChunkColumns.
-        /// </summary>
-        int DirtyChunkColumn { get; }
-
         /// <summary>
         /// Gibt einen abonnierten Chunk wieder frei.
         /// </summary>
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Die Position des freizugebenden Chunks</param>
-        void Release(int planet,Index2 position,bool passive);
+        /// <param name="writable">Ist der Chunk schreibbar abonniert worden?</param>
+        void Release(int planet,Index2 position, bool writable);
 
-        /// <summary>
-        /// Löscht den gesamten Inhalt des Caches.
-        /// </summary>
         void Clear();
-
-        void BeforSimulationUpdate(Simulation simulation);
-        void AfterSimulationUpdate(Simulation simulation);
     }
 }

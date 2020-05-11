@@ -1,34 +1,25 @@
-﻿using OctoAwesome.Runtime;
+﻿using Microsoft.Xna.Framework;
+using OctoAwesome.Runtime;
 using System;
-using engenious;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class SimulationComponent : GameComponent
     {
-        private readonly IExtensionResolver extensionResolver;
+        private Simulation Simulation { get; set; }
 
-        private readonly IResourceManager resourceManager;
+        public SimulationComponent(Game game) : base(game) { }
 
-        public Simulation Simulation { get; private set; }
-
-        public SimulationState State
-        {
-            get
-            {
-                if (Simulation != null)
-                    return Simulation.State;
-                return SimulationState.Undefined;
-            }
-        }
-
-        public SimulationComponent(Game game, IExtensionResolver extensionResolver, IResourceManager resourceManager) : base(game)
-        {
-            this.extensionResolver = extensionResolver;
-            this.resourceManager = resourceManager;
-        }
-
-        public Guid NewGame(string name, int? seed = null)
+        public void NewGame(string name, int? seed = null)
         {
             if (Simulation != null)
             {
@@ -36,8 +27,8 @@ namespace OctoAwesome.Client.Components
                 Simulation = null;
             }
 
-            Simulation = new Simulation(resourceManager, extensionResolver);
-            return Simulation.NewGame(name, seed);
+            Simulation = new Simulation();
+            Simulation.NewGame(name, seed);
         }
 
         public void LoadGame(Guid guid)
@@ -48,13 +39,16 @@ namespace OctoAwesome.Client.Components
                 Simulation = null;
             }
 
-            Simulation = new Simulation(resourceManager, extensionResolver);
+            Simulation = new Simulation();
             Simulation.LoadGame(guid);
         }
 
-        public override void Update(GameTime gameTime)
+        public void SaveGame()
         {
-            Simulation?.Update(gameTime);
+            if (Simulation == null)
+                return;
+
+            Simulation.SaveGame();
         }
 
         public void ExitGame()
@@ -66,7 +60,7 @@ namespace OctoAwesome.Client.Components
             Simulation = null;
         }
 
-        public Player LoginPlayer(Guid id)
+        public ActorHost InsertPlayer(Player player)
         {
             if (Simulation == null)
                 throw new NotSupportedException();
@@ -74,12 +68,10 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
-            Player player = resourceManager.LoadPlayer(id.ToString());
-            Simulation.AddEntity(player);
-            return player;
+            return Simulation.InsertPlayer(player);
         }
 
-        public void LogoutPlayer(Player player)
+        public void RemovePlayer(ActorHost host)
         {
             if (Simulation == null)
                 throw new NotSupportedException();
@@ -87,7 +79,7 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
-            Simulation.RemoveEntity(player);
+            Simulation.RemovePlayer(host);
         }
     }
 }

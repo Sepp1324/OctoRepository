@@ -1,7 +1,10 @@
-﻿using engenious;
-using OctoAwesome.EntityComponents;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace OctoAwesome
 {
@@ -11,88 +14,25 @@ namespace OctoAwesome
     public abstract class Entity
     {
         /// <summary>
-        /// Contains all Components.
+        /// Die Position der Entität
         /// </summary>
-        public ComponentList<EntityComponent> Components { get; private set; }
+        public Coordinate Position { get; set; }
 
         /// <summary>
-        /// Temp Id
+        /// Die Masse der Entität. 
         /// </summary>
-        public int Id { get; internal set; }
+        public float Mass { get; set; }
 
         /// <summary>
-        /// Reference to the active Simulation.
+        /// Geschwindikeit der Entität als Vektor
         /// </summary>
-        public Simulation Simulation { get; internal set; }
+        [XmlIgnore]
+        public Vector3 Velocity { get; set; }
 
         /// <summary>
-        /// LocalChunkCache für die Entity
+        /// Kraft die von aussen auf die Entität wirkt.
         /// </summary>
-        public ILocalChunkCache Cache { get; protected set; }
-
-        /// <summary>
-        /// Entity die regelmäßig eine Updateevent bekommt
-        /// </summary>
-        public Entity()
-        {
-            Components = new ComponentList<EntityComponent>(
-                ValidateAddComponent, ValidateRemoveComponent,OnAddComponent,OnRemoveComponent);
-        }
-
-        private void OnRemoveComponent(EntityComponent component)
-        {
-            
-        }
-
-        private void OnAddComponent(EntityComponent component)
-        {
-            component.SetEntity(this);
-        }
-
-        private void ValidateAddComponent(EntityComponent component)
-        {
-            if (Simulation != null)
-                throw new NotSupportedException("Can't add components during simulation");
-        }
-
-        private void ValidateRemoveComponent(EntityComponent component)
-        {
-            if (Simulation != null)
-                throw new NotSupportedException("Can't remove components during simulation");
-        }
-
-        public void Initialize(IResourceManager mananger)
-        {
-            OnInitialize(mananger);
-        }
-
-        protected virtual void OnInitialize(IResourceManager manager)
-        {
-        }
-
-        /// <summary>
-        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
-        /// </summary>
-        /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
-        /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
-        public virtual void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
-        {
-            Components.Serialize(writer, definitionManager);
-        }
-
-        /// <summary>
-        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
-        /// </summary>
-        /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
-        /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
-        public virtual void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
-        {
-            Components.Deserialize(reader, definitionManager);
-        }
-
-        public virtual void RegisterDefault()
-        {
-
-        }
+        [XmlIgnore]
+        public Vector3 ExternalForce { get; set; }
     }
 }

@@ -1,4 +1,10 @@
-﻿namespace OctoAwesome
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome
 {
     /// <summary>
     /// Ein Slot in einem Inventar
@@ -8,11 +14,11 @@
         /// <summary>
         /// Das Item das in dem Slot ist.
         /// </summary>
-        public IDefinition Definition { get; set; }
+        public IItemDefinition Definition { get; set; }
 
         /// <summary>
-        /// Volumen des Elementes <see cref="Definition"/> in diesem Slot in dm³.
+        /// Anzahl der Elemente <see cref="Definition"/> in diesem Slot
         /// </summary>
-        public decimal Amount { get; set; }
+        public int Amount { get; set; }
     }
 }

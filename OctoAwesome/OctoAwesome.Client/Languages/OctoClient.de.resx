@@ -163,7 +163,7 @@
     <value>Dinge</value>
   </data>
   <data name="LoadedChunks" xml:space="preserve">
-    <value>Ungesicherte/Geladene ChunkColumns</value>
+    <value>Geladene Chunks</value>
   </data>
   <data name="Options" xml:space="preserve">
     <value>Optionen</value>
@@ -182,101 +182,5 @@
   </data>
   <data name="ActiveItemTool" xml:space="preserve">
     <value>Aktives Werkzeug</value>
-  </data>
-  <data name="Error" xml:space="preserve">
-    <value>Fehler</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>Erstellen</value>
-  </data>
-  <data name="Delete" xml:space="preserve">
-    <value>Löschen</value>
-  </data>
-  <data name="Play" xml:space="preserve">
-    <value>Spielen</value>
-  </data>
-  <data name="CreateUniverse" xml:space="preserve">
-    <value>Universum erstellen</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="Seed" xml:space="preserve">
-    <value>Seed</value>
-  </data>
-  <data name="SelectUniverse" xml:space="preserve">
-    <value>Universum auswählen</value>
-  </data>
-  <data name="SelectUniverseFirst" xml:space="preserve">
-    <value>Bitte zuerst ein Universum auswählen!</value>
-  </data>
-  <data name="Game" xml:space="preserve">
-    <value>Spiel</value>
-  </data>
-  <data name="Temperature" xml:space="preserve">
-    <value>Temperatur</value>
-  </data>
-  <data name="ToolCount" xml:space="preserve">
-    <value>Werkzeuganzahl</value>
-  </data>
-  <data name="Resume" xml:space="preserve">
-    <value>Fortsetzen</value>
-  </data>
-  <data name="ToMainMenu" xml:space="preserve">
-    <value>Zum Hauptmenü</value>
-  </data>
-  <data name="EnableFullscreenOnStartup" xml:space="preserve">
-    <value>Beim Start Fullscreen Modus aktivieren</value>
-  </data>
-  <data name="Resolution" xml:space="preserve">
-    <value>Auflösung</value>
-  </data>
-  <data name="Pixels" xml:space="preserve">
-    <value>Pixel</value>
-  </data>
-  <data name="KeyBindings" xml:space="preserve">
-    <value>Tastaturbelegung</value>
-  </data>
-  <data name="Links" xml:space="preserve">
-    <value>Links</value>
-  </data>
-  <data name="Add" xml:space="preserve">
-    <value>Hinzufügen</value>
-  </data>
-  <data name="Apply" xml:space="preserve">
-    <value>Anwenden</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Abbrechen</value>
-  </data>
-  <data name="Disable" xml:space="preserve">
-    <value>Deaktivieren</value>
-  </data>
-  <data name="Down" xml:space="preserve">
-    <value>Nach unten</value>
-  </data>
-  <data name="Enable" xml:space="preserve">
-    <value>Aktivieren</value>
-  </data>
-  <data name="Extensions" xml:space="preserve">
-    <value>Erweiterungen</value>
-  </data>
-  <data name="PressKey" xml:space="preserve">
-    <value>Bitte eine Taste drücken...</value>
-  </data>
-  <data name="Remove" xml:space="preserve">
-    <value>Entfernen</value>
-  </data>
-  <data name="ResourcePacks" xml:space="preserve">
-    <value>Resource Packs</value>
-  </data>
-  <data name="SelectTarget" xml:space="preserve">
-    <value>Ziel auswählen</value>
-  </data>
-  <data name="Teleport" xml:space="preserve">
-    <value>Teleportieren</value>
-  </data>
-  <data name="Up" xml:space="preserve">
-    <value>Nach oben</value>
   </data>
 </root>

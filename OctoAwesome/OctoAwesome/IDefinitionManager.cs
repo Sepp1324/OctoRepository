@@ -8,12 +8,6 @@ namespace OctoAwesome
     public interface IDefinitionManager
     {
         /// <summary>
-        /// Liefert eine Liste von Definitions.
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<IDefinition> GetDefinitions();
-
-        /// <summary>
         /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
@@ -36,27 +30,13 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Index der BlockDefinition</param>
         /// <returns>BlockDefinition</returns>
-        IDefinition GetDefinitionByIndex(ushort index);
+        IBlockDefinition GetBlockDefinitionByIndex(ushort index);
 
         /// <summary>
         /// Liefert den Index der angegebenen BlockDefinition.
         /// </summary>
         /// <param name="definition">BlockDefinition</param>
         /// <returns>Index der Block Definition</returns>
-        ushort GetDefinitionIndex(IDefinition definition);
-
-        /// <summary>
-        /// Liefert den Index der angegebenen BlockDefinition.
-        /// </summary>
-        /// <typeparam name="T">BlockDefinition Type</typeparam>
-        /// <returns>Index der Block Definition</returns>
-        ushort GetDefinitionIndex<T>() where T : IDefinition;
-
-        /// <summary>
-        /// Gibt die Liste von Instanzen des angegebenen Definition Interfaces zurück.
-        /// </summary>
-        /// <typeparam name="T">Typ der Definition</typeparam>
-        /// <returns>Auflistung von Instanzen</returns>
-        IEnumerable<T> GetDefinitions<T>() where T : IDefinition;
+        ushort GetBlockDefinitionIndex(IBlockDefinition definition);
     }
 }

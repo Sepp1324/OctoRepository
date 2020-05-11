@@ -1,18 +1,15 @@
-﻿using OctoAwesome.Runtime;
+﻿using Microsoft.Xna.Framework;
+using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using engenious;
-using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class PlayerComponent : GameComponent
     {
         private new OctoGame Game;
-
-        private IResourceManager resourceManager;
 
         #region External Input
 
@@ -28,7 +25,7 @@ namespace OctoAwesome.Client.Components
 
         public bool FlymodeInput { get; set; }
 
-        public bool[] SlotInput { get; private set; } = new bool[10];
+        public bool[] SlotInput { get; private set; } = new bool[20];
 
         public bool SlotLeftInput { get; set; }
 
@@ -36,19 +33,7 @@ namespace OctoAwesome.Client.Components
 
         #endregion
 
-        public Entity CurrentEntity { get; private set; }
-
-        public HeadComponent CurrentEntityHead { get; private set; }
-
-        public ControllableComponent CurrentController { get; private set; }
-
-        public InventoryComponent Inventory { get; private set; }
-
-        public ToolBarComponent Toolbar { get; private set; }
-
-        public PositionComponent Position { get; private set; }
-
-        // public ActorHost ActorHost { get; private set; }
+        public ActorHost ActorHost { get; private set; }
 
         public Index3? SelectedBox { get; set; }
 
@@ -60,41 +45,34 @@ namespace OctoAwesome.Client.Components
 
         public OrientationFlags SelectedCorner { get; set; }
 
-        public PlayerComponent(OctoGame game, IResourceManager resourceManager)
+        public List<InventorySlot> Tools { get; set; }
+
+        public PlayerComponent(OctoGame game)
             : base(game)
         {
-            this.resourceManager = resourceManager;
             Game = game;
         }
 
-        public void SetEntity(Entity entity)
+        public override void Initialize()
         {
-            CurrentEntity = entity;
+            base.Initialize();
+            Tools = new List<InventorySlot>();
+        }
 
+        public void InsertPlayer()
+        {
+            Player player = ResourceManager.Instance.LoadPlayer("Adam");
+            ActorHost = Game.Simulation.InsertPlayer(player);
+        }
 
+        public void RemovePlayer()
+        {
+            if (ActorHost == null)
+                return;
 
-            if (CurrentEntity == null)
-            {
-                CurrentEntityHead = null;
-            }
-            else
-            {
-                // Map other Components
-
-                CurrentController = entity.Components.GetComponent<ControllableComponent>();
-
-                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>();
-                if (CurrentEntityHead == null) CurrentEntityHead = new HeadComponent();
-
-                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
-                if (Inventory == null) Inventory = new InventoryComponent();
-
-                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>();
-                if (Toolbar == null) Toolbar = new ToolBarComponent();
-
-                Position = CurrentEntity.Components.GetComponent<PositionComponent>();
-                if (Position == null) Position = new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
-            }
+            ResourceManager.Instance.SavePlayer(ActorHost.Player);
+            Game.Simulation.RemovePlayer(ActorHost);
+            ActorHost = null;
         }
 
         public override void Update(GameTime gameTime)
@@ -102,134 +80,72 @@ namespace OctoAwesome.Client.Components
             if (!Enabled)
                 return;
 
-            if (CurrentEntity == null)
+            if (ActorHost == null)
                 return;
 
-            CurrentEntityHead.Angle += (float)gameTime.ElapsedGameTime.TotalSeconds * HeadInput.X;
-            CurrentEntityHead.Tilt += (float)gameTime.ElapsedGameTime.TotalSeconds * HeadInput.Y;
-            CurrentEntityHead.Tilt = Math.Min(1.5f, Math.Max(-1.5f, CurrentEntityHead.Tilt));
+            Tools.Clear();
+            Tools.AddRange(ActorHost.Player.Inventory);
+
+            ActorHost.Head = HeadInput;
             HeadInput = Vector2.Zero;
 
-            CurrentController.MoveInput = MoveInput;
+            ActorHost.Move = MoveInput;
             MoveInput = Vector2.Zero;
 
-            CurrentController.JumpInput = JumpInput;
+            if (JumpInput)
+                ActorHost.Jump();
             JumpInput = false;
 
             if (InteractInput && SelectedBox.HasValue)
-                CurrentController.InteractBlock = SelectedBox.Value;
+                ActorHost.Interact(SelectedBox.Value);
             InteractInput = false;
 
             if (ApplyInput && SelectedBox.HasValue)
-            {
-                CurrentController.ApplyBlock = SelectedBox.Value;
-                CurrentController.ApplySide = SelectedSide;
-            }
-
+                ActorHost.Apply(SelectedBox.Value, SelectedSide);
             ApplyInput = false;
 
-            //if (FlymodeInput)
-            //    ActorHost.Player.FlyMode = !ActorHost.Player.FlyMode;
-            //FlymodeInput = false;
+            if (FlymodeInput)
+                ActorHost.Player.FlyMode = !ActorHost.Player.FlyMode;
+            FlymodeInput = false;
 
-            if (Toolbar.Tools != null && Toolbar.Tools.Length > 0)
+            if (Tools != null && Tools.Count > 0)
             {
-                if (Toolbar.ActiveTool == null) Toolbar.ActiveTool = Toolbar.Tools[0];
-                for (int i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
+                if (ActorHost.ActiveTool == null) ActorHost.ActiveTool = Tools[0];
+                for (int i = 0; i < Math.Min(Tools.Count, SlotInput.Length); i++)
                 {
                     if (SlotInput[i])
-                        Toolbar.ActiveTool = Toolbar.Tools[i];
+                        ActorHost.ActiveTool = Tools[i];
                     SlotInput[i] = false;
                 }
             }
 
-            //Index des aktiven Werkzeugs ermitteln
+            // Index des aktiven Werkzeugs ermitteln
             int activeTool = -1;
-            List<int> toolIndices = new List<int>();
-            if (Toolbar.Tools != null)
+            if (Tools != null && ActorHost.ActiveTool != null)
             {
-                for (int i = 0; i < Toolbar.Tools.Length; i++)
+                for (int i = 0; i < Tools.Count; i++)
                 {
-                    if (Toolbar.Tools[i] != null)
-                        toolIndices.Add(i);
-
-                    if (Toolbar.Tools[i] == Toolbar.ActiveTool)
-                        activeTool = toolIndices.Count - 1;
+                    if (Tools[i] == ActorHost.ActiveTool)
+                    {
+                        activeTool = i;
+                        break;
+                    }
                 }
             }
-
-            if (SlotLeftInput)
-            {
-                if (activeTool > -1)
-                    activeTool--;
-                else if (toolIndices.Count > 0)
-                    activeTool = toolIndices[toolIndices.Count - 1];
-            }
-            SlotLeftInput = false;
-
-            if (SlotRightInput)
-            {
-                if (activeTool > -1)
-                    activeTool++;
-                else if (toolIndices.Count > 0)
-                    activeTool = toolIndices[0];
-            }
-            SlotRightInput = false;
 
             if (activeTool > -1)
             {
-                activeTool = (activeTool + toolIndices.Count) % toolIndices.Count;
-                Toolbar.ActiveTool = Toolbar.Tools[toolIndices[activeTool]];
+                if (SlotLeftInput)
+                    activeTool--;
+                SlotLeftInput = false;
+
+                if (SlotRightInput)
+                    activeTool++;
+                SlotRightInput = false;
+
+                activeTool = (activeTool + Tools.Count) % Tools.Count;
+                ActorHost.ActiveTool = Tools[activeTool];
             }
-        }
-
-        /// <summary>
-        /// DEBUG METHODE: NICHT FÜR VERWENDUNG IM SPIEL!
-        /// </summary>
-        internal void AllBlocksDebug()
-        {
-            var inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
-            if (inventory == null)
-                return;
-
-            var blockDefinitions = resourceManager.DefinitionManager.GetBlockDefinitions();
-            foreach (var blockDefinition in blockDefinitions)
-            {
-
-                var slot = inventory.Inventory.Where(s => s.Definition == blockDefinition && s.Amount < blockDefinition.StackLimit).FirstOrDefault();
-
-                // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
-                if (slot == null || slot.Amount >= blockDefinition.StackLimit)
-                {
-                    slot = new InventorySlot()
-                    {
-                        Definition = blockDefinition,
-                        Amount = 0
-                    };
-                    inventory.Inventory.Add(slot);
-                }
-                slot.Amount++;
-            }
-
-            var itemDefinitions = resourceManager.DefinitionManager.GetItemDefinitions();
-            foreach (var blockDefinition in itemDefinitions)
-            {
-
-                var slot = inventory.Inventory.Where(s => s.Definition == blockDefinition && s.Amount < blockDefinition.StackLimit).FirstOrDefault();
-
-                // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
-                if (slot == null || slot.Amount >= blockDefinition.StackLimit)
-                {
-                    slot = new InventorySlot()
-                    {
-                        Definition = blockDefinition,
-                        Amount = 0
-                    };
-                    inventory.Inventory.Add(slot);
-                }
-                slot.Amount++;
-            }
-
         }
     }
 }

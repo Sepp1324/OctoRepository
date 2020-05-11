@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Xml.Serialization;
-using engenious;
 
 namespace OctoAwesome
 {
@@ -35,7 +38,7 @@ namespace OctoAwesome
             Planet = planet;
             this.block = block;
             this.position = position;
-            Normalize();
+            this.Normalize();
         }
 
         /// <summary>

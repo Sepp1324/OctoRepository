@@ -61,15 +61,6 @@ namespace OctoAwesome.Basics.Languages {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Birch Wood ähnelt.
-        /// </summary>
-        internal static string BirchWood {
-            get {
-                return ResourceManager.GetString("BirchWood", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Blue Cotton ähnelt.
         /// </summary>
         internal static string BlueCotton {
@@ -88,33 +79,6 @@ namespace OctoAwesome.Basics.Languages {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Cactus ähnelt.
-        /// </summary>
-        internal static string Cactus {
-            get {
-                return ResourceManager.GetString("Cactus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Basic Extension with all important stuff ähnelt.
-        /// </summary>
-        internal static string ExtensionDescription {
-            get {
-                return ResourceManager.GetString("ExtensionDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Basics ähnelt.
-        /// </summary>
-        internal static string ExtensionName {
-            get {
-                return ResourceManager.GetString("ExtensionName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Grass ähnelt.
         /// </summary>
         internal static string Grass {
@@ -124,29 +88,11 @@ namespace OctoAwesome.Basics.Languages {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Gravel ähnelt.
-        /// </summary>
-        internal static string Gravel {
-            get {
-                return ResourceManager.GetString("Gravel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Green Cotton ähnelt.
         /// </summary>
         internal static string GreenCotton {
             get {
                 return ResourceManager.GetString("GreenCotton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Greystone ähnelt.
-        /// </summary>
-        internal static string Greystone {
-            get {
-                return ResourceManager.GetString("Greystone", resourceCulture);
             }
         }
         
@@ -187,56 +133,11 @@ namespace OctoAwesome.Basics.Languages {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Orange Leaves ähnelt.
-        /// </summary>
-        internal static string OrangeLeaves {
-            get {
-                return ResourceManager.GetString("OrangeLeaves", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Oven ähnelt.
-        /// </summary>
-        internal static string Oven {
-            get {
-                return ResourceManager.GetString("Oven", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Plank ähnelt.
-        /// </summary>
-        internal static string Plank {
-            get {
-                return ResourceManager.GetString("Plank", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Red Cotton ähnelt.
         /// </summary>
         internal static string RedCotton {
             get {
                 return ResourceManager.GetString("RedCotton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Red Plank ähnelt.
-        /// </summary>
-        internal static string RedPlank {
-            get {
-                return ResourceManager.GetString("RedPlank", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Redstone ähnelt.
-        /// </summary>
-        internal static string Redstone {
-            get {
-                return ResourceManager.GetString("Redstone", resourceCulture);
             }
         }
         
@@ -273,15 +174,6 @@ namespace OctoAwesome.Basics.Languages {
         internal static string StoneBrick {
             get {
                 return ResourceManager.GetString("StoneBrick", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Table ähnelt.
-        /// </summary>
-        internal static string Table {
-            get {
-                return ResourceManager.GetString("Table", resourceCulture);
             }
         }
         
