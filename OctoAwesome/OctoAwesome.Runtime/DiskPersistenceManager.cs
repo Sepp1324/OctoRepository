@@ -66,6 +66,10 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <summary>
+        /// Löscht ein Universum.
+        /// </summary>
+        /// <param name="universeGuid">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid universeGuid)
         {
             string path = Path.Combine(GetRoot(), universeGuid.ToString());
@@ -212,13 +216,14 @@ namespace OctoAwesome.Runtime
             if (!File.Exists(file))
                 return null;
 
-            try {
-            using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
+                using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
-                    return planet.Generator.GenerateColumn(zip, DefinitionManager.Instance, planet.Id, columnIndex);
-                }
+                    using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
+                    {
+                        return planet.Generator.GenerateColumn(zip, DefinitionManager.Instance, planet.Id, columnIndex);
+                    }
                 }
             }
             catch (IOException)
@@ -232,6 +237,12 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <summary>
+        /// Lädt einen Player.
+        /// </summary>
+        /// <param name="universeGuid">Die Guid des Universums.</param>
+        /// <param name="playername">Der Name des Spielers.</param>
+        /// <returns></returns>
         public Player LoadPlayer(Guid universeGuid, string playername)
         {
             // TODO: Später durch Playername ersetzen
@@ -241,7 +252,8 @@ namespace OctoAwesome.Runtime
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                try {
+                try
+                {
                     XmlSerializer serializer = new XmlSerializer(typeof(Player));
                     return (Player)serializer.Deserialize(stream);
                 }
@@ -254,6 +266,11 @@ namespace OctoAwesome.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Speichert einen Player
+        /// </summary>
+        /// <param name="universeGuid">Die Guid des Universums.</param>
+        /// <param name="player">Der Player.</param>
         public void SavePlayer(Guid universeGuid, Player player)
         {
             string path = Path.Combine(GetRoot(), universeGuid.ToString());
