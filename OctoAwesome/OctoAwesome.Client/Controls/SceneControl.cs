@@ -1,8 +1,6 @@
 ﻿using MonoGameUi;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
@@ -111,13 +109,6 @@ namespace OctoAwesome.Client.Controls
                     orderedChunkRenderer.Add(renderer);
                 }
             }
-
-            // Entfernungsarray erzeugen
-            //for (int x = -VIEWRANGE; x <= VIEWRANGE; x++)
-            //    for (int y = -VIEWRANGE; y <= VIEWRANGE; y++)
-            //        for (int z = 0; z <= planet.Size.Z; z++)
-            //            distances.Add(new Index3(x, y, z));
-            //distances = distances.OrderBy(d => d.LengthSquared()).ToList();
 
             backgroundThread = new Thread(BackgroundLoop);
             backgroundThread.Priority = ThreadPriority.Lowest;

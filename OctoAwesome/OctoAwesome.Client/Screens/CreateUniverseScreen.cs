@@ -2,15 +2,12 @@
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Screens
 {
     class CreateUniverseScreen : BaseScreen
     {
-        ScreenComponent Manager;
+        new ScreenComponent Manager;
 
         Textbox nameInput, seedInput;
         Button createButton;
