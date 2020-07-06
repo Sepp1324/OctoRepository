@@ -1,12 +1,10 @@
-﻿using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace OctoAwesome.Runtime
@@ -31,7 +29,7 @@ namespace OctoAwesome.Runtime
             if (root != null)
                 return root.FullName;
 
-            string appconfig = ConfigurationManager.AppSettings["ChunkRoot"];
+            string appconfig = SettingsManager.Get("ChunkRoot");
             if (!string.IsNullOrEmpty(appconfig))
             {
                 root = new DirectoryInfo(appconfig);

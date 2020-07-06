@@ -1,9 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -69,7 +67,7 @@ namespace OctoAwesome.Runtime
             //planetCache = new Cache<int, IPlanet>(1, loadPlanet, savePlanet);
             //chunkCache = new Cache<PlanetIndex3, IChunk>(CacheSize, loadChunk, saveChunk);
 
-            bool.TryParse(ConfigurationManager.AppSettings["DisablePersistence"], out disablePersistence);
+            bool.TryParse(SettingsManager.Get("DisablePersistence"), out disablePersistence);
         }
 
         /// <summary>

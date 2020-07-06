@@ -15,8 +15,6 @@ namespace OctoAwesome.Client.Screens
         private Label rangeTitle, persistenceTitle;
         private Textbox mapPath;
 
-        Configuration config;
-
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
             game = (OctoGame)manager.Game;
@@ -53,7 +51,7 @@ namespace OctoAwesome.Client.Screens
 
 
             //////////////////////Viewrange//////////////////////
-            string viewrange = ConfigurationManager.AppSettings["Viewrange"];
+            string viewrange = SettingsManager.Get("Viewrange");
 
             rangeTitle = new Label(manager);
             rangeTitle.Text = Languages.OctoClient.Viewrange + ": " + viewrange;
@@ -79,7 +77,7 @@ namespace OctoAwesome.Client.Screens
             persistenceStack.Controls.Add(persistenceTitle);
 
             Checkbox disablePersistence = new Checkbox(manager);
-            disablePersistence.Checked = bool.Parse(ConfigurationManager.AppSettings["DisablePersistence"]);
+            disablePersistence.Checked = bool.Parse(SettingsManager.Get("DisablePersistence"));
             disablePersistence.CheckedChanged += (state) => SetPersistence(state);
             persistenceStack.Controls.Add(disablePersistence);
 
@@ -92,7 +90,7 @@ namespace OctoAwesome.Client.Screens
 
             mapPath = new Textbox(manager);
             // mapPath.HorizontalAlignment = HorizontalAlignment.Stretch;
-            mapPath.Text = ConfigurationManager.AppSettings["ChunkRoot"];
+            mapPath.Text = SettingsManager.Get("ChunkRoot");
             mapPath.Enabled = false;
             mapPath.Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray);
             mapPathStack.Controls.Add(mapPath);
@@ -115,12 +113,7 @@ namespace OctoAwesome.Client.Screens
 
         private void SetViewrange(int newRange)
         {
-            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
-
-            rangeTitle.Text = Languages.OctoClient.Viewrange + ": " + newRange;
-
-            config.AppSettings.Settings["Viewrange"].Value = newRange.ToString();
-            config.Save(ConfigurationSaveMode.Modified);
+            SettingsManager.Set("Viewrange", newRange.ToString());
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
@@ -128,15 +121,13 @@ namespace OctoAwesome.Client.Screens
 
         private void ChangePath()
         {
-            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
             System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            folderBrowser.SelectedPath = ConfigurationManager.AppSettings["ChunkRoot"];
+            folderBrowser.SelectedPath = SettingsManager.Get("ChunkRoot");
 
             if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string path = folderBrowser.SelectedPath;
-                config.AppSettings.Settings["ChunkRoot"].Value = path;
-                config.Save();
+                SettingsManager.Set("ChunkRoot", path);
                 mapPath.Text = path;
 
                 exitButton.Visible = true;
@@ -146,9 +137,7 @@ namespace OctoAwesome.Client.Screens
 
         private void SetPersistence(bool state)
         {
-            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
-            config.AppSettings.Settings["DisablePersistence"].Value = state.ToString();
-            config.Save(ConfigurationSaveMode.Modified);
+            SettingsManager.Set("DisablePersistence", state.ToString());
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
