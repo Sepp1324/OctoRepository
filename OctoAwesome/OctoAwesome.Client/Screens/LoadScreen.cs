@@ -13,7 +13,8 @@ namespace OctoAwesome.Client.Screens
     {
         private new ScreenComponent Manager;
 
-        Button deleteButton, createButton, playButton;
+        Button renameButton, deleteButton, createButton, playButton;
+        StackPanel buttonStack;
         Grid mainStack;
 
         public LoadScreen(ScreenComponent manager) : base(manager)
@@ -106,7 +107,7 @@ namespace OctoAwesome.Client.Screens
                     return;
 
                 // Sicherstellen, dass universe nicht geladen ist
-                if (ResourceManager.Instance.CurrentUniverse != null &&
+                if (ResourceManager.Instance.CurrentUniverse != null && 
                     ResourceManager.Instance.CurrentUniverse.Id == levelList.SelectedItem.Id)
                     return;
 
