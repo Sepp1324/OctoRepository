@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 
 namespace OctoAwesome
 {
@@ -18,7 +16,7 @@ namespace OctoAwesome
         /// <summary>
         /// Id des Parent Universe
         /// </summary>
-        int Universe { get; }
+        Guid Universe { get; }
 
         /// <summary>
         /// Seed des Zufallsgenerators dieses Planeten.
@@ -26,10 +24,30 @@ namespace OctoAwesome
         int Seed { get; }
 
         /// <summary>
-        /// Die Größe des Planeten in Blocks.
+        /// Die Größe des Planeten in Chunks.
         /// </summary>
         Index3 Size { get; }
 
+        /// <summary>
+        /// Die Klimakarte des Planeten
+        /// </summary>
         IClimateMap ClimateMap { get; }
+
+        /// <summary>
+        /// Der Generator des Planeten
+        /// </summary>
+        IMapGenerator Generator { get; }
+
+        /// <summary>
+        /// Serialisiert den Chunk in den angegebenen Stream
+        /// </summary>
+        /// <param name="stream">Zielstream</param>
+        void Serialize(Stream stream);
+
+        /// <summary>
+        /// Deserialisiert den Chunk aus dem angegebenen Stream
+        /// </summary>
+        /// <param name="stream">Quellstream</param>
+        void Deserialize(Stream stream);
     }
 }

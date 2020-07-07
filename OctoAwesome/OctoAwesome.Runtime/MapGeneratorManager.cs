@@ -1,16 +1,27 @@
-﻿using OctoAwesome.Basics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OctoAwesome.Runtime
 {
+    /// <summary>
+    /// Manager für nachladbare MapGeneratoren.
+    /// </summary>
     public static class MapGeneratorManager
     {
+        private static List<IMapGenerator> mapGenerators;
+
+        /// <summary>
+        /// Liefert eine Liste mit allen bekannten MapGeneratoren.
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerable<IMapGenerator> GetMapGenerators()
         {
-            return new[] { new ComplexPlanetGenerator() };
+            if (mapGenerators == null)
+            {
+                mapGenerators = new List<IMapGenerator>();
+                mapGenerators.AddRange(ExtensionManager.GetInstances<IMapGenerator>());
+            }
+
+            return mapGenerators;
         }
     }
 }

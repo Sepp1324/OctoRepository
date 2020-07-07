@@ -3,98 +3,88 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using OctoAwesome;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Controls;
 using OctoAwesome.Runtime;
 using System;
 using System.Configuration;
 using System.Linq;
+using MonoGameUi;
+using EventArgs = System.EventArgs;
 
 namespace OctoAwesome.Client
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class OctoGame : Game
+    internal class OctoGame : Game
     {
-
         GraphicsDeviceManager graphics;
-        //HALLO
-        CameraComponent camera;
-        InputComponent input;
-        SceneComponent scene;
-        PlayerComponent player;
-        HudComponent hud;
-        ScreenManagerComponent screenManager;
-        SimulationComponent simulation;
+
+        public CameraComponent Camera { get; private set; }
+
+        public PlayerComponent Player { get; private set; }
+
+        public SimulationComponent Simulation { get; private set; }
+
+        public ScreenComponent Screen { get; private set; }
 
         public OctoGame()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            this.Window.Title = "OctoAwesome";
-            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferWidth = 1080;
             graphics.PreferredBackBufferHeight = 720;
-            this.IsMouseVisible = false;
-            this.Window.AllowUserResizing = true;
 
-            this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
+            Content.RootDirectory = "Content";
+            Window.Title = "OctoAwesome";
+            IsMouseVisible = true;
+            Window.AllowUserResizing = true;
+
+            TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             int viewrange;
-            if (int.TryParse(ConfigurationManager.AppSettings["Viewrange"], out viewrange))
+            if (int.TryParse(SettingsManager.Get("Viewrange"), out viewrange))
             {
                 if (viewrange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneComponent.VIEWRANGE = viewrange;
+                SceneControl.VIEWRANGE = viewrange;
             }
 
-            int viewheight;
-            if (int.TryParse(ConfigurationManager.AppSettings["Viewheight"], out viewheight))
+            Simulation = new SimulationComponent(this);
+            Simulation.UpdateOrder = 4;
+            Components.Add(Simulation);
+
+            Player = new PlayerComponent(this);
+            Player.UpdateOrder = 2;
+            Components.Add(Player);
+
+            Camera = new CameraComponent(this);
+            Camera.UpdateOrder = 3;
+            Components.Add(Camera);
+
+            Screen = new ScreenComponent(this);
+            Screen.UpdateOrder = 1;
+            Screen.DrawOrder = 1;
+            Components.Add(Screen);
+
+            Window.ClientSizeChanged += (s, e) =>
             {
-                if (viewheight < 1)
-                    throw new NotSupportedException("Viewheight in app.config darf nicht kleiner 1 sein");
+                if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
+                   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
+                    return;
 
-                SceneComponent.VIEWHEIGHT = viewheight;
-            }
-
-            ResourceManager.CacheSize = ((viewrange * 2) + 1) * ((viewrange * 2) + 1) * ((viewheight * 2) + 1) * 2;
-
-            input = new InputComponent(this);
-            input.UpdateOrder = 1;
-            Components.Add(input);
-
-            simulation = new SimulationComponent(this);
-            simulation.UpdateOrder = 3;
-            Components.Add(simulation);
-
-            player = new PlayerComponent(this, input, simulation);
-            player.UpdateOrder = 2;
-            Components.Add(player);
-
-
-            camera = new CameraComponent(this, player);
-            camera.UpdateOrder = 4;
-            Components.Add(camera);
-
-            scene = new SceneComponent(this, player, camera);
-            scene.UpdateOrder = 5;
-            scene.DrawOrder = 1;
-            Components.Add(scene);
-
-            hud = new HudComponent(this, player, scene, input);
-            hud.UpdateOrder = 6;
-            hud.DrawOrder = 2;
-            Components.Add(hud);
-
-            screenManager = new ScreenManagerComponent(this, input);
-            screenManager.UpdateOrder = 7;
-            screenManager.DrawOrder = 3;
-            Components.Add(screenManager);
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                graphics.ApplyChanges();
+            };
         }
 
         protected override void OnExiting(object sender, EventArgs args)
         {
-            simulation.World.Save();
+            Player.RemovePlayer();
+            Simulation.ExitGame();
+
             base.OnExiting(sender, args);
         }
     }

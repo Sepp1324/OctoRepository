@@ -15,8 +15,8 @@ namespace OctoAwesome.Basics.Biomes
         {
 
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 1) { FrequencyX = 1f / 1000, FrequencyY = 1f / 1000, Persistance = 0.25f, Octaves = 5, Factor = 1f };
-
-
+            
+            
             this.MinValue = minVal;
             this.MaxValue = maxVal;
 
@@ -30,11 +30,11 @@ namespace OctoAwesome.Basics.Biomes
 
         public override float[,] GetHeightmap(Index2 chunkIndex)
         {
-            float[,] values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
+            float[,] values = new float[Chunk.CHUNKSIZE_X , Chunk.CHUNKSIZE_Y ];
 
-            Index2 blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
+            Index2 blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X , chunkIndex.Y * Chunk.CHUNKSIZE_Y);
 
-            float[,] regions = BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
+            float[,] regions = BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X , Chunk.CHUNKSIZE_Y , Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y );
 
             float[][,] biomeValues = new float[SubBiomes.Count][,];
 
@@ -42,9 +42,9 @@ namespace OctoAwesome.Basics.Biomes
                 biomeValues[i] = SubBiomes[i].GetHeightmap(chunkIndex);
 
 
-            for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+            for (int x = 0; x < Chunk.CHUNKSIZE_X ; x++)
             {
-                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y ; y++)
                 {
                     float region = regions[x, y] / 2 + 0.5f;
 
@@ -66,3 +66,4 @@ namespace OctoAwesome.Basics.Biomes
         }
     }
 }
+

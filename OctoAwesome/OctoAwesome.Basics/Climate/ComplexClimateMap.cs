@@ -16,7 +16,7 @@ namespace OctoAwesome.Basics.Climate
         public ComplexClimateMap(ComplexPlanet planet)
         {
             this.planet = planet;
-            tempFluctuationGenerator = new SimplexNoiseGenerator(planet.Seed - 1, 1f / 64, 1f / 64) { Octaves = 3 };
+            tempFluctuationGenerator = new SimplexNoiseGenerator(planet.Seed - 1, 1f / 64, 1f / 64) { Octaves = 3};
         }
 
         private INoise tempFluctuationGenerator;

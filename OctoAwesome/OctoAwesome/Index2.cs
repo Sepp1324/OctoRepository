@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -36,13 +33,13 @@ namespace OctoAwesome
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte</param>
-        public Index2(Index2 value) : this(value.X, value.Y) { }
+        public Index2(Index2 value) : this(value.X, value.Y) {}
 
         /// <summary>
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte (X und Y Anteil wird übernommen)</param>
-        public Index2(Index3 value) : this(value.X, value.Y) { }
+        public Index2(Index3 value) : this(value.X, value.Y) {}
 
         /// <summary>
         /// Normalisiert die X-Achse auf die angegebene Größe.
@@ -50,7 +47,7 @@ namespace OctoAwesome
         /// <param name="size">Maximalwert für X</param>
         public void NormalizeX(int size)
         {
-            X = Index2.NormalizeAxis(X, size);
+            X = NormalizeAxis(X, size);
         }
 
         /// <summary>
@@ -77,7 +74,7 @@ namespace OctoAwesome
         /// <param name="size">Maximalwert für Y</param>
         public void NormalizeY(int size)
         {
-            Y = Index2.NormalizeAxis(Y, size);
+            Y = NormalizeAxis(Y, size);
         }
 
         /// <summary>
@@ -97,6 +94,8 @@ namespace OctoAwesome
         {
             NormalizeY(size.Y);
         }
+
+
 
         /// <summary>
         /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
@@ -128,6 +127,17 @@ namespace OctoAwesome
         }
 
         /// <summary>
+        /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
+        /// </summary>
+        /// <param name="index">Der zu normalisierende Index2</param>
+        /// <param name="size">3D Size</param>
+        public static Index2 NormalizeXY(Index2 index,Index3 size)
+        {
+            index.NormalizeXY(size);
+            return index;
+        }
+
+        /// <summary>
         /// Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten X-Achse.
         /// </summary>
         /// <param name="x">Ziel</param>
@@ -135,7 +145,7 @@ namespace OctoAwesome
         /// <returns>Entfernung</returns>
         public int ShortestDistanceX(int x, int size)
         {
-            return Index2.ShortestDistanceOnAxis(X, x, size);
+            return ShortestDistanceOnAxis(X, x, size);
         }
 
         /// <summary>
@@ -146,7 +156,7 @@ namespace OctoAwesome
         /// <returns>Entfernung</returns>
         public int ShortestDistanceY(int y, int size)
         {
-            return Index2.ShortestDistanceOnAxis(Y, y, size);
+            return ShortestDistanceOnAxis(Y, y, size);
         }
 
         /// <summary>
@@ -158,7 +168,7 @@ namespace OctoAwesome
         public Index2 ShortestDistanceXY(Index2 destination, Index2 size)
         {
             return new Index2(
-                ShortestDistanceX(destination.X, size.X),
+                ShortestDistanceX(destination.X, size.X), 
                 ShortestDistanceY(destination.Y, size.Y));
         }
 
@@ -181,36 +191,76 @@ namespace OctoAwesome
             return (X * X) + (Y * Y);
         }
 
+        /// <summary>
+        /// Addition von zwei Indices2
+        /// </summary>
+        /// <param name="i1">1. Summand</param>
+        /// <param name="i2">2. Summand</param>
+        /// <returns></returns>
         public static Index2 operator +(Index2 i1, Index2 i2)
         {
             return new Index2(i1.X + i2.X, i1.Y + i2.Y);
         }
 
+        /// <summary>
+        /// Subtraktion von zwei Indices2
+        /// </summary>
+        /// <param name="i1">Minuend</param>
+        /// <param name="i2">Subtrahend</param>
+        /// <returns></returns>
         public static Index2 operator -(Index2 i1, Index2 i2)
         {
             return new Index2(i1.X - i2.X, i1.Y - i2.Y);
         }
 
+        /// <summary>
+        /// Multiplikation eines Index2 mit einem Skalierungsfaktor
+        /// </summary>
+        /// <param name="i1">Index</param>
+        /// <param name="scale">Skalierungsfaktor</param>
+        /// <returns></returns>
         public static Index2 operator *(Index2 i1, int scale)
         {
             return new Index2(i1.X * scale, i1.Y * scale);
         }
 
+        /// <summary>
+        /// Division eines Index2 durch einen Skalierungsfaktor
+        /// </summary>
+        /// <param name="i1">Index</param>
+        /// <param name="scale">Skalierungsfaktor</param>
+        /// <returns></returns>
         public static Index2 operator /(Index2 i1, int scale)
         {
             return new Index2(i1.X / scale, i1.Y / scale);
         }
 
+        /// <summary>
+        /// Überprüft, ob beide gegebenen Indices gleich sind.
+        /// </summary>
+        /// <param name="i1"></param>
+        /// <param name="i2"></param>
+        /// <returns></returns>
         public static bool operator ==(Index2 i1, Index2 i2)
         {
             return i1.Equals(i2);
         }
 
+        /// <summary>
+        /// Überprüft, ob beide gegebenen Indices nicht gleich sind.
+        /// </summary>
+        /// <param name="i1"></param>
+        /// <param name="i2"></param>
+        /// <returns></returns>
         public static bool operator !=(Index2 i1, Index2 i2)
         {
             return !i1.Equals(i2);
         }
 
+        /// <summary>
+        /// Implizite Umwandlung eines Index2 in einen Vector2. Möglicherweise entstehen dadurch Rundungsfehler.
+        /// </summary>
+        /// <param name="index"></param>
         public static implicit operator Vector2(Index2 index)
         {
             return new Vector2(index.X, index.Y);
@@ -254,11 +304,20 @@ namespace OctoAwesome
             return distance;
         }
 
+        /// <summary>
+        /// Gibt einen string zurück, der den akteullen Index2 darstellt.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return "(" + X.ToString() + "/" + Y.ToString() + ")";
         }
 
+        /// <summary>
+        /// Überprüft, ob das gegebene Objekt (falls ein <see cref="Index2"/> gleich der aktuellen Instanz ist.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Index2))
@@ -266,14 +325,18 @@ namespace OctoAwesome
 
             Index2 other = (Index2)obj;
             return (
-                other.X == this.X &&
-                other.Y == this.Y);
+                other.X == X &&
+                other.Y == Y);
         }
 
+        /// <summary>
+        /// Gibt einen möglichst eindeutigen Hashwert für den aktuellen Index2 zurück.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
-            return
-                (X << 16) +
+            return 
+                (X << 16) + 
                 Y;
         }
 

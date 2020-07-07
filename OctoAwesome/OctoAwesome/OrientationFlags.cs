@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -9,8 +6,11 @@ namespace OctoAwesome
     /// Liste von Flags zur Beschreibung der Block-Ausrichtung.
     /// </summary>
     [Flags]
-    public enum OrientationFlags
+    public enum OrientationFlags : byte
     {
+        /// <summary>
+        /// Null-Wert (keine Orientierung)
+        /// </summary>
         None,
 
         #region Corner
@@ -62,37 +62,37 @@ namespace OctoAwesome
         /// <summary>
         /// Beschreibt die komplette Seite von -X
         /// </summary>
-        SideWest =
-            OrientationFlags.Corner000 |
-            OrientationFlags.Corner001 |
-            OrientationFlags.Corner010 |
+        SideWest = 
+            OrientationFlags.Corner000 | 
+            OrientationFlags.Corner001 | 
+            OrientationFlags.Corner010 | 
             OrientationFlags.Corner011,
 
         /// <summary>
         /// Beschreibt die komplette Seite von +X
         /// </summary>
         SideEast =
-            OrientationFlags.Corner100 |
-            OrientationFlags.Corner101 |
-            OrientationFlags.Corner110 |
+            OrientationFlags.Corner100 | 
+            OrientationFlags.Corner101 | 
+            OrientationFlags.Corner110 | 
             OrientationFlags.Corner111,
 
         /// <summary>
         /// Beschreibt die komplette Seite von -Y
         /// </summary>
         SideSouth =
-            OrientationFlags.Corner000 |
-            OrientationFlags.Corner001 |
-            OrientationFlags.Corner100 |
+            OrientationFlags.Corner000 | 
+            OrientationFlags.Corner001 | 
+            OrientationFlags.Corner100 | 
             OrientationFlags.Corner101,
 
         /// <summary>
         /// Beschreibt die komplette Seite von +Y
         /// </summary>
         SideNorth =
-            OrientationFlags.Corner010 |
-            OrientationFlags.Corner011 |
-            OrientationFlags.Corner110 |
+            OrientationFlags.Corner010 | 
+            OrientationFlags.Corner011 | 
+            OrientationFlags.Corner110 | 
             OrientationFlags.Corner111,
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace OctoAwesome
         /// Beschreibt die obere Kante der Westseite [-X,-Y,+Z] -> [-X,+Y,+Z]
         /// </summary>
         EdgeWestTop = Corner001 | Corner011,
-
+        
         /// <summary>
         /// Beschreibt die untere Kante der Westseite [-X,-Y,-Z] -> [-X,+Y,-Z]
         /// </summary>

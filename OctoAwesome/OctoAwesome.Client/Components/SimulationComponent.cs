@@ -2,30 +2,76 @@
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class SimulationComponent : GameComponent
     {
-        public World World { get; private set; }
-
-        public ActorHost Player { get; private set; }
+        private Simulation Simulation { get; set; }
 
         public SimulationComponent(Game game) : base(game) { }
 
-        public override void Initialize()
+        public Guid NewGame(string name, int? seed = null)
         {
-            World = new World();
-            Player = World.InjectPlayer(new Player());
+            if (Simulation != null)
+            {
+                Simulation.ExitGame();
+                Simulation = null;
+            }
 
-            base.Initialize();
+            Simulation = new Simulation();
+            return Simulation.NewGame(name, seed);
         }
 
-        public override void Update(GameTime gameTime)
+        public void LoadGame(Guid guid)
         {
-            World.Update(gameTime);
+            if (Simulation != null)
+            {
+                Simulation.ExitGame();
+                Simulation = null;
+            }
+
+            Simulation = new Simulation();
+            Simulation.LoadGame(guid);
+        }
+
+        public void ExitGame()
+        {
+            if (Simulation == null)
+                return;
+
+            Simulation.ExitGame();
+            Simulation = null;
+        }
+
+        public ActorHost InsertPlayer(Player player)
+        {
+            if (Simulation == null)
+                throw new NotSupportedException();
+
+            if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
+                throw new NotSupportedException();
+
+            return Simulation.InsertPlayer(player);
+        }
+
+        public void RemovePlayer(ActorHost host)
+        {
+            if (Simulation == null)
+                throw new NotSupportedException();
+
+            if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
+                throw new NotSupportedException();
+
+            Simulation.RemovePlayer(host);
         }
     }
 }

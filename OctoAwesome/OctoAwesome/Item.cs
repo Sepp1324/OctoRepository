@@ -1,21 +1,40 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Collections.Generic;
 
 namespace OctoAwesome
 {
-    public abstract class Item
+    /// <summary>
+    /// Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity"/>
+    /// </summary>
+    public abstract class Item : IItem
     {
-        public Coordinate Position { get; set; }
+        /// <summary>
+        /// Der Zustand des Items
+        /// </summary>
+        public int Condition { get; set; }
 
-        public float Mass { get; set; }
+        /// <summary>
+        /// Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
+        /// </summary>
+        public Coordinate? Position { get; set; }
 
-        public Vector3 Velocity { get; set; }
+        /// <summary>
+        /// Die Liste aller Ressourcen, die im Item enthalten sind
+        /// </summary>
+        public List<IResource> Resources { get; private set; }
 
-        public Vector3 ExternalForce { get; set; }
+        /// <summary>
+        /// Erzeugt eine neue Instanz der Klasse Item.
+        /// </summary>
+        public Item()
+        {
+            Resources = new List<IResource>();
+            Condition = 99;
+        }
+
+        /// <summary>
+        /// Das was passiert wenn das Item zuschlägt.
+        /// </summary>
+        /// <param name="item">Das interagierende Item</param>
+        public abstract void Hit(IItem item);
     }
 }

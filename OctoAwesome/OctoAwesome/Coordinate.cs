@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Xml.Serialization;
 
 namespace OctoAwesome
 {
@@ -26,25 +24,30 @@ namespace OctoAwesome
         /// </summary>
         private Vector3 position;
 
+        /// <summary>
+        /// Erzeugt eine neue Instanz der Coordinate-Struktur.
+        /// </summary>
+        /// <param name="planet">Index des Planeten</param>
+        /// <param name="block">Blockindex innerhalb des Planeten</param>
+        /// <param name="position">Position innerhalb des Blockes</param>
         public Coordinate(int planet, Index3 block, Vector3 position)
         {
             Planet = planet;
             this.block = block;
             this.position = position;
-            this.Normalize();
+            Normalize();
         }
 
         /// <summary>
         /// Gibt den Index des Chunks zurück oder legt diesen fest.
         /// </summary>
+        [XmlIgnore]
         public Index3 ChunkIndex
         {
             get
             {
-                return new Index3(
-                    (int)Math.Floor((double)block.X / Chunk.CHUNKSIZE_X),
-                    (int)Math.Floor((double)block.Y / Chunk.CHUNKSIZE_Y),
-                    (int)Math.Floor((double)block.Z / Chunk.CHUNKSIZE_Z));
+                return new Index3(block.X >> Chunk.LimitX, block.Y >> Chunk.LimitY,
+                    block.Z >> Chunk.LimitZ);
             }
             set
             {
@@ -68,6 +71,7 @@ namespace OctoAwesome
         /// <summary>
         /// Gibt den lokalen Index des Blocks (Chunk-Koordinaten) zurück oder legt diesen fest.
         /// </summary>
+        [XmlIgnore]
         public Index3 LocalBlockIndex
         {
             get
@@ -92,6 +96,7 @@ namespace OctoAwesome
         /// <summary>
         /// Gibt die globale Position (Planet-Koordinaten) als Vektor zurück oder legt diesen fest.
         /// </summary>
+        [XmlIgnore]
         public Vector3 GlobalPosition
         {
             get
@@ -112,6 +117,7 @@ namespace OctoAwesome
         /// <summary>
         /// Gibt die lokale Position (Chunk-Koordinaten) als Vektor zurück oder legt diese fest.
         /// </summary>
+        [XmlIgnore]
         public Vector3 LocalPosition
         {
             get
@@ -172,6 +178,13 @@ namespace OctoAwesome
             ChunkIndex = index;
         }
 
+        /// <summary>
+        /// Addiert die zwei gegebenen <see cref="Coordinate"/>s.
+        /// </summary>
+        /// <param name="i1"></param>
+        /// <param name="i2"></param>
+        /// <exception cref="NotSupportedException">Wenn die beiden Coordinates nicht auf den selben Planeten verweisen</exception>
+        /// <returns>Das Ergebnis der Addition</returns>
         public static Coordinate operator +(Coordinate i1, Coordinate i2)
         {
             if (i1.Planet != i2.Planet)
@@ -180,11 +193,21 @@ namespace OctoAwesome
             return new Coordinate(i1.Planet, i1.block + i2.block, i1.position + i2.position);
         }
 
+        /// <summary>
+        /// Addiert den gegebenen Vector3 auf die <see cref="BlockPosition"/> der Coordinate.
+        /// </summary>
+        /// <param name="i1"></param>
+        /// <param name="i2"></param>
+        /// <returns>Das Ergebnis der Addition</returns>
         public static Coordinate operator +(Coordinate i1, Vector3 i2)
         {
             return new Coordinate(i1.Planet, i1.block, i1.position + i2);
         }
 
+        /// <summary>
+        /// Stellt die Coordinate-Instanz als string dar.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return

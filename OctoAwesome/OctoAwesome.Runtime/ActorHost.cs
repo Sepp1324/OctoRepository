@@ -1,85 +1,103 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 
 namespace OctoAwesome.Runtime
 {
+    /// <summary>
+    /// Kapselung eines Spielers.
+    /// </summary>
     public class ActorHost : IPlayerController
     {
-        private readonly float Gap = 0.00001f;
+        private readonly float Gap = 0.001f;
 
         private IPlanet planet;
-        private Cache<Index3, IChunk> localChunkCache;
 
         private bool lastJump = false;
 
         private Index3? lastInteract = null;
         private Index3? lastApply = null;
         private OrientationFlags lastOrientation = OrientationFlags.None;
+        private Index3 _oldIndex;
 
+        private ILocalChunkCache localChunkCache;
+
+        /// <summary>
+        /// Der Spieler dieses ActorHosts.
+        /// </summary>
         public Player Player { get; private set; }
 
-        public IBlockDefinition ActiveTool { get; set; }
+        /// <summary>
+        /// Das zur Zeit aktive Werkzeug.
+        /// </summary>
+        public InventorySlot ActiveTool { get; set; }
 
+        /// <summary>
+        /// Gibt an, ob der Spieler bereit ist.
+        /// </summary>
+        public bool ReadyState { get; private set; }
+
+        /// <summary>
+        /// Erzeugt einen neuen ActorHost.
+        /// </summary>
+        /// <param name="player">Der Player</param>
         public ActorHost(Player player)
         {
             Player = player;
-            localChunkCache = new Cache<Index3, IChunk>(10, loadChunk, null);
             planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
+            localChunkCache = new LocalChunkCache(ResourceManager.Instance.GlobalChunkCache, 2, 1);
+            _oldIndex = Player.Position.ChunkIndex;
+
             ActiveTool = null;
+            ReadyState = false;
         }
 
+        /// <summary>
+        /// Initialisiert den ActorHost und lädtc die Chunks rund um den Spieler.
+        /// </summary>
+        public void Initialize()
+        {
+            localChunkCache.SetCenter(planet, new Index2(Player.Position.ChunkIndex), (success) =>
+            {
+                ReadyState = success;
+            });
+        }
+
+        
+        /// <summary>
+        /// Aktualisiert den Spieler (Bewegung, Interaktion)
+        /// </summary>
+        /// <param name="frameTime">Die aktuelle Zeit.</param>
         public void Update(GameTime frameTime)
         {
-            Player.ExternalForce = new Vector3(0, 0, -20f) * Player.Mass;
-
             #region Inputverarbeitung
-
-            Vector3 externalPower = ((Player.ExternalForce * Player.ExternalForce) / (2 * Player.Mass)) * (float)frameTime.ElapsedGameTime.TotalSeconds;
-            externalPower *= new Vector3(Math.Sign(Player.ExternalForce.X), Math.Sign(Player.ExternalForce.Y), Math.Sign(Player.ExternalForce.Z));
 
             // Input verarbeiten
             Player.Angle += (float)frameTime.ElapsedGameTime.TotalSeconds * Head.X;
             Player.Tilt += (float)frameTime.ElapsedGameTime.TotalSeconds * Head.Y;
             Player.Tilt = Math.Min(1.5f, Math.Max(-1.5f, Player.Tilt));
 
+            #endregion
+
+            #region Physik
+
             float lookX = (float)Math.Cos(Player.Angle);
             float lookY = -(float)Math.Sin(Player.Angle);
-            var VelocityDirection = new Vector3(lookX, lookY, 0) * Move.Y;
+            var velocitydirection = new Vector3(lookX, lookY, 0) * Move.Y;
 
             float stafeX = (float)Math.Cos(Player.Angle + MathHelper.PiOver2);
             float stafeY = -(float)Math.Sin(Player.Angle + MathHelper.PiOver2);
-            VelocityDirection += new Vector3(stafeX, stafeY, 0) * Move.X;
+            velocitydirection += new Vector3(stafeX, stafeY, 0) * Move.X;
 
-            Vector3 Friction = new Vector3(1, 1, 0.1f) * Player.FRICTION;
-            Vector3 powerdirection = new Vector3();
-
-            powerdirection += externalPower;
-            powerdirection += (Player.POWER * VelocityDirection);
-            // if (OnGround && input.JumpTrigger)
-            if (lastJump)
-            {
-                lastJump = false;
-                Vector3 jumpDirection = new Vector3(lookX, lookY, 0f) * Move.Y * 0.1f;
-                jumpDirection.Z = 1f;
-                jumpDirection.Normalize();
-                powerdirection += jumpDirection * Player.JUMPPOWER;
-            }
-
-            Vector3 VelocityChange = (2.0f / Player.Mass * (powerdirection - Friction * Player.Velocity)) *
-                (float)frameTime.ElapsedGameTime.TotalSeconds;
-
-            Player.Velocity += new Vector3(
-                (float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
-                (float)(VelocityChange.Y < 0 ? -Math.Sqrt(-VelocityChange.Y) : Math.Sqrt(VelocityChange.Y)),
-                (float)(VelocityChange.Z < 0 ? -Math.Sqrt(-VelocityChange.Z) : Math.Sqrt(VelocityChange.Z)));
+            Player.Velocity += PhysicalUpdate(velocitydirection, frameTime.ElapsedGameTime, !Player.FlyMode, Player.FlyMode);
 
             #endregion
 
             #region Playerbewegung
 
             Vector3 move = Player.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;
-            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
 
             Player.OnGround = false;
             bool collision = false;
@@ -128,13 +146,16 @@ namespace OctoAwesome.Runtime
                         for (int x = minx; x <= maxx; x++)
                         {
                             Index3 pos = new Index3(x, y, z);
-                            IBlock block = GetBlock(pos +
-                                Player.Position.GlobalBlockIndex);
-                            if (block == null)
+                            Index3 blockPos = pos + Player.Position.GlobalBlockIndex;
+                            ushort block = localChunkCache.GetBlock(blockPos);
+                            if (block == 0)
                                 continue;
 
                             Axis? localAxis;
-                            float? moveFactor = block.Intersect(pos, playerBox, move, out localAxis);
+                            IBlockDefinition blockDefinition = DefinitionManager.Instance.GetBlockDefinitionByIndex(block);
+                            float? moveFactor = Block.Intersect(
+                                blockDefinition.GetCollisionBoxes(localChunkCache, blockPos.X, blockPos.Y, blockPos.Z),
+                                pos, playerBox, move, out localAxis);
 
                             if (moveFactor.HasValue && moveFactor.Value < min)
                             {
@@ -171,19 +192,59 @@ namespace OctoAwesome.Runtime
                 // Koordinate normalisieren (Rundwelt)
                 Coordinate position = Player.Position;
                 position.NormalizeChunkIndexXY(planet.Size);
+
+                //Beam me up
+                KeyboardState ks = Keyboard.GetState();
+                if (ks.IsKeyDown(Keys.P))
+                {
+                    position = position + new Vector3(0, 0, 10);
+                }
+
                 Player.Position = position;
 
                 loop++;
             }
             while (collision && loop < 3);
 
+
+
+            if (Player.Position.ChunkIndex != _oldIndex)
+            {
+                _oldIndex = Player.Position.ChunkIndex;
+                ReadyState = false;
+                localChunkCache.SetCenter(planet, new Index2(Player.Position.ChunkIndex), (success) =>
+                {
+                    ReadyState = success;
+                });                
+            }
+
             #endregion
 
-            #region Block Interaktion
+            #region Block Interaction
 
             if (lastInteract.HasValue)
             {
-                ResourceManager.Instance.SetBlock(planet.Id, lastInteract.Value, null);
+                ushort lastBlock = localChunkCache.GetBlock(lastInteract.Value);
+                localChunkCache.SetBlock(lastInteract.Value, 0);
+
+                if (lastBlock != 0)
+                {
+                    var blockDefinition = DefinitionManager.Instance.GetBlockDefinitionByIndex(lastBlock);
+
+                    var slot = Player.Inventory.Where(s => s.Definition == blockDefinition && s.Amount < blockDefinition.StackLimit).FirstOrDefault();
+
+                    // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
+                    if (slot == null || slot.Amount >= blockDefinition.StackLimit)
+                    {
+                        slot = new InventorySlot()
+                        {
+                            Definition = blockDefinition,
+                            Amount = 0
+                        };
+                        Player.Inventory.Add(slot);
+                    }
+                    slot.Amount++;
+                }
                 lastInteract = null;
             }
 
@@ -202,113 +263,192 @@ namespace OctoAwesome.Runtime
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    ResourceManager.Instance.SetBlock(planet.Id,
-                        lastApply.Value + add, ActiveTool.GetInstance(lastOrientation));
-                    lastApply = null;
+                    if (ActiveTool.Definition is IBlockDefinition)
+                    {
+                        IBlockDefinition definition = ActiveTool.Definition as IBlockDefinition;
+                        localChunkCache.SetBlock(lastApply.Value + add, DefinitionManager.Instance.GetBlockDefinitionIndex(definition));
+
+                        ActiveTool.Amount--;
+                        if (ActiveTool.Amount <= 0)
+                        {
+                            Player.Inventory.Remove(ActiveTool);
+                            ActiveTool = null;
+                        }
+                    }
+
+                    // TODO: Fix Interaction ;)
+                    //ushort block = _manager.GetBlock(lastApply.Value);
+                    //IBlockDefinition blockDefinition = BlockDefinitionManager.GetForType(block);
+                    //IItemDefinition itemDefinition = ActiveTool.Definition;
+
+                    //blockDefinition.Hit(blockDefinition, itemDefinition.GetProperties(null));
+                    //itemDefinition.Hit(null, blockDefinition.GetProperties(block));
                 }
+
+                lastApply = null;
             }
 
             #endregion
         }
-        private IChunk loadChunk(Index3 index)
+
+        private Vector3 PhysicalUpdate(Vector3 velocitydirection, TimeSpan elapsedtime,bool gravity,bool flymode)
         {
-            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
-            return ResourceManager.Instance.GetChunk(planet.Id, index);
+            Vector3 exforce = !flymode ? Player.ExternalForce : Vector3.Zero;
+
+            if (gravity && !flymode)
+            {
+                exforce += new Vector3(0, 0, -20f) * Player.Mass;
+            }
+
+            Vector3 externalPower = ((exforce * exforce) / (2 * Player.Mass)) * (float)elapsedtime.TotalSeconds;
+            externalPower *= new Vector3(Math.Sign(exforce.X), Math.Sign(exforce.Y), Math.Sign(exforce.Z));
+
+            Vector3 friction = new Vector3(1, 1, 0.1f) * Player.FRICTION;
+            Vector3 powerdirection = new Vector3();
+
+            if (flymode)
+            {
+                velocitydirection += new Vector3(0, 0, (float)Math.Sin(Player.Tilt) * Move.Y);
+                friction = Vector3.One * Player.FRICTION;
+            }
+
+            powerdirection += externalPower;
+            powerdirection += (Player.POWER * velocitydirection);
+            if (lastJump && (OnGround || flymode))
+            {
+                Vector3 jumpDirection = new Vector3(0, 0, 1);
+                jumpDirection.Z = 1f;
+                jumpDirection.Normalize();
+                powerdirection += jumpDirection * Player.JUMPPOWER;
+            }
+            lastJump = false;
+
+
+            Vector3 VelocityChange = (2.0f / Player.Mass * (powerdirection - friction * Player.Velocity)) *
+                (float)elapsedtime.TotalSeconds;
+
+            return new Vector3(
+                (float)(VelocityChange.X < 0 ? -Math.Sqrt(-VelocityChange.X) : Math.Sqrt(VelocityChange.X)),
+                (float)(VelocityChange.Y < 0 ? -Math.Sqrt(-VelocityChange.Y) : Math.Sqrt(VelocityChange.Y)),
+                (float)(VelocityChange.Z < 0 ? -Math.Sqrt(-VelocityChange.Z) : Math.Sqrt(VelocityChange.Z)));
+
+        }
+
+        internal void Unload()
+        {
+            localChunkCache.Flush();
         }
 
         /// <summary>
-        /// Liefert den Block an der angegebenen Block-Koodinate zurück.
+        /// Position des Spielers.
         /// </summary>
-        /// <param name="index">Block Index</param>
-        /// <returns>Block oder null, falls dort kein Block existiert</returns>
-        public IBlock GetBlock(Index3 index)
-        {
-            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
-
-            index.NormalizeXY(new Index2(
-                planet.Size.X * Chunk.CHUNKSIZE_X,
-                planet.Size.Y * Chunk.CHUNKSIZE_Y));
-            Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
-
-            // Betroffener Chunk ermitteln
-            Index3 chunkIndex = coordinate.ChunkIndex;
-            if (chunkIndex.X < 0 || chunkIndex.X >= planet.Size.X ||
-                chunkIndex.Y < 0 || chunkIndex.Y >= planet.Size.Y ||
-                chunkIndex.Z < 0 || chunkIndex.Z >= planet.Size.Z)
-                return null;
-            IChunk chunk = localChunkCache.Get(chunkIndex);
-            if (chunk == null)
-                return null;
-
-            return chunk.GetBlock(coordinate.LocalBlockIndex);
-        }
-
-        /// <summary>
-        /// Überschreibt den Block an der angegebenen Koordinate.
-        /// </summary>
-        /// <param name="index">Block-Koordinate</param>
-        /// <param name="block">Neuer Block oder null, falls der alte Bock gelöscht werden soll.</param>
-        public void SetBlock(Index3 index, IBlock block)
-        {
-            IPlanet planet = ResourceManager.Instance.GetPlanet(Player.Position.Planet);
-
-            index.NormalizeXYZ(new Index3(
-                planet.Size.X * Chunk.CHUNKSIZE_X,
-                planet.Size.Y * Chunk.CHUNKSIZE_Y,
-                planet.Size.Z * Chunk.CHUNKSIZE_Z));
-            Coordinate coordinate = new Coordinate(0, index, Vector3.Zero);
-            IChunk chunk = localChunkCache.Get(coordinate.ChunkIndex);
-            chunk.SetBlock(coordinate.LocalBlockIndex, block);
-        }
-
         public Coordinate Position
         {
             get { return Player.Position; }
         }
 
+        /// <summary>
+        /// Radius des Spielers.
+        /// </summary>
         public float Radius
         {
             get { return Player.Radius; }
         }
 
+        /// <summary>
+        /// Winkel des Spielers (Standposition).
+        /// </summary>
         public float Angle
         {
             get { return Player.Angle; }
         }
 
+        /// <summary>
+        /// Höhe des Spielers.
+        /// </summary>
         public float Height
         {
             get { return Player.Height; }
         }
 
+        /// <summary>
+        /// Gibt an, ob der Spieler auf dem Boden steht.
+        /// </summary>
         public bool OnGround
         {
             get { return Player.OnGround; }
         }
 
+        /// <summary>
+        /// Winkel der Kopfstellung.
+        /// </summary>
         public float Tilt
         {
             get { return Player.Tilt; }
         }
 
+        /// <summary>
+        /// Bewegungsvektor des Spielers.
+        /// </summary>
         public Vector2 Move { get; set; }
 
+        /// <summary>
+        /// Kopfbewegeungsvektor des Spielers.
+        /// </summary>
         public Vector2 Head { get; set; }
 
+        /// <summary>
+        /// Den Spieler hüpfen lassen.
+        /// </summary>
         public void Jump()
         {
             lastJump = true;
         }
 
+        /// <summary>
+        /// Lässt den Spieler einen Block entfernen.
+        /// </summary>
+        /// <param name="blockIndex"></param>
         public void Interact(Index3 blockIndex)
         {
             lastInteract = blockIndex;
         }
 
+        /// <summary>
+        /// Setzt einen neuen Block.
+        /// </summary>
+        /// <param name="blockIndex"></param>
+        /// <param name="orientation"></param>
         public void Apply(Index3 blockIndex, OrientationFlags orientation)
         {
             lastApply = blockIndex;
             lastOrientation = orientation;
+        }
+
+        /// <summary>
+        /// DEBUG METHODE: NICHT FÜR VERWENDUNG IM SPIEL!
+        /// </summary>
+        public void AllBlocksDebug()
+        {
+            var blockDefinitions = DefinitionManager.Instance.GetBlockDefinitions();
+
+            foreach (var blockDefinition in blockDefinitions)
+            {
+
+                var slot = Player.Inventory.Where(s => s.Definition == blockDefinition && s.Amount < blockDefinition.StackLimit).FirstOrDefault();
+
+                // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
+                if (slot == null || slot.Amount >= blockDefinition.StackLimit)
+                {
+                    slot = new InventorySlot()
+                    {
+                        Definition = blockDefinition,
+                        Amount = 0
+                    };
+                    Player.Inventory.Add(slot);
+                }
+                slot.Amount++;
+            }
         }
     }
 }

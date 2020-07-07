@@ -1,31 +1,39 @@
-﻿using OctoAwesome.Noise;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-
-        public IUniverse GenerateUniverse(int id)
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            return new Universe(id, "Milchstrasse");
-        }
-
-        public IPlanet GeneratePlanet(int universe, int seed)
-        {
-            Index3 size = new Index3(5000, 5000, 5);
-
-            ComplexPlanet planet = new ComplexPlanet(0, universe, size, this, seed);
-
+            Index3 size = new Index3(12, 12, 3);
+            ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed);
+            planet.Generator = this;
             return planet;
         }
 
-        public IChunk[] GenerateChunk(IPlanet planet, Index2 index)
+        public IChunkColumn GenerateColumn(IEnumerable<IBlockDefinition> blockDefinitions, IPlanet planet, Index2 index)
         {
+            IBlockDefinition sandDefinition = blockDefinitions.FirstOrDefault(d => typeof(SandBlockDefinition) == d.GetType());
+            ushort sandIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), sandDefinition) + 1);
+
+            IBlockDefinition snowDefinition = blockDefinitions.FirstOrDefault(d => typeof(SnowBlockDefinition) == d.GetType());
+            ushort snowIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), snowDefinition) + 1);
+
+            IBlockDefinition groundDefinition = blockDefinitions.FirstOrDefault(d => typeof(GroundBlockDefinition) == d.GetType());
+            ushort groundIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), groundDefinition) + 1);
+
+            IBlockDefinition stoneDefinition = blockDefinitions.FirstOrDefault(d => typeof(StoneBlockDefinition) == d.GetType());
+            ushort stoneIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), stoneDefinition) + 1);
+
+            IBlockDefinition waterDefinition = blockDefinitions.FirstOrDefault(d => typeof(WaterBlockDefinition) == d.GetType());
+            ushort waterIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), waterDefinition) + 1);
+
+            IBlockDefinition grassDefinition = blockDefinitions.FirstOrDefault(d => typeof(GrassBlockDefinition) == d.GetType());
+            ushort grassIndex = (ushort)(Array.IndexOf(blockDefinitions.ToArray(), grassDefinition) + 1);
 
             if (!(planet is ComplexPlanet))
                 throw new ArgumentException("planet is not a Type of ComplexPlanet");
@@ -64,40 +72,52 @@ namespace OctoAwesome.Basics
 
                                     if ((ozeanSurface || surfaceBlock) && (absoluteZ <= (localPlanet.BiomeGenerator.SeaLevel + 2)) && (absoluteZ >= (localPlanet.BiomeGenerator.SeaLevel - 2)))
                                     {
-                                        chunks[i].SetBlock(x, y, z, new SandBlock());
+                                        chunks[i].SetBlock(x, y, z, sandIndex);
                                     }
                                     else if (temp >= 35)
                                     {
-                                        chunks[i].SetBlock(x, y, z, new SandBlock());
+                                        chunks[i].SetBlock(x, y, z, sandIndex);
                                     }
                                     else if (absoluteZ >= localPlanet.Size.Z * Chunk.CHUNKSIZE_Z * 0.6f)
                                     {
                                         if (temp > 12)
-                                            chunks[i].SetBlock(x, y, z, new GroundBlock());
+                                            chunks[i].SetBlock(x, y, z, groundIndex);
                                         else
-                                            chunks[i].SetBlock(x, y, z, new StoneBlock());
+                                            chunks[i].SetBlock(x, y, z, stoneIndex);
                                     }
                                     else if (temp >= 8)
                                     {
                                         if (surfaceBlock && !ozeanSurface)
                                         {
-                                            chunks[i].SetBlock(x, y, z, new GrassBlock());
+                                            chunks[i].SetBlock(x, y, z, grassIndex);
                                             surfaceBlock = false;
                                         }
                                         else
                                         {
-                                            chunks[i].SetBlock(x, y, z, new GroundBlock());
+                                            chunks[i].SetBlock(x, y, z, groundIndex);
+                                        }
+                                    }
+                                    else if (temp <= 0)
+                                    {
+                                        if (surfaceBlock && !ozeanSurface)
+                                        {
+                                            chunks[i].SetBlock(x, y, z, snowIndex);
+                                            surfaceBlock = false;
+                                        }
+                                        else
+                                        {
+                                            chunks[i].SetBlock(x, y, z, groundIndex);
                                         }
                                     }
                                     else
                                     {
-                                        chunks[i].SetBlock(x, y, z, new GroundBlock());
+                                        chunks[i].SetBlock(x, y, z, groundIndex);
                                     }
                                     obersteSchicht--;
                                 }
                                 else
                                 {
-                                    chunks[i].SetBlock(x, y, z, new StoneBlock());
+                                    chunks[i].SetBlock(x, y, z, stoneIndex);
                                 }
 
 
@@ -105,7 +125,7 @@ namespace OctoAwesome.Basics
                             else if ((z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel)
                             {
 
-                                chunks[i].SetBlock(x, y, z, new WaterBlock());
+                                chunks[i].SetBlock(x, y, z, waterIndex);
                                 ozeanSurface = true;
                             }
 
@@ -171,7 +191,23 @@ namespace OctoAwesome.Basics
             //});
 
 
-            return chunks;
+            ChunkColumn column = new ChunkColumn(chunks, planet.Id, index);
+            column.CalculateHeights();
+            return column;
+        }
+
+        public IPlanet GeneratePlanet(Stream stream)
+        {
+            IPlanet planet = new ComplexPlanet();
+            planet.Deserialize(stream);
+            return planet;
+        }
+
+        public IChunkColumn GenerateColumn(Stream stream, IDefinitionManager definitionManager, int planetId, Index2 index)
+        {
+            IChunkColumn column = new ChunkColumn();
+            column.Deserialize(stream, definitionManager, planetId, index);
+            return column;
         }
     }
 }
