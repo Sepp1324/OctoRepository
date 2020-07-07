@@ -1,6 +1,5 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
-using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
@@ -9,13 +8,15 @@ namespace OctoAwesome.Client.Screens
     {
         public MainScreen(ScreenComponent manager) : base(manager)
         {
-            Padding = new Border(0,0,0,0);
+            Padding = new Border(0, 0, 0, 0);
 
-            Image background = new Image(manager);
-            background.Texture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background.png", manager.GraphicsDevice);
-            background.VerticalAlignment = VerticalAlignment.Stretch;
-            background.HorizontalAlignment = HorizontalAlignment.Stretch;
-            Controls.Add(background);
+            //Image background = new Image(manager);
+            //background.Texture = manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background.png", manager.GraphicsDevice);
+            //background.VerticalAlignment = VerticalAlignment.Stretch;
+            //background.HorizontalAlignment = HorizontalAlignment.Stretch;
+            //Controls.Add(background);
+
+            Background = new TextureBrush(manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background.png", manager.GraphicsDevice), TextureBrushMode.Stretch);
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);

@@ -18,22 +18,7 @@ namespace OctoAwesome.Client.Screens
 
             Padding = new Border(0, 0, 0, 0);
 
-            //Background
-            Image background = new Image(manager);
-            background.Texture = Manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background_notext.png", Manager.GraphicsDevice);
-            background.VerticalAlignment = VerticalAlignment.Stretch;
-            background.HorizontalAlignment = HorizontalAlignment.Stretch;
-            Controls.Add(background);
-
-            Button backButton = Button.TextButton(manager, Languages.OctoClient.Back);
-            backButton.VerticalAlignment = VerticalAlignment.Top;
-            backButton.HorizontalAlignment = HorizontalAlignment.Left;
-            backButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateBack();
-            };
-            backButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(backButton);
+            SetDefaultBackground();
 
             Panel panel = new Panel(manager);
             panel.VerticalAlignment = VerticalAlignment.Stretch;
@@ -49,7 +34,7 @@ namespace OctoAwesome.Client.Screens
             panel.Controls.Add(grid);
 
             grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.Columns.Add(new ColumnDefinition() { Width = 1,ResizeMode = ResizeMode.Parts });
+            grid.Columns.Add(new ColumnDefinition() { Width = 1, ResizeMode = ResizeMode.Parts });
 
             nameInput = GetTextbox();
             nameInput.TextChanged += (s, e) => {
@@ -86,7 +71,7 @@ namespace OctoAwesome.Client.Screens
         private void AddLabeledControl(Grid grid, String name, Control c)
         {
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count -1);
+            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count - 1);
             grid.AddControl(c, 1, grid.Rows.Count - 1);
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 10 });
         }

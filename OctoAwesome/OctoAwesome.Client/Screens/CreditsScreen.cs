@@ -1,13 +1,7 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework.Storage;
 using OctoAwesome.Client.Components;
 using MonoGameUi;
-using Microsoft.Xna.Framework.Input;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -19,21 +13,7 @@ namespace OctoAwesome.Client.Screens
 
             Title = Languages.OctoClient.CreditsCrew;
 
-            Image background = new Image(manager);
-            background.Texture = Manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background_notext.png", Manager.GraphicsDevice);
-            background.VerticalAlignment = VerticalAlignment.Stretch;
-            background.HorizontalAlignment = HorizontalAlignment.Stretch;
-            Controls.Add(background);
-
-            Button backButton = Button.TextButton(manager, Languages.OctoClient.Back);
-            backButton.VerticalAlignment = VerticalAlignment.Top;
-            backButton.HorizontalAlignment = HorizontalAlignment.Left;
-            backButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateBack();
-            };
-            backButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(backButton);
+            SetDefaultBackground();
 
             List<CrewMember> crew = CrewMember.getCrew(manager);
 
@@ -44,14 +24,15 @@ namespace OctoAwesome.Client.Screens
                 CanFocus = false
             };
 
-            StackPanel crewList = new StackPanel(manager) {
+            StackPanel crewList = new StackPanel(manager)
+            {
                 MinWidth = 700,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Orientation = Orientation.Vertical,
             };
             crewScroll.Content = crewList;
 
-            foreach(CrewMember member in crew)
+            foreach (CrewMember member in crew)
             {
                 Panel memberPanel = new Panel(manager)
                 {
@@ -80,7 +61,7 @@ namespace OctoAwesome.Client.Screens
                 crewList.Controls.Add(memberPanel);
 
             }
-            
+
 
             Controls.Add(crewScroll);
         }
