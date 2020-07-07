@@ -55,6 +55,7 @@
     <Compile Include="Biomes\IBiome.cs" />
     <Compile Include="Definitions\Blocks\BirchWoodBlockDefinition .cs" />
     <Compile Include="Definitions\Blocks\OrangeLeavesBlockDefinition.cs" />
+    <Compile Include="Definitions\Trees\BirchTreeDefinition.cs" />
     <Compile Include="ITreeDefinition.cs" />
     <Compile Include="Noise\INoise.cs" />
     <Compile Include="Biomes\LandBiomeGenerator.cs" />
