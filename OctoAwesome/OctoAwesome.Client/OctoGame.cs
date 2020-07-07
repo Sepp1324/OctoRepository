@@ -17,7 +17,7 @@ namespace OctoAwesome.Client
     {
 
         GraphicsDeviceManager graphics;
-
+        //HALLO
         CameraComponent camera;
         InputComponent input;
         SceneComponent scene;
