@@ -97,11 +97,29 @@ namespace OctoAwesome.Basics.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gravel.
+        /// </summary>
+        internal static string Gravel {
+            get {
+                return ResourceManager.GetString("Gravel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Green Cotton.
         /// </summary>
         internal static string GreenCotton {
             get {
                 return ResourceManager.GetString("GreenCotton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Greystone.
+        /// </summary>
+        internal static string Greystone {
+            get {
+                return ResourceManager.GetString("Greystone", resourceCulture);
             }
         }
         
@@ -151,11 +169,47 @@ namespace OctoAwesome.Basics.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Oven.
+        /// </summary>
+        internal static string Oven {
+            get {
+                return ResourceManager.GetString("Oven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plank.
+        /// </summary>
+        internal static string Plank {
+            get {
+                return ResourceManager.GetString("Plank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Red Cotton.
         /// </summary>
         internal static string RedCotton {
             get {
                 return ResourceManager.GetString("RedCotton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RedPlank.
+        /// </summary>
+        internal static string RedPlank {
+            get {
+                return ResourceManager.GetString("RedPlank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redstone.
+        /// </summary>
+        internal static string Redstone {
+            get {
+                return ResourceManager.GetString("Redstone", resourceCulture);
             }
         }
         
@@ -192,6 +246,15 @@ namespace OctoAwesome.Basics.Languages {
         internal static string StoneBrick {
             get {
                 return ResourceManager.GetString("StoneBrick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table.
+        /// </summary>
+        internal static string Table {
+            get {
+                return ResourceManager.GetString("Table", resourceCulture);
             }
         }
         

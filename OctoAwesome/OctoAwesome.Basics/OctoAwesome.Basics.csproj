@@ -54,7 +54,12 @@
     <Compile Include="Biomes\HillsBiome.cs" />
     <Compile Include="Biomes\IBiome.cs" />
     <Compile Include="Definitions\Blocks\BirchWoodBlockDefinition .cs" />
+    <Compile Include="Definitions\Blocks\GravelBlockDefinition.cs" />
+    <Compile Include="Definitions\Blocks\GreystoneBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\OrangeLeavesBlockDefinition.cs" />
+    <Compile Include="Definitions\Blocks\PlankBlockDefinition.cs" />
+    <Compile Include="Definitions\Blocks\RedPlankBlockDefinition.cs" />
+    <Compile Include="Definitions\Blocks\RedstoneBlockDefinition.cs" />
     <Compile Include="Definitions\Trees\BirchTreeDefinition.cs" />
     <Compile Include="ITreeDefinition.cs" />
     <Compile Include="Noise\INoise.cs" />
@@ -161,6 +166,12 @@
     <Content Include="Assets\OctoAwesome.Basics\Blocks\grass_top.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\OctoAwesome.Basics\Blocks\gravel.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\OctoAwesome.Basics\Blocks\greystone.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\OctoAwesome.Basics\Blocks\ice.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -171,6 +182,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\OctoAwesome.Basics\Blocks\oven.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\OctoAwesome.Basics\Blocks\planks.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\OctoAwesome.Basics\Blocks\planks_red.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\OctoAwesome.Basics\Blocks\redstone.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\OctoAwesome.Basics\Items\pick_iron.png">
