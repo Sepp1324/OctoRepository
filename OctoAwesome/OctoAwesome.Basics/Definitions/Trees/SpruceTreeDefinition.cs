@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Basics
 {
-    public class OakTreeDefinition : TreeDefinition
+    public class SpruceTreeDefinition : TreeDefinition
     {
         private ushort wood;
         private ushort leave;
@@ -12,20 +12,20 @@ namespace OctoAwesome.Basics
         {
             get
             {
-                return 10;
+                return 15;
             }
-        }
-
-        public override void Init(IDefinitionManager definitionManager)
-        {
-            wood = definitionManager.GetBlockDefinitionIndex<WoodBlockDefinition>();
-            leave = definitionManager.GetBlockDefinitionIndex<LeavesBlockDefinition>();
-            water = definitionManager.GetBlockDefinitionIndex<WaterBlockDefinition>();
         }
 
         public override int GetDensity(IPlanet planet, Index3 index)
         {
             return 4;
+        }
+
+        public override void Init(IDefinitionManager definitionManager)
+        {
+            wood = definitionManager.GetBlockDefinitionIndex<WoodBlockDefinition>();
+            leave = definitionManager.GetBlockDefinitionIndex<OrangeLeavesBlockDefinition>();
+            water = definitionManager.GetBlockDefinitionIndex<WaterBlockDefinition>();
         }
 
         public override void PlantTree(IDefinitionManager definitionManager, IPlanet planet, Index3 index, LocalBuilder builder, int seed)
@@ -34,8 +34,8 @@ namespace OctoAwesome.Basics
             if (ground == water) return;
 
             Random rand = new Random(seed);
-            int height = rand.Next(6, 16);
-            int radius = rand.Next(3, height - 2);
+            int height = rand.Next(3, 5);
+            int radius = rand.Next(3, height);
 
             builder.FillSphere(0, 0, height, radius, leave);
 

@@ -3,16 +3,16 @@ using System.Drawing;
 
 namespace OctoAwesome.Basics
 {
-    public sealed class BlueCottonBlockDefinition : BlockDefinition
+    public sealed class BrickBlockDefinition : BlockDefinition
     {
         public override string Name
         {
-            get { return Languages.OctoBasics.BlueCotton; }
+            get { return Languages.OctoBasics.Brick; }
         }
 
         public override Bitmap Icon
         {
-            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/cotton_blue.png"); }
+            get { return (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/brick_red.png"); }
         }
 
 
@@ -21,7 +21,7 @@ namespace OctoAwesome.Basics
             get
             {
                 return new[] {
-                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/cotton_blue.png")
+                    (Bitmap)Bitmap.FromFile("./Assets/OctoAwesome.Basics/Blocks/brick_red.png"),
                 };
             }
         }
@@ -30,10 +30,10 @@ namespace OctoAwesome.Basics
         {
             return new PhysicalProperties()
             {
-                Density = 2f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
+                Density = 2.5f,
+                FractureToughness = 0.1f,
+                Granularity = 0.1f,
+                Hardness = 0.9f
             };
         }
 
