@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome
 {
@@ -36,13 +33,13 @@ namespace OctoAwesome
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte</param>
-        public Index2(Index2 value) : this(value.X, value.Y) {}
+        public Index2(Index2 value) : this(value.X, value.Y) { }
 
         /// <summary>
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte (X und Y Anteil wird übernommen)</param>
-        public Index2(Index3 value) : this(value.X, value.Y) {}
+        public Index2(Index3 value) : this(value.X, value.Y) { }
 
         /// <summary>
         /// Normalisiert die X-Achse auf die angegebene Größe.
@@ -50,7 +47,7 @@ namespace OctoAwesome
         /// <param name="size">Maximalwert für X</param>
         public void NormalizeX(int size)
         {
-            X = Index2.NormalizeAxis(X, size);
+            X = NormalizeAxis(X, size);
         }
 
         /// <summary>
@@ -77,7 +74,7 @@ namespace OctoAwesome
         /// <param name="size">Maximalwert für Y</param>
         public void NormalizeY(int size)
         {
-            Y = Index2.NormalizeAxis(Y, size);
+            Y = NormalizeAxis(Y, size);
         }
 
         /// <summary>
@@ -134,7 +131,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Der zu normalisierende Index2</param>
         /// <param name="size">3D Size</param>
-        public static Index2 NormalizeXY(Index2 index,Index3 size)
+        public static Index2 NormalizeXY(Index2 index, Index3 size)
         {
             index.NormalizeXY(size);
             return index;
@@ -148,7 +145,7 @@ namespace OctoAwesome
         /// <returns>Entfernung</returns>
         public int ShortestDistanceX(int x, int size)
         {
-            return Index2.ShortestDistanceOnAxis(X, x, size);
+            return ShortestDistanceOnAxis(X, x, size);
         }
 
         /// <summary>
@@ -159,7 +156,7 @@ namespace OctoAwesome
         /// <returns>Entfernung</returns>
         public int ShortestDistanceY(int y, int size)
         {
-            return Index2.ShortestDistanceOnAxis(Y, y, size);
+            return ShortestDistanceOnAxis(Y, y, size);
         }
 
         /// <summary>
@@ -171,7 +168,7 @@ namespace OctoAwesome
         public Index2 ShortestDistanceXY(Index2 destination, Index2 size)
         {
             return new Index2(
-                ShortestDistanceX(destination.X, size.X), 
+                ShortestDistanceX(destination.X, size.X),
                 ShortestDistanceY(destination.Y, size.Y));
         }
 
@@ -328,8 +325,8 @@ namespace OctoAwesome
 
             Index2 other = (Index2)obj;
             return (
-                other.X == this.X &&
-                other.Y == this.Y);
+                other.X == X &&
+                other.Y == Y);
         }
 
         /// <summary>
@@ -338,8 +335,8 @@ namespace OctoAwesome
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return 
-                (X << 16) + 
+            return
+                (X << 16) +
                 Y;
         }
 

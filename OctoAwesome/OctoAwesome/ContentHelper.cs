@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 
 namespace OctoAwesome
@@ -24,15 +22,6 @@ namespace OctoAwesome
             {
                 return Texture2D.FromStream(device, stream);
             }
-
-            //Bitmap bmp = (Bitmap)Bitmap.FromFile(path);
-
-            //using (MemoryStream stream = new MemoryStream())
-            //{
-            //    bmp.Save(stream, ImageFormat.Bmp);
-            //    stream.Seek(0, SeekOrigin.Begin);
-            //    return Texture2D.FromStream(device, stream);
-            //}
         }
     }
 }
