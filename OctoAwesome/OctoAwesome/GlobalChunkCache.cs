@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OctoAwesome
 {
@@ -68,23 +69,22 @@ namespace OctoAwesome
                     cacheItem = new CacheItem()
                     {
                         References = 0,
-                        WritableReferences = 0,
                         ChunkColumn = null
                     };
 
                     cache.Add(new Index3(position, planet), cacheItem);
                 }
-
                 cacheItem.References++;
-                if (writeable) cacheItem.WritableReferences++;
             }
 
             lock (cacheItem)
             {
                 if (cacheItem.ChunkColumn == null)
+                {
                     cacheItem.ChunkColumn = loadDelegate(planet, position);
+                    cacheItem.SavedChangeCounter = cacheItem.ChunkColumn.Chunks.Select(c => c.ChangeCounter).ToArray();
+                }
             }
-
             return cacheItem.ChunkColumn;
         }
 
@@ -140,18 +140,17 @@ namespace OctoAwesome
                 }
 
                 cacheItem.References--;
-                if (writeable) cacheItem.WritableReferences--;
             }
 
-            lock (cacheItem)
-            {
-                if (cacheItem.WritableReferences <= 0 && cacheItem.ChunkColumn != null)
-                {
-                    saveDelegate(planet, position, cacheItem.ChunkColumn);
-                }
-            }
+            //lock (cacheItem)
+            //{
+            //    if (cacheItem.WritableReferences <= 0 && cacheItem.ChunkColumn != null)
+            //    {
+            //        saveDelegate(planet, position, cacheItem.ChunkColumn);
+            //    }
+            //}
 
-            lock(lockObject)
+            lock (lockObject)
             {
                 if (cacheItem.References <= 0)
                 {
@@ -161,15 +160,52 @@ namespace OctoAwesome
             }
         }
 
+        private void Cleanup()
+        {
+            CacheItem[] cacheItems;
+            lock (lockObject)
+            {
+                cacheItems = cache.Values.Where(v => v.IsDirty()).ToArray();
+            }
+
+            foreach (var cacheItem in cacheItems)
+            {
+                lock (cacheItem)
+                {
+                    cacheItem.SavedChangeCounter = cacheItem.ChunkColumn.Chunks.Select(c => c.ChangeCounter).ToArray();
+                    saveDelegate(cacheItem.Planet, cacheItem.Index, cacheItem.ChunkColumn);
+                }
+            }
+
+            //TODO: WORK TO DO
+
+            lock (lockObject)
+            {
+                var keys = cache.Where(v => v.Value.References == 0 && v.Value.ChunkColumn != null && !v.Value.IsDirty()).Select(v => v.Key).ToArray();
+
+                foreach (var key in keys)
+                {
+                    cache[key].ChunkColumn = null;
+                    cache.Remove(key);
+                }
+            }
+        }
+
         /// <summary>
         /// Element für den Cache
         /// </summary>
         private class CacheItem
         {
+            public int Planet { get; set; }
+
+            public Index2 Index { get; set; }
+
             /// <summary>
             /// Die Zahl der Subscriber, die das Item Abboniert hat.
             /// </summary>
             public int References { get; set; }
+
+            public int[] SavedChangeCounter { get; set; }
 
             /// <summary>
             /// Die Zahl der Subscriber, die schreibend auf den Chunk zugreifen. Ihre Referenz wird auch in <see cref="References"/> mitgezählt
@@ -180,6 +216,18 @@ namespace OctoAwesome
             /// Der Chunk, auf den das <see cref="CacheItem"/> referenziert
             /// </summary>
             public IChunkColumn ChunkColumn { get; set; }
+
+            public bool IsDirty()
+            {
+                if (ChunkColumn == null) return false;
+
+                for (int i = 0; i < ChunkColumn.Chunks.Length; i++)
+                {
+                    if (ChunkColumn.Chunks[i].ChangeCounter > SavedChangeCounter[i])
+                        return true;
+                }
+                return false;
+            }
         }
     }
 }
