@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Runtime
 {
@@ -33,6 +35,9 @@ namespace OctoAwesome.Runtime
 
         private Dictionary<int, IPlanet> planets;
 
+        /// <summary>
+        /// Das aktuell geladene Universum.
+        /// </summary>
         public IUniverse CurrentUniverse { get { return universe; } }
 
         #region Singleton
@@ -83,8 +88,8 @@ namespace OctoAwesome.Runtime
         public void NewUniverse(string name, int seed)
         {
             universe = new Universe(Guid.NewGuid(), name, seed);
-                persistenceManager.SaveUniverse(universe);
-            }
+            persistenceManager.SaveUniverse(universe);
+        }
 
         /// <summary>
         /// Gibt alle Universen zurück, die geladen werden können.
@@ -113,7 +118,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Entlädt das aktuelle Universum
+        /// Entlädt das aktuelle Universum.
         /// </summary>
         public void UnloadUniverse()
         {
@@ -124,11 +129,19 @@ namespace OctoAwesome.Runtime
             // TODO: Unload Universe;
         }
 
+        /// <summary>
+        /// Entlädt das aktuelle Universum
+        /// </summary>
+        /// <returns>Das gewünschte Universum, falls es existiert</returns>
         public IUniverse GetUniverse()
         {
             return universe;
         }
 
+        /// <summary>
+        /// Löscht ein Universum.
+        /// </summary>
+        /// <param name="id">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid id)
         {
             if (universe != null && universe.Id == id)
@@ -137,6 +150,11 @@ namespace OctoAwesome.Runtime
             persistenceManager.DeleteUniverse(id);
         }
 
+        /// <summary>
+        /// Gibt den Planeten mit der angegebenen ID zurück
+        /// </summary>
+        /// <param name="id">Die Planteten-ID des gewünschten Planeten</param>
+        /// <returns>Der gewünschte Planet, falls er existiert</returns>
         public IPlanet GetPlanet(int id)
         {
             if (universe == null)
@@ -172,6 +190,11 @@ namespace OctoAwesome.Runtime
             return planet;
         }
 
+        /// <summary>
+        /// Lädt einen Player.
+        /// </summary>
+        /// <param name="playername">Der Name des Players.</param>
+        /// <returns></returns>
         public Player LoadPlayer(string playername)
         {
             if (universe == null)
@@ -183,6 +206,10 @@ namespace OctoAwesome.Runtime
             return player;
         }
 
+        /// <summary>
+        /// Speichert einen Player.
+        /// </summary>
+        /// <param name="player">Der Player.</param>
         public void SavePlayer(Player player)
         {
             if (universe == null)
@@ -263,8 +290,8 @@ namespace OctoAwesome.Runtime
             if (!disablePersistence && value.Chunks.Any(c => c.ChangeCounter > 0))
             {
                 persistenceManager.SaveColumn(universe.Id, planetId, value);
-                foreach (var chunk in value.Chunks)
-                    chunk.ChangeCounter = 0;
+                //foreach (var chunk in value.Chunks)
+                //    chunk.ChangeCounter = 0;
             }
         }
     }

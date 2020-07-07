@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace OctoAwesome
 {
@@ -29,10 +30,27 @@ namespace OctoAwesome
         /// </summary>
         private object lockObject = new object();
 
+        // TODO: Früher oder später nach draußen auslagern
+        private Thread cleanupThread;
+
         /// <summary>
         /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
         /// </summary>
         public int LoadedChunkColumns { get { return cache.Count; } }
+
+        /// <summary>
+        /// Anzahl der noch nicht gespeicherten ChunkColumns.
+        /// </summary>
+        public int DirtyChunkColumn
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    return cache.Values.Where(v => v.IsDirty()).Count();
+                }
+            }
+        }
 
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse GlobalChunkCache
@@ -49,6 +67,11 @@ namespace OctoAwesome
             this.saveDelegate = saveDelegate;
 
             cache = new Dictionary<Index3, CacheItem>();
+
+            cleanupThread = new Thread(BackgroundCleanup);
+            cleanupThread.IsBackground = true;
+            cleanupThread.Priority = ThreadPriority.Lowest;
+            cleanupThread.Start();
         }
 
         /// <summary>
@@ -69,11 +92,12 @@ namespace OctoAwesome
                     cacheItem = new CacheItem()
                     {
                         References = 0,
-                        ChunkColumn = null
+                        ChunkColumn = null,
                     };
 
                     cache.Add(new Index3(position, planet), cacheItem);
                 }
+
                 cacheItem.References++;
             }
 
@@ -85,6 +109,7 @@ namespace OctoAwesome
                     cacheItem.SavedChangeCounter = cacheItem.ChunkColumn.Chunks.Select(c => c.ChangeCounter).ToArray();
                 }
             }
+
             return cacheItem.ChunkColumn;
         }
 
@@ -104,22 +129,20 @@ namespace OctoAwesome
             return null;
         }
 
+        /// <summary>
+        /// Löscht den gesamten Inhalt des Caches.
+        /// </summary>
         public void Clear()
         {
             lock (lockObject)
             {
-                foreach (var item in cache.Values)
+                foreach (var value in cache.Values)
                 {
-                    saveDelegate(
-                        item.ChunkColumn.Planet,
-                        item.ChunkColumn.Index,
-                        item.ChunkColumn);
-
-                    item.ChunkColumn = null;
+                    value.References = 0;
                 }
-
-                cache.Clear();
             }
+
+            Cleanup();
         }
 
         /// <summary>
@@ -131,7 +154,6 @@ namespace OctoAwesome
         public void Release(int planet, Index2 position, bool writeable)
         {
             CacheItem cacheItem = null;
-
             lock (lockObject)
             {
                 if (!cache.TryGetValue(new Index3(position, planet), out cacheItem))
@@ -141,51 +163,46 @@ namespace OctoAwesome
 
                 cacheItem.References--;
             }
+        }
 
-            //lock (cacheItem)
-            //{
-            //    if (cacheItem.WritableReferences <= 0 && cacheItem.ChunkColumn != null)
-            //    {
-            //        saveDelegate(planet, position, cacheItem.ChunkColumn);
-            //    }
-            //}
-
-            lock (lockObject)
+        private void BackgroundCleanup()
+        {
+            while (true)
             {
-                if (cacheItem.References <= 0)
-                {
-                    cacheItem.ChunkColumn = null;
-                    cache.Remove(new Index3(position, planet));
-                }
+                Cleanup();
+                Thread.Sleep(100);
             }
         }
 
         private void Cleanup()
         {
+            // Items mit ChangeCounter sichern
             CacheItem[] cacheItems;
             lock (lockObject)
             {
                 cacheItems = cache.Values.Where(v => v.IsDirty()).ToArray();
+                // DirtyChunkColumn = cacheItems.Length;
             }
 
             foreach (var cacheItem in cacheItems)
             {
                 lock (cacheItem)
                 {
-                    cacheItem.SavedChangeCounter = cacheItem.ChunkColumn.Chunks.Select(c => c.ChangeCounter).ToArray();
-                    saveDelegate(cacheItem.Planet, cacheItem.Index, cacheItem.ChunkColumn);
+                    if (cacheItem.IsDirty())
+                    {
+                        cacheItem.SavedChangeCounter = cacheItem.ChunkColumn.Chunks.Select(c => c.ChangeCounter).ToArray();
+                        saveDelegate(cacheItem.Planet, cacheItem.Index, cacheItem.ChunkColumn);
+                    }
                 }
             }
 
-            //TODO: WORK TO DO
-
+            // Items ohne Ref aus Cache entfernen
             lock (lockObject)
             {
                 var keys = cache.Where(v => v.Value.References == 0 && v.Value.ChunkColumn != null && !v.Value.IsDirty()).Select(v => v.Key).ToArray();
-
                 foreach (var key in keys)
                 {
-                    cache[key].ChunkColumn = null;
+                    // cache[key].ChunkColumn = null;
                     cache.Remove(key);
                 }
             }
@@ -208,11 +225,6 @@ namespace OctoAwesome
             public int[] SavedChangeCounter { get; set; }
 
             /// <summary>
-            /// Die Zahl der Subscriber, die schreibend auf den Chunk zugreifen. Ihre Referenz wird auch in <see cref="References"/> mitgezählt
-            /// </summary>
-            public int WritableReferences { get; set; }
-
-            /// <summary>
             /// Der Chunk, auf den das <see cref="CacheItem"/> referenziert
             /// </summary>
             public IChunkColumn ChunkColumn { get; set; }
@@ -223,9 +235,10 @@ namespace OctoAwesome
 
                 for (int i = 0; i < ChunkColumn.Chunks.Length; i++)
                 {
-                    if (ChunkColumn.Chunks[i].ChangeCounter > SavedChangeCounter[i])
+                    if (ChunkColumn.Chunks[i].ChangeCounter != SavedChangeCounter[i])
                         return true;
                 }
+
                 return false;
             }
         }
