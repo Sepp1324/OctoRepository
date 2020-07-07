@@ -120,7 +120,6 @@ namespace OctoAwesome.Runtime
         public void UnloadUniverse()
         {
             // TODO: Save und Unload
-            // TODO: Unload Chunks
             globalChunkCache.Clear();
             // TODO: Unload Planets
             // TODO: Unload Universe;
@@ -172,16 +171,7 @@ namespace OctoAwesome.Runtime
                     planet = generator.GeneratePlanet(universe.Id, id, universe.Seed + id);
                     // persistenceManager.SavePlanet(universe.Id, planet);
                 }
-
                 planets.Add(id, planet);
-
-                // TODO: Serializer überarbeiten
-                //planet = persistenceManager.LoadPlanet(universe.Id, id);
-                //if (planet == null)
-                //{
-                //    planet = mapGenerator.GeneratePlanet(universe.Id, id, universe.Seed + id);
-                //    persistenceManager.SavePlanet(universe.Id, planet);
-                //}
             }
 
             return planet;

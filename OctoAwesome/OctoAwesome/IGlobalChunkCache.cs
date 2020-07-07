@@ -10,9 +10,8 @@
         /// </summary>
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Position des Chunks</param>
-        /// <param name="writable">Gibt an, ob der Subscriber schreibend zugreifen will</param>
         /// <returns>Den neu abonnierten Chunk</returns>
-        IChunkColumn Subscribe(int planet,Index2 position, bool writable);
+        IChunkColumn Subscribe(int planet, Index2 position);
 
         /// <summary>
         /// Liefert den Chunk, sofern geladen.
@@ -28,7 +27,7 @@
         int LoadedChunkColumns { get; }
 
         /// <summary>
-        /// Anzahl der noch nicht gespeicherten Chunks
+        /// Anzahl der noch nicht gespeicherten ChunkColumns.
         /// </summary>
         int DirtyChunkColumn { get; }
 
@@ -37,9 +36,11 @@
         /// </summary>
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Die Position des freizugebenden Chunks</param>
-        /// <param name="writable">Ist der Chunk schreibbar abonniert worden?</param>
-        void Release(int planet,Index2 position, bool writable);
+        void Release(int planet, Index2 position);
 
+        /// <summary>
+        /// Löscht den gesamten Inhalt des Caches.
+        /// </summary>
         void Clear();
     }
 }

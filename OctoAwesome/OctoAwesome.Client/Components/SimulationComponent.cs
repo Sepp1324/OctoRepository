@@ -1,15 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
 {
@@ -41,14 +32,6 @@ namespace OctoAwesome.Client.Components
 
             Simulation = new Simulation();
             Simulation.LoadGame(guid);
-        }
-
-        public void SaveGame()
-        {
-            if (Simulation == null)
-                return;
-
-            Simulation.SaveGame();
         }
 
         public void ExitGame()

@@ -1,47 +1,65 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-//namespace OctoAwesome.Tests
-//{
-//    internal class TestGlobalCache : IGlobalChunkCache
-//    {
-//        public int LoadCounter { get; private set; }
+namespace OctoAwesome.Tests
+{
+    internal class TestGlobalCache : IGlobalChunkCache
+    {
+        public int LoadCounter { get; private set; }
 
-//        public int SaveCounter { get; private set; }
+        public int SaveCounter { get; private set; }
 
-//        public List<PlanetIndex3> Loaded { get; private set; }
+        public List<PlanetIndex3> Loaded { get; private set; }
 
-//        public int LoadedChunkColumns
-//        {
-//            get
-//            {
-//                throw new NotImplementedException();
-//            }
-//        }
+        public int LoadedChunkColumns
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
-//        public TestGlobalCache()
-//        {
-//            Loaded = new List<PlanetIndex3>();
-//        }
+        public int DirtyChunkColumn
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
-//        public void Reset()
-//        {
-//            LoadCounter = 0;
-//            SaveCounter = 0;
-//            Loaded.Clear();
-//        }
+        public TestGlobalCache()
+        {
+            Loaded = new List<PlanetIndex3>();
+        }
 
-//        public void Release(int planet,Index2 position, bool writable = true)
-//        {
-//            SaveCounter++;
-//        }
+        public void Reset()
+        {
+            LoadCounter = 0;
+            SaveCounter = 0;
+            Loaded.Clear();
+        }
 
-//        public IChunkColumn Subscribe(int planet, Index2 position, bool writable = true)
-//        {
-//            LoadCounter++;
-//            return new ChunkColumn(new IChunk[] { new TestChunk(new PlanetIndex3(planet,new Index3(position,0))) },planet, position);
-//        }
-//    }
-//}
+        public void Release(int planet, Index2 position)
+        {
+            SaveCounter++;
+        }
+
+        public IChunkColumn Subscribe(int planet, Index2 position)
+        {
+            LoadCounter++;
+            return new ChunkColumn(new IChunk[] { }, planet, position);
+        }
+
+        public IChunkColumn Peek(int planet, Index2 position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
