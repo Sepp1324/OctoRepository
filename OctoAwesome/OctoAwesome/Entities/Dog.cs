@@ -1,6 +1,8 @@
-﻿namespace OctoAwesome.Basics.Entities
+﻿using OctoAwesome.Entities;
+
+namespace OctoAwesome.Basics.Entities
 {
-    public class Dog : Entity
+    public class Dog : ControllableEntity
     {
         public Dog(Coordinate coordinate)
         {
