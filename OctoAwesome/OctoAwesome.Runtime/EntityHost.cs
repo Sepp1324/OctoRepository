@@ -37,8 +37,24 @@ namespace OctoAwesome.Runtime
             });
         }
 
+        int lastJump = 0;
+
+        protected virtual void BeforeUpdate(GameTime frameTime)
+        {
+            bool jump = false;
+
+            if(frameTime.TotalGameTime.Seconds > lastJump)
+            {
+                jump = true;
+                lastJump = frameTime.TotalGameTime.Seconds;
+            }
+            Entity.Velocity += PhysicalUpdate(Vector3.Zero, frameTime.ElapsedGameTime, true, jump);
+        }
+
         public virtual void Update(GameTime frameTime)
         {
+            BeforeUpdate(frameTime);
+
             #region Playerbewegung
 
             Vector3 move = Entity.Velocity * (float)frameTime.ElapsedGameTime.TotalSeconds;

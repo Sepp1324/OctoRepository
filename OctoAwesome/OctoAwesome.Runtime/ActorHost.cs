@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Linq;
 
@@ -40,7 +39,7 @@ namespace OctoAwesome.Runtime
         /// Aktualisiert den Spieler (Bewegung, Interaktion)
         /// </summary>
         /// <param name="frameTime">Die aktuelle Zeit.</param>
-        public override void Update(GameTime frameTime)
+        protected override void BeforeUpdate(GameTime frameTime)
         {
             #region Inputverarbeitung
 
@@ -71,8 +70,6 @@ namespace OctoAwesome.Runtime
             lastJump = false;
 
             #endregion
-
-            base.Update(frameTime);
 
             #region Block Interaction
 

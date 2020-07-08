@@ -36,8 +36,10 @@ namespace OctoAwesome.Client.Controls
         private Texture2D sunTexture;
 
         private VertexPositionColor[] selectionLines;
+        private VertexPositionColor[] entityBlock;
         private VertexPositionTexture[] billboardVertices;
         private short[] selectionIndeces;
+        private short[] entityBlockIndices;
         private Index2 currentChunk = new Index2(-1, -1);
 
         private Thread backgroundThread;
@@ -128,6 +130,18 @@ namespace OctoAwesome.Client.Controls
                 new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Microsoft.Xna.Framework.Color.Black * 0.5f),
             };
 
+            entityBlock = new[]
+            {
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, +1f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, +1f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(-0.5f, -0.5f, +1f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(+0.5f, -0.5f, +1f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, -0f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, -0f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(-0.5f, -0.5f, -0f), Microsoft.Xna.Framework.Color.DarkKhaki),
+                new VertexPositionColor(new Vector3(+0.5f, -0.5f, -0f), Microsoft.Xna.Framework.Color.DarkKhaki),
+            };
+
             billboardVertices = new[]
             {
                 new VertexPositionTexture(new Vector3(-0.5f, 0.5f, 0), new Vector2(0, 0)),
@@ -143,6 +157,16 @@ namespace OctoAwesome.Client.Controls
                 0, 1, 0, 2, 1, 3, 2, 3,
                 4, 5, 4, 6, 5, 7, 6, 7,
                 0, 4, 1, 5, 2, 6, 3, 7
+            };
+
+            entityBlockIndices = new short[]
+            {
+                0, 1, 2, 1, 3, 2, //Oben
+                1, 0, 5, 0, 4, 5, //Hinten
+                3, 1, 7, 1, 5, 7, //Rechts
+                2, 3, 6, 3, 7, 6, //Vorne
+                0, 2, 4, 2, 6, 4, //Links
+                7, 6, 5, 6, 4, 5 //Unten
             };
 
             sunEffect = new BasicEffect(manager.GraphicsDevice);
@@ -277,10 +301,8 @@ namespace OctoAwesome.Client.Controls
             TimeSpan diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
 
             float inclination = ((float)Math.Sin(playerPosY) * inclinationVariance) + MathHelper.Pi / 6f;
-            //Console.WriteLine("Stand: " + (MathHelper.Pi + playerPosX) + " Neigung: " + inclination);
             Matrix sunMovement =
                 Matrix.CreateRotationX(inclination) *
-                //Matrix.CreateRotationY((((float)gameTime.TotalGameTime.TotalMinutes * MathHelper.TwoPi) + playerPosX) * -1); 
                 Matrix.CreateRotationY((float)(MathHelper.TwoPi - ((diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi) % MathHelper.TwoPi)));
 
             Vector3 sunDirection = Vector3.Transform(new Vector3(0, 0, 1), sunMovement);
@@ -289,9 +311,6 @@ namespace OctoAwesome.Client.Controls
             simpleShader.Parameters["DiffuseIntensity"].SetValue(0.6f);
             simpleShader.Parameters["DiffuseDirection"].SetValue(sunDirection);
 
-            // Console.WriteLine(sunDirection);
-
-            // Index3 chunkOffset = player.ActorHost.Position.ChunkIndex;
             Index3 chunkOffset = camera.CameraChunk;
             Microsoft.Xna.Framework.Color background =
                 new Microsoft.Xna.Framework.Color(181, 224, 255);
@@ -369,16 +388,32 @@ namespace OctoAwesome.Client.Controls
                     renderer.Draw(camera.View, camera.Projection, shift);
             }
 
+            Index3 offset = camera.CameraChunk * Chunk.CHUNKSIZE;
+            Index3 planetSize = planet.Size * Chunk.CHUNKSIZE;
+
             foreach (var item in Manager.Game.Simulation.Simulation.Entities.ToArray())
             {
+                if (item == player.ActorHost.Player)
+                    continue;
 
+                Vector3 relativePosition = new Index3(
+                    Index2.ShortestDistanceOnAxis(offset.X, item.Position.GlobalBlockIndex.X, planetSize.X),
+                    Index2.ShortestDistanceOnAxis(offset.Y, item.Position.GlobalBlockIndex.Y, planetSize.Y),
+                    item.Position.GlobalBlockIndex.Z - offset.Z) + item.Position.BlockPosition;
+
+                selectionEffect.World = Matrix.CreateScale(item.Radius, item.Radius, item.Height) * Matrix.CreateTranslation(relativePosition);
+                selectionEffect.View = camera.View;
+                selectionEffect.Projection = camera.Projection;
+                foreach (var pass in selectionEffect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, entityBlock, 0, 8, entityBlockIndices, 0, 12);
+                }
             }
 
             if (player.SelectedBox.HasValue)
             {
                 // Index3 offset = player.ActorHost.Position.ChunkIndex * Chunk.CHUNKSIZE;
-                Index3 offset = camera.CameraChunk * Chunk.CHUNKSIZE;
-                Index3 planetSize = planet.Size * Chunk.CHUNKSIZE;
                 Index3 relativePosition = new Index3(
                     Index2.ShortestDistanceOnAxis(offset.X, player.SelectedBox.Value.X, planetSize.X),
                     Index2.ShortestDistanceOnAxis(offset.Y, player.SelectedBox.Value.Y, planetSize.Y),
@@ -398,7 +433,6 @@ namespace OctoAwesome.Client.Controls
                     Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.LineList, selectionLines, 0, 8, selectionIndeces, 0, 12);
                 }
             }
-
             Manager.GraphicsDevice.SetRenderTarget(null);
         }
 
