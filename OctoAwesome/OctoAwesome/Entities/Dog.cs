@@ -5,8 +5,8 @@
         public Dog(Coordinate coordinate)
         {
             Position = coordinate;
-            Radius = 3;
-            Height = 4;
+            Radius = 0.5f;
+            Height = 1f;
             Mass = 100;
         }
     }
