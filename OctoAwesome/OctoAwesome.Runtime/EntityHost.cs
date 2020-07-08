@@ -161,6 +161,9 @@ namespace OctoAwesome.Runtime
                 //    position = position + new Vector3(0, 0, 10);
                 //}
 
+                //Chunkwechsel signalisieren
+                if(Entity.Position.ChunkIndex.X != position.ChunkIndex.X || Entity.Position.ChunkIndex.Y != position.ChunkIndex.Y)
+                    ChunkMove(new Index2(Entity.Position.ChunkIndex), new Index2(position.ChunkIndex));
                 Entity.Position = position;
 
                 loop++;
@@ -182,18 +185,25 @@ namespace OctoAwesome.Runtime
             #endregion
         }
 
-        private void ChunkMove(Index2 oldIndex, Index2 newIndex)
+        private void ChunkMove(Index2? oldIndex, Index2? newIndex)
         {
             int activationRange = 3;
 
-            for (int x = -activationRange; x <= activationRange; x++)
-            {
-                for (int y = -activationRange; y <= activationRange; y++)
+            if(oldIndex.HasValue) {
+                for (int x = -activationRange; x <= activationRange; x++)
                 {
-                    Index2 pos = new Index2(oldIndex.X + x, oldIndex.Y + y);
-                    pos.NormalizeXY(planet.Size);
-                    ResourceManager.Instance.EntityCache.Unsubscribe(pos);
+                    for (int y = -activationRange; y <= activationRange; y++)
+                    {
+                        Index2 pos = new Index2(oldIndex.Value.X + x, oldIndex.Value.Y + y);
+                        pos.NormalizeXY(planet.Size);
+                        ResourceManager.Instance.EntityCache.Unsubscribe(pos);
+                    }
                 }
+            }
+
+            if (newIndex.HasValue)
+            {
+                
             }
         }
 

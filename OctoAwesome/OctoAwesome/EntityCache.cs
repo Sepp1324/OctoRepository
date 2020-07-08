@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace OctoAwesome
 {
     public sealed class EntityCache
     {
-        private Dictionary<Index2, int> referenceCounter = new Dictionary<Index2, int>();
+        private Dictionary<PlanetIndex2, int> passiveCounter = new Dictionary<PlanetIndex2, int>();
+
+        private Dictionary<PlanetIndex2, int> referenceCounter = new Dictionary<PlanetIndex2, int>();
 
         private List<X> Entries { get; set; }
 
@@ -21,24 +24,63 @@ namespace OctoAwesome
             }
         }
 
-        public void Subscribe(Index2 index)
+        public void Subscribe(IPlanet planet, Index2 index, int activationRange)
         {
-            if(!referenceCounter.ContainsKey(index))
+            int softBorder = 1;
+
+            for (int x = -activationRange - softBorder; x <= activationRange + softBorder; x++)
             {
-                referenceCounter.Add(index, 0);
-                //TODO: Entities aus diesem Chunk laden
+                for (int y = -activationRange - softBorder; y <= activationRange + softBorder; y++)
+                {
+                    Index2 pos = new Index2(index.X + x, index.Y + y);
+                    pos.NormalizeXY(planet.Size);
+
+                    PlanetIndex2 i = new PlanetIndex2(planet.Id, index);
+
+                    //Hard Reference
+                    if (x >= -activationRange || x <= activationRange || y >= -activationRange || y <= activationRange)
+                    {
+                        if (!referenceCounter.ContainsKey(i))
+                            referenceCounter.Add(i, 0);
+                        referenceCounter[i]++;
+                    }
+
+                    //Soft Reference
+                    if (!passiveCounter.ContainsKey(i))
+                        passiveCounter.Add(i, 0);
+                    passiveCounter[i]++;
+                }
             }
-            referenceCounter[index]++;
         }
 
-        public void Unsubscribe(Index2 index)
+        public void Unsubscribe(IPlanet planet, Index2 index, int activationRange)
         {
-            referenceCounter[index]--;
+            int softBorder = 1;
 
-            if(referenceCounter[index] <= 0)
+            for (int x = -activationRange - softBorder; x <= activationRange + softBorder; x++)
             {
-                //TODO: Entities ausladen
-                referenceCounter.Remove(index);
+                for (int y = -activationRange - softBorder; y <= activationRange + softBorder; y++)
+                {
+                    Index2 pos = new Index2(index.X + x, index.Y + y);
+                    pos.NormalizeXY(planet.Size);
+
+                    PlanetIndex2 i = new PlanetIndex2(planet.Id, index);
+
+                    //Hard Reference
+                    if (x >= -activationRange || x <= activationRange || y >= -activationRange || y <= activationRange)
+                    {
+                        referenceCounter[i]--;
+
+                        if (referenceCounter[i] <= 0)
+                            referenceCounter.Remove(i);
+                    }
+
+                    //Soft Reference
+                    passiveCounter[i]--;
+
+                    if (passiveCounter[i] <= 0)
+                        passiveCounter.Remove(i);
+                }
             }
         }
 
