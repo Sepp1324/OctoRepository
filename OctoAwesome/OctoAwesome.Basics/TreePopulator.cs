@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -54,7 +53,13 @@ namespace OctoAwesome.Basics
                     int x = random.Next(Chunk.CHUNKSIZE_X / 2, Chunk.CHUNKSIZE_X * 3 / 2);
                     int y = random.Next(Chunk.CHUNKSIZE_Y / 2, Chunk.CHUNKSIZE_Y * 3 / 2);
                     int z = LocalBuilder.GetSurfaceHeight(column00, column10, column01, column11, x, y);
-                    
+
+                    float blocktemp = planet.ClimateMap.GetTemperature(new Index3(column00.Index.X * Chunk.CHUNKSIZE_X,
+                    column00.Index.Y * Chunk.CHUNKSIZE_X, z));
+
+                    if (blocktemp > treeDefinition.MaxTemperature || blocktemp < treeDefinition.MinTemperature)
+                        continue;
+
                     LocalBuilder builder = new LocalBuilder(x, y, z + 1, column00, column10, column01, column11);
                     treeDefinition.PlantTree(definitionManager, planet, new Index3(x, y, z), builder, random.Next(int.MaxValue));
                 }

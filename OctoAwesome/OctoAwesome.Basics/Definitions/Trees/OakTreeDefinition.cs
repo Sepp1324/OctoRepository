@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -16,6 +13,22 @@ namespace OctoAwesome.Basics
             get
             {
                 return 10;
+            }
+        }
+
+        public override float MaxTemperature
+        {
+            get
+            {
+                return 27;
+            }
+        }
+
+        public override float MinTemperature
+        {
+            get
+            {
+                return -5;
             }
         }
 

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace OctoAwesome.Basics
+﻿namespace OctoAwesome.Basics
 {
     interface ITreeDefinition
     {
         int Order { get; }
+
+        float MaxTemperature { get; }
+
+        float MinTemperature { get; }
 
         void Init(IDefinitionManager definitionManager);
 
