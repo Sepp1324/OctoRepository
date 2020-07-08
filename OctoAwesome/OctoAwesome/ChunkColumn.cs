@@ -6,7 +6,7 @@ using System.Linq;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Welt-Modell einer Säule aus <see cref="IChunk"/>s.
+    /// World Model of an Column(Säule) <see cref="IChunk"/>s.
     /// </summary>
     public class ChunkColumn : IChunkColumn
     {
@@ -29,6 +29,7 @@ namespace OctoAwesome
         public ChunkColumn()
         {
             Heights = new int[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
+            Entities = new List<Entity>();
         }
 
         /// <summary>
@@ -71,6 +72,11 @@ namespace OctoAwesome
             get;
             private set;
         }
+
+        /// <summary>
+        /// Listing of all Entities (current Column)
+        /// </summary> 
+        public IList<Entity> Entities { get; set; }
 
         /// <summary>
         /// Gibt an, ob die ChunkColumn schon von einem <see cref="IMapPopulator"/> bearbeitet wurde.
