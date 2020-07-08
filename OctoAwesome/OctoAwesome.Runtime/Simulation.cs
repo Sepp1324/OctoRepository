@@ -134,9 +134,9 @@ namespace OctoAwesome.Runtime
             host.Initialize();
 
             Coordinate dogCoordinate = host.Position + new Index3(5, 0, 2);
-            Dog dog = new Dog(dogCoordinate);
+            Dog wauzi = new Dog(dogCoordinate);
 
-            var dogHost = new EntityHost(dog);
+            var dogHost = new EntityHost(wauzi);
 
             entityHosts.Add(dogHost);
             dogHost.Initialize();

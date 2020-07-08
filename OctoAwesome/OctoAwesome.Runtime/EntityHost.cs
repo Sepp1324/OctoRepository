@@ -44,7 +44,7 @@ namespace OctoAwesome.Runtime
         {
             bool jump = false;
 
-            if(frameTime.TotalGameTime.Seconds > lastJump)
+            if (frameTime.TotalGameTime.Seconds > lastJump)
             {
                 jump = true;
                 lastJump = frameTime.TotalGameTime.Seconds;
@@ -180,6 +180,21 @@ namespace OctoAwesome.Runtime
             }
 
             #endregion
+        }
+
+        private void ChunkMove(Index2 oldIndex, Index2 newIndex)
+        {
+            int activationRange = 3;
+
+            for (int x = -activationRange; x <= activationRange; x++)
+            {
+                for (int y = -activationRange; y <= activationRange; y++)
+                {
+                    Index2 pos = new Index2(oldIndex.X + x, oldIndex.Y + y);
+                    pos.NormalizeXY(planet.Size);
+                    ResourceManager.Instance.EntityCache.Unsubscribe(pos);
+                }
+            }
         }
 
         internal void Unload()
