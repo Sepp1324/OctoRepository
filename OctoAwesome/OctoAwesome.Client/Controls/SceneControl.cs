@@ -9,6 +9,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using OctoAwesome.Runtime;
 using System.Drawing;
+using System.Linq;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -366,6 +367,11 @@ namespace OctoAwesome.Client.Controls
 
                 if (camera.Frustum.Intersects(chunkBox))
                     renderer.Draw(camera.View, camera.Projection, shift);
+            }
+
+            foreach (var item in Manager.Game.Simulation.Simulation.Entities.ToArray())
+            {
+
             }
 
             if (player.SelectedBox.HasValue)

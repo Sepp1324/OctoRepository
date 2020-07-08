@@ -1,21 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class SimulationComponent : GameComponent
     {
-        private Simulation Simulation { get; set; }
+        public Simulation Simulation { get; private set; }
 
         public SimulationComponent(Game game) : base(game) { }
 
