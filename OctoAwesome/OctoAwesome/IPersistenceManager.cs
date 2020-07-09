@@ -65,6 +65,24 @@ namespace OctoAwesome
         void SaveColumn(Guid universeGuid, int planetId, IChunkColumn column);
 
         /// <summary>
+        /// Laden von Entities
+        /// </summary>
+        /// <param name="universeGuid">GUID des Universums</param>
+        /// <param name="planet">Index des Planeten</param>
+        /// <param name="columnIndex">Column-Adresse</param>
+        /// <returns>Liste der Entities</returns>
+        Entity[] LoadEntities(Guid universeGuid, IPlanet planet, Index2 columnIndex);
+
+        /// <summary>
+        /// Speichern von Entities
+        /// </summary>
+        /// <param name="universeGuid">GUID des Universums</param>
+        /// <param name="planet">Index des Planeten</param>
+        /// <param name="columnIndexn">Column-Adresse</param>
+        /// <param name="entities">Liste der Entities</param>
+        void SaveEntities(Guid universeGuid, IPlanet planet, Index2 columnIndexn, Entity[] entities);
+
+        /// <summary>
         /// Lädt einen Player.
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>

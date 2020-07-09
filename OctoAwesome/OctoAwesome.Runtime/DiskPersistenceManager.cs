@@ -123,6 +123,16 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        public Entity[] LoadEntities(Guid universeGuid, IPlanet planet, Index2 columnIndex)
+        {
+            return null;
+        }
+
+        public void SaveEntities(Guid universeGuid, IPlanet planet, Index2 columnIndex, Entity[] entities)
+        {
+
+        }
+
         /// <summary>
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>

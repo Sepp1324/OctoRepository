@@ -3,7 +3,7 @@
     /// <summary>
     /// Datenstruktur zur genauen bestimmung einer Column und seinen Planeten
     /// </summary>
-    class PlanetIndex2
+    public struct PlanetIndex2
     {
         /// <summary>
         /// Die Planeten-ID
