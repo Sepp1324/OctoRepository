@@ -7,11 +7,7 @@ namespace OctoAwesome
     {
         private object lockObject = new object();
 
-        private Dictionary<PlanetIndex2, int> passiveCounter = new Dictionary<PlanetIndex2, int>();
-
-        private Dictionary<PlanetIndex2, int> referenceCounter = new Dictionary<PlanetIndex2, int>();
-
-        private Dictionary<PlanetIndex2, LoaderState> loaderStates = new Dictionary<PlanetIndex2, LoaderState>();
+        private Dictionary<PlanetIndex2, SubscriptionInfo> references = new Dictionary<PlanetIndex2, SubscriptionInfo>();
 
         private List<X> Entries { get; set; }
 
@@ -44,32 +40,33 @@ namespace OctoAwesome
 
                         PlanetIndex2 i = new PlanetIndex2(planet.Id, index);
 
+                        //Soft Reference
+                        SubscriptionInfo reference;
+
+                        if(!references.TryGetValue(i, out reference))
+                        {
+                            reference = new SubscriptionInfo()
+                            {
+                                LoaderState = LoaderState.ToLoad,
+                                Position = i
+                            };
+                            references.Add(i, reference); 
+                        }
+                        else
+                        {
+                            switch (reference.LoaderState)
+                            {
+                                case LoaderState.ToUnload: reference.LoaderState = LoaderState.Ready; break;
+                                case LoaderState.Unloading: reference.LoaderState = LoaderState.CancleUnload; break;
+                            }
+                        }
+
                         //Hard Reference
                         if (x >= -activationRange || x <= activationRange || y >= -activationRange || y <= activationRange)
                         {
-                            if (!referenceCounter.ContainsKey(i))
-                                referenceCounter.Add(i, 0);
-                            referenceCounter[i]++;
+                            reference.HardReference++;
                         }
-
-                        //Soft Reference
-                        if (!passiveCounter.ContainsKey(i))
-                        {
-                            passiveCounter.Add(i, 0);
-
-                            //Entities aus diesem Chunk laden
-                            if (!loaderStates.ContainsKey(i))
-                                loaderStates.Add(i, LoaderState.ToLoad);
-                            else
-                            {
-                                switch (loaderStates[i])
-                                {
-                                    case LoaderState.ToUnload: loaderStates[i] = LoaderState.Ready; break;
-                                    case LoaderState.Unloading: loaderStates[i] = LoaderState.CancleUnload; break;
-                                }
-                            }
-                        }
-                        passiveCounter[i]++;
+                        reference.SoftReference++;
                     }
                 }
             }
@@ -90,29 +87,27 @@ namespace OctoAwesome
 
                         PlanetIndex2 i = new PlanetIndex2(planet.Id, index);
 
+                        SubscriptionInfo reference = references[i];
+
                         //Hard Reference
                         if (x >= -activationRange || x <= activationRange || y >= -activationRange || y <= activationRange)
                         {
-                            referenceCounter[i]--;
-
-                            if (referenceCounter[i] <= 0)
-                                referenceCounter.Remove(i);
+                            reference.HardReference--;
                         }
+                        reference.SoftReference--;
 
                         //Soft Reference
-                        passiveCounter[i]--;
 
-                        if (passiveCounter[i] <= 0)
+                        if (reference.SoftReference <= 0)
                         {
                             //Entities ausladen
-                            switch (loaderStates[i])
+                            switch (reference.LoaderState)
                             {
-                                case LoaderState.CancleUnload: loaderStates[i] = LoaderState.Unloading; break;
-                                case LoaderState.ToUnload: loaderStates[i] = LoaderState.Ready; break;
+                                case LoaderState.CancleUnload: reference.LoaderState = LoaderState.Unloading; break;
+                                case LoaderState.ToUnload: reference.LoaderState = LoaderState.Ready; break;
                             }
 
                         }
-                        passiveCounter.Remove(i);
                     }
                 }
             }
@@ -127,9 +122,11 @@ namespace OctoAwesome
                 lock (lockObject)
                 {
                     //Ermittelt das Element, welches als nächstes geladen werden soll
-                    if (loaderStates.Where(s => s.Value == LoaderState.ToLoad).Any())
+                    var subscriptionInfo = references.Values.Where(s => s.LoaderState == LoaderState.ToLoad).FirstOrDefault();
+
+                    if (subscriptionInfo != null)
                     {
-                        toload = loaderStates.Where(s => s.Value == LoaderState.ToLoad).First().Key;
+                        toload = subscriptionInfo.Position;
                         loaderStates[toload.Value] = LoaderState.Loading;
                     }
                 }
@@ -153,8 +150,8 @@ namespace OctoAwesome
                     {
                         if (loaderStates.Where(s => s.Value == LoaderState.ToUnload).Any())
                         {
-                            toload = loaderStates.Where(s => s.Value == LoaderState.ToUnload).First().Key;
-                            loaderStates[toload.Value] = LoaderState.Unloading;
+                            tounload = loaderStates.Where(s => s.Value == LoaderState.ToUnload).First().Key;
+                            loaderStates[tounload.Value] = LoaderState.Unloading;
                         }
                     }
 
@@ -193,6 +190,17 @@ namespace OctoAwesome
                 //TODO: Entitymovement
                 //TODO: Chunk Move
             }
+        }
+
+        private class SubscriptionInfo
+        {
+            public PlanetIndex2 Position { get; set; }
+
+            public int HardReference { get; set; }
+
+            public int SoftReference { get; set; }
+
+            public LoaderState LoaderState { get; set; }
         }
 
         private enum LoaderState
