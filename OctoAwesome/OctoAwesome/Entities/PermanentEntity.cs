@@ -1,7 +1,9 @@
-﻿namespace OctoAwesome.Entities
+﻿using System.IO;
+
+namespace OctoAwesome.Entities
 {
     /// <summary>
-    /// Entity, das dauert haft simuliert werden muss (z.B Player)
+    /// Entität, das dauert haft simuliert werden muss (z.B Player)
     /// </summary>
     public class PermanentEntity : ControllableEntity
     {

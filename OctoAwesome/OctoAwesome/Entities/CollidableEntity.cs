@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace OctoAwesome.Entities
@@ -31,5 +32,23 @@ namespace OctoAwesome.Entities
         /// Die Körperhöhe des Entities in Blocks
         /// </summary>
         public float Height { get; set; }
+
+        public override void Serialize(BinaryWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.Write(Mass);
+            writer.Write(Radius);
+            writer.Write(Height);
+        }
+
+        public override void Deserialize(BinaryReader reader)
+        {
+            base.Deserialize(reader);
+
+            Mass = reader.ReadSingle();
+            Radius = reader.ReadSingle();
+            Height = reader.ReadSingle();
+        }
     }
 }
