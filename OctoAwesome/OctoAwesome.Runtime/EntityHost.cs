@@ -36,6 +36,9 @@ namespace OctoAwesome.Runtime
             {
                 ReadyState = success;
             });
+
+            if (Entity is PermanentEntity)
+                ResourceManager.Instance.EntityCache.Subscribe(planet, new Index2(Entity.Position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
         }
 
         int lastJump = 0;
@@ -162,8 +165,17 @@ namespace OctoAwesome.Runtime
                 //}
 
                 //Chunkwechsel signalisieren
-                if(Entity.Position.ChunkIndex.X != position.ChunkIndex.X || Entity.Position.ChunkIndex.Y != position.ChunkIndex.Y)
-                    ChunkMove(new Index2(Entity.Position.ChunkIndex), new Index2(position.ChunkIndex));
+                if (Entity is PermanentEntity)
+                {
+                    //TODO: Überprüfen, ob die PermanentEntity Prüfung noch notwendig ist
+                    if (Entity.Position.ChunkIndex.X != position.ChunkIndex.X || Entity.Position.ChunkIndex.Y != position.ChunkIndex.Y)
+                    {
+                        ResourceManager.Instance.EntityCache.Unsubscribe(planet, new Index2(Entity.Position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
+                        ResourceManager.Instance.EntityCache.Subscribe(planet, new Index2(position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
+                    }
+                }
+
+                //Neue Position setzen
                 Entity.Position = position;
 
                 loop++;
@@ -185,30 +197,11 @@ namespace OctoAwesome.Runtime
             #endregion
         }
 
-        private void ChunkMove(Index2? oldIndex, Index2? newIndex)
-        {
-            int activationRange = 3;
-
-            if(oldIndex.HasValue) {
-                for (int x = -activationRange; x <= activationRange; x++)
-                {
-                    for (int y = -activationRange; y <= activationRange; y++)
-                    {
-                        Index2 pos = new Index2(oldIndex.Value.X + x, oldIndex.Value.Y + y);
-                        pos.NormalizeXY(planet.Size);
-                        ResourceManager.Instance.EntityCache.Unsubscribe(pos);
-                    }
-                }
-            }
-
-            if (newIndex.HasValue)
-            {
-                
-            }
-        }
-
         internal void Unload()
         {
+            if (Entity is PermanentEntity)
+                ResourceManager.Instance.EntityCache.Unsubscribe(planet, new Index2(Entity.Position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
+
             localChunkCache.Flush();
         }
 

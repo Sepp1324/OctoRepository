@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OctoAwesome
 {
@@ -8,6 +9,8 @@ namespace OctoAwesome
         private Dictionary<PlanetIndex2, int> passiveCounter = new Dictionary<PlanetIndex2, int>();
 
         private Dictionary<PlanetIndex2, int> referenceCounter = new Dictionary<PlanetIndex2, int>();
+
+        private Dictionary<PlanetIndex2, LoaderState> loaderStates = new Dictionary<PlanetIndex2, LoaderState>();
 
         private List<X> Entries { get; set; }
 
@@ -47,7 +50,23 @@ namespace OctoAwesome
 
                     //Soft Reference
                     if (!passiveCounter.ContainsKey(i))
+                    {
                         passiveCounter.Add(i, 0);
+
+                        lock(loaderStates)
+                        {
+                            if (!loaderStates.ContainsKey(i))
+                                loaderStates.Add(i, LoaderState.ToLoad);
+                            else
+                            {
+                                switch(loaderStates[i])
+                                {
+                                    case LoaderState.ToUnload: loaderStates[i] = LoaderState.Ready; break;
+                                    case LoaderState.Unloading: break;
+                                }
+                            }
+                        }
+                    }
                     passiveCounter[i]++;
                 }
             }
@@ -84,6 +103,27 @@ namespace OctoAwesome
             }
         }
 
+        private void LoaderLoop()
+        {
+            while(true)
+            {
+                PlanetIndex2 toload;
+
+                lock(loaderStates)
+                {
+                    toload = loaderStates.Where(s => s.Value == LoaderState.ToLoad).First().Key;
+                    loaderStates[toload] = LoaderState.ToLoad;
+                }
+
+                //TODO: Load toload
+                lock (loaderStates)
+                {
+                    toload = loaderStates.Where(s => s.Value == LoaderState.ToLoad).First().Key;
+                    loaderStates[toload] = LoaderState.Ready;
+                }
+            }
+        }
+
         private class X
         {
             public Index2 Position { get; set; }
@@ -97,6 +137,11 @@ namespace OctoAwesome
                 //TODO: Entitymovement
                 //TODO: Chunk Move
             }
+        }
+
+        private enum LoaderState
+        {
+            ToLoad, Loading, Ready, ToUnload, Unloading
         }
     }
 }

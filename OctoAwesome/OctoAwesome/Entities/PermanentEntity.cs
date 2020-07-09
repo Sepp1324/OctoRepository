@@ -5,5 +5,14 @@
     /// </summary>
     public class PermanentEntity : ControllableEntity
     {
+        /// <summary>
+        /// Aktivierungsradius
+        /// </summary>
+        public readonly int ActivationRange;
+
+        public PermanentEntity(int activationRange)
+        {
+            ActivationRange = activationRange;
+        }
     }
 }

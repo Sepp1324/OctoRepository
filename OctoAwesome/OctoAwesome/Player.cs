@@ -16,6 +16,11 @@ namespace OctoAwesome
         public const int SELECTIONRANGE = 8;
 
         /// <summary>
+        /// Bestimmt den Aktivierungsradius eines Spielers
+        /// </summary>
+        public const int ACTIVATIONRANGE = 4;
+
+        /// <summary>
         /// Die Kraft, die der Spieler hat, um sich fortzubewegen
         /// </summary>
         public const float POWER = 600f;
@@ -51,7 +56,7 @@ namespace OctoAwesome
         /// <summary>
         /// Erzeugt eine neue Player-Instanz an der Default-Position.
         /// </summary>
-        public Player()
+        public Player() : base(ACTIVATIONRANGE)
         {
             Position = new Coordinate(0, new Index3(0, 0, 100), Vector3.Zero);
             Velocity = new Vector3(0, 0, 0);
