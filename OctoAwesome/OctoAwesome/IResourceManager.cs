@@ -37,6 +37,10 @@ namespace OctoAwesome
         /// <param name="player">Der Player.</param>
         void SavePlayer(Player player);
 
+        Entity[] LoadEntities(int planetId, Index2 columnIndex);
+
+        void SaveEntities(int planetId, Index2 columnIndex, Entity[] entities);
+
         /// <summary>
         /// Entlädt das aktuelle Universum
         /// </summary>

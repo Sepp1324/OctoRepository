@@ -30,11 +30,14 @@ namespace OctoAwesome.Runtime
             ReadyState = false;
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(Action successCallback)
         {
             localChunkCache.SetCenter(planet, new Index2(Entity.Position.ChunkIndex), (success) =>
             {
                 ReadyState = success;
+
+                if (successCallback != null)
+                    successCallback();
             });
 
             if (Entity is PermanentEntity)
@@ -165,15 +168,14 @@ namespace OctoAwesome.Runtime
                 //}
 
                 //Chunkwechsel signalisieren
-                if (Entity is PermanentEntity)
-                {
-                    //TODO: Überprüfen, ob die PermanentEntity Prüfung noch notwendig ist
-                    if (Entity.Position.ChunkIndex.X != position.ChunkIndex.X || Entity.Position.ChunkIndex.Y != position.ChunkIndex.Y)
-                    {
-                        ResourceManager.Instance.EntityCache.Unsubscribe(planet, new Index2(Entity.Position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
-                        ResourceManager.Instance.EntityCache.Subscribe(planet, new Index2(position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
-                    }
-                }
+                //if (Entity is PermanentEntity)
+                //{
+                //    //TODO: Überprüfen, ob die PermanentEntity Prüfung noch notwendig ist
+                //    if (Entity.Position.ChunkIndex.X != position.ChunkIndex.X || Entity.Position.ChunkIndex.Y != position.ChunkIndex.Y)
+                //    {
+
+                //    }
+                //}
 
                 //Neue Position setzen
                 Entity.Position = position;
@@ -186,6 +188,12 @@ namespace OctoAwesome.Runtime
 
             if (Entity.Position.ChunkIndex != _oldIndex)
             {
+                if (Entity is PermanentEntity)
+                {
+                    ResourceManager.Instance.EntityCache.Unsubscribe(planet, new Index2(_oldIndex), (Entity as PermanentEntity).ActivationRange);
+                    ResourceManager.Instance.EntityCache.Subscribe(planet, new Index2(Entity.Position.ChunkIndex), (Entity as PermanentEntity).ActivationRange);
+                }
+
                 _oldIndex = Entity.Position.ChunkIndex;
                 ReadyState = false;
                 localChunkCache.SetCenter(planet, new Index2(Entity.Position.ChunkIndex), (success) =>

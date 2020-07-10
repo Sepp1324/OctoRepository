@@ -407,7 +407,27 @@ namespace OctoAwesome.Client.Controls
                 foreach (var pass in selectionEffect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
-                    Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, entityBlock, 0, 8, entityBlockIndices, 0, 12);
+                    Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, entityBlock, 0, entityBlock.Length, entityBlockIndices, 0, 12);
+                }
+            }
+            ////////////////////////////
+            foreach (var item in Manager.Game.Simulation.Simulation.Entities.ToArray())
+            {
+                if (item == player.ActorHost.Player)
+                    continue;
+
+                Vector3 relativePosition = new Index3(
+                    Index2.ShortestDistanceOnAxis(offset.X, item.Position.GlobalBlockIndex.X, planetSize.X),
+                    Index2.ShortestDistanceOnAxis(offset.Y, item.Position.GlobalBlockIndex.Y, planetSize.Y),
+                    item.Position.GlobalBlockIndex.Z - offset.Z) + item.Position.BlockPosition;
+
+                selectionEffect.World = Matrix.CreateScale(2 * item.Radius, 2 * item.Radius, item.Height) * Matrix.CreateTranslation(relativePosition);
+                selectionEffect.View = camera.View;
+                selectionEffect.Projection = camera.Projection;
+                foreach (var pass in selectionEffect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, entityBlock, 0, entityBlock.Length, entityBlockIndices, 0, 12);
                 }
             }
 

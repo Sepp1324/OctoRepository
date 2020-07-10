@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace OctoAwesome
 {
@@ -9,11 +10,24 @@ namespace OctoAwesome
 
         private Dictionary<PlanetIndex2, SubscriptionInfo> references = new Dictionary<PlanetIndex2, SubscriptionInfo>();
 
+        private List<Entity> entities = new List<Entity>();
+
+        private IResourceManager resourceManager;
+
         private List<X> Entries { get; set; }
 
-        public EntityCache()
+        private Thread loaderThread;
+
+        public EntityCache(IResourceManager resourceManager)
         {
+            this.resourceManager = resourceManager;
+
             Entries = new List<X>();
+
+            loaderThread = new Thread(LoaderLoop);
+            loaderThread.IsBackground = true;
+            loaderThread.Priority = ThreadPriority.Lowest;
+            loaderThread.Start();
         }
 
         public void Update()
@@ -103,8 +117,10 @@ namespace OctoAwesome
                             //Entities ausladen
                             switch (reference.LoaderState)
                             {
+                                case LoaderState.Ready: reference.LoaderState = LoaderState.ToUnload; break;
+                                case LoaderState.Loading: reference.LoaderState = LoaderState.ToUnload; break;
+                                case LoaderState.ToLoad: references.Remove(reference.Position); break;
                                 case LoaderState.CancleUnload: reference.LoaderState = LoaderState.Unloading; break;
-                                case LoaderState.ToUnload: reference.LoaderState = LoaderState.Ready; break;
                             }
 
                         }
@@ -127,7 +143,7 @@ namespace OctoAwesome
                     if (subscriptionInfo != null)
                     {
                         toload = subscriptionInfo.Position;
-                        loaderStates[toload.Value] = LoaderState.Loading;
+                        subscriptionInfo.LoaderState = LoaderState.Loading;
                     }
                 }
 
@@ -136,9 +152,12 @@ namespace OctoAwesome
 
                     //TODO: Load toload
                     //Wenn es was zu laden gibt
+                    var loadedEntities = resourceManager.LoadEntities(toload.Value.Planet, toload.Value.ColumnIndex);
+                    entities.AddRange(loadedEntities);
+
                     lock (lockObject)
                     {
-                        loaderStates[toload.Value] = LoaderState.Ready;
+                        references[toload.Value].LoaderState = LoaderState.Ready;
                     }
                 }
                 else
@@ -148,10 +167,12 @@ namespace OctoAwesome
 
                     lock (lockObject)
                     {
-                        if (loaderStates.Where(s => s.Value == LoaderState.ToUnload).Any())
+                        var subscriptionInfo = references.Values.Where(s => s.LoaderState == LoaderState.ToUnload).FirstOrDefault();
+
+                        if (subscriptionInfo != null)
                         {
-                            tounload = loaderStates.Where(s => s.Value == LoaderState.ToUnload).First().Key;
-                            loaderStates[tounload.Value] = LoaderState.Unloading;
+                            tounload = subscriptionInfo.Position;
+                            subscriptionInfo.LoaderState = LoaderState.Unloading;
                         }
                     }
 
@@ -159,16 +180,20 @@ namespace OctoAwesome
                     {
                         //Wenn es was zu entladen gibt
                         //TODO: Save
+                        var savedEntities = entities.Where(e => e.Position.Planet == tounload.Value.Planet &&  e.Position.ChunkIndex.X == tounload.Value.ColumnIndex.X && e.Position.ChunkIndex.Y == tounload.Value.ColumnIndex.Y);
+                        resourceManager.SaveEntities(tounload.Value.Planet, tounload.Value.ColumnIndex, savedEntities.ToArray());
 
                         lock (lockObject)
                         {
-                            if (loaderStates[tounload.Value] == LoaderState.CancleUnload)
+                            var subscriptionInfo = references[tounload.Value];
+
+                            if (subscriptionInfo.LoaderState == LoaderState.CancleUnload)
                             {
-                                loaderStates[tounload.Value] = LoaderState.Ready;
+                                subscriptionInfo.LoaderState = LoaderState.Ready;
                             }
                             else
                             {
-                                loaderStates.Remove(tounload.Value);
+                                references.Remove(subscriptionInfo.Position);
                                 //TODO: Delete Entities
                             }
                         }

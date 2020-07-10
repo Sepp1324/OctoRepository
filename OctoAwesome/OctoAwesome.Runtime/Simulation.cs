@@ -127,11 +127,16 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="player">Der Player.</param>
         /// <returns>Der neue ActorHost zur Steuerung des Spielers.</returns>
-        public ActorHost InsertPlayer(Player player)
+        public ActorHost InsertPlayer(Player player, bool firstTime)
         {
             var host = new ActorHost(player);
             entityHosts.Add(host);
-            host.Initialize();
+
+            host.Initialize(() =>
+            {
+                //if (firstTime) 
+                    //host.BeamUp();
+            });
 
             Coordinate dogCoordinate = host.Position + new Index3(5, 0, 2);
             Dog wauzi = new Dog(dogCoordinate);
@@ -139,7 +144,7 @@ namespace OctoAwesome.Runtime
             var dogHost = new EntityHost(wauzi);
 
             entityHosts.Add(dogHost);
-            dogHost.Initialize();
+            dogHost.Initialize(null);
 
             return host;
         }

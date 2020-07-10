@@ -139,7 +139,7 @@ namespace OctoAwesome.Runtime
                 Dog dog = new Dog(new Coordinate(planetId,
                     new Index3(
                         (int)((columnIndex.X + 0.5f) * Chunk.CHUNKSIZE_X),
-                        (int)((columnIndex.Y + 0.5f) * Chunk.CHUNKSIZE_Y), 1000), Vector3.Zero));
+                        (int)((columnIndex.Y + 0.5f) * Chunk.CHUNKSIZE_Y), 1000), new Vector3(0, 0, 41)));
 
                 return new Entity[] { dog };
             }

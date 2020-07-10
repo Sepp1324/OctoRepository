@@ -51,10 +51,10 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
-            return Simulation.InsertPlayer(player);
+            return Simulation.InsertPlayer(player, true); //TODO: CHEK: TRUE
         }
 
-        public void RemovePlayer(ActorHost host)
+        public void RemovePlayer(ActorHost host) 
         {
             if (Simulation == null)
                 throw new NotSupportedException();
