@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using OctoAwesome.Basics.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -23,9 +21,7 @@ namespace OctoAwesome.Runtime
 
         private const string ColumnFilename = "column_{0}_{1}.dat";
 
-        private const string EntitiesFilename = "entities_{0}_{1}.dat";
-
-        private DirectoryInfo root;
+        private DirectoryInfo root;        
 
         private string GetRoot()
         {
@@ -127,63 +123,6 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        public Entity[] LoadEntities(Guid universeGuid, int planetId, Index2 columnIndex)
-        {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
-            Directory.CreateDirectory(path);
-
-            string file = path = Path.Combine(path, string.Format(EntitiesFilename, columnIndex.X, columnIndex.Y));
-
-            if (!File.Exists(file))
-            {
-                Dog dog = new Dog(new Coordinate(planetId,
-                    new Index3(
-                        (int)((columnIndex.X + 0.5f) * Chunk.CHUNKSIZE_X),
-                        (int)((columnIndex.Y + 0.5f) * Chunk.CHUNKSIZE_Y), 1000), new Vector3(0, 0, 41)));
-
-                return new Entity[] { dog };
-            }
-
-            using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Write))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    int count = reader.ReadInt32();
-                    Entity[] result = new Entity[count];
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        Type type = Type.GetType(reader.ReadString());
-                        Entity entity = (Entity)Activator.CreateInstance(type);
-                        entity.Deserialize(reader);
-                        result[i] = entity;
-                    }
-                    return result;
-                }
-            }
-        }
-
-        public void SaveEntities(Guid universeGuid, int planetId, Index2 columnIndex, Entity[] entities)
-        {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
-            Directory.CreateDirectory(path);
-
-            string file = path = Path.Combine(path, string.Format(EntitiesFilename, columnIndex.X, columnIndex.Y));
-            using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
-            {
-                using (BinaryWriter writer = new BinaryWriter(stream))
-                {
-                    //TODO: Sicherheitssystem
-                    writer.Write(entities.Length);
-                    foreach (var entity in entities)
-                    {
-                        writer.Write(entity.GetType().FullName);
-                        entity.Serialize(writer);
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
@@ -239,7 +178,7 @@ namespace OctoAwesome.Runtime
                 return null;
 
             IMapGenerator generator = null;
-            using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
+            using (Stream stream = File.Open(generatorInfo, FileMode.Create, FileAccess.Read))
             {
                 using (BinaryReader bw = new BinaryReader(stream))
                 {
@@ -274,14 +213,13 @@ namespace OctoAwesome.Runtime
             if (!File.Exists(file))
                 return null;
 
-            try
+            try {
+            using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
+                using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
-                    {
-                        return planet.Generator.GenerateColumn(zip, DefinitionManager.Instance, planet.Id, columnIndex);
-                    }
+                    return planet.Generator.GenerateColumn(zip, DefinitionManager.Instance, planet.Id, columnIndex);
+                }
                 }
             }
             catch (IOException)
@@ -310,8 +248,7 @@ namespace OctoAwesome.Runtime
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                try
-                {
+                try {
                     XmlSerializer serializer = new XmlSerializer(typeof(Player));
                     return (Player)serializer.Deserialize(stream);
                 }

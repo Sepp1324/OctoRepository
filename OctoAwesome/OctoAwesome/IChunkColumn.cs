@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace OctoAwesome
 {
@@ -32,11 +31,6 @@ namespace OctoAwesome
         /// Die Chunks der Säule.
         /// </summary>
         IChunk[] Chunks { get; }
-
-        /// <summary>
-        /// Listing of all Entities (current Column)
-        /// </summary> 
-        IList<Entity> Entities { get; }
 
         /// <summary>
         /// Liefet den Block an der angegebenen Koordinate zurück.

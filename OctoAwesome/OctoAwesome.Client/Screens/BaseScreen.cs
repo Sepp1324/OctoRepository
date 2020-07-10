@@ -1,5 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -40,7 +44,7 @@ namespace OctoAwesome.Client.Screens
 
         protected override void OnKeyPress(KeyEventArgs args)
         {
-            if (Manager.CanGoBack && args.Key == Keys.Escape)
+            if (Manager.CanGoBack && args.Key == Keys.Back)
             {
                 args.Handled = true;
                 Manager.NavigateBack();

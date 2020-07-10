@@ -2,6 +2,9 @@
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -17,6 +20,8 @@ namespace OctoAwesome.Client.Screens
             Manager = manager;
 
             Padding = new Border(0, 0, 0, 0);
+
+            Title = Languages.OctoClient.CreateUniverse;
 
             SetDefaultBackground();
 
@@ -40,12 +45,12 @@ namespace OctoAwesome.Client.Screens
             nameInput.TextChanged += (s, e) => {
                 createButton.Visible = !string.IsNullOrEmpty(e.NewValue);
             };
-            AddLabeledControl(grid, "Name: ", nameInput);
+            AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Name), nameInput);
 
             seedInput = GetTextbox();
-            AddLabeledControl(grid, "Seed: ", seedInput);
+            AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Seed), seedInput);
 
-            createButton = Button.TextButton(manager, "Create");
+            createButton = Button.TextButton(manager, Languages.OctoClient.Create);
             createButton.HorizontalAlignment = HorizontalAlignment.Right;
             createButton.VerticalAlignment = VerticalAlignment.Bottom;
             createButton.Visible = false;

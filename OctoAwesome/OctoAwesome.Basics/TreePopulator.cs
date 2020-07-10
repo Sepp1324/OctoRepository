@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -46,7 +47,7 @@ namespace OctoAwesome.Basics
             foreach (var treeDefinition in treeDefinitions)
             {
                 int density = treeDefinition.GetDensity(planet, sample);
-                if (density <= 0) continue;
+                if (density <= 0) continue;               
 
                 for (int i = 0; i < density; i++)
                 {

@@ -25,6 +25,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <DocumentationFile>..\bin\Debug\OctoAwesome.Basics.XML</DocumentationFile>
+    <NoWarn>CS1591,1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +35,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\bin\Release\OctoAwesome.Basics.XML</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
@@ -87,6 +91,7 @@
     <Compile Include="Definitions\Blocks\GroundBlockDefinition.cs" />
     <Compile Include="IronOre.cs" />
     <Compile Include="IronOreDefinition.cs" />
+    <Compile Include="Definitions\Items\Pickaxe.cs" />
     <Compile Include="Definitions\Items\PickaxeDefinition.cs" />
     <Compile Include="Languages\OctoBasics.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -224,7 +229,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Biomes\Noise\" />
-    <Folder Include="Entities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

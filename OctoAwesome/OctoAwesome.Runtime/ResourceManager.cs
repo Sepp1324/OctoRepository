@@ -17,8 +17,6 @@ namespace OctoAwesome.Runtime
 
         private GlobalChunkCache globalChunkCache = null;
 
-        private EntityCache entityCache = null;
-
         private List<IMapPopulator> populators = null;
 
         private IUniverse universe;
@@ -58,8 +56,6 @@ namespace OctoAwesome.Runtime
 
             planets = new Dictionary<int, IPlanet>();
 
-            entityCache = new EntityCache(this);
-
             bool.TryParse(SettingsManager.Get("DisablePersistence"), out disablePersistence);
         }
 
@@ -67,11 +63,6 @@ namespace OctoAwesome.Runtime
         /// Der <see cref="IGlobalChunkCache"/>, der im Spiel verwendet werden soll.
         /// </summary>
         public IGlobalChunkCache GlobalChunkCache { get { return globalChunkCache; } }
-
-        /// <summary>
-        /// Der globale Entity-Cache
-        /// </summary>
-        public EntityCache EntityCache { get { return entityCache; } }
 
         /// <summary>
         /// Erzuegt ein neues Universum.
@@ -122,7 +113,7 @@ namespace OctoAwesome.Runtime
 
             // Unload Chunks
             globalChunkCache.Clear();
-
+            
             // TODO: Unload Planets
             // TODO: Unload Universe;
         }
@@ -206,20 +197,6 @@ namespace OctoAwesome.Runtime
                 throw new Exception("No Universe loaded");
 
             persistenceManager.SavePlayer(universe.Id, player);
-        }
-
-        public Entity[] LoadEntities(int planetId, Index2 columnIndex)
-        {
-            if (universe == null)
-                throw new Exception("No Universe loaded");
-            return persistenceManager.LoadEntities(universe.Id, planetId, columnIndex);
-        }
-
-        public void SaveEntities(int planetId, Index2 columnIndex, Entity[] entities)
-        {
-            if (universe == null)
-                throw new Exception("No Universe loaded");
-            persistenceManager.SaveEntities(universe.Id, planetId, columnIndex, entities);
         }
 
         private IChunkColumn loadChunkColumn(int planetId, Index2 index)

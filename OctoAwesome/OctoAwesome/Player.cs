@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using OctoAwesome.Entities;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -8,17 +7,12 @@ namespace OctoAwesome
     /// <summary>
     /// Entität, die der menschliche Spieler mittels Eingabegeräte steuern kann.
     /// </summary>
-    public sealed class Player : PermanentEntity
+    public sealed class Player : Entity
     {
         /// <summary>
         /// Die Reichweite des Spielers, in der er mit Spielelementen wie <see cref="Block"/> und <see cref="Entity"/> interagieren kann
         /// </summary>
         public const int SELECTIONRANGE = 8;
-
-        /// <summary>
-        /// Bestimmt den Aktivierungsradius eines Spielers
-        /// </summary>
-        public const int ACTIVATIONRANGE = 4;
 
         /// <summary>
         /// Die Kraft, die der Spieler hat, um sich fortzubewegen
@@ -34,6 +28,38 @@ namespace OctoAwesome
         /// Die Reibung die der Spieler mit der Umwelt hat
         /// </summary>
         public const float FRICTION = 60f;
+
+        /// <summary>
+        /// Der Radius des Spielers in Blocks.
+        /// </summary>
+        public float Radius { get; set; }
+
+        private float angle = 0f;
+
+        /// <summary>
+        /// Blickwinkel in der horizontalen Achse
+        /// </summary>
+        public float Angle
+        {
+            get { return angle; }
+            set { angle = MathHelper.WrapAngle(value); }
+        }
+
+        /// <summary>
+        /// Die Körperhöhe des Spielers in Blocks
+        /// </summary>
+        public float Height { get; set; }
+
+        /// <summary>
+        /// Gibt an, ob der Spieler an Boden ist
+        /// </summary>
+        [XmlIgnore]
+        public bool OnGround { get; set; }
+
+        /// <summary>
+        /// Blickwinkel in der vertikalen Achse
+        /// </summary>
+        public float Tilt { get; set; }
 
         /// <summary>
         /// Zurzeit nicht benutzt
@@ -56,7 +82,7 @@ namespace OctoAwesome
         /// <summary>
         /// Erzeugt eine neue Player-Instanz an der Default-Position.
         /// </summary>
-        public Player() : base(ACTIVATIONRANGE)
+        public Player()
         {
             Position = new Coordinate(0, new Index3(0, 0, 100), Vector3.Zero);
             Velocity = new Vector3(0, 0, 0);

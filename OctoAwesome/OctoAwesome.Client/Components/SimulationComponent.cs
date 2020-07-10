@@ -1,12 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class SimulationComponent : GameComponent
     {
-        public Simulation Simulation { get; private set; }
+        private Simulation Simulation { get; set; }
 
         public SimulationComponent(Game game) : base(game) { }
 
@@ -51,10 +60,10 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
-            return Simulation.InsertPlayer(player, true); //TODO: CHEK: TRUE
+            return Simulation.InsertPlayer(player);
         }
 
-        public void RemovePlayer(ActorHost host) 
+        public void RemovePlayer(ActorHost host)
         {
             if (Simulation == null)
                 throw new NotSupportedException();
