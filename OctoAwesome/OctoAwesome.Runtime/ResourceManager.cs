@@ -194,7 +194,7 @@ namespace OctoAwesome.Runtime
         public void SavePlayer(Player player)
         {
             if (universe == null)
-                throw new Exception("No Universe loaded");
+                throw new Exception("No Universe loaded"); //TEst
 
             persistenceManager.SavePlayer(universe.Id, player);
         }
