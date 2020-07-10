@@ -1,10 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 
 namespace OctoAwesome.Client.Screens
 {
-    internal sealed class InventoryScreen : BaseScreen
+    internal sealed class InventoryScreen : Screen
     {
         private PlayerComponent player;
 
@@ -42,6 +43,16 @@ namespace OctoAwesome.Client.Screens
             //Controls.Add(counter);
 
             Title = Languages.OctoClient.Inventory;
+        }
+
+        protected override void OnKeyPress(KeyEventArgs args)
+        {
+            if(Manager.CanGoBack && args.Key == Keys.Back)
+            {
+                args.Handled = true;
+                Manager.NavigateBack();
+            }
+            base.OnKeyPress(args);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs args)

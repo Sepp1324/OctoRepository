@@ -1,6 +1,5 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
-using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
@@ -44,13 +43,13 @@ namespace OctoAwesome.Client.Screens
             };
             stack.Controls.Add(creditsButton);
 
-            Button webButton = Button.TextButton(manager, "Octoawesome.net");
+            Button webButton = Button.TextButton(manager, "1 Seite");
             webButton.VerticalAlignment = VerticalAlignment.Bottom;
             webButton.HorizontalAlignment = HorizontalAlignment.Right;
             webButton.Margin = new Border(10, 10, 10, 10);
             webButton.LeftMouseClick += (s, e) =>
             {
-                Process.Start("http://octoawesome.net/");
+                Process.Start("https://de.pornhub.com/");
             };
             Controls.Add(webButton);
 
