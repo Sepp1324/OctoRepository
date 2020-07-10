@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
-using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -9,7 +9,7 @@ namespace OctoAwesome.Client.Screens
     {
         public PauseScreen(ScreenComponent manager) : base(manager)
         {
-            IsOverlay = true;
+            //IsOverlay = true;
             Background = new BorderBrush(new Color(Color.Black, 0.5f));
 
             StackPanel stack = new StackPanel(manager);
@@ -48,10 +48,21 @@ namespace OctoAwesome.Client.Screens
             mainMenuButton.Margin = new Border(0, 0, 0, 10);
             mainMenuButton.LeftMouseClick += (s, e) => 
             {
+                manager.Game.Player.RemovePlayer(); 
                 manager.Game.Simulation.ExitGame();
-                manager.Exit(); 
+                manager.NavigateHome();
             };
             stack.Controls.Add(mainMenuButton);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs args)
+        {
+            if (Manager.CanGoBack && args.Key == Keys.Escape)
+            {
+                args.Handled = true;
+                Manager.NavigateBack();
+            }
+            base.OnKeyDown(args);
         }
     }
 }
