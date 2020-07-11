@@ -156,7 +156,20 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnDrawContent(SpriteBatch batch, Microsoft.Xna.Framework.Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            batch.Draw(ControlTexture, contentArea, Microsoft.Xna.Framework.Color.White * alpha);
+            if(ControlTexture != null)
+                batch.Draw(ControlTexture, contentArea, Microsoft.Xna.Framework.Color.White * alpha);
+        }
+
+        public override void OnResolutionChanged()
+        {
+            base.OnResolutionChanged();
+
+            if (ControlTexture != null)
+            {
+                ControlTexture.Dispose();
+                ControlTexture = null;
+            }
+            Manager.Game.Camera.RecreateProjection();
         }
 
         protected override void OnUpdate(GameTime gameTime)
@@ -173,6 +186,7 @@ namespace OctoAwesome.Client.Controls
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
+
             for (int z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
             {
                 for (int y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
