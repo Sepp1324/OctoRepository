@@ -100,9 +100,9 @@ namespace OctoAwesome.Client.Controls
             // Aktualisierung des aktiven Buttons
             for (int i = 0; i < OctoAwesome.Player.TOOLCOUNT; i++)
             {
-                if (Player.ActorHost.Player.Tools != null &&
-                    Player.ActorHost.Player.Tools.Length > i &&
-                    Player.ActorHost.Player.Tools[i] != null &&
+                if (Player.ActorHost.Player.Tools != null && 
+                    Player.ActorHost.Player.Tools.Length > i && 
+                    Player.ActorHost.Player.Tools[i] != null && 
                     Player.ActorHost.Player.Tools[i].Definition != null)
                 {
                     images[i].Texture = toolTextures[Player.ActorHost.Player.Tools[i].Definition.GetType().FullName];
@@ -120,8 +120,8 @@ namespace OctoAwesome.Client.Controls
             }
 
             // Aktualisierung des ActiveTool Labels
-            activeToolLabel.Text = Player.ActorHost.ActiveTool != null ?
-                string.Format("{0} ({1})", Player.ActorHost.ActiveTool.Definition.Name, Player.ActorHost.ActiveTool.Amount) :
+            activeToolLabel.Text = Player.ActorHost.ActiveTool != null ? 
+                string.Format("{0} ({1})", Player.ActorHost.ActiveTool.Definition.Name, Player.ActorHost.ActiveTool.Amount) : 
                 string.Empty;
 
             base.OnUpdate(gameTime);
