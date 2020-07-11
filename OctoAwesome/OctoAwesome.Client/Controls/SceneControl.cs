@@ -156,7 +156,7 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnDrawContent(SpriteBatch batch, Microsoft.Xna.Framework.Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if(ControlTexture != null)
+            if (ControlTexture != null)
                 batch.Draw(ControlTexture, contentArea, Microsoft.Xna.Framework.Color.White * alpha);
         }
 
@@ -169,13 +169,13 @@ namespace OctoAwesome.Client.Controls
                 ControlTexture.Dispose();
                 ControlTexture = null;
             }
+
             Manager.Game.Camera.RecreateProjection();
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (player.ActorHost == null)
-                return;
+            if (player.ActorHost == null) return;
 
             sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
 
@@ -186,7 +186,6 @@ namespace OctoAwesome.Client.Controls
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
-
             for (int z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
             {
                 for (int y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
@@ -279,8 +278,7 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnPreDraw(GameTime gameTime)
         {
-            if (player.ActorHost == null)
-                return;
+            if (player.ActorHost == null) return;
 
             if (ControlTexture == null)
             {

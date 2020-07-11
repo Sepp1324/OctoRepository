@@ -26,7 +26,7 @@ namespace OctoAwesome.Runtime
         /// <summary>
         /// Das aktuell geladene Universum.
         /// </summary>
-        public IUniverse CurrentUniverse { get { return universe; } } //Test
+        public IUniverse CurrentUniverse { get { return universe; } }
 
         #region Singleton
 

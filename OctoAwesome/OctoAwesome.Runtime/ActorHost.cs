@@ -11,8 +11,6 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class ActorHost : IPlayerController
     {
-        private readonly float Gap = 0.001f;
-
         private IPlanet planet;
 
         private bool lastJump = false;
@@ -228,10 +226,10 @@ namespace OctoAwesome.Runtime
                 {
                     var blockDefinition = DefinitionManager.Instance.GetBlockDefinitionByIndex(lastBlock);
 
-                    var slot = Player.Inventory.Where(s => s.Definition == blockDefinition && s.Amount < blockDefinition.StackLimit).FirstOrDefault();
+                    var slot = Player.Inventory.FirstOrDefault(s => s.Definition == blockDefinition);
 
                     // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
-                    if (slot == null || slot.Amount >= blockDefinition.StackLimit)
+                    if (slot == null)
                     {
                         slot = new InventorySlot()
                         {
@@ -239,8 +237,17 @@ namespace OctoAwesome.Runtime
                             Amount = 0
                         };
                         Player.Inventory.Add(slot);
+
+                        for (int i = 0; i < Player.Tools.Length; i++)
+                        {
+                            if (Player.Tools[i] == null)
+                            {
+                                Player.Tools[i] = slot;
+                                break;
+                            }
+                        }
                     }
-                    slot.Amount++;
+                    slot.Amount += 125;
                 }
                 lastInteract = null;
             }
@@ -291,10 +298,15 @@ namespace OctoAwesome.Runtime
                         {
                             localChunkCache.SetBlock(idx, DefinitionManager.Instance.GetBlockDefinitionIndex(definition));
 
-                            ActiveTool.Amount--;
+                            ActiveTool.Amount -= 125;
                             if (ActiveTool.Amount <= 0)
                             {
                                 Player.Inventory.Remove(ActiveTool);
+                                for (int i = 0; i < Player.Tools.Length; i++)
+                                {
+                                    if (Player.Tools[i] == ActiveTool)
+                                        Player.Tools[i] = null;
+                                }
                                 ActiveTool = null;
                             }
                         }
@@ -459,10 +471,10 @@ namespace OctoAwesome.Runtime
             foreach (var blockDefinition in blockDefinitions)
             {
 
-                var slot = Player.Inventory.Where(s => s.Definition == blockDefinition && s.Amount < blockDefinition.StackLimit).FirstOrDefault();
+                var slot = Player.Inventory.FirstOrDefault(s => s.Definition == blockDefinition);
 
                 // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
-                if (slot == null || slot.Amount >= blockDefinition.StackLimit)
+                if (slot == null)
                 {
                     slot = new InventorySlot()
                     {
@@ -471,7 +483,7 @@ namespace OctoAwesome.Runtime
                     };
                     Player.Inventory.Add(slot);
                 }
-                slot.Amount++;
+                slot.Amount += 125;
             }
         }
     }

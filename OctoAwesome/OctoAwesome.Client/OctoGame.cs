@@ -1,14 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using OctoAwesome;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using OctoAwesome.Runtime;
 using System;
+using System.Configuration;
+using System.Linq;
+using MonoGameUi;
 using OctoAwesome.Client.Components.OctoAwesome.Client.Components;
 using EventArgs = System.EventArgs;
 using System.Collections.Generic;
 
 namespace OctoAwesome.Client
 {
+    /// <summary>
+    /// This is the main type for your game
+    /// </summary>
     internal class OctoGame : Game
     {
         GraphicsDeviceManager graphics;
@@ -177,9 +186,10 @@ namespace OctoAwesome.Client
                         Window.Position = oldPositon;
                         Window.IsBorderless = false;
                         graphics.PreferredBackBufferHeight = oldHeight;
-                        graphics.PreferredBackBufferWidth = oldWidth;
+                        graphics.PreferredBackBufferWidth = oldWidth;                        
                         fullscreen = false;
                     }
+
                     graphics.ApplyChanges();
                 }
             });

@@ -55,6 +55,7 @@
     <Compile Include="Controls\CrosshairControl.cs" />
     <Compile Include="Controls\DebugControl.cs" />
     <Compile Include="Controls\HealthBarControl.cs" />
+    <Compile Include="Controls\InventoryControl.cs" />
     <Compile Include="Controls\MinimapControl.cs" />
     <Compile Include="Controls\SceneControl.cs" />
     <Compile Include="Controls\ToolbarControl.cs" />
@@ -75,10 +76,10 @@
     <Compile Include="Screens\InventoryScreen.cs" />
     <Compile Include="Screens\LoadScreen.cs" />
     <Compile Include="Screens\MainScreen.cs" />
+    <Compile Include="Screens\TargetScreen.cs" />
     <Compile Include="Screens\MessageScreen.cs" />
     <Compile Include="Screens\OptionsScreen.cs" />
     <Compile Include="Screens\PauseScreen.cs" />
-    <Compile Include="Screens\TargetScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
@@ -195,9 +196,7 @@
       <LastGenOutput>OctoClient.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\Pages\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

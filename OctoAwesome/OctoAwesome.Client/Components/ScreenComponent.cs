@@ -48,7 +48,7 @@ namespace OctoAwesome.Client.Components
                     Game.Screen.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/UI/progress_background.png",
                         GraphicsDevice), 10, 8);
 
-
+            
 
 
             Frame.Background = new BorderBrush(Color.CornflowerBlue);

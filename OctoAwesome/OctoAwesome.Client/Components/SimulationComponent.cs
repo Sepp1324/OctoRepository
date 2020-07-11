@@ -71,7 +71,7 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
-            Simulation.RemovePlayer(host); 
+            Simulation.RemovePlayer(host);
         }
     }
 }

@@ -37,6 +37,7 @@ namespace OctoAwesome.Client.Screens
             debug = new DebugControl(manager);
             debug.HorizontalAlignment = HorizontalAlignment.Stretch;
             debug.VerticalAlignment = VerticalAlignment.Stretch;
+            debug.Visible = false;
             Controls.Add(debug);
 
             compass = new CompassControl(manager);
@@ -313,8 +314,8 @@ namespace OctoAwesome.Client.Screens
                 Manager.NavigateToScreen(new TargetScreen(Manager, (x, y) => {
                     Manager.Game.Player.ActorHost.Player.Position = new Coordinate(0, new Index3(x, y, 300), new Vector3());
                     Manager.NavigateBack();
-                }, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.X, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.Y));
-
+                    }, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.X, Manager.Game.Player.ActorHost.Player.Position.GlobalBlockIndex.Y));
+                
             });
         }
 

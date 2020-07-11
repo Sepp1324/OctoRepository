@@ -59,7 +59,7 @@ namespace OctoAwesome.Client.Screens
 
             Button closeButton = Button.TextButton(manager, "Teleport");
             closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            closeButton.LeftMouseClick += (s, e) =>
+            closeButton.LeftMouseClick += (s, e) => 
             {
                 if (tp != null)
                     tp(int.Parse(xText.Text), int.Parse(yText.Text));

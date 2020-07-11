@@ -106,7 +106,7 @@ namespace OctoAwesome.Client.Screens
             {
                 Text = SettingsManager.Get("ChunkRoot"),
                 Enabled = false,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,              
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
             };
             mapPathStack.Controls.Add(mapPath);
@@ -220,7 +220,7 @@ namespace OctoAwesome.Client.Screens
             {
                 string path = folderBrowser.SelectedPath;
                 SettingsManager.Set("ChunkRoot", path);
-                mapPath.Text = path;
+                mapPath.Text = path;                
 
                 exitButton.Visible = true;
                 exitButton.Enabled = true;
