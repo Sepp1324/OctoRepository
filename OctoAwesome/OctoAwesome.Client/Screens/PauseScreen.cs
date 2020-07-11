@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 
@@ -10,12 +9,13 @@ namespace OctoAwesome.Client.Screens
         public PauseScreen(ScreenComponent manager) : base(manager)
         {
             //IsOverlay = true;
-            Background = new BorderBrush(new Color(Color.Black, 0.5f));
+            //Background = new BorderBrush(new Color(Color.Black, 0.5f));
+            Background = new TextureBrush(manager.Content.LoadTexture2DFromFile("./Assets/OctoAwesome.Client/background.png", manager.GraphicsDevice), TextureBrushMode.Stretch);
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);
 
-            Button resumeButton = Button.TextButton(manager, "Resume");
+            Button resumeButton = Button.TextButton(manager, Languages.OctoClient.Resume);
             resumeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             resumeButton.Margin = new Border(0, 0, 0, 10);
             resumeButton.LeftMouseClick += (s, e) =>
@@ -43,12 +43,11 @@ namespace OctoAwesome.Client.Screens
             };
             stack.Controls.Add(creditsButton);
 
-            Button mainMenuButton = Button.TextButton(manager, "Main Menu");
+            Button mainMenuButton = Button.TextButton(manager, Languages.OctoClient.ToMainMenu);
             mainMenuButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             mainMenuButton.Margin = new Border(0, 0, 0, 10);
             mainMenuButton.LeftMouseClick += (s, e) => 
             {
-                manager.Game.Player.RemovePlayer(); 
                 manager.Game.Simulation.ExitGame();
                 manager.NavigateHome();
             };

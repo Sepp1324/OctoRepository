@@ -45,14 +45,14 @@ namespace OctoAwesome.Client.Screens
             Title = Languages.OctoClient.Inventory;
         }
 
-        protected override void OnKeyPress(KeyEventArgs args)
+        protected override void OnKeyDown(KeyEventArgs args)
         {
-            if(Manager.CanGoBack && args.Key == Keys.Back)
+            if (Manager.CanGoBack && (args.Key == Keys.Escape || args.Key == Keys.I))
             {
                 args.Handled = true;
                 Manager.NavigateBack();
             }
-            base.OnKeyPress(args);
+            base.OnKeyDown(args);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs args)

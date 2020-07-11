@@ -3,11 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -53,6 +50,9 @@ namespace OctoAwesome.Client.Controls
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
             if (!Visible || !Enabled)
+                return;
+
+            if (Player.ActorHost == null)
                 return;
 
             if (Player.Tools != null && Player.Tools.Count > 0) // > 0 Check erforderlich da durch einen Bug ActiveTool auch gesetzt bleibt wenn kein Tool mehr vorhanden ist
