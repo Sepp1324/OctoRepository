@@ -6,7 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
     {
         public override string Name => Languages.OctoBasics.Water;
 
-        public override Wall SolidWall => Wall.None;
+        public override uint SolidWall => 0;
 
         public override string Icon => "water";
 
