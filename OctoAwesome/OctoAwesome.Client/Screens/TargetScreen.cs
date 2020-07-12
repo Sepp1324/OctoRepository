@@ -39,43 +39,27 @@ namespace OctoAwesome.Client.Screens
             vstack.Orientation = Orientation.Vertical;
             spanel.Controls.Add(vstack);
 
-            StackPanel xStack = new StackPanel(manager);
-            xStack.Orientation = Orientation.Horizontal;
-            vstack.Controls.Add(xStack);
-
-            Label xLabel = new Label(manager);
-            xLabel.Text = "X:";
-            xStack.Controls.Add(xLabel);
-
             Textbox xText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
-                Margin = new Border(2, 10, 2, 10),
+                Margin = new Border(10, 10, 10, 10),
                 Text = x.ToString()
             };
-            xStack.Controls.Add(xText);
-
-            StackPanel yStack = new StackPanel(manager);
-            yStack.Orientation = Orientation.Horizontal;
-            vstack.Controls.Add(yStack);
-
-            Label yLabel = new Label(manager);
-            yLabel.Text = "Y:";
-            yStack.Controls.Add(yLabel);
+            vstack.Controls.Add(xText);
 
             Textbox yText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
-                Margin = new Border(2, 10, 2, 10),
+                Margin = new Border(10, 10, 10, 10),
                 Text = y.ToString()
             };
-            yStack.Controls.Add(yText);
+            vstack.Controls.Add(yText);
 
             Button closeButton = Button.TextButton(manager, "Teleport");
             closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            closeButton.LeftMouseClick += (s, e) =>
+            closeButton.LeftMouseClick += (s, e) => 
             {
                 if (tp != null)
                     tp(int.Parse(xText.Text), int.Parse(yText.Text));

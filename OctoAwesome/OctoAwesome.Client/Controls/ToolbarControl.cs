@@ -3,8 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -35,14 +38,8 @@ namespace OctoAwesome.Client.Controls
 
             foreach (var item in DefinitionManager.Instance.GetItemDefinitions())
             {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    System.Drawing.Bitmap bitmap = item.Icon;
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    stream.Seek(0, SeekOrigin.Begin);
-
-                    toolTextures.Add(item.GetType().FullName, Texture2D.FromStream(ScreenManager.GraphicsDevice, stream));
-                }
+                Texture2D texture = screenManager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
+                toolTextures.Add(item.GetType().FullName, texture);
             }
 
             Grid grid = new Grid(screenManager)
@@ -120,8 +117,6 @@ namespace OctoAwesome.Client.Controls
             activeToolLabel.Text = Player.ActorHost.ActiveTool != null ? 
                 string.Format("{0} ({1})", Player.ActorHost.ActiveTool.Definition.Name, Player.ActorHost.ActiveTool.Amount) : 
                 string.Empty;
-
-            activeToolLabel.Visible = !(activeToolLabel.Text == string.Empty);
 
             base.OnUpdate(gameTime);
         }
