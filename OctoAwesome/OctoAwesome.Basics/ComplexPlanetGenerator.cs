@@ -1,6 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Blocks;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +9,7 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            Index3 size = new Index3(12, 12, 3);
+            Index3 size = new Index3(4, 4, 3); // 2^4
             ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed);
             planet.Generator = this;
             return planet;

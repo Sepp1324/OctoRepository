@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using engenious;
+﻿using engenious;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.EntityComponents;
 
@@ -26,8 +21,10 @@ namespace OctoAwesome.Basics.Entities
         {
             BodyPowerComponent body = Components.GetComponent<BodyPowerComponent>();
             ControllableComponent controller = Components.GetComponent<ControllableComponent>();
-            controller.MoveInput = new Vector2(0.5f, 0.5f) ;
-            
+            controller.MoveInput = new Vector2(0.5f, 0.5f);
+
+            var collisionComponent = Components.GetComponent<BoxCollisionComponent>();
+
             if (JumpTime <= 0)
             {
                 controller.JumpInput = true;
