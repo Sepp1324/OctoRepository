@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OctoAwesome.Client.Screens
@@ -17,12 +19,15 @@ namespace OctoAwesome.Client.Screens
         private Label rangeTitle;
         private Textbox mapPath;
 
+        private ISettings settings;
+
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
             game = manager.Game;
             assets = game.Assets;
 
             Padding = new Border(0, 0, 0, 0);
+            settings = manager.Game.Settings;
 
             Title = Languages.OctoClient.Options;
 
@@ -42,7 +47,7 @@ namespace OctoAwesome.Client.Screens
 
             #region OptionsPage
 
-            TabPage optionsPage = new TabPage(manager, "Options");
+            TabPage optionsPage = new TabPage(manager, Languages.OctoClient.Options);
             tabs.Pages.Add(optionsPage);
 
             ////////////////////////////////////////////Settings Stack////////////////////////////////////////////
@@ -56,7 +61,7 @@ namespace OctoAwesome.Client.Screens
             optionsPage.Controls.Add(settingsStack);
 
             //////////////////////Viewrange//////////////////////
-            string viewrange = SettingsManager.Get("Viewrange");
+            string viewrange = settings.Get<string>("Viewrange");
 
             rangeTitle = new Label(manager)
             {
@@ -91,7 +96,7 @@ namespace OctoAwesome.Client.Screens
 
             Checkbox disablePersistence = new Checkbox(manager)
             {
-                Checked = bool.Parse(SettingsManager.Get("DisablePersistence")),
+                Checked = bool.Parse(settings.Get<string>("DisablePersistence")),
                 HookBrush = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch),
             };
             disablePersistence.CheckedChanged += (state) => SetPersistence(state);
@@ -108,7 +113,7 @@ namespace OctoAwesome.Client.Screens
 
             mapPath = new Textbox(manager)
             {
-                Text = SettingsManager.Get("ChunkRoot"),
+                Text = settings.Get<string>("ChunkRoot"),
                 Enabled = false,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
@@ -137,7 +142,7 @@ namespace OctoAwesome.Client.Screens
 
             Checkbox enableFullscreen = new Checkbox(manager)
             {
-                Checked = bool.Parse(SettingsManager.Get("EnableFullscreen")),
+                Checked = bool.Parse(settings.Get<string>("EnableFullscreen")),
                 HookBrush = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch),
             };
             enableFullscreen.CheckedChanged += (state) => SetFullscreen(state);
@@ -159,7 +164,7 @@ namespace OctoAwesome.Client.Screens
 
             Textbox resolutionWidthTextbox = new Textbox(manager)
             {
-                Text = SettingsManager.Get("Width"),
+                Text = settings.Get<string>("Width"),
                 Width = 50,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
             };
@@ -174,7 +179,7 @@ namespace OctoAwesome.Client.Screens
 
             Textbox resolutionHeightTextbox = new Textbox(manager)
             {
-                Text = SettingsManager.Get("Height"),
+                Text = settings.Get<string>("Height"),
                 Width = 50,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
             };
@@ -191,7 +196,7 @@ namespace OctoAwesome.Client.Screens
 
             #region BindingsPage
 
-            TabPage bindingsPage = new TabPage(manager, "Bindings");
+            TabPage bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings);
             tabs.Pages.Add(bindingsPage);
 
             ScrollContainer bindingsScroll = new ScrollContainer(manager);
@@ -266,7 +271,7 @@ namespace OctoAwesome.Client.Screens
 
         private void ResolutionWidthTextbox_TextChanged(Control sender, PropertyEventArgs<string> args)
         {
-            SettingsManager.Set("Width", args.NewValue);
+            settings.Set("Width", args.NewValue);
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
@@ -274,7 +279,7 @@ namespace OctoAwesome.Client.Screens
 
         private void ResolutionHeightTextbox_TextChanged(Control sender, PropertyEventArgs<string> args)
         {
-            SettingsManager.Set("Height", args.NewValue);
+            settings.Set("Height", args.NewValue);
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
@@ -294,7 +299,7 @@ namespace OctoAwesome.Client.Screens
                 game.KeyMapper.RemoveKey(id, oldKey);
                 game.KeyMapper.AddKey(id, a.Key);
                 data[1] = a.Key;
-                SettingsManager.Set("KeyMapper-" + id, a.Key.ToString());
+                settings.Set("KeyMapper-" + id, a.Key.ToString());
                 lbl.Text = a.Key.ToString();
                 Manager.NavigateBack();
             };
@@ -305,7 +310,7 @@ namespace OctoAwesome.Client.Screens
         {
             rangeTitle.Text = Languages.OctoClient.Viewrange + ": " + newRange;
 
-            SettingsManager.Set("Viewrange", newRange.ToString());
+            settings.Set("Viewrange", newRange);
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
@@ -314,12 +319,12 @@ namespace OctoAwesome.Client.Screens
         private void ChangePath()
         {
             System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            folderBrowser.SelectedPath = SettingsManager.Get("ChunkRoot");
+            folderBrowser.SelectedPath = settings.Get<string>("ChunkRoot");
 
             if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string path = folderBrowser.SelectedPath;
-                SettingsManager.Set("ChunkRoot", path);
+                settings.Set("ChunkRoot", path);
                 mapPath.Text = path;
 
                 exitButton.Visible = true;
@@ -329,7 +334,7 @@ namespace OctoAwesome.Client.Screens
 
         private void SetPersistence(bool state)
         {
-            SettingsManager.Set("DisablePersistence", state.ToString());
+            settings.Set("DisablePersistence", state);
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
@@ -337,7 +342,7 @@ namespace OctoAwesome.Client.Screens
 
         private void SetFullscreen(bool state)
         {
-            SettingsManager.Set("EnableFullscreen", state.ToString());
+            settings.Set("EnableFullscreen", state);
 
             exitButton.Visible = true;
             exitButton.Enabled = true;
