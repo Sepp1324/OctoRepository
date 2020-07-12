@@ -26,7 +26,7 @@
       <Achievements>Streamer</Achievements>
       <Achievements>Livegast</Achievements>
     </AchievementList>
-    <PictureFilename>./Assets/OctoAwesome.Client/Crew/bobstriker.png</PictureFilename>
+    <PictureFilename>bobstriker</PictureFilename>
   </CrewMember>
   <CrewMember>
     <Username>Christian</Username>
