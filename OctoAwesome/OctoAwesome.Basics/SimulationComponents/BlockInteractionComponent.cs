@@ -1,11 +1,5 @@
 ﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
-using OctoAwesome.Basics.EntityComponents;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
@@ -41,7 +35,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                 if (lastBlock != 0)
                 {
                     var blockDefinition = simulation.ResourceManager.DefinitionManager.GetDefinitionByIndex(lastBlock);
-                    inventory.AddOfType(blockDefinition);
+                    if (blockDefinition is IInventoryableDefinition invDef)
+                        inventory.AddUnit(invDef);
                 }
                 controller.InteractBlock = null;
             }
@@ -99,8 +94,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                         if (!intersects)
                         {
-                            var succeeded = inventory.RemoveUnit(toolbar.ActiveTool);
-                            if (succeeded)
+                            if (inventory.RemoveUnit(toolbar.ActiveTool))
                             {
                                 entity.Cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 if (toolbar.ActiveTool.Amount <= 0)
