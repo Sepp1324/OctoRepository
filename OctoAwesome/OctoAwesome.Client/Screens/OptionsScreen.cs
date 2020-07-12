@@ -235,6 +235,29 @@ namespace OctoAwesome.Client.Screens
 
             #endregion
 
+            #region TexturePackPage
+
+            TabPage texturePackPage = new TabPage(manager, "Texture Packs");
+            tabs.Pages.Add(texturePackPage);
+
+            Listbox<ResourcePack> resourceList = new Listbox<ResourcePack>(manager);
+            resourceList.HorizontalAlignment = HorizontalAlignment.Stretch;
+            resourceList.VerticalAlignment = VerticalAlignment.Stretch;
+            resourceList.SelectedItemBrush = new BorderBrush(Color.SaddleBrown * 0.7f);
+            resourceList.TemplateGenerator = (item) =>
+            {
+                return new Label(manager) { Text = item.Name };
+            };
+            texturePackPage.Controls.Add(resourceList);
+
+            AssetComponent assets = manager.Game.Assets;
+            foreach (var item in assets.LoadedResourcePacks)
+            {
+                resourceList.Items.Add(item);
+            }
+
+            #endregion
+
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
             exitButton = Button.TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
             exitButton.VerticalAlignment = VerticalAlignment.Top;
