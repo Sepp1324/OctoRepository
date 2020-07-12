@@ -3,11 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Controls
 {
