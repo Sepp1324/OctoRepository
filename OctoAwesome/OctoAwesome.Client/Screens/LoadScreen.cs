@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using MonoGameUi;
+﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using engenious;
+using engenious.Input;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -97,11 +98,11 @@ namespace OctoAwesome.Client.Screens
                 }
 
                 // Sicherstellen, dass universe nicht geladen ist
-                if (ResourceManager.Instance.CurrentUniverse != null && 
-                    ResourceManager.Instance.CurrentUniverse.Id == levelList.SelectedItem.Id)
+                if (Manager.Game.ResourceManager.CurrentUniverse != null &&
+                    Manager.Game.ResourceManager.CurrentUniverse.Id == levelList.SelectedItem.Id)
                     return;
 
-                ResourceManager.Instance.DeleteUniverse(levelList.SelectedItem.Id);
+                Manager.Game.ResourceManager.DeleteUniverse(levelList.SelectedItem.Id);
                 levelList.Items.Remove(levelList.SelectedItem);
                 levelList.SelectedItem = null;
                 levelList.InvalidateDimensions();
@@ -127,17 +128,20 @@ namespace OctoAwesome.Client.Screens
             };
             buttonStack.Controls.Add(playButton);
 
-            foreach (var universe in ResourceManager.Instance.ListUniverses())
+            foreach (var universe in Manager.Game.ResourceManager.ListUniverses())
                 levelList.Items.Add(universe);
 
             // Erstes Element auswählen, oder falls vorhanden das letzte gespielte Universum
             if (levelList.Items.Count >= 1)
                 levelList.SelectedItem = levelList.Items[0];
 
-            if (settings.KeyExists("LastUniverse") && settings.Get<string>("LastUniverse") != null
-                && settings.Get<string>("LastUniverse") != "")
+            Guid lastUniverseId;
+            if (Guid.TryParse(settings.Get<string>("LastUniverse"), out lastUniverseId))
             {
-                levelList.SelectedItem = levelList.Items.First(u => u.Id == Guid.Parse(settings.Get<string>("LastUniverse")));
+                var lastlevel =  levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
+                if (lastlevel != null)
+                    levelList.SelectedItem = lastlevel;
+
             }
         }
 
@@ -150,7 +154,7 @@ namespace OctoAwesome.Client.Screens
 
         protected override void OnKeyDown(KeyEventArgs args)
         {
-            if (args.Key == Microsoft.Xna.Framework.Input.Keys.Enter)
+            if (args.Key == Keys.Enter)
             {
                 if (levelList.SelectedItem == null)
                     return;
@@ -163,10 +167,15 @@ namespace OctoAwesome.Client.Screens
 
         private void Play()
         {
-            Manager.Player.RemovePlayer();
+            Manager.Player.SetEntity(null);
+
             Manager.Game.Simulation.LoadGame(levelList.SelectedItem.Id);
             settings.Set("LastUniverse", levelList.SelectedItem.Id.ToString());
-            Manager.Game.Player.InsertPlayer();
+
+            Player player = Manager.Game.Simulation.LoginPlayer(Guid.Empty);
+            Manager.Game.Player.SetEntity(player);
+
+
             Manager.NavigateToScreen(new GameScreen(Manager));
         }
     }

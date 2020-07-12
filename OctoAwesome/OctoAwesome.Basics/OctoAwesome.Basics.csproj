@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,13 +9,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OctoAwesome.Basics</RootNamespace>
     <AssemblyName>OctoAwesome.Basics</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,9 +43,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="engenious, Version=0.1.7.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\engenious.0.1.7\lib\net40\engenious.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\engenious.0.1.7\lib\net40\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>..\packages\engenious.0.1.7\lib\net40\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,10 +62,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollisionPlane.cs" />
+    <Compile Include="Definitions\Items\WauziEggDefinition.cs" />
+    <Compile Include="Entities\WauziEntity.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="Biomes\FlatlandBiome.cs" />
     <Compile Include="Biomes\HighMountainBiome.cs" />
     <Compile Include="Biomes\HillsBiome.cs" />
     <Compile Include="Biomes\IBiome.cs" />
+    <Compile Include="EntityComponents\BodyPowerComponent.cs" />
+    <Compile Include="EntityComponents\CollisionComponent.cs" />
+    <Compile Include="EntityComponents\MassComponent.cs" />
+    <Compile Include="EntityComponents\BoxCollisionComponent.cs" />
+    <Compile Include="EntityComponents\EntityCollisionComponent.cs" />
     <Compile Include="Definitions\Blocks\BirchWoodBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\CactusBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\GravelBlockDefinition.cs" />
@@ -70,6 +85,10 @@
     <Compile Include="Definitions\Blocks\PlankBlockDefinition.cs" />
     <Compile Include="Definitions\Trees\BirchTreeDefinition.cs" />
     <Compile Include="Definitions\Trees\CactusTreeDefinition.cs" />
+    <Compile Include="EntityComponents\ForceComponent.cs" />
+    <Compile Include="EntityComponents\GravityComponent.cs" />
+    <Compile Include="EntityComponents\MoveableComponent.cs" />
+    <Compile Include="EntityComponents\PowerComponent.cs" />
     <Compile Include="ITreeDefinition.cs" />
     <Compile Include="Noise\INoise.cs" />
     <Compile Include="Biomes\LandBiomeGenerator.cs" />
@@ -95,7 +114,6 @@
     <Compile Include="IronOre.cs" />
     <Compile Include="IronOreDefinition.cs" />
     <Compile Include="Definitions\Items\Pickaxe.cs" />
-    <Compile Include="Definitions\Items\PickaxeDefinition.cs" />
     <Compile Include="Languages\OctoBasics.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -114,8 +132,25 @@
     <Compile Include="Definitions\Blocks\WaterBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\WoodBlockDefinition.cs" />
     <Compile Include="Definitions\Trees\SpruceTreeDefinition.cs" />
+    <Compile Include="SimulationComponents\BlockInteractionComponent.cs" />
+    <Compile Include="SimulationComponents\CollisionComponent.cs" />
+    <Compile Include="SimulationComponents\ForceAggregatorComponent.cs" />
+    <Compile Include="SimulationComponents\MoveComponent.cs" />
+    <Compile Include="SimulationComponents\AccelerationComponent.cs" />
+    <Compile Include="SimulationComponents\NewtonGravitatorComponent.cs" />
+    <Compile Include="SimulationComponents\PowerAggregatorComponent.cs" />
+    <Compile Include="SimulationComponents\WattMoverComponent.cs" />
     <Compile Include="TreeDefinition.cs" />
     <Compile Include="TreePopulator.cs" />
+    <Compile Include="Definitions\Items\PickAxeDefinition.cs" />
+    <Compile Include="WauziPopulator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OctoAwesome\OctoAwesome.csproj">
+      <Project>{93601DB8-F134-418E-8B35-11E30CFEC31C}</Project>
+      <Name>OctoAwesome</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Languages\OctoBasics.de.resx" />
@@ -170,9 +205,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <EmbeddedResource Include="Assets\Definitions\Items\wauziegg.png" />
+    <Content Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

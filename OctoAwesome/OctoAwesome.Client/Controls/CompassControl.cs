@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGameUi;
+﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
+using engenious;
+using engenious.Graphics;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -28,19 +28,19 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (Player == null || Player.ActorHost == null || !assets.Ready)
+            if (Player == null || Player.CurrentEntity == null || !assets.Ready)
                 return;
 
-            float compassValue = Player.ActorHost.Angle / (float)(2 * Math.PI);
+            float compassValue = Player.CurrentEntityHead.Angle / (float)(2 * Math.PI);
             compassValue %= 1f;
             if (compassValue < 0)
                 compassValue += 1f;
 
             int offset = (int)(compassTexture.Width * compassValue);
             offset -= contentArea.Width / 2;
-            int offsetY = (-compassTexture.Height - contentArea.Height) / 2;
+            int offsetY = (compassTexture.Height -contentArea.Height) / 2;
 
-            batch.Draw(compassTexture, contentArea, new Rectangle(offset, offsetY, contentArea.Width, contentArea.Height), Color.White * alpha);
+            batch.Draw(compassTexture, new Rectangle(contentArea.X,contentArea.Y-offsetY,contentArea.Width,contentArea.Height), new Rectangle(offset, 0, contentArea.Width, contentArea.Height+offsetY), Color.White * alpha);
         }
     }
 }

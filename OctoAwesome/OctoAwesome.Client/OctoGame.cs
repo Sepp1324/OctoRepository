@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using OctoAwesome;
+﻿using OctoAwesome;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Runtime;
@@ -9,8 +6,9 @@ using System;
 using System.Configuration;
 using System.Linq;
 using MonoGameUi;
-using OctoAwesome.Client.Components.OctoAwesome.Client.Components;
 using EventArgs = System.EventArgs;
+using engenious;
+using engenious.Input;
 using System.Collections.Generic;
 
 namespace OctoAwesome.Client
@@ -20,13 +18,13 @@ namespace OctoAwesome.Client
     /// </summary>
     internal class OctoGame : Game
     {
-        GraphicsDeviceManager graphics;
+        //GraphicsDeviceManager graphics;
 
         public CameraComponent Camera { get; private set; }
 
         public PlayerComponent Player { get; private set; }
 
-        public SimulationComponent Simulation { get; private set; }
+        public Components.SimulationComponent Simulation { get; private set; }
 
         public ScreenComponent Screen { get; private set; }
 
@@ -36,51 +34,42 @@ namespace OctoAwesome.Client
 
         public Settings Settings { get; private set; }
 
-        // Fullscreen
-        private int oldHeight, oldWidth;
-        Point oldPositon;
-        bool fullscreen = false;
+        public IDefinitionManager DefinitionManager { get; private set; }
+
+        public IResourceManager ResourceManager { get; private set; }
+
+        public IExtensionLoader ExtensionLoader { get; private set; }
+
+        public Components.EntityComponent Entity { get; private set; }
 
         public OctoGame()
-            : base()
         {
-            graphics = new GraphicsDeviceManager(this);
+            //graphics = new GraphicsDeviceManager(this);
+            //graphics.PreferredBackBufferWidth = 1080;
+            //graphics.PreferredBackBufferHeight = 720;
 
-            Settings = new Settings();
-            ResourceManager.Settings = Settings;
-
-            int width;
-            if (Settings.KeyExists("Width"))
-            {
-                width = Settings.Get<int>("Width");
-            }
-            else
-            {
-                width = 1080;
-            }
-            graphics.PreferredBackBufferWidth = width;
-
-            int height;
-            if (Settings.KeyExists("Height"))
-            {
-                height = Settings.Get<int>("Height");
-            }
-            else
-            {
-                height = 1080;
-            }
-            graphics.PreferredBackBufferHeight = height;
-
-          
-            Content.RootDirectory = "Content";
-            Window.Title = "OctoAwesome";
+            //Content.RootDirectory = "Content";
+            Title = "OctoAwesome";
             IsMouseVisible = true;
-            Window.AllowUserResizing = true;
+            Icon = Properties.Resources.octoawesome;
 
-            TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
+            //Window.AllowUserResizing = true;
+            Settings = new Settings();
 
-            if(Settings.KeyExists("EnableFullscreen") && Settings.Get<bool>("EnableFullscreen"))
-                Fullscreen();
+            ExtensionLoader extensionLoader = new ExtensionLoader(Settings);
+            extensionLoader.LoadExtensions();
+            ExtensionLoader = extensionLoader;
+
+            DefinitionManager = new DefinitionManager(extensionLoader);
+            ResourceManager = new ResourceManager(extensionLoader, DefinitionManager, Settings);
+
+            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
+
+            int width = Settings.Get("Width", 1080);
+            int height = Settings.Get("Height", 720);
+            Window.ClientSize = new Size(width, height);
+
+            Window.Fullscreen = Settings.Get("EnableFullscreen", false);
 
             if (Settings.KeyExists("Viewrange"))
             {
@@ -95,13 +84,18 @@ namespace OctoAwesome.Client
             Assets = new AssetComponent(this);
             Components.Add(Assets);
 
-            Simulation = new SimulationComponent(this);
+            Simulation = new Components.SimulationComponent(this, 
+                extensionLoader, ResourceManager);
             Simulation.UpdateOrder = 4;
             Components.Add(Simulation);
 
-            Player = new PlayerComponent(this);
+            Player = new PlayerComponent(this, ResourceManager);
             Player.UpdateOrder = 2;
             Components.Add(Player);
+
+            Entity = new Client.Components.EntityComponent(this,Simulation);
+            Entity.UpdateOrder = 2;
+            Components.Add(Entity);
 
             Camera = new CameraComponent(this);
             Camera.UpdateOrder = 3;
@@ -114,17 +108,16 @@ namespace OctoAwesome.Client
 
             KeyMapper = new KeyMapper(Screen, Settings);
 
-            Window.ClientSizeChanged += (s, e) =>
+            /*Resize += (s, e) =>
             {
-                if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
-                   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
-                    return;
+                //if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
+                //   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
+                //    return;
 
-                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-                graphics.ApplyChanges();
-            };
-
+                //graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                //graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                //graphics.ApplyChanges();
+            };*/
             SetKeyBindings();
         }
 
@@ -173,7 +166,7 @@ namespace OctoAwesome.Client
                 { "octoawesome:headright", Keys.Right },
                 { "octoawesome:interact", Keys.E },
                 { "octoawesome:apply", Keys.Q },
-                { "octoawesome:flymode", Keys.Scroll },
+                { "octoawesome:flymode", Keys.ScrollLock },
                 { "octoawesome:jump", Keys.Space },
                 { "octoawesome:slot0", Keys.D1 },
                 { "octoawesome:slot1", Keys.D2 },
@@ -200,45 +193,16 @@ namespace OctoAwesome.Client
             KeyMapper.AddAction("octoawesome:fullscreen", type =>
             {
                 if (type == KeyMapper.KeyType.Down)
-                    Fullscreen();
+                {
+                    Window.Fullscreen = !Window.Fullscreen;
+                }
             });
         }
 
         protected override void OnExiting(object sender, EventArgs args)
         {
-            Player.RemovePlayer();
+            Player.SetEntity(null);
             Simulation.ExitGame();
-
-            base.OnExiting(sender, args);
-        }
-
-        private void Fullscreen()
-        {
-            if (!fullscreen)
-            {
-                oldHeight = Window.ClientBounds.Height;
-                oldWidth = Window.ClientBounds.Width;
-                oldPositon = Window.Position;
-                var screenWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
-                var screenHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
-
-                Window.Position = new Point(0, 0);
-                Window.IsBorderless = true;
-
-                graphics.PreferredBackBufferWidth = screenWidth;
-                graphics.PreferredBackBufferHeight = screenHeight;
-                fullscreen = true;
-            }
-            else
-            {
-                Window.Position = oldPositon;
-                Window.IsBorderless = false;
-                graphics.PreferredBackBufferHeight = oldHeight;
-                graphics.PreferredBackBufferWidth = oldWidth;
-                fullscreen = false;
-            }
-
-            graphics.ApplyChanges();
         }
     }
 }

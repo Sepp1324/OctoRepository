@@ -1,13 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using engenious;
+using engenious.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace OctoAwesome.Client.Components
@@ -192,7 +190,7 @@ namespace OctoAwesome.Client.Components
                 throw new ArgumentNullException();
 
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentNullException();
+                return default(T);
 
             string fullkey = string.Format("{0}.{1}", baseType.Namespace, key);
 

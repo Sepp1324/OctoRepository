@@ -1,11 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using engenious.Input;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -58,7 +53,7 @@ namespace OctoAwesome.Client.Screens
             mainMenuButton.Margin = new Border(0, 0, 0, 10);
             mainMenuButton.LeftMouseClick += (s, e) =>
             {
-                manager.Player.RemovePlayer();
+                manager.Player.SetEntity(null);
                 manager.Game.Simulation.ExitGame();
                 manager.NavigateHome();
             };

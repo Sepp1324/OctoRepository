@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using engenious;
+using OctoAwesome.EntityComponents;
+using System;
 using System.IO;
-using System.Xml.Serialization;
 
 namespace OctoAwesome
 {
@@ -10,24 +11,64 @@ namespace OctoAwesome
     public abstract class Entity
     {
         /// <summary>
-        /// Die Position der Entität
+        /// Contains all Components.
         /// </summary>
-        public Coordinate Position { get; set; }
+        public ComponentList<EntityComponent> Components { get; private set; }
 
         /// <summary>
-        /// Die Masse der Entität. 
+        /// Temp Id
         /// </summary>
-        public float Mass { get; set; }
+        public int Id { get; internal set; }
 
         /// <summary>
-        /// Geschwindikeit der Entität als Vektor
+        /// Reference to the active Simulation.
         /// </summary>
-        public Vector3 Velocity { get; set; }
+        public Simulation Simulation { get; internal set; }
 
         /// <summary>
-        /// Kraft die von aussen auf die Entität wirkt.
+        /// LocalChunkCache für die Entity
         /// </summary>
-        public Vector3 ExternalForce { get; set; }
+        public ILocalChunkCache Cache { get; protected set; }
+
+        /// <summary>
+        /// Entity die regelmäßig eine Updateevent bekommt
+        /// </summary>
+        public Entity()
+        {
+            Components = new ComponentList<EntityComponent>(
+                ValidateAddComponent, ValidateRemoveComponent,OnAddComponent,OnRemoveComponent);
+        }
+
+        private void OnRemoveComponent(EntityComponent component)
+        {
+            
+        }
+
+        private void OnAddComponent(EntityComponent component)
+        {
+            component.SetEntity(this);
+        }
+
+        private void ValidateAddComponent(EntityComponent component)
+        {
+            if (Simulation != null)
+                throw new NotSupportedException("Can't add components during simulation");
+        }
+
+        private void ValidateRemoveComponent(EntityComponent component)
+        {
+            if (Simulation != null)
+                throw new NotSupportedException("Can't remove components during simulation");
+        }
+
+        public void Initialize(IResourceManager mananger)
+        {
+            OnInitialize(mananger);
+        }
+
+        protected virtual void OnInitialize(IResourceManager manager)
+        {
+        }
 
         /// <summary>
         /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
@@ -36,17 +77,7 @@ namespace OctoAwesome
         /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
         public virtual void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
         {
-            // Position
-            writer.Write(Position.Planet);
-            writer.Write(Position.GlobalBlockIndex.X);
-            writer.Write(Position.GlobalBlockIndex.Y);
-            writer.Write(Position.GlobalBlockIndex.Z);
-            writer.Write(Position.BlockPosition.X);
-            writer.Write(Position.BlockPosition.Y);
-            writer.Write(Position.BlockPosition.Z);
-
-            // Mass
-            writer.Write(Mass);
+            Components.Serialize(writer, definitionManager);
         }
 
         /// <summary>
@@ -56,18 +87,12 @@ namespace OctoAwesome
         /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
         public virtual void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
-            // Position
-            int planet = reader.ReadInt32();
-            int blockX = reader.ReadInt32();
-            int blockY = reader.ReadInt32();
-            int blockZ = reader.ReadInt32();
-            float posX = reader.ReadSingle();
-            float posY = reader.ReadSingle();
-            float posZ = reader.ReadSingle();
-            Position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
+            Components.Deserialize(reader, definitionManager);
+        }
 
-            // Mass
-            Mass = reader.ReadSingle();
+        public virtual void RegisterDefault()
+        {
+
         }
     }
 }
