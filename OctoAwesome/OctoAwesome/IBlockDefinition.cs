@@ -11,12 +11,11 @@ namespace OctoAwesome
         /// <summary>
         /// Gibt das Volumen für eine Einheit an.
         /// </summary>
-        float VolumePerUnit { get; }
+        decimal VolumePerUnit { get; }
 
         /// <summary>
         /// Gibt an, wie viele dieses Items im Inventar in einem Slot gestapelt werden können
         /// </summary>
-        [Obsolete]
         int StackLimit { get; }
 
         /// <summary>
