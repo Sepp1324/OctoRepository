@@ -4,8 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace OctoAwesome.Client.Screens
