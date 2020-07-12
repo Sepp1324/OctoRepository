@@ -229,7 +229,6 @@ namespace OctoAwesome.Client.Components
                 }
                 slot.Amount++;
             }
-
         }
     }
 }

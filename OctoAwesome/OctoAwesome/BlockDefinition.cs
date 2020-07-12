@@ -1,8 +1,9 @@
-﻿using System.Drawing;
-using engenious;
+﻿using engenious;
 
 namespace OctoAwesome
 {
+    //TODO: #CleanUp -> Default values or not complete?
+
     /// <summary>
     /// Eine definition eines Block-Typen
     /// </summary>
@@ -63,10 +64,8 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
-        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
-        }
+        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z) 
+            => new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
 
         /// <summary>
         /// Texturindex für das Array <see cref="Textures"/> für die Oberseite (Positiv Z) des Blocks
@@ -76,10 +75,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Index für das Array <see cref="Textures"/></returns>
-        public virtual int GetTopTextureIndex(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetTopTextureIndex(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Texturindex für das Array <see cref="Textures"/> für die Unterseite (Negativ Z) des Blocks
@@ -89,10 +85,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Index für das Array <see cref="Textures"/></returns>
-        public virtual int GetBottomTextureIndex(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetBottomTextureIndex(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Texturindex für das Array <see cref="Textures"/> für die Nordseite (Positiv Y) des Blocks
@@ -102,10 +95,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Index für das Array <see cref="Textures"/></returns>
-        public virtual int GetNorthTextureIndex(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetNorthTextureIndex(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Texturindex für das Array <see cref="Textures"/> für die Südseite (negativ Y) des Blocks
@@ -115,10 +105,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Index für das Array <see cref="Textures"/></returns>
-        public virtual int GetSouthTextureIndex(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetSouthTextureIndex(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Texturindex für das Array <see cref="Textures"/> für die Westseite (Negativ X) des Blocks
@@ -128,10 +115,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Index für das Array <see cref="Textures"/></returns>
-        public virtual int GetWestTextureIndex(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetWestTextureIndex(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Texturindex für das Array <see cref="Textures"/> für die Ostseite (Positiv X) des Blocks
@@ -141,10 +125,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Index für das Array <see cref="Textures"/></returns>
-        public virtual int GetEastTextureIndex(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetEastTextureIndex(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Rotation der Textur in 90° Schritten für die Oberseite (Positiv Z) des Blocks
@@ -154,10 +135,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
-        public virtual int GetTopTextureRotation(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetTopTextureRotation(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Rotation der Textur in 90° Schritten für die Unterseite (Negativ Z) des Blocks
@@ -167,10 +145,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
-        public virtual int GetBottomTextureRotation(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetBottomTextureRotation(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Rotation der Textur in 90° Schritten für die Ostseite (Positiv X) des Blocks
@@ -180,10 +155,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
-        public virtual int GetEastTextureRotation(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetEastTextureRotation(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Rotation der Textur in 90° Schritten für die Westseite (Negativ X) des Blocks
@@ -193,10 +165,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
-        public virtual int GetWestTextureRotation(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetWestTextureRotation(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Rotation der Textur in 90° Schritten für die Nordseite (Positiv Y) des Blocks
@@ -206,10 +175,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
-        public virtual int GetNorthTextureRotation(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetNorthTextureRotation(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Rotation der Textur in 90° Schritten für die Südseite (Negativ Y) des Blocks
@@ -219,10 +185,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
-        public virtual int GetSouthTextureRotation(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetSouthTextureRotation(ILocalChunkCache manager, int x, int y, int z) => 0;
 
         /// <summary>
         /// Gibt an, ob die Oberseite (Positiv Z) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
@@ -232,10 +195,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>True, wenn die Wand undurchsichtig ist</returns>
-        public virtual bool IsTopSolidWall(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return true;
-        }
+        public virtual bool IsTopSolidWall(ILocalChunkCache manager, int x, int y, int z) => true;
 
         /// <summary>
         /// Gibt an, ob die Unterseite (Negativ Z) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
@@ -245,10 +205,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>True, wenn die Wand undurchsichtig ist</returns>
-        public virtual bool IsBottomSolidWall(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return true;
-        }
+        public virtual bool IsBottomSolidWall(ILocalChunkCache manager, int x, int y, int z) => true;
 
         /// <summary>
         /// Gibt an, ob die Nordseite (Positiv Y) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
@@ -258,10 +215,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>True, wenn die Wand undurchsichtig ist</returns>
-        public virtual bool IsNorthSolidWall(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return true;
-        }
+        public virtual bool IsNorthSolidWall(ILocalChunkCache manager, int x, int y, int z) => true;
 
         /// <summary>
         /// Gibt an, ob die Südseite (Negativ Y) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
@@ -271,10 +225,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>True, wenn die Wand undurchsichtig ist</returns>
-        public virtual bool IsSouthSolidWall(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return true;
-        }
+        public virtual bool IsSouthSolidWall(ILocalChunkCache manager, int x, int y, int z) => true;
 
         /// <summary>
         /// Gibt an, ob die Westseite (Positiv X) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
@@ -284,10 +235,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>True, wenn die Wand undurchsichtig ist</returns>
-        public virtual bool IsWestSolidWall(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return true;
-        }
+        public virtual bool IsWestSolidWall(ILocalChunkCache manager, int x, int y, int z) => true;
 
         /// <summary>
         /// Gibt an, ob die Ostseite (Negativ X) undurchsichtig ist, also Blöcke dahinter nicht gesehen werden können
@@ -297,9 +245,6 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>True, wenn die Wand undurchsichtig ist</returns>
-        public virtual bool IsEastSolidWall(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return true;
-        }
+        public virtual bool IsEastSolidWall(ILocalChunkCache manager, int x, int y, int z) => true;
     }
 }
