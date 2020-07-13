@@ -147,10 +147,8 @@
     <EmbeddedResource Include="Assets\Crew\base.png" />
     <EmbeddedResource Include="Assets\Crew\bobstriker.png" />
     <Content Include="Copyright.txt" />
-    <Content Include="FEEDBACK.txt" />
     <Content Include="octoawesome.ico" />
     <Content Include="packages.config" />
-    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Runtime\OctoAwesome.Runtime.csproj">
