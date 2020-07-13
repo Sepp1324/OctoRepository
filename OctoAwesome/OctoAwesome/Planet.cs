@@ -75,7 +75,7 @@ namespace OctoAwesome
         /// <param name="stream">Zielstream</param>
         public virtual void Serialize(Stream stream)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace OctoAwesome
         /// <param name="stream">Quellstream</param>
         public virtual void Deserialize(Stream stream)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

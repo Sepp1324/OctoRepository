@@ -149,8 +149,7 @@ namespace OctoAwesome.Runtime
             foreach (var folder in Directory.GetDirectories(root))
             {
                 string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
-                Guid guid;
-                if (Guid.TryParse(id, out guid))
+                if (Guid.TryParse(id, out Guid guid))
                     universes.Add(LoadUniverse(guid));
             }
 

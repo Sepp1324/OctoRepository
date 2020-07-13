@@ -26,7 +26,7 @@ namespace OctoAwesome.Basics
         {
 
             BiomeGenerator = new SurfaceBiomeGenerator(this, 40);
-            this.Heightmap = null;  
+            Heightmap = null;  
             ClimateMap = new Climate.ComplexClimateMap(this);
         }
 
