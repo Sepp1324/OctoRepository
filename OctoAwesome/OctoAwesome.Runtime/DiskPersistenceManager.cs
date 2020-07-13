@@ -192,7 +192,7 @@ namespace OctoAwesome.Runtime
                 return null;
 
             IMapGenerator generator = null;
-            using (Stream stream = File.Open(generatorInfo, FileMode.Create, FileAccess.Read))
+            using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
             {
                 using (BinaryReader bw = new BinaryReader(stream))
                 {

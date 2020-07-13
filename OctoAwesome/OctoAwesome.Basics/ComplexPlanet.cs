@@ -1,5 +1,6 @@
 ﻿using OctoAwesome.Basics.Biomes;
 using System;
+using System.IO;
 
 namespace OctoAwesome.Basics
 {
@@ -25,14 +26,24 @@ namespace OctoAwesome.Basics
             : base(id, universe, size, seed)
         {
 
-            BiomeGenerator = new SurfaceBiomeGenerator(this, 40);
-            Heightmap = null;  
-            ClimateMap = new Climate.ComplexClimateMap(this);
+            Initialize();
         }
 
         public ComplexPlanet() : base()
         {
+            
+        }
 
+        public override void Deserialize(Stream stream)
+        {
+            base.Deserialize(stream);
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            BiomeGenerator = new SurfaceBiomeGenerator(this, 40);
+            ClimateMap = new Climate.ComplexClimateMap(this);
         }
     }
 }

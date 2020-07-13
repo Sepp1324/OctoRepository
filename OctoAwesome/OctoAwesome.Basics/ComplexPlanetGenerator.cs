@@ -202,6 +202,7 @@ namespace OctoAwesome.Basics
         {
             IPlanet planet = new ComplexPlanet();
             planet.Deserialize(stream);
+            planet.Generator = this;
             return planet;
         }
 

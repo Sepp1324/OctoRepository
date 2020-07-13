@@ -40,7 +40,7 @@ namespace OctoAwesome.Runtime
         {
             this.extensionResolver = extensionResolver;
             DefinitionManager = definitionManager;
-            persistenceManager = new DiskPersistenceManager(extensionResolver, definitionManager,this, settings);
+            persistenceManager = new DiskPersistenceManager(extensionResolver, definitionManager, this, settings);
 
             populators = extensionResolver.GetMapPopulator().OrderBy(p => p.Order).ToList();
 
@@ -106,7 +106,7 @@ namespace OctoAwesome.Runtime
         {
             // TODO: Save
             persistenceManager.SaveUniverse(CurrentUniverse);
-            
+
             // Unload Chunks
             globalChunkCache.Clear();
 
@@ -169,10 +169,8 @@ namespace OctoAwesome.Runtime
                     planet = generator.GeneratePlanet(CurrentUniverse.Id, id, CurrentUniverse.Seed + id);
                     // persistenceManager.SavePlanet(universe.Id, planet);
                 }
-
                 planets.Add(id, planet);
             }
-
             return planet;
         }
 
