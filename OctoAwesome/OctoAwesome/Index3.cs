@@ -223,7 +223,7 @@ namespace OctoAwesome
         /// Ermittelt die Entfernung zum Nullpunkt im Quadrat.
         /// </summary>
         /// <returns></returns>
-        public int LengthSquared() => (X * X) + (Y * Y) + (Z * Z);
+        public int LengthSquared() => X * X + Y * Y + Z * Z;
 
         /// <summary>
         /// Addiert zwei Indices3
@@ -310,7 +310,7 @@ namespace OctoAwesome
         /// Gibt einen string zurück, der den akteullen Index3 darstellt.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => "(" + X.ToString() + "/" + Y.ToString() + "/" + Z.ToString() + ")";
+        public override string ToString() => $"({X}/{Y}/{Z})";
 
         /// <summary>
         /// Überprüft, ob der gegebene Index3 den gleichen Wert aufweist, wie der aktuelle Index3.
@@ -319,14 +319,9 @@ namespace OctoAwesome
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is Index3))
-                return false;
-
-            Index3 other = (Index3)obj;
-            return (
-                other.X == X &&
-                other.Y == Y &&
-                other.Z == Z);
+            if (obj is Index3 other)
+                return other.X == X && other.Y == Y && other.Z == Z;
+            return false;
         }
 
         /// <summary>

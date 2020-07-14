@@ -10,27 +10,12 @@ namespace OctoAwesome
     /// </summary>
     public sealed class Simulation
     {
-        // private List<ActorHost> actorHosts = new List<ActorHost>();
-        // private Stopwatch watch = new Stopwatch();
-        // private Thread thread;
-
-        private int nextId = 1;
-
         public IResourceManager ResourceManager { get; private set; }
-
-        private readonly IExtensionResolver extensionResolver;
-
-        private HashSet<Entity> entites = new HashSet<Entity>();
 
         /// <summary>
         /// List of all Simulation Components.
         /// </summary>
         public ComponentList<SimulationComponent> Components { get; private set; }
-
-        /// <summary>
-        /// List of all Entities.
-        /// </summary>
-        public IEnumerable<Entity> Entities => entites.AsEnumerable();
 
         /// <summary>
         /// Der aktuelle Status der Simulation.
@@ -42,6 +27,17 @@ namespace OctoAwesome
         /// </summary>
         public Guid UniverseId { get; private set; }
 
+        /// <summary>
+        /// List of all Entities.
+        /// </summary>
+        public List<Entity> Entities => entites.ToList();
+
+        private int nextId = 1;
+        
+        private readonly IExtensionResolver extensionResolver;
+
+        private HashSet<Entity> entites = new HashSet<Entity>();
+                        
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
         /// </summary>
@@ -142,8 +138,9 @@ namespace OctoAwesome
             State = SimulationState.Paused;
 
             //TODO: unschön
-            while (entites.Count > 0)
-                RemoveEntity(Entities.First());       
+            Entities.ForEach(entity => RemoveEntity(entity));
+            //while (entites.Count > 0)
+            //    RemoveEntity(Entities.First());       
 
             State = SimulationState.Finished;
             // thread.Join();
@@ -156,7 +153,7 @@ namespace OctoAwesome
         /// <param name="entity">Neue Entity</param>
         public void AddEntity(Entity entity)
         {
-            //TODO: Überprüfen ob ENtity schon da ist
+            //TODO: Überprüfen ob Entity schon da ist
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
@@ -168,9 +165,8 @@ namespace OctoAwesome
 
             extensionResolver.ExtendEntity(entity);
 
-            entity.Initialize(this.ResourceManager);
+            entity.Initialize(ResourceManager);
             
-
             entites.Add(entity);
             entity.Simulation = this;
             entity.Id = nextId++;
@@ -191,8 +187,6 @@ namespace OctoAwesome
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-
-
             if (entity.Simulation != this)
             {
                 if(entity.Simulation == null)
@@ -206,12 +200,11 @@ namespace OctoAwesome
 
             foreach (var component in Components)
                 component.Remove(entity);
-
            
             entites.Remove(entity);
             entity.Id = 0;
             entity.Simulation = null;
-
+            
             ResourceManager.SaveEntity(entity);
         }
     }

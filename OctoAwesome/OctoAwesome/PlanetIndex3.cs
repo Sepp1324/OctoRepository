@@ -64,28 +64,19 @@
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is PlanetIndex3))
-                return false;
-
-            PlanetIndex3 other = (PlanetIndex3)obj;
-            return (
-                other.Planet == Planet &&
-                other.ChunkIndex.X == ChunkIndex.X &&
-                other.ChunkIndex.Y == ChunkIndex.Y &&
-                other.ChunkIndex.Z == ChunkIndex.Z);
+            if (obj is PlanetIndex3 other)
+                return other.Planet == Planet && other.ChunkIndex.X == ChunkIndex.X && other.ChunkIndex.Y == ChunkIndex.Y && other.ChunkIndex.Z == ChunkIndex.Z;
+            return false;
         }
 
         /// <summary>
         /// Erzeugt einen möglichst eindeutigen Hashcode des PlanetIndex3s
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return
-                (Planet << 24) +
+        public override int GetHashCode() 
+            => (Planet << 24) +
                (ChunkIndex.X << 16) +
                (ChunkIndex.Y << 8) +
                ChunkIndex.Z;
-        }
     }
 }

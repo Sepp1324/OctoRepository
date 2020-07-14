@@ -270,7 +270,7 @@ namespace OctoAwesome
         /// <summary>
         /// Null-Index
         /// </summary>
-        public static Index2 Zero { get { return new Index2(0, 0); } }
+        public static Index2 Zero { get { return new Index2(0, 0); } } 
 
         /// <summary>
         /// Index(1,1)
