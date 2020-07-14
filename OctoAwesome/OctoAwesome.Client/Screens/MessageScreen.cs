@@ -1,5 +1,4 @@
 ﻿using engenious;
-using engenious.Graphics;
 using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
@@ -48,7 +47,7 @@ namespace OctoAwesome.Client.Screens
 
             Button closeButton = Button.TextButton(manager, buttonText);
             closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            closeButton.LeftMouseClick += (s, e) => 
+            closeButton.LeftMouseClick += (s, e) =>
             {
                 if (buttonClick != null)
                     buttonClick(s, e);

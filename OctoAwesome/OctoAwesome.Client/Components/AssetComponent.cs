@@ -74,7 +74,6 @@ namespace OctoAwesome.Client.Components
                     }
                 }
             }
-
             ApplyResourcePacks(toLoad);
         }
 
@@ -104,7 +103,6 @@ namespace OctoAwesome.Client.Components
                             Path = info.FullName,
                             Name = info.Name
                         };
-
                         loadedPacks.Add(pack);
                     }
                 }

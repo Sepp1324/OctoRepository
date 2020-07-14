@@ -104,21 +104,19 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void UnloadUniverse()
         {
-            // TODO: Save
+            //Save
             persistenceManager.SaveUniverse(CurrentUniverse);
 
             // Unload Chunks
             globalChunkCache.Clear();
 
-            // TODO: Unload Planets
+            // Unload Planets
             foreach (var planet in planets)
-            {
                 persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-            }
 
             planets.Clear();
 
-            // TODO: Unload Universe;
+            // Unload Universe;
             CurrentUniverse = null;
             GC.Collect();
         }
@@ -127,10 +125,7 @@ namespace OctoAwesome.Runtime
         /// Entlädt das aktuelle Universum
         /// </summary>
         /// <returns>Das gewünschte Universum, falls es existiert</returns>
-        public IUniverse GetUniverse()
-        {
-            return CurrentUniverse;
-        }
+        public IUniverse GetUniverse() => CurrentUniverse;
 
         /// <summary>
         /// Löscht ein Universum.
@@ -185,10 +180,10 @@ namespace OctoAwesome.Runtime
                 throw new Exception("No Universe loaded");
 
             Player player = persistenceManager.LoadPlayer(CurrentUniverse.Id, playername);
+
             if (player == null)
-            {
+
                 player = new Player();
-            }
             return player;
         }
 
@@ -267,9 +262,7 @@ namespace OctoAwesome.Runtime
         private void SaveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
             if (!disablePersistence && value.ChangeCounter > 0) //value.Chunks.Any(c => c.ChangeCounter > 0)
-            {
                 persistenceManager.SaveColumn(CurrentUniverse.Id, planetId, value);
-            }
         }
 
         public void SaveEntity(Entity entity)

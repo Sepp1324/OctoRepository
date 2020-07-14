@@ -2,13 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
     public abstract class SuperBiomeBase : IBiome
     {
-
         public IPlanet Planet { get; private set; }
 
         public List<IBiome> SubBiomes { get; private set; }
@@ -27,10 +25,10 @@ namespace OctoAwesome.Basics.Biomes
 
         public SuperBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange)
         {
-            this.Planet = planet;
-            this.SubBiomes = new List<IBiome>();
-            this.ValueRangeOffset = valueRangeOffset;
-            this.ValueRange = valueRange;
+            Planet = planet;
+            SubBiomes = new List<IBiome>();
+            ValueRangeOffset = valueRangeOffset;
+            ValueRange = valueRange;
         }
 
         protected void SortSubBiomes()
@@ -42,7 +40,6 @@ namespace OctoAwesome.Basics.Biomes
                 throw new InvalidOperationException("MinValue oder MaxValue der Biome nicht in gültigem Bereich");
             }
         }
-
         protected IBiome ChooseBiome(float value, out IBiome secondBiome)
         {
 

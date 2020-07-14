@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Basics.Entities;
 using OctoAwesome.EntityComponents;
@@ -14,13 +10,7 @@ namespace OctoAwesome.Basics
 
         Random r = new Random();
 
-        public int Order
-        {
-            get
-            {
-                return 11;
-            }
-        }
+        public int Order => 11;
 
         int ispop = 10;
 

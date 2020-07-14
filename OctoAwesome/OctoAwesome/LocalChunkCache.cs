@@ -102,7 +102,7 @@ namespace OctoAwesome
             }
 
             // Planet resetten falls notwendig
-            if (this.Planet != planet)
+            if (Planet != planet)
                 InitializePlanet(planet);
 
             CenterPosition = index;
@@ -131,9 +131,7 @@ namespace OctoAwesome
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
         private void InternalSetCenter(CancellationToken token, IPlanet planet, Index2 index, Action<bool> successCallback)
         {
-           
-
-            if (planet == null)
+                       if (planet == null)
             {
                 if (successCallback != null) successCallback(true);
                 return;

@@ -47,10 +47,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns>Der Wert der Einstellung.</returns>
-        public T Get<T>(string key)
-        {
-            return Get<T>(key, default(T));
-        }
+        public T Get<T>(string key) => Get(key, default(T));
 
         /// <summary>
         /// Gibt den Wert einer Einstellung zurück.
@@ -86,10 +83,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns></returns>
-        public bool KeyExists(string key)
-        {
-            return _config.AppSettings.Settings.AllKeys.Contains(key);
-        }
+        public bool KeyExists(string key) => _config.AppSettings.Settings.AllKeys.Contains(key);
 
         /// <summary>
         /// Setzt den Wert einer Eigenschaft.
@@ -110,20 +104,14 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, int value)
-        {
-            Set(key, Convert.ToString(value));
-        }
+        public void Set(string key, int value) => Set(key, Convert.ToString(value));
 
         /// <summary>
         /// Setzt den Wert einer Eigenschaft.
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, bool value)
-        {
-            Set(key, Convert.ToString(value));
-        }
+        public void Set(string key, bool value) => Set(key, Convert.ToString(value));
 
         /// <summary>
         /// Setzt den Wert einer Eigenschaft.

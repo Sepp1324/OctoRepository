@@ -67,7 +67,6 @@ namespace OctoAwesome.Client.Screens
                 args.Handled = true;
                 Manager.NavigateBack();
             }
-
             base.OnKeyDown(args);
         }
     }

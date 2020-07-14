@@ -1,14 +1,10 @@
 ﻿using OctoAwesome.Noise;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
     public class HillsBiome : IBiome
     {
-
         public IPlanet Planet { get; private set; }
 
         public List<IBiome> SubBiomes { get; private set; }
@@ -25,12 +21,12 @@ namespace OctoAwesome.Basics.Biomes
 
         public HillsBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
         {
-            this.BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 2) { FrequencyX = 1f / 256, FrequencyY = 1f / 256, FrequencyZ = 1f / 256, Persistance = 0.4f, Octaves = 4, Factor = 1f };
-            this.Planet = planet;
-            this.MinValue = minValue;
-            this.MaxValue = maxValue;
-            this.ValueRangeOffset = valueRangeOffset;
-            this.ValueRange = valueRange;
+            BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 2) { FrequencyX = 1f / 256, FrequencyY = 1f / 256, FrequencyZ = 1f / 256, Persistance = 0.4f, Octaves = 4, Factor = 1f };
+            Planet = planet;
+            MinValue = minValue;
+            MaxValue = maxValue;
+            ValueRangeOffset = valueRangeOffset;
+            ValueRange = valueRange;
         }
 
         public float[,] GetHeightmap(Index2 chunkIndex)

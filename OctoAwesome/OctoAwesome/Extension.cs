@@ -1,10 +1,5 @@
 ﻿using engenious;
 using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -12,21 +7,9 @@ namespace OctoAwesome
 
     public sealed class Extension : IExtension
     {
-        public string Description
-        {
-            get
-            {
-                return "OctoAwesome";
-            }
-        }
+        public string Description => "OctoAwesome";
 
-        public string Name
-        {
-            get
-            {
-                return "OctoAwesome";
-            }
-        }
+        public string Name => "OctoAwesome";
 
         public void Register(IExtensionLoader extensionLoader)
         {

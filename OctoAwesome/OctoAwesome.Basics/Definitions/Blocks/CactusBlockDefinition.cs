@@ -1,34 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class CactusBlockDefinition : BlockDefinition
     {
-        public override string Icon
-        {
-            get { return "cactus_inside"; }
-        }
+        public override string Icon => "cactus_inside";
 
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Cactus; }
-        }
+        public override string Name => Languages.OctoBasics.Cactus;
 
-        public override string[] Textures
-        {
-            get
-            {
-                return new[] {
+        public override string[] Textures => new[] {
                     "cactus_inside",
                     "cactus_side",
                     "cactus_top"
                 };
-            }
-        }
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {

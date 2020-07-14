@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OctoAwesome
+﻿namespace OctoAwesome
 {
     public enum Wall
     {

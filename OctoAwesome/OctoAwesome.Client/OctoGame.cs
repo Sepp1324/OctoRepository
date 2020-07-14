@@ -14,8 +14,6 @@ namespace OctoAwesome.Client
     /// </summary>
     internal class OctoGame : Game
     {
-        //GraphicsDeviceManager graphics;
-
         public CameraComponent Camera { get; private set; }
 
         public PlayerComponent Player { get; private set; }

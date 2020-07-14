@@ -63,10 +63,7 @@ namespace OctoAwesome.Client.Controls
                     column = 0;
                 }
             }
-
             scroll.Content = grid;
-
-
         }
     }
 }

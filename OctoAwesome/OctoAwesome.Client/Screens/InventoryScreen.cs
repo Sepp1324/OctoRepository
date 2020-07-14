@@ -20,15 +20,12 @@ namespace OctoAwesome.Client.Screens
         private InventoryControl inventory;
 
         private Label nameLabel;
-
         private Label massLabel;
-
         private Label volumeLabel;
 
         private Image[] images;
 
         private Brush backgroundBrush;
-
         private Brush hoverBrush;
 
         public InventoryScreen(ScreenComponent manager) : base(manager)
@@ -101,12 +98,15 @@ namespace OctoAwesome.Client.Screens
             };
 
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
+
             for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
                 toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
+
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
             toolbar.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
 
             images = new Image[ToolBarComponent.TOOLCOUNT];
+
             for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 Image image = images[i] = new Image(manager)
@@ -190,7 +190,6 @@ namespace OctoAwesome.Client.Screens
                 args.Handled = true;
                 Manager.NavigateBack();
             }
-
             base.OnKeyDown(args);
         }
 

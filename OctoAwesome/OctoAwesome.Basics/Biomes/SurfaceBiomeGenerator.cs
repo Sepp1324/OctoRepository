@@ -1,8 +1,5 @@
 ﻿using OctoAwesome.Noise;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
@@ -17,7 +14,7 @@ namespace OctoAwesome.Basics.Biomes
         public SurfaceBiomeGenerator(IPlanet planet, int seaLevel)
             : base(planet, 0f, 1f)
         {
-            this.SeaLevel = seaLevel;
+            SeaLevel = seaLevel;
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed) { FrequencyX = 1f / 10000, FrequencyY = 1f / 10000, Factor = 1f };
 
             float offset = (float)seaLevel / (Planet.Size.Z * Chunk.CHUNKSIZE_Z);
@@ -71,7 +68,6 @@ namespace OctoAwesome.Basics.Biomes
                     }
                     else
                         values[x, y] = biomeValues[biome1][x, y];
-
                 }
             }
             return values;

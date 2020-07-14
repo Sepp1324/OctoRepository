@@ -1,56 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class SnowBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get
-            {
-                return Languages.OctoBasics.Snow;
-            }
-        }
+        public override string Name => Languages.OctoBasics.Snow;
 
-        public override string Icon
-        {
-            get
-            {
-                return "snow";
-            }
-        }
+        public override string Icon => "snow";
 
-        public override string[] Textures
-        {
-            get
-            {
-                return new[] {
+        public override string[] Textures => new[] {
                     "snow",
                     "dirt",
                     "dirt_snow",
                 };
-            }
-        }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z) => new PhysicalProperties()
         {
-            return new PhysicalProperties()
-            {
-                Density = 1.5f,
-                FractureToughness = 0.2f,
-                Granularity = 0.9f,
-                Hardness = 0.05f
-            };
-        }
+            Density = 1.5f,
+            FractureToughness = 0.2f,
+            Granularity = 0.9f,
+            Hardness = 0.05f
+        };
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {

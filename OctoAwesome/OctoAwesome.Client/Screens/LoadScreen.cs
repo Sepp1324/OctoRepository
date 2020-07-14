@@ -1,10 +1,7 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using engenious;
 using engenious.Input;
 
@@ -129,7 +126,7 @@ namespace OctoAwesome.Client.Screens
                 {
                     MessageScreen msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
                     manager.NavigateToScreen(msg);
-                    
+
                     return;
                 }
 
@@ -147,7 +144,7 @@ namespace OctoAwesome.Client.Screens
             Guid lastUniverseId;
             if (Guid.TryParse(settings.Get<string>("LastUniverse"), out lastUniverseId))
             {
-                var lastlevel =  levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
+                var lastlevel = levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
                 if (lastlevel != null)
                     levelList.SelectedItem = lastlevel;
 
@@ -183,8 +180,6 @@ namespace OctoAwesome.Client.Screens
 
             Player player = Manager.Game.Simulation.LoginPlayer(Guid.Empty);
             Manager.Game.Player.SetEntity(player);
-
-
             Manager.NavigateToScreen(new GameScreen(Manager));
         }
     }

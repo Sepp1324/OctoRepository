@@ -1,10 +1,6 @@
 ﻿using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.EntityComponents;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
 
 namespace OctoAwesome.Basics.SimulationComponents
@@ -12,10 +8,7 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(ControllableComponent), typeof(BodyPowerComponent))]
     public class WattMoverComponent : SimulationComponent<ControllableComponent, BodyPowerComponent>
     {
-        protected override bool AddEntity(Entity entity)
-        {
-            return true;
-        }
+        protected override bool AddEntity(Entity entity) => true;
 
         protected override void RemoveEntity(Entity entity)
         {
@@ -42,11 +35,11 @@ namespace OctoAwesome.Basics.SimulationComponents
             }
             else
             {
-                powercomp.Direction = new Vector3(controller.MoveInput.X,controller.MoveInput.Y);
+                powercomp.Direction = new Vector3(controller.MoveInput.X, controller.MoveInput.Y);
             }
 
             //Jump
-            if (controller.JumpInput &&!controller.JumpActive)
+            if (controller.JumpInput && !controller.JumpActive)
             {
                 controller.JumpTime = powercomp.JumpTime;
                 controller.JumpActive = true;
@@ -54,14 +47,12 @@ namespace OctoAwesome.Basics.SimulationComponents
 
             if (controller.JumpActive)
             {
-                powercomp.Direction += new Vector3(0,0,1);
+                powercomp.Direction += new Vector3(0, 0, 1);
                 controller.JumpTime -= gameTime.ElapsedGameTime.Milliseconds;
 
                 if (controller.JumpTime <= 0)
                     controller.JumpActive = false;
             }
-
-            
         }
     }
 }

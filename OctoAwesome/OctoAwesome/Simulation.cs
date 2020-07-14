@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using engenious;
-using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome
 {
@@ -32,7 +30,7 @@ namespace OctoAwesome
         /// <summary>
         /// List of all Entities.
         /// </summary>
-        public IEnumerable<Entity> Entities { get { return entites.AsEnumerable(); } }
+        public IEnumerable<Entity> Entities => entites.AsEnumerable();
 
         /// <summary>
         /// Der aktuelle Status der Simulation.
@@ -119,7 +117,7 @@ namespace OctoAwesome
         {
             if (State == SimulationState.Running)
             {
-                ResourceManager.GlobalChunkCache.BeforSimulationUpdate(this);
+                ResourceManager.GlobalChunkCache.BeforeSimulationUpdate(this);
 
                 //Update all Entities
                 foreach (var entity in Entities.OfType<UpdateableEntity>())
@@ -149,12 +147,8 @@ namespace OctoAwesome
 
             State = SimulationState.Finished;
             // thread.Join();
-
-          
-
             ResourceManager.UnloadUniverse();
         }
-
 
         /// <summary>
         /// Fügt eine Entity der Simulation hinzu
