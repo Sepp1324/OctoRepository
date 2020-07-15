@@ -1,34 +1,14 @@
-﻿using OctoAwesome.Noise;
-using System.Collections.Generic;
-
-namespace OctoAwesome.Basics.Biomes
+﻿namespace OctoAwesome.Basics.Biomes
 {
-    public class OceanBiomeGenerator : IBiome
+    public class OceanBiomeGenerator : LargeBiomeBase
     {
-        public OceanBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange)
+        public OceanBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange) : base(planet, valueRangeOffset, valueRange)
         {
-            Planet = planet;
             MinValue = minVal;
             MaxValue = maxVal;
-            ValueRangeOffset = valueRangeOffset;
-            ValueRange = valueRange;
         }
 
-        public IPlanet Planet { get; private set; }
-
-        public List<IBiome> SubBiomes { get; private set; }
-
-        public INoise BiomeNoiseGenerator { get; private set; }
-
-        public float MinValue { get; private set; }
-
-        public float MaxValue { get; private set; }
-
-        public float ValueRangeOffset { get; private set; }
-
-        public float ValueRange { get; private set; }
-
-        public float[,] GetHeightmap(Index2 chunkIndex)
+        public override float[,] GetHeightmap(Index2 chunkIndex)
         {
             float[,] values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
 

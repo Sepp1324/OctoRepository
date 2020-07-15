@@ -67,7 +67,6 @@ namespace OctoAwesome
                 throw new NotSupportedException("Simulation needs to be in Ready mode to remove Components");
         }
 
-
         /// <summary>
         /// Erzeugt ein neues Spiel (= Universum)
         /// </summary>
@@ -153,7 +152,6 @@ namespace OctoAwesome
         /// <param name="entity">Neue Entity</param>
         public void AddEntity(Entity entity)
         {
-            //TODO: Überprüfen ob Entity schon da ist
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
@@ -162,6 +160,9 @@ namespace OctoAwesome
 
             if (entity.Simulation != null)
                 throw new NotSupportedException("Entity can't be part of more than one simulation");
+
+            if (entites.Contains(entity))
+                return;
 
             extensionResolver.ExtendEntity(entity);
 

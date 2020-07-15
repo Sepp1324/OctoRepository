@@ -231,7 +231,6 @@ namespace OctoAwesome
         /// <param name="definitionManager">Der verwendete DefinitionManager</param>
         public void Serialize(Stream stream, IDefinitionManager definitionManager)
         {
-            //TODO: #CleanUp - Serialize
             using (BinaryWriter bw = new BinaryWriter(stream))
             {
                 // Definitionen sammeln
@@ -343,7 +342,6 @@ namespace OctoAwesome
         /// <param name="planetId">Der Index des Planeten</param>
         public void Deserialize(Stream stream, IDefinitionManager definitionManager, int planetId, Index2 columnIndex)
         {
-            //TODO: CleanUp -> Deserialize
             using (BinaryReader br = new BinaryReader(stream))
             {
                 bool longIndex = br.ReadByte() > 0;

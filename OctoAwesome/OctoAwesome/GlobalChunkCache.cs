@@ -144,7 +144,6 @@ namespace OctoAwesome
                     }
                 }
             }
-
             return cacheItem.ChunkColumn;
         }
 
@@ -168,12 +167,9 @@ namespace OctoAwesome
         public IChunkColumn Peek(int planet, Index2 position)
         {
             if (cache.TryGetValue(new Index3(position, planet), out CacheItem cacheItem))
-            {
                 return cacheItem.ChunkColumn;
-            }
             return null;
         }
-
 
         /// <summary>
         /// Löscht den gesamten Inhalt des Caches.
@@ -188,7 +184,6 @@ namespace OctoAwesome
                     value.PassiveReference = 0;
                     _unreferencedItems.Enqueue(value);
                 }
-
             }
             _autoResetEvent.Set();
         }
@@ -206,10 +201,7 @@ namespace OctoAwesome
                 if (!cache.TryGetValue(new Index3(position, planet), out cacheItem))
                 {
                     if (!passive)
-                    {
                         throw new NotSupportedException(string.Format("Kein Chunk für die Position ({0}) im Cache", position));
-                    }
-
                     return;
                 }
 
@@ -248,7 +240,6 @@ namespace OctoAwesome
                     {
                         saveDelegate(item.Planet, item.Index, item.ChunkColumn);
                     }
-
                 }
 
                 while (_unreferencedItems.TryDequeue(out ci))
@@ -288,20 +279,18 @@ namespace OctoAwesome
                 while (newChunks.Count > 0)
                 {
                     var chunk = newChunks.Dequeue();
+
                     foreach (var entity in chunk.ChunkColumn.Entities)
-                    {
                         simulation.AddEntity(entity);
-                    }
                 }
 
                 //Alte Chunks aus der Siumaltion entfernen
                 while (oldChunks.Count > 0)
                 {
                     var chunk = oldChunks.Dequeue();
+
                     foreach (var entity in chunk.ChunkColumn.Entities)
-                    {
                         simulation.RemoveEntity(entity);
-                    }
                 }
             }
         }
@@ -333,7 +322,6 @@ namespace OctoAwesome
                         simulation.RemoveEntity(entity.Entity);
                     }
                 }
-
             }
         }
 
