@@ -19,6 +19,8 @@ namespace OctoAwesome.Basics
         {
             IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
 
+
+            //TODO: More generic
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().FirstOrDefault();
             ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);
 
@@ -135,63 +137,6 @@ namespace OctoAwesome.Basics
                     }
                 }
             }
-
-            //float[,] cloudmap = null;
-            ////Biomes.BiomeBlockValue[, ,] blockValues = localPlanet.BiomeGenerator.GetBlockValues(index,heightmap,0f,1f);
-
-            ////for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
-            //Parallel.For(0, Chunk.CHUNKSIZE_X, x =>
-            //{
-            //    for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
-            //    {
-            //        bool grass = true, sand = false;
-
-            //        for (int i = chunks.Length - 1; i >= 0; i--)
-            //        {
-
-            //            for (int z = Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
-            //            {
-            //                //Biomes.BiomeBlockValue blockValue = blockValues[x, y, z + i * Chunk.CHUNKSIZE_Z];
-            //                int blockHeight = Math.Max(z + Chunk.CHUNKSIZE_Z * (i), 0);
-            //                //float density = heightmap[x,y] * (Chunk.CHUNKSIZE_Z * (planet.Size.Z)) - blockHeight;
-            //                Index3 blockIndex = new Index3(index.X * Chunk.CHUNKSIZE_X + x, index.Y * Chunk.CHUNKSIZE_Y + y, i * Chunk.CHUNKSIZE_Z + z);
-
-
-            //                if (blockValue.Density > 0.6f || (z < 3 && i == 0))
-            //                {
-            //                    if (blockValue.IsDessert || (grass | sand) && (z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel && (z + (i * Chunk.CHUNKSIZE_Z)) >= localPlanet.BiomeGenerator.SeaLevel - 2)
-            //                    {
-            //                        chunks[i].SetBlock(new Index3(x, y, z), new SandBlock());
-            //                        grass = false;
-            //                        sand = true;
-            //                    }
-            //                    else if (grass && planet.ClimateMap.GetTemperature(blockIndex) > 18.0f)
-            //                    {
-            //                        chunks[i].SetBlock(new Index3(x, y, z), new GrassBlock());
-            //                        grass = false;
-            //                    }
-            //                    //else if (z < Chunk.CHUNKSIZE_Z - 1 && noiseplus >= resDensity)
-            //                    //{
-            //                    //    chunks[i].SetBlock(new Index3(x, y, z), new StoneBlock());
-            //                    //}
-            //                    else
-            //                    {
-            //                        chunks[i].SetBlock(new Index3(x, y, z), new GroundBlock());
-            //                        grass = false;
-            //                    }
-
-            //                }
-            //                else if ((z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel)
-            //                {
-            //                    grass = false;
-            //                    sand = true;
-            //                    chunks[i].SetBlock(new Index3(x, y, z), new WaterBlock());
-            //                }
-            //            }
-            //        }
-            //    }
-            //});
-
 
             ChunkColumn column = new ChunkColumn(chunks, planet.Id, index);
             column.CalculateHeights();

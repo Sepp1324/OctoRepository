@@ -3,7 +3,7 @@ using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.EntityComponents;
 using System.Collections.Generic;
 
-namespace OctoAwesome.Basic
+namespace OctoAwesome.Basics
 {
     /// <summary>
     /// Stellt eine Fläche dar, welche mit anderen Flächen Kollidieren kann

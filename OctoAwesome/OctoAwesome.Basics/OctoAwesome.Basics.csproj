@@ -112,8 +112,6 @@
     <Compile Include="DebugMapGenerator.cs" />
     <Compile Include="Definitions\Blocks\GrassBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\GroundBlockDefinition.cs" />
-    <Compile Include="IronOre.cs" />
-    <Compile Include="IronOreDefinition.cs" />
     <Compile Include="Definitions\Items\Pickaxe.cs" />
     <Compile Include="Languages\OctoBasics.Designer.cs">
       <AutoGen>True</AutoGen>
