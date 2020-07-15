@@ -1,5 +1,8 @@
-﻿using System;
+﻿using OctoAwesome.Basics;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.IO;
 using OctoAwesome.Basics.Definitions.Blocks;
 
@@ -28,7 +31,7 @@ namespace OctoAwesome.Basics
 
             for (int layer = 0; layer < planet.Size.Z; layer++)
                 result[layer] = new Chunk(new Index3(index.X, index.Y, layer), planet.Id);
-            
+
             int part = (planet.Size.Z * Chunk.CHUNKSIZE_Z) / 4;
 
             for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
@@ -43,13 +46,14 @@ namespace OctoAwesome.Basics
                     {
                         if (z < (int)(height + part))
                         {
-                            int block = z % Chunk.CHUNKSIZE_Z;
+                            int block = z % (Chunk.CHUNKSIZE_Z);
                             int layer = z / Chunk.CHUNKSIZE_Z;
                             result[layer].SetBlock(x, y, block, sandIndex);
                         }
                     }
                 }
             }
+
             column.CalculateHeights();
             return column;
         }

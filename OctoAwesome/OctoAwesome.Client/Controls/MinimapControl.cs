@@ -1,5 +1,9 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using engenious;
 using engenious.Graphics;
 
@@ -9,7 +13,11 @@ namespace OctoAwesome.Client.Controls
     {
         public SceneControl Scene { get; set; }
 
-        public MinimapControl(ScreenComponent screenManager, SceneControl scene) : base(screenManager) => Scene = scene;
+        public MinimapControl(ScreenComponent screenManager, SceneControl scene)
+            : base(screenManager)
+        {
+            Scene = scene;
+        }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {

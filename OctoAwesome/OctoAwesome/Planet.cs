@@ -56,7 +56,7 @@ namespace OctoAwesome
             Id = id;
             Universe = universe;
             Size = new Index3(
-                (int)Math.Pow(2, size.X), 
+                (int)Math.Pow(2, size.X),
                 (int)Math.Pow(2, size.Y),
                 (int)Math.Pow(2, size.Z));
             Seed = seed;
@@ -76,7 +76,7 @@ namespace OctoAwesome
         /// <param name="stream">Zielstream</param>
         public virtual void Serialize(Stream stream)
         {
-            using(var writer = new BinaryWriter(stream, Encoding.UTF8, true))
+            using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 writer.Write(Id);
                 writer.Write(Seed);

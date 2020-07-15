@@ -1,4 +1,9 @@
 ﻿using OctoAwesome.EntityComponents;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using engenious;
 
 namespace OctoAwesome.Basics.SimulationComponents
@@ -8,9 +13,15 @@ namespace OctoAwesome.Basics.SimulationComponents
     {
         private Simulation simulation;
 
-        public BlockInteractionComponent(Simulation simulation) => this.simulation = simulation;
+        public BlockInteractionComponent(Simulation simulation)
+        {
+            this.simulation = simulation;
+        }
 
-        protected override bool AddEntity(Entity entity) => true;
+        protected override bool AddEntity(Entity entity)
+        {
+            return true;
+        }
 
         protected override void RemoveEntity(Entity entity)
         {

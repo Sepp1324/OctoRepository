@@ -1,4 +1,6 @@
-﻿using engenious;
+﻿using System.Drawing;
+using engenious;
+using System.Collections.Generic;
 
 namespace OctoAwesome
 {
@@ -64,13 +66,13 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
-        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z) 
+        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
             => new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
 
         public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
 
         public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
-
-        public bool IsSolidWall(Wall wall) => (SolidWall & (1 << (int)wall)) != 0;
+        
+        public bool IsSolidWall(Wall wall) => (SolidWall& (1 << (int)wall)) != 0;
     }
 }

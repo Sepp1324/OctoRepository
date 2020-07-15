@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Serialization;
 
 namespace OctoAwesome.Runtime
 {
@@ -202,7 +203,7 @@ namespace OctoAwesome.Runtime
 
             if (generator == null)
                 throw new Exception("Unknown Generator");
-
+            
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
@@ -255,7 +256,7 @@ namespace OctoAwesome.Runtime
         /// <returns></returns>
         public Player LoadPlayer(Guid universeGuid, string playername)
         {
-            // TODO: Später durch Playername ersetzen
+            //TODO: Später durch Playername ersetzen
             string file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
             if (!File.Exists(file))
                 return null;

@@ -74,10 +74,12 @@ namespace OctoAwesome
                 max = min.Z;
                 axis = Axis.Z;
             }
+
             collisionAxis = axis;
 
             if (axis.HasValue)
                 return max * raylength;
+
             return null;
         }
 
@@ -156,10 +158,12 @@ namespace OctoAwesome
                 max = min.Z;
                 axis = Axis.Z;
             }
+
             collisionAxis = axis;
 
             if (axis.HasValue)
                 return max;
+
             return null;
         }
     }

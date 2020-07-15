@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace OctoAwesome.Noise
 {
@@ -72,14 +75,14 @@ namespace OctoAwesome.Noise
 
         public SimplexNoiseGenerator(int seed,float frequencyX=1f,float frequencyY=1f,float frequencyZ=1f,float frequencyW=1f)
         {
-            Seed = seed;
-            Octaves = 5;
-            Persistance = 0.5f;
-            FrequencyX = frequencyX;
-            FrequencyY = frequencyY;
-            FrequencyZ = frequencyZ;
-            FrequencyW = frequencyW;
-            Factor = 1;
+            this.Seed = seed;
+            this.Octaves = 5;
+            this.Persistance = 0.5f;
+            this.FrequencyX = frequencyX;
+            this.FrequencyY = frequencyY;
+            this.FrequencyZ = frequencyZ;
+            this.FrequencyW = frequencyW;
+            this.Factor = 1;
             CreatePermutations();
 
         }

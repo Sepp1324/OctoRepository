@@ -1,0 +1,115 @@
+﻿Lassi per Codeplex (17.03.)
+===========================
+2) Noch ein Fehler bei der Berechnung
+   "powerdirection += ExternalForce;" müsste "powerdirection += externalpower;" sein
+
+Andy via Email (07.04.)
+=======================
+- Game States (Loading, Playing, Saving) einführen
+
+Nachtrag von Ralf per Email (16.04.)
+====================================
+Begrifflichkeiten im Cache irreführend. Sinnvolle wären die typischen Werte get(), put(), replace(), remove(), putIfAbsent()
+
+Tom (14.04.)
+============
+- Speicherüberlauf in der Grafikkarte -> Absturz des GraKa-Treibers
+  * Speicher-Profiling in der GraKa
+  * VB und IB-Recycling?
+
+Andy via Email (14.04.)
+=======================
+- Performancen-Frage bei OrderBy im Cache (ermittlung des ältesten Elements) -> Alternative eine verkettete Liste als Queue
+- Performance-Frage bei Ermittlung des ElapsedMilliseconds der StopWatch. int++ schneller
+
+Ralf via Email (15.04.)
+=======================
+- Ausgabe auf die Console nicht wirklich cool. Einbindung von log4net
+
+Sansero Games @ YouTube (21.04.)
+================================
+- Dynamische Nebelweite in Abhängigkeit der geladenenen Chunks
+
+Ralf @ Email (20.04.)
+=====================
+- DisablePersistence vom Namen her blöd. EnablePersistence
+
+Ralf @ Email (25.05.)
+=====================
+- Kollision zwecks besserer testbarkeit auslagern
+- Intersects zusammen fassen (Pickray und Boundingbox)
+- Intersects mit Result-Struct (distanz, Axe, Einschlagspunkt?)
+- Überlagerung mehrerer Kollisionsachsen (bsp: X & Y)
+- Funktion "move *= (1f - min);" muss mit negativen Werten arbeiten können!
+
+Ralf @ Email (16.06)
+====================
+- Trigger (Left/Right) als Integer
+- Left/Right auf +/- oder Bild hoch/runter
+- Nummern-Mapping bei Keyboard-Input von D0-9 auf KeyPad0-9
+
+Ralf @ Email (17.06)
+====================
+- Left/Right -> NumPad+/- oder Bild hoch/runter
+- SlotLeft/Right -> +1 für Integer
+- Mapping der Nummern nicht D0-9 sondern NumPad0-9
+
+Andy @ Email (17.06)
+====================
+- Trigger-Klasse anstatt den Trigger-Mechanismus jedes mal
+- Konvertierungsumweg über PNG kostet performance -> lieber BMP
+
+susch @ YT (21.06.)
+===================
+- Fullscreen Mode!
+
+Ralf @ Email (23.06.)
+=====================
+- Trigger braucht noch einen Peek
+- Trigger in eine Event-Queue (noch nicht sicher ob wir diese Komplexität brauchen. Mal merken fürs UI Framework)
+
+Andy @ Email (24.06.)
+=====================
+- Reihenfolge Shift und FillChunkrenderer tauschen? Shift zuerst, damit keine unnötigen Renderer aktualisiert werden
+- Chunkrenderer nicht sortieren sondern händisch durchlaufen (O(n log n) vs. O(n))
+- Thread.Sleep verzögert die Updates unnötig. Vielleicht mit nem bool arbeiten
+
+Anteru @ LiveCoding.tv (23.06.)
+https://www.livecoding.tv/video/ger-make-it-suck-less-3/
+===============================
+- Render-Reihenfolge (Erst Minimap, dann Scene)
+- Projection Matrix direkt beim Draw, nicht an zwei Stellen (damit fällt DrawMinimap raus)
+- DrawMinimap() raus und Draw anstatt CameraComponent einfach View und Projection matrix mitgeben
+- Mipmaps in unseren Texturen
+- Blöcke IMMER von unten nach oben rendern (Blöcke & Chunks) -> Minimap ohne Tiefenpuffer
+- ViewRange (near- und farplane) optimieren. Range ist zu groß
+- HUD in einem Rutsch malen (mal sehen ob der Spritebatch da was hat)
+- Einsortierung der ChunkRenderer in einen Quad/OctTree
+
+Anteru @ LiveCoding.tv (23.06.)
+https://www.livecoding.tv/video/ger-make-it-suck-less-2/
+https://www.livecoding.tv/video/ger-make-it-suck-less/
+===============================
+- Eigene Shader!!! :) BasicShader ist schlecht gecoded
+- Vertex Koordinaten optimieren (Kleinerer Wertebereich)
+- Normalen optimieren (auf die 6 Richtungen -> 3 Byte)
+- Textur-Koordinaten notwendig?
+- Textures als Texture2D-Array - keine Rand-Probleme mehr
+- zentralen IndexBuffer verwenden (wenn nicht sogar vollständig auslassen dank Shader)
+- Tiefenpuffer-Range optimieren
+
+Thomas Caesar @ YT (06.07.)
+===========================
+- Minimap Player-Position eher ein kleines Dreieck
+
+
+Cleanup
+=======
+- Texture (Mehrteilig)
+- Friction (Auf Block-Instanz)
+- Angle-Klasse
+- Chunkgröße auf 16 runter? Oder dynamisch machen
+- InstanceManager fur Universe, Planet, 
+- Persistierung von Chunks bereits beim Erzeugen?
+- -> SimpleNoiseGenerator, line 162, serialisieren
+- Smartere Priorisierung der ChunkRenderer (Neusortierung nach jedem Chunk, dann fällt auch die Highprio-Liste raus)

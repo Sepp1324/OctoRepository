@@ -1,5 +1,8 @@
 ﻿using MonoGameUi;
+using System.Collections.Generic;
+using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
+using System;
 using engenious;
 using engenious.Graphics;
 using System.Linq;
@@ -210,6 +213,7 @@ namespace OctoAwesome.Client.Controls
             }
             else
                 box.Text = "";
+
         }
     }
 }

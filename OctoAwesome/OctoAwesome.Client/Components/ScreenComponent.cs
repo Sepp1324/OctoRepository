@@ -9,9 +9,9 @@ namespace OctoAwesome.Client.Components
     {
         public new OctoGame Game { get; private set; }
 
-        public PlayerComponent Player => Game.Player;
+        public PlayerComponent Player { get { return Game.Player; } }
 
-        public CameraComponent Camera => Game.Camera;
+        public CameraComponent Camera { get { return Game.Camera; } }
 
         public ScreenComponent(OctoGame game) : base(game)
         {
@@ -31,6 +31,8 @@ namespace OctoAwesome.Client.Components
             NavigateToTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 1f);
 
             NavigateToScreen(new MainScreen(this));
+
+            
         }
 
         public void Exit()

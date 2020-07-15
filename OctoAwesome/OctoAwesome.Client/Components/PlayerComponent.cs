@@ -71,6 +71,8 @@ namespace OctoAwesome.Client.Components
         {
             CurrentEntity = entity;
 
+
+
             if (CurrentEntity == null)
             {
                 CurrentEntityHead = null;

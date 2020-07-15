@@ -1,6 +1,9 @@
 ﻿using engenious;
 using engenious.Graphics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 namespace OctoAwesome.Client.Components
 {
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential,Pack=1)]

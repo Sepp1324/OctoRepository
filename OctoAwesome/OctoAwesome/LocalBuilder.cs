@@ -53,6 +53,7 @@
                 column = column10;
             else
                 column = column00;
+
             return column;
         }
 

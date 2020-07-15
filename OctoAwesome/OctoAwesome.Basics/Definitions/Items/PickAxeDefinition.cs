@@ -1,24 +1,58 @@
-﻿namespace OctoAwesome.Basics.Definitions.Items
+﻿using OctoAwesome.Basics.Properties;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome.Basics.Definitions.Items
 {
     public class PickaxeDefinition : IItemDefinition
     {
-        public string Icon => "pick_iron";
+        public string Icon
+        {
+            get
+            {
+                return "pick_iron";
+            }
+        }
 
-        public string Name => "Pickaxe";
+        public string Name
+        {
+            get
+            {
+                return "Pickaxe";
+            }
+        }
 
-        public int StackLimit => 1;
+        public int StackLimit
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
-        public float VolumePerUnit => 10;
+        public float VolumePerUnit
+        {
+            get
+            {
+                return 10;
+            }
+        }
 
         decimal IInventoryableDefinition.VolumePerUnit => 1;
 
-        public PhysicalProperties GetProperties(IItem item) => new PhysicalProperties()
+        public PhysicalProperties GetProperties(IItem item)
         {
-            Density = 1f,
-            FractureToughness = 1f,
-            Granularity = 1f,
-            Hardness = 1f
-        };
+            return new PhysicalProperties()
+            {
+                Density = 1f,
+                FractureToughness = 1f,
+                Granularity = 1f,
+                Hardness = 1f
+            };
+        }
 
         public void Hit(IItem item, PhysicalProperties itemProperties)
         {

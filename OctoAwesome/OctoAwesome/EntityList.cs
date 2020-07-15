@@ -1,6 +1,10 @@
 ﻿using OctoAwesome.EntityComponents;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -9,14 +13,13 @@ namespace OctoAwesome
         private List<Entity> entities;
         private IChunkColumn column;
 
-
         public EntityList(IChunkColumn column)
         {
             entities = new List<Entity>();
             this.column = column;
         }
 
-        public int Count  => entities.Count;
+        public int Count => entities.Count;
 
         public bool IsReadOnly => false;
 
@@ -26,7 +29,7 @@ namespace OctoAwesome
             column.ChangeCounter++;
         }
 
-        public void Clear()  => entities.Clear();
+        public void Clear() => entities.Clear();
 
         public bool Contains(Entity item) => entities.Contains(item);
 
@@ -59,7 +62,6 @@ namespace OctoAwesome
                             CurrentPlanet = column.Planet,
                             TargetChunk = new Index2(position.Position.ChunkIndex),
                             TargetPlanet = position.Position.Planet,
-
                         };
                     }
                 }

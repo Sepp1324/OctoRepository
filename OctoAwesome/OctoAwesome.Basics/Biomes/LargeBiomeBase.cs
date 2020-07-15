@@ -1,11 +1,17 @@
-﻿using System;
+﻿using OctoAwesome.Noise;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
     public abstract class LargeBiomeBase : BiomeBase
     {
-        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange) : base(planet, 0, 0, valueRangeOffset, valueRange)
+
+
+        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange)
+            : base(planet, 0, 0, valueRangeOffset, valueRange)
         {
         }
 
@@ -78,7 +84,10 @@ namespace OctoAwesome.Basics.Biomes
             return 0f;
         }
 
-        protected virtual float CurveFunction(float inputValue) => inputValue;
+        protected virtual float CurveFunction(float inputValue)
+        {
+            return inputValue;
+        }
 
         public override float[,] GetHeightmap(Index2 chunkIndex) => base.GetHeightmap(chunkIndex);
     }

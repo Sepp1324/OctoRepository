@@ -1,5 +1,9 @@
-﻿using System;
-using System.Runtime.Remoting.Messaging;
+﻿using OctoAwesome.Basics.Properties;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -9,23 +13,28 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "birch_wood_top";
 
-        public override bool HasMetaData { get { return true; } }
+        public override bool HasMetaData => true;
 
         public override string[] Textures => new[] {
                 "birch_wood_top",
                 "birch_wood_side" };
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z) => new PhysicalProperties()
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+            => new PhysicalProperties()
+            {
+                Density = 0.87f,
+                FractureToughness = 0.3f,
+                Granularity = 0.9f,
+                Hardness = 0.1f
+            };
+
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
         {
-            Density = 0.87f,
-            FractureToughness = 0.3f,
-            Granularity = 0.9f,
-            Hardness = 0.1f
-        };
+            throw new NotImplementedException();
+        }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
-
-        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
+            int x, int y, int z)
         {
             OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
@@ -50,6 +59,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
                 case Wall.Front:
                 case Wall.Back:
+
                     {
                         switch (orientation)
                         {
@@ -68,6 +78,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 case Wall.Left:
                 case Wall.Right:
                     {
+
                         switch (orientation)
                         {
                             case OrientationFlags.SideWest:
@@ -82,20 +93,22 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         }
                     }
             }
+
+            // Should never happen
+            // Assert here
             return -1;
         }
 
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
-
             switch (wall)
             {
                 case Wall.Top:
                 case Wall.Bottom:
-                case Wall.Front:
                 case Wall.Back:
-                    switch (orientation)
+                case Wall.Front:
+                    switch (orientation)//top and bottom north south
                     {
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
@@ -107,10 +120,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         default:
                             return 0;
                     }
-
                 case Wall.Left:
                 case Wall.Right:
-                    switch (orientation)
+                    switch (orientation) //east west
                     {
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
@@ -123,7 +135,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                             return 0;
                     }
                 default:
-                    return base.GetTextureRotation(wall, manager, x, y, z);
+                    return base.GetTextureRotation(wall, manager, x, y, z); //should never ever happen
             }
         }
     }

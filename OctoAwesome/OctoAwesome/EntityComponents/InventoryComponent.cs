@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -11,7 +14,10 @@ namespace OctoAwesome.EntityComponents
         /// </summary>
         public List<InventorySlot> Inventory { get; set; }
 
-        public InventoryComponent() => Inventory = new List<InventorySlot>();
+        public InventoryComponent()
+        {
+            Inventory = new List<InventorySlot>();
+        }
 
         public override void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
@@ -32,6 +38,7 @@ namespace OctoAwesome.EntityComponents
                     Amount = amount,
                     Definition = (IInventoryableDefinition)definition,
                 };
+
                 Inventory.Add(slot);
             }
         }

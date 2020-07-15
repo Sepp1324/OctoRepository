@@ -7,6 +7,7 @@ namespace OctoAwesome
     /// </summary>
     public interface IGlobalChunkCache
     {
+
         /// <summary>
         /// Die Zahl der geladenen Chunks zurück
         /// </summary>
@@ -41,7 +42,7 @@ namespace OctoAwesome
         /// <param name="position">Die Position des zurückzugebenden Chunks</param>
         /// <returns>Chunk Instanz oder null, falls nicht geladen</returns>
         IChunkColumn Peek(int planet, Index2 position);
-
+        
         /// <summary>
         /// Gibt einen abonnierten Chunk wieder frei.
         /// </summary>
@@ -55,7 +56,6 @@ namespace OctoAwesome
         void Clear();
 
         void BeforeSimulationUpdate(Simulation simulation);
-
         void AfterSimulationUpdate(Simulation simulation);
     }
 }

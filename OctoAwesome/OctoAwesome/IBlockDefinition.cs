@@ -1,4 +1,5 @@
 ﻿using engenious;
+using System;
 
 namespace OctoAwesome
 {
@@ -7,7 +8,6 @@ namespace OctoAwesome
     /// </summary>
     public interface IBlockDefinition : IInventoryableDefinition, IDefinition
     {
-
         /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
         /// </summary>
@@ -26,7 +26,7 @@ namespace OctoAwesome
         bool HasMetaData { get; }
 
         /// <summary>
-        /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die 
+        /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die
         /// </summary>
         /// <param name="manager">[Bitte ergänzen]</param>
         /// <param name="x">X-Anteil der Koordinate des Blocks</param>
@@ -47,6 +47,14 @@ namespace OctoAwesome
 
         int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
+        /// <summary>
+        /// Rotation der Textur in 90° Schritten für die Oberseite (Positiv Z) des Blocks
+        /// </summary>
+        /// <param name="manager">[Bitte ergänzen]</param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>Rotation der Textur in 90° Schritten</returns>
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
         uint SolidWall { get; }

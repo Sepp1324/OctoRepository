@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics
 {
@@ -8,7 +9,10 @@ namespace OctoAwesome.Basics
     {
         private IEnumerable<ITreeDefinition> treeDefinitions = null;
 
-        public TreePopulator() => Order = 10;
+        public TreePopulator()
+        {
+            Order = 10;
+        }
 
         private static IChunkColumn getColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
@@ -21,6 +25,8 @@ namespace OctoAwesome.Basics
                 column = column10;
             else
                 column = column00;
+
+
             return column;
         }
 

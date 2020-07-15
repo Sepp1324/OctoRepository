@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Basics.Entities;
+﻿using OctoAwesome.Basics.Definitions.Blocks;
+using OctoAwesome.Basics.Entities;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.Basics.SimulationComponents;
 using OctoAwesome.EntityComponents;

@@ -145,7 +145,7 @@ namespace OctoAwesome
         /// </summary>
         public Vector3 BlockPosition
         {
-            get => position;
+            get { return position; }
             set
             {
                 position = value;
@@ -207,8 +207,8 @@ namespace OctoAwesome
         /// </summary>
         /// <returns></returns>
         public override string ToString() => $@"({ Planet }/
-                    {block.X + position.X:0.00}/
-                    {block.Y + position.Y:0.00}/
-                    {block.Z + position.Z:0.00})";
+                    {(block.X + position.X).ToString("0.00")}/
+                    {(block.Y + position.Y).ToString("0.00")}/
+                    {(block.Z + position.Z).ToString("0.00")})";
     }
 }

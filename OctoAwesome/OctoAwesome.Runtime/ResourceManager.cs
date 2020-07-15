@@ -104,19 +104,17 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void UnloadUniverse()
         {
-            //Save
             persistenceManager.SaveUniverse(CurrentUniverse);
 
             // Unload Chunks
             globalChunkCache.Clear();
 
-            // Unload Planets
             foreach (var planet in planets)
+            {
                 persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-
+            }
             planets.Clear();
 
-            // Unload Universe;
             CurrentUniverse = null;
             GC.Collect();
         }
@@ -125,7 +123,10 @@ namespace OctoAwesome.Runtime
         /// Entlädt das aktuelle Universum
         /// </summary>
         /// <returns>Das gewünschte Universum, falls es existiert</returns>
-        public IUniverse GetUniverse() => CurrentUniverse;
+        public IUniverse GetUniverse()
+        {
+            return CurrentUniverse;
+        }
 
         /// <summary>
         /// Löscht ein Universum.
@@ -164,8 +165,11 @@ namespace OctoAwesome.Runtime
                     planet = generator.GeneratePlanet(CurrentUniverse.Id, id, CurrentUniverse.Seed + id);
                     // persistenceManager.SavePlanet(universe.Id, planet);
                 }
+
+
                 planets.Add(id, planet);
             }
+
             return planet;
         }
 
@@ -180,10 +184,10 @@ namespace OctoAwesome.Runtime
                 throw new Exception("No Universe loaded");
 
             Player player = persistenceManager.LoadPlayer(CurrentUniverse.Id, playername);
-
             if (player == null)
-
+            {
                 player = new Player();
+            }
             return player;
         }
 
@@ -262,7 +266,9 @@ namespace OctoAwesome.Runtime
         private void SaveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
             if (!disablePersistence && value.ChangeCounter > 0) //value.Chunks.Any(c => c.ChangeCounter > 0)
+            {
                 persistenceManager.SaveColumn(CurrentUniverse.Id, planetId, value);
+            }
         }
 
         public void SaveEntity(Entity entity)

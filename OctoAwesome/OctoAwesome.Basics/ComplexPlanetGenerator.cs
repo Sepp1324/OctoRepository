@@ -1,5 +1,6 @@
 ﻿using OctoAwesome.Basics.Definitions.Blocks;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,18 +10,18 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            Index3 size = new Index3(4, 4, 3); // 2^4
-            ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed);
-            planet.Generator = this;
+            Index3 size = new Index3(12, 12, 3);
+            ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed)
+            {
+                Generator = this
+            };
             return planet;
         }
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
             IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
-
-
-            //TODO: More generic
+            //TODO More Generic, überdenken der Planetgeneration im allgemeinen (Heapmap + Highmap + Biome + Modding)
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().FirstOrDefault();
             ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);
 
@@ -123,8 +124,6 @@ namespace OctoAwesome.Basics
                                 {
                                     chunks[i].SetBlock(x, y, z, stoneIndex);
                                 }
-
-
                             }
                             else if ((z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel)
                             {

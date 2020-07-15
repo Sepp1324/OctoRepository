@@ -1,7 +1,11 @@
-﻿using OctoAwesome.Client.Components;
+﻿using OctoAwesome;
+using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Runtime;
 using System;
+using System.Configuration;
+using System.Linq;
+using MonoGameUi;
 using EventArgs = System.EventArgs;
 using engenious;
 using engenious.Input;
@@ -14,6 +18,8 @@ namespace OctoAwesome.Client
     /// </summary>
     internal class OctoGame : Game
     {
+        //GraphicsDeviceManager graphics;
+
         public CameraComponent Camera { get; private set; }
 
         public PlayerComponent Player { get; private set; }
@@ -87,7 +93,7 @@ namespace OctoAwesome.Client
             Player.UpdateOrder = 2;
             Components.Add(Player);
 
-            Entity = new Client.Components.EntityComponent(this, Simulation);
+            Entity = new Client.Components.EntityComponent(this,Simulation);
             Entity.UpdateOrder = 2;
             Components.Add(Entity);
 

@@ -1,6 +1,11 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Runtime;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using engenious;
 using engenious.Graphics;
 using OctoAwesome.EntityComponents;
@@ -23,7 +28,8 @@ namespace OctoAwesome.Client.Controls
 
         public Label activeToolLabel;
 
-        public ToolbarControl(ScreenComponent screenManager) : base(screenManager)
+        public ToolbarControl(ScreenComponent screenManager)
+            : base(screenManager)
         {
             Player = screenManager.Player;
             toolTextures = new Dictionary<string, Texture2D>();
@@ -86,7 +92,7 @@ namespace OctoAwesome.Client.Controls
 
             if (Player.CurrentEntity == null) return;
 
-            // Aktualisierung des aktiven Buttons
+           // Aktualisierung des aktiven Buttons
             for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 if (Player.Toolbar.Tools != null &&

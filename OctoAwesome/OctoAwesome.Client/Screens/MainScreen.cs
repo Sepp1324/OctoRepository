@@ -12,7 +12,7 @@ namespace OctoAwesome.Client.Screens
         {
             assets = manager.Game.Assets;
 
-            Padding = new Border(0, 0, 0, 0);
+            Padding = new Border(0,0,0,0);
 
             Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
 

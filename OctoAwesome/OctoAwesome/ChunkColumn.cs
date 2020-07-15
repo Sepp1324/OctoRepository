@@ -59,12 +59,12 @@ namespace OctoAwesome
             {
                 for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
-                    Heights[x, y] = getTopBlockHeight(x, y);
+                    Heights[x, y] = GetTopBlockHeight(x, y);
                 }
             }
         }
 
-        private int getTopBlockHeight(int x, int y)
+        private int GetTopBlockHeight(int x, int y)
         {
             for (int z = Chunks.Length * Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
             {
@@ -193,7 +193,7 @@ namespace OctoAwesome
         {
             int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
-            Chunks[index].SetBlock(x, y, z,block,meta);
+            Chunks[index].SetBlock(x, y, z, block, meta);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace OctoAwesome
         {
             int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
-            Chunks[index].SetBlockMeta(x, y, z,  meta);
+            Chunks[index].SetBlockMeta(x, y, z, meta);
         }
 
         /// <summary>
@@ -262,7 +262,6 @@ namespace OctoAwesome
 
                 for (int i = 0; i < Chunks.Length; i++) // Change Counter
                     bw.Write(Chunks[i].ChangeCounter);
-                
 
                 // Schreibe Phase 2 (Block Definitionen)
                 if (longIndex)
@@ -277,7 +276,6 @@ namespace OctoAwesome
                 for (int c = 0; c < Chunks.Length; c++)
                 {
                     IChunk chunk = Chunks[c];
-
                     for (int i = 0; i < chunk.Blocks.Length; i++)
                     {
                         if (chunk.Blocks[i] == 0)
@@ -383,11 +381,11 @@ namespace OctoAwesome
                 {
                     IChunk chunk = Chunks[c] = new Chunk(new Index3(columnIndex, c), planetId);
                     chunk.Changed += OnChunkChanged;
+
                     for (int i = 0; i < chunk.Blocks.Length; i++)
                     {
                         ushort typeIndex = longIndex ? br.ReadUInt16() : br.ReadByte();
                         chunk.MetaData[i] = 0;
-
                         if (typeIndex > 0)
                         {
                             chunk.Blocks[i] = map[typeIndex];
@@ -403,7 +401,6 @@ namespace OctoAwesome
 
                 //Entities lesen
                 var count = br.ReadInt32();
-
                 for (int i = 0; i < count; i++)
                 {
                     var name = br.ReadString();
@@ -418,7 +415,7 @@ namespace OctoAwesome
 
                         if (type == null)
                             continue;
-                        
+
                         Entity entity = (Entity)Activator.CreateInstance(type);
 
                         using (MemoryStream memorystream = new MemoryStream(buffer))
@@ -428,6 +425,7 @@ namespace OctoAwesome
                                 entity.Deserialize(componentbinarystream, definitionManager);
                             }
                         }
+
                         Entities.Add(entity);
                     }
                     catch (Exception)

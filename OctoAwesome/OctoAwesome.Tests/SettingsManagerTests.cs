@@ -1,5 +1,7 @@
-﻿using System;
+﻿using OctoAwesome.Client;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace OctoAwesome.Tests

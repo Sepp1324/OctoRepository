@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Windows.Forms;
 using MonoGameUi;
 using KeyEventArgs = MonoGameUi.KeyEventArgs;
 using Keys = engenious.Input.Keys;
@@ -55,9 +57,11 @@ namespace OctoAwesome.Client.Components
         /// <param name="key">The Key</param>
         public void AddKey(string id, Keys key)
         {
-            if (bindings.TryGetValue(id, out Binding binding))
-                if (!binding.Keys.Contains(key))
-                    binding.Keys.Add(key);
+            Binding binding;
+            if (bindings.TryGetValue(id, out binding))
+            {
+                if (!binding.Keys.Contains(key)) binding.Keys.Add(key);
+            }
         }
 
         /// <summary>
@@ -67,9 +71,11 @@ namespace OctoAwesome.Client.Components
         /// <param name="key">The Key</param>
         public void RemoveKey(string id, Keys key)
         {
-            if (bindings.TryGetValue(id, out Binding binding))
-                if (binding.Keys.Contains(key))
-                    binding.Keys.Remove(key);
+            Binding binding;
+            if (bindings.TryGetValue(id, out binding))
+            {
+                if (binding.Keys.Contains(key)) binding.Keys.Remove(key);
+            }
         }
 
         /// <summary>
@@ -79,9 +85,11 @@ namespace OctoAwesome.Client.Components
         /// <param name="action">The Action</param>
         public void AddAction(string id, Action<KeyType> action)
         {
-            if (bindings.TryGetValue(id, out Binding binding))
-                if (!binding.Actions.Contains(action))
-                    binding.Actions.Add(action);
+            Binding binding;
+            if (bindings.TryGetValue(id, out binding))
+            {
+                if (!binding.Actions.Contains(action)) binding.Actions.Add(action);
+            }
         }
 
         /// <summary>
@@ -91,9 +99,11 @@ namespace OctoAwesome.Client.Components
         /// <param name="action">The Action</param>
         public void RemoveAction(string id, Action<KeyType> action)
         {
-            if (bindings.TryGetValue(id, out Binding binding))
-                if (binding.Actions.Contains(action)) 
-                    binding.Actions.Remove(action);
+            Binding binding;
+            if (bindings.TryGetValue(id, out binding))
+            {
+                if (binding.Actions.Contains(action)) binding.Actions.Remove(action);
+            }
         }
 
         /// <summary>
@@ -103,7 +113,8 @@ namespace OctoAwesome.Client.Components
         /// <param name="displayName">The new DisplayName</param>
         public void SetDisplayName(string id, string displayName)
         {
-            if (bindings.TryGetValue(id, out Binding binding))
+            Binding binding;
+            if (bindings.TryGetValue(id, out binding))
                 binding.DisplayName = displayName;
         }
 

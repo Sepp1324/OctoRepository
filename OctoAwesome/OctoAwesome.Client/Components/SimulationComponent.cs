@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OctoAwesome.Runtime;
+using System;
 using engenious;
 
 namespace OctoAwesome.Client.Components
@@ -73,6 +74,7 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
+            //TODO: [Network] Anstelle von ID einen einstellbaren Playernamen implementieren
             Player player = resourceManager.LoadPlayer(id.ToString());
             Simulation.AddEntity(player);
             return player;

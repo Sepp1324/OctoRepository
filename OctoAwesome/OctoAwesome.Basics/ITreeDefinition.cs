@@ -1,4 +1,9 @@
-﻿namespace OctoAwesome.Basics
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome.Basics
 {
     /// <summary>
     /// Basisschnittstelle für Baumdefinitionen, die vom TreePopulator verarbeitet werden sollen.

@@ -22,20 +22,24 @@ namespace OctoAwesome.Basics
         /// <param name="size">Größe des Planeten in Zweierpotenzen Chunks</param>
         /// <param name="generator">Instanz des Map-Generators</param>
         /// <param name="seed">Seed des Zufallsgenerators</param>
-        public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed) : base(id, universe, size, seed) => Initialize();
+        public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed)
+            : base(id, universe, size, seed)
+        {
+            Initalize();
+        }
 
         public ComplexPlanet() : base()
         {
-
+            //Initalize();
         }
 
         public override void Deserialize(Stream stream)
         {
             base.Deserialize(stream);
-            Initialize();
+            Initalize();
         }
 
-        private void Initialize()
+        private void Initalize()
         {
             BiomeGenerator = new SurfaceBiomeGenerator(this, 40);
             ClimateMap = new Climate.ComplexClimateMap(this);

@@ -7,7 +7,6 @@ namespace OctoAwesome
     /// </summary>
     public interface IItemDefinition : IDefinition, IInventoryableDefinition
     {
-
         /*/// <summary>
         /// Liefert die Physikalischen Paramerter, wie härte, dichte und bruchzähigkeit
         /// </summary>

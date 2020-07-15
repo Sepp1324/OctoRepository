@@ -109,10 +109,8 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity)
-        {
-            return entity.Components.ContainsComponent<C1>();
-        }
+        protected override bool Match(Entity entity) 
+            => entity.Components.ContainsComponent<C1>();
 
         /// <summary>
         /// Updatemethode der Entity
@@ -121,9 +119,7 @@ namespace OctoAwesome
         public override void Update(GameTime gameTime)
         {
             foreach (var entity in entities)
-            {
                 UpdateEntity(gameTime, entity, entity.Components.GetComponent<C1>());
-            }
         }
 
         /// <summary>
@@ -148,7 +144,9 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>() && entity.Components.ContainsComponent<C2>();
+        protected override bool Match(Entity entity) 
+            => entity.Components.ContainsComponent<C1>()
+                && entity.Components.ContainsComponent<C2>();
 
         /// <summary>
         /// Updatemethode der Entity
@@ -184,8 +182,8 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) =>
-            entity.Components.ContainsComponent<C1>()
+        protected override bool Match(Entity entity) 
+            => entity.Components.ContainsComponent<C1>()
                 && entity.Components.ContainsComponent<C2>()
                 && entity.Components.ContainsComponent<C3>();
 
@@ -195,10 +193,8 @@ namespace OctoAwesome
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
         {
-            //TDOD: Ändern
-            var localentities = entities.ToArray();
-
-            foreach (var entity in localentities)
+            //TODO: Ändern
+            foreach (var entity in entities.ToArray())
                 UpdateEntity(gameTime, entity, entity.Components.GetComponent<C1>(), entity.Components.GetComponent<C2>(), entity.Components.GetComponent<C3>());
         }
 

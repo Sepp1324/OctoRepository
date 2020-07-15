@@ -23,6 +23,14 @@ namespace OctoAwesome.Tests
             }
         }
 
+        public IMapGenerator Generator
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public int Id { get; private set; }
 
         public int Seed

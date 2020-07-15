@@ -1,4 +1,6 @@
-﻿using System;
+﻿using engenious;
+using OctoAwesome.EntityComponents;
+using System;
 using System.IO;
 
 namespace OctoAwesome
@@ -32,15 +34,17 @@ namespace OctoAwesome
         /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
         public Entity()
-            => Components = new ComponentList<EntityComponent>(
-                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+        {
+            Components = new ComponentList<EntityComponent>(
+                ValidateAddComponent, ValidateRemoveComponent,OnAddComponent,OnRemoveComponent);
+        }
 
         private void OnRemoveComponent(EntityComponent component)
         {
-
+            
         }
 
-        private void OnAddComponent(EntityComponent component)
+        private void OnAddComponent(EntityComponent component) 
             => component.SetEntity(this);
 
         private void ValidateAddComponent(EntityComponent component)
@@ -56,7 +60,9 @@ namespace OctoAwesome
         }
 
         public void Initialize(IResourceManager mananger)
-            => OnInitialize(mananger);
+        {
+            OnInitialize(mananger);
+        }
 
         protected virtual void OnInitialize(IResourceManager manager)
         {
@@ -67,7 +73,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
         /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
-        public virtual void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
+        public virtual void Serialize(BinaryWriter writer, IDefinitionManager definitionManager) 
             => Components.Serialize(writer, definitionManager);
 
         /// <summary>
@@ -75,7 +81,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
         /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
-        public virtual void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
+        public virtual void Deserialize(BinaryReader reader, IDefinitionManager definitionManager) 
             => Components.Deserialize(reader, definitionManager);
 
         public virtual void RegisterDefault()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -10,18 +11,28 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "water";
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z) => new PhysicalProperties()
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            Density = 1f,
-            FractureToughness = 0.3f,
-            Granularity = 0.9f,
-            Hardness = 0.1f
-        };
+            return new PhysicalProperties()
+            {
+                Density = 1f,
+                FractureToughness = 0.3f,
+                Granularity = 0.9f,
+                Hardness = 0.1f
+            };
+        }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public override string[] Textures => new[] {
                     "water"
                 };
+
+
+
     }
 }

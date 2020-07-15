@@ -1,6 +1,9 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using engenious;
 
 namespace OctoAwesome.Client.Screens
@@ -39,11 +42,10 @@ namespace OctoAwesome.Client.Screens
             panel.Controls.Add(grid);
 
             grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.Columns.Add(new ColumnDefinition() { Width = 1, ResizeMode = ResizeMode.Parts });
+            grid.Columns.Add(new ColumnDefinition() { Width = 1,ResizeMode = ResizeMode.Parts });
 
             nameInput = GetTextbox();
-            nameInput.TextChanged += (s, e) =>
-            {
+            nameInput.TextChanged += (s, e) => {
                 createButton.Visible = !string.IsNullOrEmpty(e.NewValue);
             };
             AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Name), nameInput);
@@ -82,7 +84,7 @@ namespace OctoAwesome.Client.Screens
         private void AddLabeledControl(Grid grid, String name, Control c)
         {
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count - 1);
+            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count -1);
             grid.AddControl(c, 1, grid.Rows.Count - 1);
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 10 });
         }
