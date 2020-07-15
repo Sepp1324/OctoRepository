@@ -312,12 +312,7 @@ namespace OctoAwesome
 
             lock (lockObject)
             {
-                //TODO: #CleanUp -> Check if working
                 var failChunkEntities = cache.Where(chunk => chunk.Value.ChunkColumn != null).SelectMany(chunk => chunk.Value.ChunkColumn.Entities.FailChunkEntity()).ToArray();
-                //var failChunkEntities = (from chunk in cache
-                //                         where chunk.Value.ChunkColumn != null
-                //                         from entity in chunk.Value.ChunkColumn.Entities.FailChunkEntity()
-                //                         select entity).ToArray();
 
                 foreach (var entity in failChunkEntities)
                 {

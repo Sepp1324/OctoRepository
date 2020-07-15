@@ -151,7 +151,7 @@ namespace OctoAwesome
             // Erste Abbruchmöglichkeit
             if (token.IsCancellationRequested)
             {
-                if (successCallback != null) successCallback(false);
+                successCallback?.Invoke(false);
                 return;
             }
 
@@ -173,7 +173,7 @@ namespace OctoAwesome
                 // Zweite Abbruchmöglichkeit
                 if (token.IsCancellationRequested)
                 {
-                    if (successCallback != null) successCallback(false);
+                    successCallback?.Invoke(false);
                     return;
                 }
 
@@ -185,7 +185,7 @@ namespace OctoAwesome
 
                     if (chunkColumn == null)
                     {
-                        if (successCallback != null) successCallback(false);
+                        successCallback?.Invoke(false);
                         return;
                     }
                 }
@@ -193,12 +193,11 @@ namespace OctoAwesome
                 // Dritte Abbruchmöglichkeit
                 if (token.IsCancellationRequested)
                 {
-                    if (successCallback != null) successCallback(false);
+                    successCallback?.Invoke(false);
                     return;
                 }
             }
-
-            if (successCallback != null) successCallback(true);
+            successCallback?.Invoke(true);
         }
 
         /// <summary>
@@ -211,9 +210,6 @@ namespace OctoAwesome
                 Flush();
 
             Planet = planet;
-
-            //TODO: CleanUp - Incomplete Code?
-            int height = planet.Size.Z;
         }
 
         /// <summary>
@@ -251,7 +247,6 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block Index</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        [Obsolete]
         public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
@@ -275,7 +270,6 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="block">Die neue Block-ID.</param>
-        [Obsolete]
         public void SetBlock(Index3 index, ushort block) => SetBlock(index.X, index.Y, index.Z, block);
 
         /// <summary>
@@ -314,14 +308,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
-        public int GetBlockMeta(Index3 index)
-        {
-            IChunk chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
-            if (chunk != null)
-                return chunk.GetBlockMeta(index.X, index.Y, index.Z);
-
-            return 0;
-        }
+        public int GetBlockMeta(Index3 index) => GetBlockMeta(index.X, index.Y, index.Z);
 
         /// <summary>
         /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 
@@ -343,13 +330,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="meta">Die neuen Metadaten</param>
-        public void SetBlockMeta(Index3 index, int meta)
-        {
-            IChunk chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
-
-            if (chunk != null)
-                chunk.SetBlockMeta(index.X, index.Y, index.Z, meta);
-        }
+        public void SetBlockMeta(Index3 index, int meta) => SetBlockMeta(index.X, index.Y, index.Z, meta);
 
         /// <summary>
         /// Leert den Cache und gibt sie beim GlobalChunkCache wieder frei

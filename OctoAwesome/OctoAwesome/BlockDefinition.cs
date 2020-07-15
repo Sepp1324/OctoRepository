@@ -2,8 +2,6 @@
 
 namespace OctoAwesome
 {
-    //TODO: #CleanUp -> Default values or not complete?
-
     /// <summary>
     /// Eine definition eines Block-Typen
     /// </summary>
