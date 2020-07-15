@@ -18,7 +18,16 @@ namespace OctoAwesome
 
         private Dictionary<Type, T> components = new Dictionary<Type, T>();
 
-        public T this[Type type] => components.TryGetValue(type, out T result) ? result : null;
+        public T this[Type type]
+        {
+            get
+            {
+                if (components.TryGetValue(type, out T result))
+                    return result;
+
+                return null;
+            }
+        }
 
         public ComponentList()
         {
@@ -41,7 +50,10 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="component">Component</param>
         public void AddComponent<V>(V component)
-            where V : T => AddComponent(component, false);
+            where V : T
+        {
+            AddComponent(component, false);
+        }
 
 
         public void AddComponent<V>(V component, bool replace)
@@ -52,10 +64,15 @@ namespace OctoAwesome
             if (components.ContainsKey(type))
             {
                 if (replace)
+                {
                     RemoveComponent<V>();
+                }
                 else
+                {
                     return;
+                }
             }
+
             insertValidator?.Invoke(component);
             components.Add(type, component);
             onInserter?.Invoke(component);
@@ -64,11 +81,11 @@ namespace OctoAwesome
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="V"></typeparam>
         /// <returns></returns>
-        public bool ContainsComponent<T>()
+        public bool ContainsComponent<V>()
         {
-            return components.ContainsKey(typeof(T));
+            return components.ContainsKey(typeof(V));
         }
 
         /// <summary>
@@ -80,6 +97,7 @@ namespace OctoAwesome
         {
             if (components.TryGetValue(typeof(V), out T result))
                 return (V)result;
+
             return null;
         }
 
@@ -100,6 +118,7 @@ namespace OctoAwesome
                 onRemover?.Invoke(component);
                 return true;
             }
+
             return false;
         }
 
@@ -129,6 +148,7 @@ namespace OctoAwesome
                         catch (Exception)
                         {
                             writer.Write(0);
+                            //throw; //TODO #CleanUp throw?
                         }
                     }
                 }

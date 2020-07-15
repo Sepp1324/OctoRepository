@@ -3,11 +3,10 @@ using System.Configuration;
 using System.Linq;
 using System.Reflection;
 
-namespace OctoAwesome
+namespace OctoAwesome.Client
 {
     /// <summary>
     /// Verwaltet die Anwendungseinstellungen.
-    /// TODO: In den Client verschieben
     /// </summary>
     public class Settings : ISettings
     {
@@ -35,10 +34,7 @@ namespace OctoAwesome
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Settings, die auf die Konfigurationsdatei der aktuell laufenden Anwendung zugreift.
         /// </summary>
-        public Settings()
-        {
-            _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
-        }
+        public Settings() => _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
 
         /// <summary>
         /// Gibt den Wert einer Einstellung zurück.
@@ -94,6 +90,7 @@ namespace OctoAwesome
                 _config.AppSettings.Settings[key].Value = value;
             else
                 _config.AppSettings.Settings.Add(key, value);
+
             _config.Save(ConfigurationSaveMode.Modified, false);
         }
 
@@ -135,8 +132,10 @@ namespace OctoAwesome
         public void Set(string key, int[] values)
         {
             string[] strValues = new string[values.Length];
+
             for (int i = 0; i < values.Length; i++)
                 strValues[i] = Convert.ToString(values[i]);
+
             Set(key, strValues);
         }
 
@@ -148,8 +147,10 @@ namespace OctoAwesome
         public void Set(string key, bool[] values)
         {
             string[] stringValues = new string[values.Length];
+
             for (int i = 0; i < values.Length; i++)
                 stringValues[i] = Convert.ToString(values[i]);
+
             Set(key, stringValues);
         }
 
@@ -163,11 +164,11 @@ namespace OctoAwesome
 
             string[] partsString = arrayString.Split(',');
             T[] tArray = new T[partsString.Length];
+
             for (int i = 0; i < partsString.Length; i++)
                 tArray[i] = (T)Convert.ChangeType(partsString[i], typeof(T));
-
             return tArray;
-            }
+        }
 
         /// <summary>
         /// Löscht eine Eigenschaft aus den Einstellungen
