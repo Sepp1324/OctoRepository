@@ -80,13 +80,14 @@ namespace OctoAwesome.Client.Controls
             //List<Bitmap> bitmaps = new List<Bitmap>();
             var definitions = Manager.Game.DefinitionManager.GetBlockDefinitions();
             int textureCount = 0;
+
             foreach (var definition in definitions)
-            {
                 textureCount += definition.Textures.Length;
-            }
+
             int bitmapSize = 128;
             blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
             int layer = 0;
+
             foreach (var definition in definitions)
             {
                 foreach (var bitmap in definition.Textures)
@@ -165,6 +166,7 @@ namespace OctoAwesome.Client.Controls
             _fillIncrement = additional + 1;
             _additionalFillResetEvents = new AutoResetEvent[additional];
             _additionalRegenerationThreads = new Thread[additional];
+
             for (int i = 0; i < additional; i++)
             {
                 var t  = new Thread(AdditionalFillerBackgroundLoop)
@@ -178,8 +180,6 @@ namespace OctoAwesome.Client.Controls
                 _additionalRegenerationThreads[i] = t;
 
             }
-
-            
 
             var selectionVertices = new[]
             {
@@ -277,8 +277,7 @@ namespace OctoAwesome.Client.Controls
 
                         IBlockDefinition blockDefinition = (IBlockDefinition)Manager.Game.DefinitionManager.GetDefinitionByIndex(block);
 
-                        Axis? collisionAxis;
-                        float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out collisionAxis);
+                        float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out Axis? collisionAxis);
 
                         if (distance.HasValue && distance.Value < bestDistance)
                         {

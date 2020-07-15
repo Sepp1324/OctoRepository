@@ -244,7 +244,7 @@ namespace OctoAwesome.Client.Components
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Top, _manager, x, y, z)) % textureColumns) * textureWidth) + textureGap,
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Top, _manager, x, y, z)) / textureColumns) * textureWidth) + textureGap);
 
-                            int rotation = -blockDefinition.GetTopTextureRotation(_manager, x, y, z);
+                            int rotation = -blockDefinition.GetTextureRotation(Wall.Top, _manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(
@@ -294,7 +294,7 @@ namespace OctoAwesome.Client.Components
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Bottom, _manager, x, y, z)) % textureColumns) * textureWidth) + textureGap,
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Bottom, _manager, x, y, z)) / textureColumns) * textureWidth) + textureGap);
 
-                            int rotation = -blockDefinition.GetBottomTextureRotation(_manager, x, y, z);
+                            int rotation = -blockDefinition.GetTextureRotation(Wall.Bottom, _manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(
@@ -343,7 +343,7 @@ namespace OctoAwesome.Client.Components
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Front, _manager, x, y, z)) % textureColumns) * textureWidth) + textureGap,
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Front, _manager, x, y, z)) / textureColumns) * textureWidth) + textureGap);
 
-                            int rotation = -blockDefinition.GetSouthTextureRotation(_manager, x, y, z);
+                            int rotation = -blockDefinition.GetTextureRotation(Wall.Front, _manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(
@@ -392,7 +392,7 @@ namespace OctoAwesome.Client.Components
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Back, _manager, x, y, z)) % textureColumns) * textureWidth) + textureGap,
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Back, _manager, x, y, z)) / textureColumns) * textureWidth) + textureGap);
 
-                            int rotation = -blockDefinition.GetNorthTextureRotation(_manager, x, y, z);
+                            int rotation = -blockDefinition.GetTextureRotation(Wall.Back, _manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(
@@ -442,7 +442,7 @@ namespace OctoAwesome.Client.Components
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Left, _manager, x, y, z)) / textureColumns) * textureWidth) + textureGap);
 
 
-                            int rotation = -blockDefinition.GetWestTextureRotation(_manager, x, y, z);
+                            int rotation = -blockDefinition.GetTextureRotation(Wall.Left, _manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(
@@ -492,7 +492,7 @@ namespace OctoAwesome.Client.Components
                                 (((textureIndex + blockDefinition.GetTextureIndex(Wall.Right, _manager, x, y, z)) / textureColumns) * textureWidth) + textureGap);
 
 
-                            int rotation = -blockDefinition.GetEastTextureRotation(_manager, x, y, z);
+                            int rotation = -blockDefinition.GetTextureRotation(Wall.Right, _manager, x, y, z);
 
                             int localOffset = vertices.Count;
                             vertices.Add(
