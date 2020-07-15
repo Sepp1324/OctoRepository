@@ -1,11 +1,5 @@
 ﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
-using OctoAwesome.Basics.EntityComponents;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
@@ -14,15 +8,9 @@ namespace OctoAwesome.Basics.SimulationComponents
     {
         private Simulation simulation;
 
-        public BlockInteractionComponent(Simulation simulation)
-        {
-            this.simulation = simulation;
-        }
+        public BlockInteractionComponent(Simulation simulation) => this.simulation = simulation;
 
-        protected override bool AddEntity(Entity entity)
-        {
-            return true;
-        }
+        protected override bool AddEntity(Entity entity) => true;
 
         protected override void RemoveEntity(Entity entity)
         {
@@ -41,24 +29,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                 if (lastBlock != 0)
                 {
                     var blockDefinition = simulation.ResourceManager.DefinitionManager.GetDefinitionByIndex(lastBlock);
-
-                    var slot = inventory.Inventory.FirstOrDefault(s => s.Definition == blockDefinition);
-
-                    // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
-                    if (slot == null)
-                    {
-                        slot = new InventorySlot()
-                        {
-                            Definition = blockDefinition,
-                            Amount = 0
-                        };
-                        inventory.Inventory.Add(slot);
-
-
-                        if (toolbar != null)
-                            toolbar.AddNewSlot(slot);
-                    }
-                    slot.Amount += 125; //TODO: Hardcoded?
+                    if (blockDefinition is IInventoryableDefinition invDef)
+                        inventory.AddUnit(invDef);
                 }
                 controller.InteractBlock = null;
             }
@@ -104,7 +76,6 @@ namespace OctoAwesome.Basics.SimulationComponents
                                 );
 
                             // Nicht in sich selbst reinbauen
-
                             foreach (var box in boxes)
                             {
                                 var newBox = new BoundingBox(idx + box.Min, idx + box.Max);
@@ -115,21 +86,18 @@ namespace OctoAwesome.Basics.SimulationComponents
                             }
                         }
 
-
                         if (!intersects)
                         {
-                            entity.Cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
-
-                            toolbar.ActiveTool.Amount -= 125; //TODO: Hardcoded?
-                            if (toolbar.ActiveTool.Amount <= 0)
+                            if (inventory.RemoveUnit(toolbar.ActiveTool))
                             {
-                                inventory.Inventory.Remove(toolbar.ActiveTool);
-                                toolbar.RemoveSlot(toolbar.ActiveTool);
+                                entity.Cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
+                                if (toolbar.ActiveTool.Amount <= 0)
+                                    toolbar.RemoveSlot(toolbar.ActiveTool);
                             }
                         }
                     }
-                    controller.ApplyBlock = null;
                 }
+                controller.ApplyBlock = null;
             }
         }
     }

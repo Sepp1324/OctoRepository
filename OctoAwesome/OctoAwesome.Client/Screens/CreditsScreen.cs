@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using OctoAwesome.Client.Components;
 using MonoGameUi;
-using engenious;
 using OctoAwesome.Client.Crew;
 
 namespace OctoAwesome.Client.Screens
@@ -48,8 +44,6 @@ namespace OctoAwesome.Client.Screens
 
                 crewList.Controls.Add(memberButton);
             }
-            
-
             Controls.Add(crewScroll);
         }
     }

@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using OctoAwesome.Client.Components;
 using System.Drawing.Imaging;
-using System.Threading.Tasks;
-using OctoAwesome.Runtime;
 using engenious;
 using engenious.Graphics;
 
@@ -82,13 +80,14 @@ namespace OctoAwesome.Client.Controls
             //List<Bitmap> bitmaps = new List<Bitmap>();
             var definitions = Manager.Game.DefinitionManager.GetBlockDefinitions();
             int textureCount = 0;
+
             foreach (var definition in definitions)
-            {
                 textureCount += definition.Textures.Length;
-            }
+
             int bitmapSize = 128;
             blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
             int layer = 0;
+
             foreach (var definition in definitions)
             {
                 foreach (var bitmap in definition.Textures)
@@ -104,27 +103,6 @@ namespace OctoAwesome.Client.Controls
                     layer++;
                 }
             }
-
-            /*int size = (int)Math.Ceiling(Math.Sqrt(bitmaps.Count));
-            Bitmap blocks = new Bitmap(size * TEXTURESIZE, size * TEXTURESIZE);
-            using (Graphics g = Graphics.FromImage(blocks))
-            {
-                int counter = 0;
-                foreach (var bitmap in bitmaps)
-                {
-                    int x = counter % size;
-                    int y = (int)(counter / size);
-                    g.DrawImage(bitmap, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
-                    counter++;
-                }
-            }
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                blocks.Save(stream, ImageFormat.Png);
-                stream.Seek(0, SeekOrigin.Begin);
-                blockTextures = Texture2D.FromStream(manager.GraphicsDevice, stream);
-            }*/
 
             planet = Manager.Game.ResourceManager.GetPlanet(0);
 
@@ -167,6 +145,7 @@ namespace OctoAwesome.Client.Controls
             _fillIncrement = additional + 1;
             _additionalFillResetEvents = new AutoResetEvent[additional];
             _additionalRegenerationThreads = new Thread[additional];
+
             for (int i = 0; i < additional; i++)
             {
                 var t  = new Thread(AdditionalFillerBackgroundLoop)
@@ -180,8 +159,6 @@ namespace OctoAwesome.Client.Controls
                 _additionalRegenerationThreads[i] = t;
 
             }
-
-            
 
             var selectionVertices = new[]
             {
@@ -279,8 +256,7 @@ namespace OctoAwesome.Client.Controls
 
                         IBlockDefinition blockDefinition = (IBlockDefinition)Manager.Game.DefinitionManager.GetDefinitionByIndex(block);
 
-                        Axis? collisionAxis;
-                        float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out collisionAxis);
+                        float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out Axis? collisionAxis);
 
                         if (distance.HasValue && distance.Value < bestDistance)
                         {

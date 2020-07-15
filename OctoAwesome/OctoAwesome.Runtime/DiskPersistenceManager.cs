@@ -4,7 +4,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
 
 namespace OctoAwesome.Runtime
 {
@@ -149,8 +148,7 @@ namespace OctoAwesome.Runtime
             foreach (var folder in Directory.GetDirectories(root))
             {
                 string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
-                Guid guid;
-                if (Guid.TryParse(id, out guid))
+                if (Guid.TryParse(id, out Guid guid))
                     universes.Add(LoadUniverse(guid));
             }
 
@@ -193,7 +191,7 @@ namespace OctoAwesome.Runtime
                 return null;
 
             IMapGenerator generator = null;
-            using (Stream stream = File.Open(generatorInfo, FileMode.Create, FileAccess.Read))
+            using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
             {
                 using (BinaryReader bw = new BinaryReader(stream))
                 {

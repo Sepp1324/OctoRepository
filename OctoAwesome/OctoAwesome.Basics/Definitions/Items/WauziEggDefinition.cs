@@ -2,36 +2,14 @@
 {
     public sealed class WauziEggDefinition : IItemDefinition
     {
-        public string Icon
-        {
-            get
-            {
-                return "wauziegg";
-            }
-        }
+        public string Icon => "wauziegg";
 
-        public string Name
-        {
-            get
-            {
-                return "Wauzi Egg";
-            }
-        }
+        public string Name => "Wauzi Egg";
 
-        public int StackLimit
-        {
-            get
-            {
-                return 1000;
-            }
-        }
+        public int StackLimit => 1000;
 
-        public float VolumePerUnit
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public float VolumePerUnit => 1;
+
+        decimal IInventoryableDefinition.VolumePerUnit => 1;
     }
 }

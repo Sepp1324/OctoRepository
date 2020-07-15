@@ -1,8 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Blocks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Trees
 {
@@ -12,34 +9,13 @@ namespace OctoAwesome.Basics.Definitions.Trees
         private ushort leave;
         private ushort water;
 
-        public override int Order
-        {
-            get
-            {
-                return 15;
-            }
-        }
+        public override int Order => 15;
 
-        public override float MaxTemperature
-        {
-            get
-            {
-                return 30;
-            }
-        }
+        public override float MaxTemperature => 30;
 
-        public override float MinTemperature
-        {
-            get
-            {
-                return -5;
-            }
-        }
+        public override float MinTemperature => -5;
 
-        public override int GetDensity(IPlanet planet, Index3 index)
-        {
-            return 4;
-        }
+        public override int GetDensity(IPlanet planet, Index3 index) => 4;
 
         public override void Init(IDefinitionManager definitionManager)
         {
@@ -51,6 +27,7 @@ namespace OctoAwesome.Basics.Definitions.Trees
         public override void PlantTree(IDefinitionManager definitionManager, IPlanet planet, Index3 index, LocalBuilder builder, int seed)
         {
             ushort ground = builder.GetBlock(0, 0, -1);
+
             if (ground == water) return;
 
             Random rand = new Random(seed);
@@ -60,9 +37,7 @@ namespace OctoAwesome.Basics.Definitions.Trees
             builder.FillSphere(0, 0, height, radius, leave);
 
             for (int i = 0; i < height + 2; i++)
-            {
                 builder.SetBlock(0, 0, 0 + i, wood);
-            }
         }
     }
 }

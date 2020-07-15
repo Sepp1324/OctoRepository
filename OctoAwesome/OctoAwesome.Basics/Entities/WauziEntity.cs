@@ -12,10 +12,7 @@ namespace OctoAwesome.Basics.Entities
         {
         }
 
-        protected override void OnInitialize(IResourceManager manager)
-        {
-            Cache = new LocalChunkCache(manager.GlobalChunkCache, true, 2, 1);
-        }
+        protected override void OnInitialize(IResourceManager manager) => Cache = new LocalChunkCache(manager.GlobalChunkCache, true, 2, 1);
 
         public override void Update(GameTime gameTime)
         {

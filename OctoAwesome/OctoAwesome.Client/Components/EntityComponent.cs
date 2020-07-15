@@ -1,11 +1,8 @@
 ﻿using engenious;
 using engenious.Graphics;
 using OctoAwesome.EntityComponents;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {

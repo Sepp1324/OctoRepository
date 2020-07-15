@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using engenious;
-using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome
 {
@@ -12,27 +10,12 @@ namespace OctoAwesome
     /// </summary>
     public sealed class Simulation
     {
-        // private List<ActorHost> actorHosts = new List<ActorHost>();
-        // private Stopwatch watch = new Stopwatch();
-        // private Thread thread;
-
-        private int nextId = 1;
-
         public IResourceManager ResourceManager { get; private set; }
-
-        private readonly IExtensionResolver extensionResolver;
-
-        private HashSet<Entity> entites = new HashSet<Entity>();
 
         /// <summary>
         /// List of all Simulation Components.
         /// </summary>
         public ComponentList<SimulationComponent> Components { get; private set; }
-
-        /// <summary>
-        /// List of all Entities.
-        /// </summary>
-        public IEnumerable<Entity> Entities { get { return entites.AsEnumerable(); } }
 
         /// <summary>
         /// Der aktuelle Status der Simulation.
@@ -44,6 +27,17 @@ namespace OctoAwesome
         /// </summary>
         public Guid UniverseId { get; private set; }
 
+        /// <summary>
+        /// List of all Entities.
+        /// </summary>
+        public List<Entity> Entities => entites.ToList();
+
+        private int nextId = 1;
+        
+        private readonly IExtensionResolver extensionResolver;
+
+        private HashSet<Entity> entites = new HashSet<Entity>();
+                        
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
         /// </summary>
@@ -72,7 +66,6 @@ namespace OctoAwesome
             if (State != SimulationState.Ready)
                 throw new NotSupportedException("Simulation needs to be in Ready mode to remove Components");
         }
-
 
         /// <summary>
         /// Erzeugt ein neues Spiel (= Universum)
@@ -119,7 +112,7 @@ namespace OctoAwesome
         {
             if (State == SimulationState.Running)
             {
-                ResourceManager.GlobalChunkCache.BeforSimulationUpdate(this);
+                ResourceManager.GlobalChunkCache.BeforeSimulationUpdate(this);
 
                 //Update all Entities
                 foreach (var entity in Entities.OfType<UpdateableEntity>())
@@ -144,17 +137,14 @@ namespace OctoAwesome
             State = SimulationState.Paused;
 
             //TODO: unschön
-            while (entites.Count > 0)
-                RemoveEntity(Entities.First());       
+            Entities.ForEach(entity => RemoveEntity(entity));
+            //while (entites.Count > 0)
+            //    RemoveEntity(Entities.First());       
 
             State = SimulationState.Finished;
             // thread.Join();
-
-          
-
             ResourceManager.UnloadUniverse();
         }
-
 
         /// <summary>
         /// Fügt eine Entity der Simulation hinzu
@@ -162,7 +152,6 @@ namespace OctoAwesome
         /// <param name="entity">Neue Entity</param>
         public void AddEntity(Entity entity)
         {
-            //TODO: Überprüfen ob ENtity schon da ist
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
@@ -172,11 +161,13 @@ namespace OctoAwesome
             if (entity.Simulation != null)
                 throw new NotSupportedException("Entity can't be part of more than one simulation");
 
+            if (entites.Contains(entity))
+                return;
+
             extensionResolver.ExtendEntity(entity);
 
-            entity.Initialize(this.ResourceManager);
+            entity.Initialize(ResourceManager);
             
-
             entites.Add(entity);
             entity.Simulation = this;
             entity.Id = nextId++;
@@ -197,8 +188,6 @@ namespace OctoAwesome
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-
-
             if (entity.Simulation != this)
             {
                 if(entity.Simulation == null)
@@ -212,12 +201,11 @@ namespace OctoAwesome
 
             foreach (var component in Components)
                 component.Remove(entity);
-
            
             entites.Remove(entity);
             entity.Id = 0;
             entity.Simulation = null;
-
+            
             ResourceManager.SaveEntity(entity);
         }
     }

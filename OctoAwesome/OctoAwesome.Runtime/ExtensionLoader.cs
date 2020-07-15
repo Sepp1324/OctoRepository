@@ -52,7 +52,6 @@ namespace OctoAwesome.Runtime
             mapPopulators = new List<IMapPopulator>();
             LoadedExtensions = new List<IExtension>();
             ActiveExtensions = new List<IExtension>();
-
         }
 
         /// <summary>
@@ -183,7 +182,7 @@ namespace OctoAwesome.Runtime
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : Entity 
+        public void RegisterDefaultEntityExtender<T>() where T : Entity
             => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>

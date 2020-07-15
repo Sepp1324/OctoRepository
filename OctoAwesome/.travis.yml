@@ -1,0 +1,4 @@
+language: csharp
+solution: OctoAwesome.sln
+mono:
+  - latest

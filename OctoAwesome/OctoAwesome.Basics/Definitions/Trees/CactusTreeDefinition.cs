@@ -1,8 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Blocks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Trees
 {
@@ -10,25 +7,13 @@ namespace OctoAwesome.Basics.Definitions.Trees
     {
         private ushort cactus, water;
 
-        public override float MaxTemperature
-        {
-            get { return 45; }
-        }
+        public override float MaxTemperature => 45;
 
-        public override float MinTemperature
-        {
-            get { return 32; }
-        }
+        public override float MinTemperature => 32;
 
-        public override int Order
-        {
-            get { return 20; }
-        }
+        public override int Order => 20;
 
-        public override int GetDensity(IPlanet planet, Index3 index)
-        {
-            return 2;
-        }
+        public override int GetDensity(IPlanet planet, Index3 index) => 2;
 
         public override void Init(IDefinitionManager definitionManager)
         {
@@ -39,6 +24,7 @@ namespace OctoAwesome.Basics.Definitions.Trees
         public override void PlantTree(IDefinitionManager definitionManager, IPlanet planet, Index3 index, LocalBuilder builder, int seed)
         {
             ushort ground = builder.GetBlock(0, 0, -1);
+
             if (ground == water) return;
 
             Random rand = new Random(seed);
