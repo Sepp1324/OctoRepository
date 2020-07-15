@@ -7,6 +7,7 @@ using OctoAwesome.Client.Components;
 using System.Drawing.Imaging;
 using engenious;
 using engenious.Graphics;
+using engenious.Helper;
 
 namespace OctoAwesome.Client.Controls
 {
