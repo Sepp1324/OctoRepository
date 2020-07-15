@@ -20,12 +20,6 @@ namespace OctoAwesome
         IEnumerable<IItemDefinition> GetItemDefinitions();
 
         /// <summary>
-        /// Liefert eine Liste der bekannten Ressourcen.
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<IResourceDefinition> GetResourceDefinitions();
-
-        /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>

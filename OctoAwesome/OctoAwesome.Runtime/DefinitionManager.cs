@@ -13,8 +13,6 @@ namespace OctoAwesome.Runtime
 
         private IItemDefinition[] itemDefinitions;
 
-        private IResourceDefinition[] resourceDefinitions;
-
         private IBlockDefinition[] blockDefinitions;
 
         private IExtensionResolver extensionResolver;
@@ -27,9 +25,6 @@ namespace OctoAwesome.Runtime
 
             // Items sammeln
             itemDefinitions = definitions.OfType<IItemDefinition>().ToArray();
-
-            // Ressourcen sammeln
-            resourceDefinitions = definitions.OfType<IResourceDefinition>().ToArray();
 
             // Blöcke sammeln
             blockDefinitions = definitions.OfType<IBlockDefinition>().ToArray();
@@ -46,12 +41,6 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <returns></returns>
         public IEnumerable<IItemDefinition> GetItemDefinitions() => itemDefinitions;
-
-        /// <summary>
-        /// Liefert eine Liste der bekannten Ressourcen.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<IResourceDefinition> GetResourceDefinitions() => resourceDefinitions;
 
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
