@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
@@ -21,10 +15,7 @@ namespace OctoAwesome.Network
             Command = command;
             Payload = new byte[size];
         }
-        public Package(byte[] data) : this(0, data.Length)
-        {
-            Write(data);
-        }
+        public Package(byte[] data) : this(0, data.Length) => Write(data);
 
         public void Write(byte[] buffer)
         {
