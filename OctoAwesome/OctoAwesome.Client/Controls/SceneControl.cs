@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using OctoAwesome.Runtime;
 using engenious;
 using engenious.Graphics;
+using engenious.Helper;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -65,8 +66,8 @@ namespace OctoAwesome.Client.Controls
         public SceneControl(ScreenComponent manager, string style = "") :
             base(manager, style)
         {
-            Mask = (int) Math.Pow(2, VIEWRANGE) - 1;
-            Span = (int) Math.Pow(2, VIEWRANGE);
+            Mask = (int)Math.Pow(2, VIEWRANGE) - 1;
+            Span = (int)Math.Pow(2, VIEWRANGE);
             SpanOver2 = Span >> 1;
 
             player = manager.Player;
@@ -105,33 +106,12 @@ namespace OctoAwesome.Client.Controls
                 }
             }
 
-            /*int size = (int)Math.Ceiling(Math.Sqrt(bitmaps.Count));
-            Bitmap blocks = new Bitmap(size * TEXTURESIZE, size * TEXTURESIZE);
-            using (Graphics g = Graphics.FromImage(blocks))
-            {
-                int counter = 0;
-                foreach (var bitmap in bitmaps)
-                {
-                    int x = counter % size;
-                    int y = (int)(counter / size);
-                    g.DrawImage(bitmap, new System.Drawing.Rectangle(TEXTURESIZE * x, TEXTURESIZE * y, TEXTURESIZE, TEXTURESIZE));
-                    counter++;
-                }
-            }
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                blocks.Save(stream, ImageFormat.Png);
-                stream.Seek(0, SeekOrigin.Begin);
-                blockTextures = Texture2D.FromStream(manager.GraphicsDevice, stream);
-            }*/
-
             planet = Manager.Game.ResourceManager.GetPlanet(0);
 
             // TODO: evtl. Cache-Size (Dimensions) VIEWRANGE + 1
 
             int range = ((int)Math.Pow(2, VIEWRANGE) - 2) / 2;
-            localChunkCache = new LocalChunkCache(Manager.Game.ResourceManager.GlobalChunkCache,false, VIEWRANGE, range);
+            localChunkCache = new LocalChunkCache(Manager.Game.ResourceManager.GlobalChunkCache, false, VIEWRANGE, range);
 
             chunkRenderer = new ChunkRenderer[
                 (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE),
@@ -149,7 +129,8 @@ namespace OctoAwesome.Client.Controls
                 }
             }
 
-            backgroundThread = new Thread(BackgroundLoop) {
+            backgroundThread = new Thread(BackgroundLoop)
+            {
                 Priority = ThreadPriority.Lowest,
                 IsBackground = true
             };
@@ -169,7 +150,7 @@ namespace OctoAwesome.Client.Controls
             _additionalRegenerationThreads = new Thread[additional];
             for (int i = 0; i < additional; i++)
             {
-                var t  = new Thread(AdditionalFillerBackgroundLoop)
+                var t = new Thread(AdditionalFillerBackgroundLoop)
                 {
                     Priority = ThreadPriority.Lowest,
                     IsBackground = true
@@ -181,7 +162,7 @@ namespace OctoAwesome.Client.Controls
 
             }
 
-            
+
 
             var selectionVertices = new[]
             {
@@ -250,12 +231,12 @@ namespace OctoAwesome.Client.Controls
 
             Manager.Game.Camera.RecreateProjection();
         }
-        
+
         protected override void OnUpdate(GameTime gameTime)
         {
             if (player.CurrentEntity == null)
                 return;
-            
+
             sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
 
             Index3 centerblock = player.Position.Position.GlobalBlockIndex;
@@ -372,15 +353,14 @@ namespace OctoAwesome.Client.Controls
             if (player.CurrentEntity == null) return;
 
             if (ControlTexture == null)
-            {
                 ControlTexture = new RenderTarget2D(Manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
-            }
+
 
             float octoDaysPerEarthDay = 360f;
             float inclinationVariance = MathHelper.Pi / 3f;
 
-            float playerPosX = ((float)player.Position.Position.GlobalPosition.X / (planet.Size.X * Chunk.CHUNKSIZE_X)) * MathHelper.TwoPi;
-            float playerPosY = ((float)player.Position.Position.GlobalPosition.Y / (planet.Size.Y * Chunk.CHUNKSIZE_Y)) * MathHelper.TwoPi;
+            float playerPosX = player.Position.Position.GlobalPosition.X / (planet.Size.X * Chunk.CHUNKSIZE_X) * MathHelper.TwoPi;
+            float playerPosY = player.Position.Position.GlobalPosition.Y / (planet.Size.Y * Chunk.CHUNKSIZE_Y) * MathHelper.TwoPi;
 
             TimeSpan diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
 
@@ -433,7 +413,7 @@ namespace OctoAwesome.Client.Controls
                     shift.Y >= -range && shift.Y <= range)
                     renderer.Draw(camera.MinimapView, miniMapProjectionMatrix, shift);
             }
-            
+
             Manager.GraphicsDevice.SetRenderTarget(ControlTexture);
             Manager.GraphicsDevice.Clear(background);
 
@@ -442,6 +422,10 @@ namespace OctoAwesome.Client.Controls
 
             // Draw Sun
             // GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            if (camera.View == new Matrix())
+                return;
+
             sunEffect.Texture = sunTexture;
             Matrix billboard = Matrix.Invert(camera.View);
             billboard.Translation = player.Position.Position.LocalPosition + (sunDirection * -10);
@@ -478,9 +462,9 @@ namespace OctoAwesome.Client.Controls
                     renderer.Draw(camera.View, camera.Projection, shift);
             }
 
-           
 
-            entities.Draw(camera.View, camera.Projection,chunkOffset,new Index2(planet.Size.X,planet.Size.Z));
+
+            entities.Draw(camera.View, camera.Projection, chunkOffset, new Index2(planet.Size.X, planet.Size.Z));
 
             if (player.SelectedBox.HasValue)
             {
@@ -502,7 +486,7 @@ namespace OctoAwesome.Client.Controls
                 selectionEffect.Projection = camera.Projection;
                 Manager.GraphicsDevice.VertexBuffer = selectionLines;
                 Manager.GraphicsDevice.IndexBuffer = selectionIndexBuffer;
-                foreach (var pass in selectionEffect.CurrentTechnique.Passes.PassesList)
+                foreach (var pass in selectionEffect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                     Manager.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.Lines, 0, 0, 8, 0, 12);
@@ -512,7 +496,7 @@ namespace OctoAwesome.Client.Controls
 
             Manager.GraphicsDevice.SetRenderTarget(null);
         }
-        
+
 
         private void FillChunkRenderer()
         {
@@ -527,13 +511,14 @@ namespace OctoAwesome.Client.Controls
                 localChunkCache.SetCenter(
                     planet,
                     new Index2(player.Position.Position.ChunkIndex),
-                    b => {
+                    b =>
+                    {
                         if (b)
                         {
-                            _fillResetEvent.Set(); 
+                            _fillResetEvent.Set();
                         }
                     });
-                
+
                 for (int x = 0; x < Span; x++)
                 {
                     for (int y = 0; y < Span; y++)
@@ -567,7 +552,7 @@ namespace OctoAwesome.Client.Controls
 
                 currentChunk = destinationChunk;
             }
-            
+
             foreach (var e in _additionalFillResetEvents)
                 e.Set();
 
@@ -576,7 +561,7 @@ namespace OctoAwesome.Client.Controls
 
         private void RegenerateAll(int start)
         {
-            for (var index = start; index < orderedChunkRenderer.Count; index+=_fillIncrement)
+            for (var index = start; index < orderedChunkRenderer.Count; index += _fillIncrement)
             {
                 var renderer = orderedChunkRenderer[index];
                 if (renderer.NeedsUpdate)
@@ -597,9 +582,9 @@ namespace OctoAwesome.Client.Controls
 
         private void AdditionalFillerBackgroundLoop(object oArr)
         {
-            var arr = (object[]) oArr;
-            var are = (AutoResetEvent) arr[0];
-            var n = (int) arr[1];
+            var arr = (object[])oArr;
+            var are = (AutoResetEvent)arr[0];
+            var n = (int)arr[1];
             while (true)
             {
                 are.WaitOne();
@@ -613,7 +598,7 @@ namespace OctoAwesome.Client.Controls
             {
                 _forceResetEvent.WaitOne();
 
-                while(!_forcedRenders.IsEmpty)
+                while (!_forcedRenders.IsEmpty)
                 {
                     ChunkRenderer r;
                     while (_forcedRenders.TryDequeue(out r))
@@ -657,7 +642,7 @@ namespace OctoAwesome.Client.Controls
         #endregion
 
         private ConcurrentQueue<ChunkRenderer> _forcedRenders = new ConcurrentQueue<ChunkRenderer>();
-        
+
 
         public void Enqueue(ChunkRenderer chunkRenderer1)
         {

@@ -38,17 +38,19 @@ namespace OctoAwesome.Client
 
         public IResourceManager ResourceManager { get; private set; }
 
-        public IExtensionLoader ExtensionLoader { get; private set; }
+        public ExtensionLoader ExtensionLoader { get; private set; }
 
         public Components.EntityComponent Entity { get; private set; }
 
-        public OctoGame()
+        public OctoGame() : base()
         {
             //graphics = new GraphicsDeviceManager(this);
             //graphics.PreferredBackBufferWidth = 1080;
             //graphics.PreferredBackBufferHeight = 720;
 
             //Content.RootDirectory = "Content";
+
+
             Title = "OctoAwesome";
             IsMouseVisible = true;
             Icon = Properties.Resources.octoawesome;
@@ -56,12 +58,8 @@ namespace OctoAwesome.Client
             //Window.AllowUserResizing = true;
             Settings = new Settings();
 
-            ExtensionLoader extensionLoader = new ExtensionLoader(Settings);
-            extensionLoader.LoadExtensions();
-            ExtensionLoader = extensionLoader;
-
-            DefinitionManager = new DefinitionManager(extensionLoader);
-            ResourceManager = new ResourceManager(extensionLoader, DefinitionManager, Settings);
+            ExtensionLoader = new ExtensionLoader(Settings);
+            ExtensionLoader.LoadExtensions();
 
             //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
@@ -84,16 +82,28 @@ namespace OctoAwesome.Client
             Assets = new AssetComponent(this);
             Components.Add(Assets);
 
-            Simulation = new Components.SimulationComponent(this, 
-                extensionLoader, ResourceManager);
-            Simulation.UpdateOrder = 4;
-            Components.Add(Simulation);
+
+            Screen = new ScreenComponent(this);
+            Screen.UpdateOrder = 1;
+            Screen.DrawOrder = 1;
+            Components.Add(Screen);
+
+
+            KeyMapper = new KeyMapper(Screen, Settings);
+
+            #region GameComponents
+            DefinitionManager = new DefinitionManager(ExtensionLoader);
+
+            //var persistenceManager = new DiskPersistenceManager(ExtensionLoader, DefinitionManager, Settings);
+            //ResourceManager = new ResourceManager(ExtensionLoader, DefinitionManager, Settings, persistenceManager);
+            ResourceManager = new ContainerResourceManager();
+
 
             Player = new PlayerComponent(this, ResourceManager);
             Player.UpdateOrder = 2;
             Components.Add(Player);
 
-            Entity = new Client.Components.EntityComponent(this,Simulation);
+            Entity = new Components.EntityComponent(this, Simulation);
             Entity.UpdateOrder = 2;
             Components.Add(Entity);
 
@@ -101,12 +111,12 @@ namespace OctoAwesome.Client
             Camera.UpdateOrder = 3;
             Components.Add(Camera);
 
-            Screen = new ScreenComponent(this);
-            Screen.UpdateOrder = 1;
-            Screen.DrawOrder = 1;
-            Components.Add(Screen);
+            Simulation = new Components.SimulationComponent(this,
+              ExtensionLoader, ResourceManager);
+            Simulation.UpdateOrder = 4;
+            Components.Add(Simulation);
 
-            KeyMapper = new KeyMapper(Screen, Settings);
+            #endregion GameComponents
 
             /*Resize += (s, e) =>
             {
@@ -119,6 +129,7 @@ namespace OctoAwesome.Client
                 //graphics.ApplyChanges();
             };*/
             SetKeyBindings();
+
         }
 
         private void SetKeyBindings()
@@ -135,16 +146,8 @@ namespace OctoAwesome.Client
             KeyMapper.RegisterBinding("octoawesome:apply", Languages.OctoKeys.apply);
             KeyMapper.RegisterBinding("octoawesome:flymode", Languages.OctoKeys.flymode);
             KeyMapper.RegisterBinding("octoawesome:jump", Languages.OctoKeys.jump);
-            KeyMapper.RegisterBinding("octoawesome:slot0", Languages.OctoKeys.slot0);
-            KeyMapper.RegisterBinding("octoawesome:slot1", Languages.OctoKeys.slot1);
-            KeyMapper.RegisterBinding("octoawesome:slot2", Languages.OctoKeys.slot2);
-            KeyMapper.RegisterBinding("octoawesome:slot3", Languages.OctoKeys.slot3);
-            KeyMapper.RegisterBinding("octoawesome:slot4", Languages.OctoKeys.slot4);
-            KeyMapper.RegisterBinding("octoawesome:slot5", Languages.OctoKeys.slot5);
-            KeyMapper.RegisterBinding("octoawesome:slot6", Languages.OctoKeys.slot6);
-            KeyMapper.RegisterBinding("octoawesome:slot7", Languages.OctoKeys.slot7);
-            KeyMapper.RegisterBinding("octoawesome:slot8", Languages.OctoKeys.slot8);
-            KeyMapper.RegisterBinding("octoawesome:slot9", Languages.OctoKeys.slot9);
+            for (int i = 0; i < 10; i++)
+                KeyMapper.RegisterBinding("octoawesome:slot" + i, Languages.OctoKeys.ResourceManager.GetString("slot" + i));
             KeyMapper.RegisterBinding("octoawesome:debug.allblocks", Languages.OctoKeys.debug_allblocks);
             KeyMapper.RegisterBinding("octoawesome:debug.control", Languages.OctoKeys.debug_control);
             KeyMapper.RegisterBinding("octoawesome:inventory", Languages.OctoKeys.inventory);

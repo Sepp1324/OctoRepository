@@ -9,24 +9,30 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class ResourceManager : IResourceManager
     {
+        public Player CurrentPlayer
+        {
+            get
+            {
+                if (player == null)
+                    player = LoadPlayer("");
+
+                return player;
+            }
+            private set => player = value;
+        }
+
         private Guid DEFAULT_UNIVERSE = Guid.Parse("{3C4B1C38-70DC-4B1D-B7BE-7ED9F4B1A66D}");
-
         private bool disablePersistence = false;
-
         private IPersistenceManager persistenceManager = null;
-
         private GlobalChunkCache globalChunkCache = null;
-
         private List<IMapPopulator> populators = null;
-
-        private IUniverse universe;
-
         private Dictionary<int, IPlanet> planets;
+        private Player player;
 
         /// <summary>
         /// Das aktuell geladene Universum.
         /// </summary>
-        public IUniverse CurrentUniverse { get { return universe; } }
+        public IUniverse CurrentUniverse { get; private set; }
 
         public IDefinitionManager DefinitionManager { get; private set; }
 
@@ -38,30 +44,28 @@ namespace OctoAwesome.Runtime
         /// <param name="extensionResolver">ExetnsionResolver</param>
         /// <param name="definitionManager">DefinitionManager</param>
         /// <param name="settings">Einstellungen</param>
-        public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
+        public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, IPersistenceManager persistenceManager)
         {
             this.extensionResolver = extensionResolver;
             DefinitionManager = definitionManager;
-            persistenceManager = new DiskPersistenceManager(extensionResolver, definitionManager,this, settings);
+            this.persistenceManager = persistenceManager;
 
             populators = extensionResolver.GetMapPopulator().OrderBy(p => p.Order).ToList();
 
             globalChunkCache = new GlobalChunkCache(
-                (p, i) => loadChunkColumn(p, i),
+                (p, i) => LoadChunkColumn(p, i),
                 (i) => GetPlanet(i),
-                (p, i, c) => saveChunkColumn(p, i, c));
+                (p, i, c) => SaveChunkColumn(p, i, c));
 
             planets = new Dictionary<int, IPlanet>();
 
             bool.TryParse(settings.Get<string>("DisablePersistence"), out disablePersistence);
         }
 
-        
-
         /// <summary>
         /// Der <see cref="IGlobalChunkCache"/>, der im Spiel verwendet werden soll.
         /// </summary>
-        public IGlobalChunkCache GlobalChunkCache { get { return globalChunkCache; } }
+        public IGlobalChunkCache GlobalChunkCache => globalChunkCache;
 
         /// <summary>
         /// Erzuegt ein neues Universum.
@@ -72,8 +76,8 @@ namespace OctoAwesome.Runtime
         public Guid NewUniverse(string name, int seed)
         {
             Guid guid = Guid.NewGuid();
-            universe = new Universe(guid, name, seed);
-            persistenceManager.SaveUniverse(universe);
+            CurrentUniverse = new Universe(guid, name, seed);
+            persistenceManager.SaveUniverse(CurrentUniverse);
             return guid;
         }
 
@@ -94,12 +98,12 @@ namespace OctoAwesome.Runtime
         public void LoadUniverse(Guid universeId)
         {
             // Alte Daten entfernen
-            if (universe != null)
+            if (CurrentUniverse != null)
                 UnloadUniverse();
 
             // Neuen Daten loaden/generieren
-            universe = persistenceManager.LoadUniverse(universeId);
-            if (universe == null)
+            CurrentUniverse = persistenceManager.LoadUniverse(universeId);
+            if (CurrentUniverse == null)
                 throw new Exception();
         }
 
@@ -108,13 +112,19 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void UnloadUniverse()
         {
-            // TODO: Save und Unload
+            persistenceManager.SaveUniverse(CurrentUniverse);
 
             // Unload Chunks
             globalChunkCache.Clear();
-            
-            // TODO: Unload Planets
-            // TODO: Unload Universe;
+
+            foreach (var planet in planets)
+            {
+                persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
+            }
+            planets.Clear();
+
+            CurrentUniverse = null;
+            GC.Collect();
         }
 
         /// <summary>
@@ -123,7 +133,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Das gewünschte Universum, falls es existiert</returns>
         public IUniverse GetUniverse()
         {
-            return universe;
+            return CurrentUniverse;
         }
 
         /// <summary>
@@ -132,7 +142,7 @@ namespace OctoAwesome.Runtime
         /// <param name="id">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid id)
         {
-            if (universe != null && universe.Id == id)
+            if (CurrentUniverse != null && CurrentUniverse.Id == id)
                 throw new Exception("Universe is already loaded");
 
             persistenceManager.DeleteUniverse(id);
@@ -145,24 +155,25 @@ namespace OctoAwesome.Runtime
         /// <returns>Der gewünschte Planet, falls er existiert</returns>
         public IPlanet GetPlanet(int id)
         {
-            if (universe == null)
+            if (CurrentUniverse == null)
                 throw new Exception("No Universe loaded");
 
             IPlanet planet;
             if (!planets.TryGetValue(id, out planet))
             {
                 // Versuch vorhandenen Planeten zu laden
-                planet = persistenceManager.LoadPlanet(universe.Id, id);
+                planet = persistenceManager.LoadPlanet(CurrentUniverse.Id, id);
                 if (planet == null)
                 {
                     // Keiner da -> neu erzeugen
-                    Random rand = new Random(universe.Seed + id);
+                    Random rand = new Random(CurrentUniverse.Seed + id);
                     var generators = extensionResolver.GetMapGenerator().ToArray();
                     int index = rand.Next(generators.Length - 1);
                     IMapGenerator generator = generators[index];
-                    planet = generator.GeneratePlanet(universe.Id, id, universe.Seed + id);
+                    planet = generator.GeneratePlanet(CurrentUniverse.Id, id, CurrentUniverse.Seed + id);
                     // persistenceManager.SavePlanet(universe.Id, planet);
                 }
+
 
                 planets.Add(id, planet);
             }
@@ -177,10 +188,10 @@ namespace OctoAwesome.Runtime
         /// <returns></returns>
         public Player LoadPlayer(string playername)
         {
-            if (universe == null)
+            if (CurrentUniverse == null)
                 throw new Exception("No Universe loaded");
 
-            Player player = persistenceManager.LoadPlayer(universe.Id, playername);
+            Player player = persistenceManager.LoadPlayer(CurrentUniverse.Id, playername);
             if (player == null)
             {
                 player = new Player();
@@ -194,18 +205,18 @@ namespace OctoAwesome.Runtime
         /// <param name="player">Der Player.</param>
         public void SavePlayer(Player player)
         {
-            if (universe == null)
+            if (CurrentUniverse == null)
                 throw new Exception("No Universe loaded");
 
-            persistenceManager.SavePlayer(universe.Id, player);
+            persistenceManager.SavePlayer(CurrentUniverse.Id, player);
         }
 
-        private IChunkColumn loadChunkColumn(int planetId, Index2 index)
+        private IChunkColumn LoadChunkColumn(int planetId, Index2 index)
         {
             IPlanet planet = GetPlanet(planetId);
 
             // Load from disk
-            IChunkColumn column11 = persistenceManager.LoadColumn(universe.Id, planet, index);
+            IChunkColumn column11 = persistenceManager.LoadColumn(CurrentUniverse.Id, planet, index);
             if (column11 == null)
             {
                 IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
@@ -260,18 +271,18 @@ namespace OctoAwesome.Runtime
             return column11;
         }
 
-        private void saveChunkColumn(int planetId, Index2 index, IChunkColumn value)
+        private void SaveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
             if (!disablePersistence && value.ChangeCounter > 0) //value.Chunks.Any(c => c.ChangeCounter > 0)
             {
-                persistenceManager.SaveColumn(universe.Id, planetId, value);
+                persistenceManager.SaveColumn(CurrentUniverse.Id, planetId, value);
             }
         }
 
         public void SaveEntity(Entity entity)
         {
-            if (entity is Player)
-                SavePlayer((Player)entity);
+            if (entity is Player player)
+                SavePlayer(player);
         }
     }
 }

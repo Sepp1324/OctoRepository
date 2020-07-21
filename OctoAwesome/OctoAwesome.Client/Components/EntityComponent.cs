@@ -1,5 +1,6 @@
 ﻿using engenious;
 using engenious.Graphics;
+using engenious.Helper;
 using OctoAwesome.EntityComponents;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace OctoAwesome.Client.Components
 
         public List<Entity> Entities { get; set; }
 
-        public EntityComponent(Game game, SimulationComponent simulation) : base(game)
+        public EntityComponent(OctoGame game, SimulationComponent simulation) : base(game)
         {
             Simulation = simulation;
 
@@ -42,7 +43,7 @@ namespace OctoAwesome.Client.Components
             effect.View = view;
             effect.TextureEnabled = true;
             graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
-            foreach (var pass in effect.CurrentTechnique.Passes.PassesList)
+            foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
@@ -96,7 +97,7 @@ namespace OctoAwesome.Client.Components
 
         public override void Update(GameTime gameTime)
         {
-            if (Simulation.Simulation == null)
+            if (Simulation?.Simulation == null)
                 return;
 
             var simulation = Simulation.Simulation;

@@ -30,6 +30,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <DocumentationFile>..\bin\Debug\OctoAwesome.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,14 +43,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="engenious, Version=0.1.7.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\engenious.0.1.7\lib\net40\engenious.dll</HintPath>
-    </Reference>
-    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\engenious.0.1.7\lib\net40\NVorbis.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
-      <HintPath>..\packages\engenious.0.1.7\lib\net40\OpenTK.dll</HintPath>
+    <Reference Include="engenious, Version=0.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\engenious.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -90,6 +86,7 @@
     <Compile Include="IEntityList.cs" />
     <Compile Include="IExtensionLoader.cs" />
     <Compile Include="IExtensionResolver.cs" />
+    <Compile Include="IInventoryableDefinition.cs" />
     <Compile Include="IPersistenceManager.cs" />
     <Compile Include="IClimateMap.cs" />
     <Compile Include="IDefinitionManager.cs" />
@@ -104,7 +101,6 @@
     <Compile Include="IPlanet.cs" />
     <Compile Include="ILocalChunkCache.cs" />
     <Compile Include="IResource.cs" />
-    <Compile Include="IResourceDefinition.cs" />
     <Compile Include="IResourceManager.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="ISettings.cs" />
@@ -120,22 +116,14 @@
     <Compile Include="PlanetIndex3.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="SimulationComponent.cs" />
     <Compile Include="SimulationState.cs" />
+    <Compile Include="Wall.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="UpdateableEntity.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-</Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
