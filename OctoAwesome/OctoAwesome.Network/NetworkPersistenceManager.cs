@@ -10,15 +10,15 @@ namespace OctoAwesome.Network
 {
     public class NetworkPersistenceManager : IPersistenceManager
     {
-        private Client _client;
+        private Client client;
 
         public NetworkPersistenceManager()
         {
-            _client = new Client();
+            client = new Client();
         }
         public NetworkPersistenceManager(string host, ushort port) : this()
         {
-            _client.Connect(host, port);
+            client.Connect(host, port);
         }
 
         public void DeleteUniverse(Guid universeGuid)
@@ -43,10 +43,10 @@ namespace OctoAwesome.Network
 
         public Player LoadPlayer(Guid universeGuid, string playername)
         {
-            var playerNameBytes = Encoding.UTF8.GetBytes(playername);
+            var playernameBytes = Encoding.UTF8.GetBytes(playername);
 
-            var package = new Package(11, playerNameBytes.Length);
-            package.Write(playerNameBytes);
+            var package = new Package(11, playernameBytes.Length);
+            package.Write(playernameBytes);
 
 
             var mre = new ManualResetEvent(false);
@@ -56,12 +56,12 @@ namespace OctoAwesome.Network
 
                 mre.Set();
             });
-            _client.OnMessageRecived += dele;
+            client.OnMessageRecived += dele;
 
-            _client.Send(package);
+            client.Send(package);
             mre.WaitOne();
 
-            _client.OnMessageRecived -= dele;
+            client.OnMessageRecived -= dele;
 
             return new Player()
             {
