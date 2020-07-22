@@ -1,6 +1,10 @@
 ﻿using OctoAwesome.Network;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -10,13 +14,10 @@ namespace OctoAwesome.Client
     public class ContainerResourceManager : IResourceManager
     {
         public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
-        
         public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
-        
         public IGlobalChunkCache GlobalChunkCache => resourceManager.GlobalChunkCache;
 
         public bool IsMultiplayer { get; private set; }
-
         public Player CurrentPlayer => resourceManager.CurrentPlayer;
 
         private ResourceManager resourceManager;
@@ -34,10 +35,11 @@ namespace OctoAwesome.Client
                 resourceManager = null;
             }
 
+
             if (multiplayer)
             {
                 var host = settings.Get<string>("server").Trim().Split(':');
-                persistenceManager = new NetworkPersistenceManager(host[0], host.Length > 1 ? ushort.Parse(host[1]) : (ushort)8888);
+                persistenceManager = new NetworkPersistenceManager(host[0], host.Length > 1 ? ushort.Parse(host[1]) : (ushort)8888, definitionManager);
             }
             else
             {
@@ -45,10 +47,13 @@ namespace OctoAwesome.Client
             }
 
             resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
+
             IsMultiplayer = multiplayer;
 
             if (multiplayer)
+            {
                 resourceManager.LoadUniverse(new Guid());
+            }
         }
 
         public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);

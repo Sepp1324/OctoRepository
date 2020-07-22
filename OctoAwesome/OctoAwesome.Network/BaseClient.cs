@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
@@ -68,8 +71,10 @@ namespace OctoAwesome.Network
         }
         public void SendAsync(Package package)
         {
-            var buffer = new byte[1024];
-            var len = package.Read(buffer);
+            var buffer = new byte[2048];
+            
+            var len = package.Read(buffer, package.Payload.Length > 2000);
+
             SendAsync(buffer, len);
         }
 
@@ -89,6 +94,7 @@ namespace OctoAwesome.Network
             manualResetEvent.WaitOne();
 
             OnMessageRecived -= onDataReceive;
+
             return returnPackage;
         }
 
