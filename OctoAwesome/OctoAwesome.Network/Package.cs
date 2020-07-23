@@ -17,6 +17,8 @@ namespace OctoAwesome.Network
 
         public byte[] Payload { get; set; }
 
+        public bool Zipped { get; set; }
+
         public int Size => Payload.Length;
 
         private MemoryStream _memoryStream;
@@ -28,18 +30,22 @@ namespace OctoAwesome.Network
             Command = command;
             Payload = new byte[size];
 
+            Zipped = size > 2000;
+
             _memoryStream = new MemoryStream();
             _gzipStream = new GZipStream(_memoryStream, CompressionMode.Compress);
         }
         public Package(byte[] data) : this(0, data.Length)
         {
-            Write(data);
+            Write(data, 0, data.Length);
         }
 
         private int _writePosition;
 
         public int Write(byte[] buffer, int offset, int count)
         {
+            int written = 0;
+
             if (_writePosition == 0)
             {
                 if (count < HEAD_LENGTH)
@@ -49,38 +55,41 @@ namespace OctoAwesome.Network
                 Command = (ushort)(buffer[offset + 1] << 8 | buffer[offset + 2]);
                 int size = (ushort)(buffer[offset + 3] << 24 | buffer[offset + 4] << 16 | buffer[offset + 5] << 8 | buffer[offset + 6]);
                 Payload = new byte[size];
+                Zipped = buffer[offset + 7] == 1;
 
-                if(buffer[offset + 7] == 1)
+                if (Zipped)
                 {
-                    _gzipStream = new GZipStream(_memoryStream, CompressionMode.Decompress);
+                    _memoryStream.Position = 0;
+                    _gzipStream = new GZipStream(_memoryStream, CompressionMode.Decompress, true);
                 }
-
+                written += HEAD_LENGTH;
                 _writePosition += HEAD_LENGTH;
                 offset += HEAD_LENGTH;
+                count -= HEAD_LENGTH;
             }
 
-            
-            { 
-                using (var memoryStream = new MemoryStream(buffer, HEAD_LENGTH, buffer.Length - HEAD_LENGTH))
-                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                {
-                    using (var targetStream = new MemoryStream())
-                    {
-                        gzipStream.CopyTo(targetStream);
-                        Payload = targetStream.ToArray();
-                    }
-                }
+            var toRead = Payload.Length - _writePosition - HEAD_LENGTH;
+
+            if (Zipped)
+            {
+                _memoryStream.Write(buffer, offset, count);
+                written += count;
+                int read = _gzipStream.Read(Payload, _writePosition - HEAD_LENGTH, toRead);
+                _writePosition += read;
             }
             else
             {
-                Array.Copy(buffer, HEAD_LENGTH, Payload, 0, buffer.Length - HEAD_LENGTH);
+                toRead = Math.Min(count, toRead);
+                Array.Copy(buffer, offset, Payload, _writePosition - HEAD_LENGTH, toRead);
+                _writePosition += toRead;
+                written += toRead;
             }
-
+            return written;
         }
 
         private int _readPosition;
 
-        public int Read(byte[] buffer, int offset, int count, bool zip = false)
+        public int Read(byte[] buffer, int offset, int count)
         {
             int oldPosition = _readPosition;
             if (_readPosition == 0)
@@ -97,13 +106,13 @@ namespace OctoAwesome.Network
                 buffer[offset++] = (byte)(Size >> 8);
                 buffer[offset++] = (byte)(Size & 0xFF);
 
-                buffer[offset++] = (byte)(zip ? 1 : 0);
+                buffer[offset++] = (byte)(Zipped ? 1 : 0);
 
                 _readPosition += HEAD_LENGTH;
                 count -= HEAD_LENGTH;
             }
 
-            if (zip)
+            if (Zipped)
             {
                 if (_memoryStream.Length == 0)
                 {

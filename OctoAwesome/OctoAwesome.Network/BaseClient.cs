@@ -75,7 +75,7 @@ namespace OctoAwesome.Network
             int /*offset = 0,*/read = 0;
             do
             {
-                read = package.Read(buffer, 0, buffer.Length, package.Payload.Length > 2000);
+                read = package.Read(buffer, 0, buffer.Length);
                 //offset += read;
                 SendAsync(buffer, read);
 
