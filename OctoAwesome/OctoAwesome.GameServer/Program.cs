@@ -1,12 +1,9 @@
 ﻿using CommandManagementSystem;
 using OctoAwesome.Network;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
@@ -14,32 +11,37 @@ namespace OctoAwesome.GameServer
     {
         public static ServerHandler ServerHandler { get; set; }
 
-        private static ManualResetEvent manualResetEvent;
-        private static DefaultCommandManager<ushort, byte[], byte[]> defaultManager;
-        private static Server server;
+        private static ManualResetEvent _manualResetEvent;
+        private static DefaultCommandManager<ushort, byte[], byte[]> _defaultManager;
+        private static Server _server;
 
         static void Main(string[] args)
         {
-            defaultManager = new DefaultCommandManager<ushort, byte[], byte[]>(typeof(Program).Namespace + ".Commands");
-            manualResetEvent = new ManualResetEvent(false);
-            server = new Server();
-            server.OnClientConnected += ServerOnClientConnected;
-            Console.WriteLine("Server start");
-            ServerHandler = new ServerHandler(server);
-            server.Start(IPAddress.Any, 8888);
+            _defaultManager = new DefaultCommandManager<ushort, byte[], byte[]>(typeof(Program).Namespace + ".Commands");
+            _manualResetEvent = new ManualResetEvent(false);
+            _server = new Server();
+            _server.OnClientConnected += ServerOnClientConnected;
+            Console.WriteLine("Server staredt");
+            ServerHandler = new ServerHandler(_server);
+            _server.Start(IPAddress.Any, 8888);
 
-            Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
-            manualResetEvent.WaitOne();
+            Console.CancelKeyPress += (s, e) => _manualResetEvent.Set();
+            _manualResetEvent.WaitOne();
         }
 
         private static void ServerOnClientConnected(object sender, ConnectedClient e)
         {
-            Console.WriteLine("Hurra ein neuer Spieler");
+            Console.WriteLine("Client connected");
 
-            e.OnMessageRecived += (s, args) =>
+            e.PackageReceived += (s, package) =>
             {
-                var package = new Package(args.Data.Take(args.Count).ToArray());
-                package.Payload = defaultManager.Dispatch(package.Command, package.Payload);
+
+                package.Payload = _defaultManager.Dispatch(package.Command, package.Payload);
+
+                Console.WriteLine(package.Command);
+                if (package.Command != 12)
+                    ;
+
                 e.SendAsync(package);
             };
         }

@@ -1,8 +1,5 @@
 ﻿using MonoGameUi;
-using System.Collections.Generic;
-using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
-using System;
 using engenious;
 using engenious.Graphics;
 using System.Linq;
@@ -12,13 +9,14 @@ namespace OctoAwesome.Client.Controls
 {
     internal class DebugControl : Panel
     {
-        private int buffersize = 10;
-        private float[] framebuffer;
-        private int bufferindex = 0;
+        private int _buffersize = 10;
+        private int _bufferindex = 0;
+        private int _frameCount = 0;
 
-        private int framecount = 0;
-        private double seconds = 0;
-        private double lastfps = 0f;
+        private float[] _framebuffer;
+
+        private double _seconds = 0;
+        private double _lastfps = 0f;
 
         AssetComponent assets;
 
@@ -32,7 +30,7 @@ namespace OctoAwesome.Client.Controls
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
         {
-            framebuffer = new float[buffersize];
+            _framebuffer = new float[_buffersize];
             Player = screenManager.Player;
             manager = screenManager;
             assets = screenManager.Game.Assets;
@@ -137,17 +135,17 @@ namespace OctoAwesome.Client.Controls
                 return;
 
             //Calculate FPS
-            framecount++;
-            seconds += gameTime.ElapsedGameTime.TotalSeconds;
-            if (framecount == 10)
+            _frameCount++;
+            _seconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_frameCount == 10)
             {
-                lastfps = seconds / framecount;
-                framecount = 0;
-                seconds = 0;
+                _lastfps = _seconds / _frameCount;
+                _frameCount = 0;
+                _seconds = 0;
             }
 
-            framebuffer[bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            bufferindex %= buffersize;
+            _framebuffer[_bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _bufferindex %= _buffersize;
 
             //Draw Control Info
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
@@ -164,7 +162,7 @@ namespace OctoAwesome.Client.Controls
             rotation.Text = rot;
 
             //Draw Fps
-            string fpsString = "fps: " + (1f / lastfps).ToString("0.00");
+            string fpsString = "fps: " + (1f / _lastfps).ToString("0.00");
             fps.Text = fpsString;
 
             //Draw Loaded Chunks
