@@ -22,10 +22,10 @@ namespace OctoAwesome.Network
         private int _writePosition;
         private int _readPosition;
 
-        public OctoNetworkStream()
+        public OctoNetworkStream(int capacity = 1024)
         {
-            _bufferSize = 1000;
-            _internalBuffer = new byte[1000];
+            _bufferSize = capacity;
+            _internalBuffer = new byte[capacity];
             _bufferIndex = 0;
         }
 
@@ -49,6 +49,7 @@ namespace OctoAwesome.Network
             {
                 tmpCount = _internalBuffer.Length - _readPosition;
                 Array.Copy(_internalBuffer, _readPosition, buffer, offset, tmpCount);
+                offset = tmpCount;
                 tmpCount = count - tmpCount;
                 _readPosition = 0;
 
@@ -66,7 +67,6 @@ namespace OctoAwesome.Network
 
             return count;
         }
-
 
         public void Write(byte[] buffer, int offset, int count)
         {
@@ -86,7 +86,7 @@ namespace OctoAwesome.Network
 
             Array.Copy(buffer, bufferPosition, _internalBuffer, _writePosition, toWrite);
 
-            if (_writePosition + toWrite > _internalBuffer.Length)
+            if (_writePosition + count > _internalBuffer.Length)
             {
                 bufferPosition += toWrite;
                 toWrite = count - toWrite;
@@ -104,9 +104,6 @@ namespace OctoAwesome.Network
                 }
                 Array.Copy(buffer, bufferPosition, _internalBuffer, _writePosition, toWrite);
             }
-
-            
-
             Interlocked.Exchange(ref _writePosition, _writePosition + toWrite);
         }
     }
