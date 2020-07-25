@@ -1,55 +1,67 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-
-namespace OctoAwesome.Network
+﻿namespace OctoAwesome.Network
 {
-    public class Package : IDisposable
+    public class Package
     {
         /// <summary>
         /// Bytesize of Header
         /// </summary>
         public const int HEAD_LENGTH = 8;
 
-        public byte Type { get; set; }
+        public PackageType Type { get; set; }
 
         public ushort Command { get; set; }
 
         public byte[] Payload { get; set; }
 
-        public bool Zipped { get; set; }
-
-        private int _compressedSize;
-
-        private MemoryStream _memoryStream;
-        private GZipStream _gzipStream;
-
-        private int _readPosition;
-        private int _writePosition;
-
-        public Package(ushort command, int size, byte type = 0) : this()
+        public Package(ushort command, int size, PackageType type = 0) : this()
         {
             Type = type;
             Command = command;
             Payload = new byte[size];
-
-            Zipped = size > 2000;
         }
+
         public Package()
         {
-
-            _memoryStream = new MemoryStream();
         }
+
         public Package(byte[] data) : this(0, data.Length)
         {
-            throw new NotImplementedException(); //TODO: FIX
-            //Write(data, 0, data.Length);
+            
         }
 
-        public void Dispose()
+        public byte[] NextSubPackage()
         {
-            _memoryStream.Flush();
-            _memoryStream.Dispose();
+
+        }
+
+        public void WriteHead()
+        {
+            byte[] header = new byte[HEAD_LENGTH];
+
+            switch (Type)
+            {
+                case PackageType.Normal:
+                    header[0] = (byte)Type;
+                    header[1] = (byte)(Command >> 8);
+                    header[2] = (byte)(Command & 0xFF);
+                    break;
+                case PackageType.Subhead:
+                    break;
+                case PackageType.Subcontent:
+                    break;
+                case PackageType.None:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public enum PackageType : byte
+        {
+            None, 
+            Normal, 
+            Subhead, 
+            Subcontent
         }
     }
 }

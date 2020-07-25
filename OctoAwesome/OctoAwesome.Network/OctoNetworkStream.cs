@@ -6,34 +6,29 @@ namespace OctoAwesome.Network
 {
     public class OctoNetworkStream
     {
-        public bool CanRead => throw new NotImplementedException();
+        public bool CanRead => true;
 
         public bool CanSeek => false;
 
-        public bool CanWrite => throw new NotImplementedException();
+        public bool CanWrite => true;
 
-        public long Length => throw new NotImplementedException();
+        public long Length => _internalBuffer.LongLength;
 
-        public long Position { get; set; }
+        public int WritePosition => _writePosition;
+
+        public int ReadPosition => _readPosition;
 
         private byte[] _internalBuffer;
-        private int _bufferIndex;
-        private int _bufferSize;
         private int _writePosition;
         private int _readPosition;
 
-        public OctoNetworkStream(int capacity = 1024)
-        {
-            _bufferSize = capacity;
-            _internalBuffer = new byte[capacity];
-            _bufferIndex = 0;
-        }
+        public OctoNetworkStream(int capacity = 1024) => _internalBuffer = new byte[capacity];
 
         public void Flush() => throw new NotImplementedException();
 
         public long Seek(long offset, SeekOrigin origin) => throw new NotImplementedException();
 
-        public void SetLength(long value) => throw new NotImplementedException();
+        public void SetLength(int value) => Array.Resize(ref _internalBuffer, value);
 
         public int Read(byte[] buffer, int offset, int count)
         {
