@@ -67,21 +67,22 @@ namespace OctoAwesome.Network
 
                 _sending = true;
             }
-
             SendInternal(data, len);
 
         }
         public void SendAsync(Package package)
         {
-            var buffer = new byte[2048];
-            int /*offset = 0,*/read = 0;
-            do
-            {
-                read = package.Read(buffer, 0, buffer.Length);
-                //offset += read;
-                SendAsync(buffer, read);
+            throw new NotImplementedException(); //TODO: FIX
 
-            } while (read >= buffer.Length);
+            //var buffer = new byte[2048];
+            //int /*offset = 0,*/read = 0;
+            //do
+            //{
+            //    read = package.Read(buffer, 0, buffer.Length);
+            //    //offset += read;
+            //    SendAsync(buffer, read);
+
+            //} while (read >= buffer.Length);
         }
 
         public Package SendAndReceive(Package package)
@@ -89,32 +90,34 @@ namespace OctoAwesome.Network
             Package returnPackage = new Package();
 
             SendAsync(package);
-            packageReceived.WaitOne();
+            _packageReceived.WaitOne();
 
-            lock (receivedPackages)
+            lock (_receivedPackages)
             {
-                return receivedPackages.Dequeue();
+                return _receivedPackages.Dequeue();
             }
         }
-        private Package returnPackage = new Package();
-        private Queue<Package> receivedPackages = new Queue<Package>();
-        private AutoResetEvent packageReceived = new AutoResetEvent(false);
+
+        private Package _returnPackage = new Package();
+        private Queue<Package> _receivedPackages = new Queue<Package>();
+        private AutoResetEvent _packageReceived = new AutoResetEvent(false);
+
         protected virtual int ProcessInternal(byte[] receiveArgsBuffer, int receiveOffset, int receiveArgsCount)
         {
-            int read = returnPackage.Write(receiveArgsBuffer, receiveOffset, receiveArgsCount);
+            throw new NotImplementedException(); //TODO: FIX
+            //int read = returnPackage.Write(receiveArgsBuffer, receiveOffset, receiveArgsCount);
 
-            if (read < receiveArgsBuffer.Length - receiveOffset)
-            {
-                lock (receivedPackages)
-                {
-                    receivedPackages.Enqueue(returnPackage);
-                }
-                PackageReceived?.Invoke(this, returnPackage);
-                packageReceived.Set();
-                returnPackage = new Package();
-            }
-
-            return read;
+            //if (read < receiveArgsBuffer.Length - receiveOffset)
+            //{
+            //    lock (receivedPackages)
+            //    {
+            //        receivedPackages.Enqueue(returnPackage);
+            //    }
+            //    PackageReceived?.Invoke(this, returnPackage);
+            //    packageReceived.Set();
+            //    returnPackage = new Package();
+            //}
+            //return read;
         }
 
         //protected int OnMessageReceivedInvoke(byte[] receiveArgsBuffer,int receiveOffset, int receiveArgsCount)

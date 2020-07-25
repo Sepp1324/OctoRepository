@@ -105,27 +105,7 @@ namespace OctoAwesome.Network
                 Array.Copy(buffer, bufferPosition, _internalBuffer, _writePosition, toWrite);
             }
 
-            do
-            {
-                if(_writePosition + toWrite > _internalBuffer.Length)
-                {
-                    bufferPosition += toWrite;
-                    toWrite = count - toWrite;
-                }
-
-                if (_writePosition + toWrite > _readPosition)
-                {
-                    var exception = new IndexOutOfRangeException("Dont't worry, be happy d:^)");
-                    exception.Data.Add("Buffer Length", buffer.Length);
-                    exception.Data.Add("Count", count);
-                    exception.Data.Add("Offset", offset);
-                    exception.Data.Add("Readpos", _readPosition);
-                    exception.Data.Add("Writepos", _writePosition);
-                    throw exception;
-                }
-                Array.Copy(buffer, bufferPosition, _internalBuffer, _writePosition, toWrite);
-                bufferPosition += toWrite;
-            } while (_writePosition + toWrite > _internalBuffer.Length);
+            
 
             Interlocked.Exchange(ref _writePosition, _writePosition + toWrite);
         }
