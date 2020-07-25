@@ -21,7 +21,7 @@ namespace OctoAwesome.GameServer
             _manualResetEvent = new ManualResetEvent(false);
             _server = new Server();
             _server.OnClientConnected += ServerOnClientConnected;
-            Console.WriteLine("Server staredt");
+            Console.WriteLine("Server started");
             ServerHandler = new ServerHandler(_server);
             _server.Start(IPAddress.Any, 8888);
 

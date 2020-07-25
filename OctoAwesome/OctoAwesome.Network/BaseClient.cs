@@ -38,7 +38,6 @@ namespace OctoAwesome.Network
 
             _sendArgs = new SocketAsyncEventArgs();
             _sendArgs.Completed += OnSent;
-
         }
 
         public void Start()
@@ -68,7 +67,6 @@ namespace OctoAwesome.Network
                 _sending = true;
             }
             SendInternal(data, len);
-
         }
         public void SendAsync(Package package)
         {
@@ -172,7 +170,6 @@ namespace OctoAwesome.Network
                     return;
                 }
             }
-
             SendInternal(data, len);
         }
 
