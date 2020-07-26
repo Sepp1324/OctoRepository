@@ -34,40 +34,53 @@ namespace OctoAwesome.Network
 
         public Package()
         {
-              
+
         }
 
         public Package(byte[] data) : this(0, data.Length)
         {
-            
+
         }
 
         public void SerializePackage(OctoNetworkStream stream)
         {
-            if (Type == PackageType.Normal || Type == PackageType.None)
-            {
-                WriteHead(ref _header);
-                stream.Write(_header, 0, _header.Length);
-                stream.Write(Payload, 0, Payload.Length);
-            }
-            else
+            if (Payload.Length + _header.Length > stream.Length)
             {
                 SerializeSubPackages(stream);
+                return;
             }
+            Type = PackageType.Normal;
+            WriteHead(ref _header);
+            stream.Write(_header, 0, _header.Length);
+            stream.Write(Payload, 0, Payload.Length);
         }
 
         public void SerializeSubPackages(OctoNetworkStream stream)
         {
-            var firstPackage = stream.Length - SUB_HEAD_LENGTH;
-            var contentPackage = stream.Length - SUB_CONTENT_HEAD_LENGTH;
+            var firstPackage = (int)stream.Length - SUB_HEAD_LENGTH;
+            var contentPackage = (int)stream.Length - SUB_CONTENT_HEAD_LENGTH;
+            var count = (int)Math.Round((double)((Payload.Length - firstPackage) / contentPackage), MidpointRounding.AwayFromZero);
+            var offset = firstPackage;
 
-            do
+            Type = PackageType.Subhead;
+            WriteHead(ref _header);
+            _header[8] = (byte)(count >> 8);
+            _header[9] = (byte)(count & 0xFF);
+            stream.Write(_header, 0, _header.Length);
+            stream.Write(Payload, 0, firstPackage);
+            Type = PackageType.Subcontent;
+
+            for (int i = 0; i < count - 1; i++)
             {
                 WriteHead(ref _header);
-                _header[8] = (byte)(count >> 8);
-                _header[9] = (byte)(count & 0xFF);
                 stream.Write(_header, 0, _header.Length);
-            } while (true);
+                stream.Write(Payload, offset, contentPackage);
+                offset += contentPackage;
+            }
+
+            WriteHead(ref _header);
+            stream.Write(_header, 0, _header.Length);
+            stream.Write(Payload, offset, Payload.Length - offset);
         }
 
         public void WriteHead(ref byte[] buffer, int offset = 0)
@@ -108,9 +121,9 @@ namespace OctoAwesome.Network
 
         public enum PackageType : byte
         {
-            None, 
-            Normal, 
-            Subhead, 
+            None,
+            Normal,
+            Subhead,
             Subcontent
         }
     }
