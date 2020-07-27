@@ -110,12 +110,13 @@ namespace OctoAwesome.Network
             Type = PackageType.Subcontent;
 
             var offset = firstPackage + contentPackage;
+            ulong uid;
 
             for (int i = 0; i < count; i++)
             {
                 ReadHead(networkStream);
                 networkStream.Read(buffer, 0, 8);
-                var uid = BitConverter.ToUInt64(buffer, 0);
+                uid = BitConverter.ToUInt64(buffer, 0);
 
                 if (uid != Uid)
                     continue;
@@ -123,6 +124,9 @@ namespace OctoAwesome.Network
                 networkStream.Read(Payload, offset, contentPackage);
                 offset += contentPackage;
             }
+            networkStream.Read(buffer, 0, 8);
+            uid = BitConverter.ToUInt64(buffer, 0);
+
             networkStream.Read(Payload, offset, Payload.Length - offset);
         }
 
