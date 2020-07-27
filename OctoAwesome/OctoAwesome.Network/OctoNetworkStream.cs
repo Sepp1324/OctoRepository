@@ -106,13 +106,13 @@ namespace OctoAwesome.Network
         {
             int toWrite = 1;
 
-            if (_writePosition + toWrite > _readPosition)
-            {
-                var exception = new IndexOutOfRangeException("Dont't worry, be happy d:^)"); ;
-                exception.Data.Add("Readpos", _readPosition);
-                exception.Data.Add("Writepos", _writePosition);
-                throw exception;
-            }
+            //if (_writePosition + toWrite > _readPosition)
+            //{
+            //    var exception = new IndexOutOfRangeException("Dont't worry, be happy d:^)"); ;
+            //    exception.Data.Add("Readpos", _readPosition);
+            //    exception.Data.Add("Writepos", _writePosition);
+            //    throw exception;
+            //}
 
             if (_writePosition + toWrite > _internalBuffer.Length)
                 toWrite = _internalBuffer.Length - _writePosition;
