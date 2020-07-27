@@ -101,5 +101,31 @@ namespace OctoAwesome.Network
             }
             Interlocked.Exchange(ref _writePosition, _writePosition + toWrite);
         }
+
+        public void Write(byte data)
+        {
+            int toWrite = 1;
+
+            if (_writePosition + toWrite > _readPosition)
+            {
+                var exception = new IndexOutOfRangeException("Dont't worry, be happy d:^)"); ;
+                exception.Data.Add("Readpos", _readPosition);
+                exception.Data.Add("Writepos", _writePosition);
+                throw exception;
+            }
+
+            if (_writePosition + toWrite > _internalBuffer.Length)
+                toWrite = _internalBuffer.Length - _writePosition;
+
+            if(toWrite == 0)
+                _writePosition %= _internalBuffer.Length;
+
+            _internalBuffer[_writePosition++] = data;
+
+           
+            
+            
+            //Interlocked.Exchange(ref _writePosition, _writePosition + toWrite);
+        }
     }
 }

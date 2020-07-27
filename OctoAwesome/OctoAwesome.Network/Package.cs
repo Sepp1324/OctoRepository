@@ -44,13 +44,13 @@ namespace OctoAwesome.Network
 
         public void SerializePackage(OctoNetworkStream networkStream)
         {
-            if (Payload.Length + _header.Length > networkStream.Length)
+            if (Payload.Length + HEAD_LENGTH > networkStream.Length)
             {
                 SerializeSubPackages(networkStream);
                 return;
             }
             Type = PackageType.Normal;
-            WriteHead(ref _header);
+            WriteHead(networkStream);
             networkStream.Write(_header, 0, _header.Length);
             networkStream.Write(Payload, 0, Payload.Length);
         }
@@ -63,7 +63,8 @@ namespace OctoAwesome.Network
             var offset = firstPackage;
 
             Type = PackageType.Subhead;
-            WriteHead(ref _header);
+
+            WriteHead(networkStream);
             _header[8] = (byte)(count >> 8);
             _header[9] = (byte)(count & 0xFF);
             networkStream.Write(_header, 0, _header.Length);
@@ -72,13 +73,13 @@ namespace OctoAwesome.Network
 
             for (int i = 0; i < count - 1; i++)
             {
-                WriteHead(ref _header);
+                WriteHead(networkStream);
                 networkStream.Write(_header, 0, _header.Length);
                 networkStream.Write(Payload, offset, contentPackage);
                 offset += contentPackage;
             }
 
-            WriteHead(ref _header);
+            WriteHead(networkStream);
             networkStream.Write(_header, 0, _header.Length);
             networkStream.Write(Payload, offset, Payload.Length - offset);
         }
@@ -130,41 +131,37 @@ namespace OctoAwesome.Network
             networkStream.Read(Payload, offset, Payload.Length - offset);
         }
 
-        public void WriteHead(ref byte[] buffer, int offset = 0)
+        public void WriteHead(OctoNetworkStream networkStream)
         {
-            byte[] header, bytes;
-            int index = offset;
-            header = buffer;
+            byte[] bytes;
 
             switch (Type)
             {
                 case PackageType.Normal:
-                    header = new byte[HEAD_LENGTH];
-                    header[index] = (byte)Type;
-                    header[index++] = (byte)(Command >> 8);
-                    header[index++] = (byte)(Command & 0xFF);
+                    //header = new byte[HEAD_LENGTH];
+                    networkStream.Write((byte)Type);
+                    networkStream.Write((byte)(Command >> 8));
+                    networkStream.Write((byte)(Command & 0xF));
 
                     bytes = BitConverter.GetBytes(Payload.LongLength);
-                    Array.Copy(bytes, 0, header, index++, bytes.Length);
+                    networkStream.Write(bytes, 0, bytes.Length);
                     break;
                 case PackageType.Subhead:
-                    header = new byte[SUB_HEAD_LENGTH];
-                    header[index] = (byte)Type;
-                    header[index++] = (byte)(Command >> 8);
-                    header[index++] = (byte)(Command & 0xFF);
+                    //header = new byte[SUB_HEAD_LENGTH];
+                    networkStream.Write((byte)Type);
+                    networkStream.Write((byte)(Command >> 8));
+                    networkStream.Write((byte)(Command & 0xF));
 
                     bytes = BitConverter.GetBytes(Payload.LongLength);
-                    Array.Copy(bytes, 0, header, index, bytes.Length);
-                    index += bytes.Length;
+                    networkStream.Write(bytes, 0, bytes.Length);
                     bytes = BitConverter.GetBytes(NextUid);
-                    Array.Copy(bytes, 0, header, index++, bytes.Length);
+                    networkStream.Write(bytes, 0, bytes.Length);
                     break;
                 case PackageType.Subcontent:
-                    header = new byte[SUB_CONTENT_HEAD_LENGTH];
-                    header[index] = (byte)Type;
-
+                    //header = new byte[SUB_CONTENT_HEAD_LENGTH];
+                    networkStream.Write((byte)Type);
                     bytes = BitConverter.GetBytes(Uid);
-                    Array.Copy(bytes, 0, header, index++, bytes.Length);
+                    networkStream.Write(bytes, 0, bytes.Length);
                     break;
                 case PackageType.None:
                     break;
