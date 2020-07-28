@@ -50,7 +50,7 @@ namespace OctoAwesome.Network.Tests
             Assert.AreEqual(packageDes.Type, _package.Type);
         }
 
-        [TestMethod] {
+        [TestMethod] 
         public void TestReadWriteStream()
         {
 
