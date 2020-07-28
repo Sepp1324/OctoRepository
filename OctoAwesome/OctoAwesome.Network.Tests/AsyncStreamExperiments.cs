@@ -37,9 +37,12 @@ namespace OctoAwesome.Network.Tests
 
             Task _readTask = new Task(() =>
             {
-                while(test.Read(_readData, 0, _readData.Length) == 0)
-                {
+                int o = 0;
 
+                while (test.Read(_readData, o, 100) != 0)
+                {
+                    Thread.Sleep(200);
+                    o += 100;
                 }
             });
             _readTask.Start();
@@ -58,6 +61,9 @@ namespace OctoAwesome.Network.Tests
             private readonly byte[] _bufferA;
             private readonly byte[] _bufferB;
 
+            private readonly byte[] _readLock;
+            private readonly byte[] _writeLock;
+
             private readonly int _writeLength;
             private readonly int _readLength;
 
@@ -66,7 +72,6 @@ namespace OctoAwesome.Network.Tests
             private int _readPosition;
             private int _writePosition;
 
-            private bool _readingProcess;
             private bool _writingProcess;
 
             public TestAsyncStream(int capacity = 1024)
@@ -85,7 +90,7 @@ namespace OctoAwesome.Network.Tests
             {
                 _writingProcess = true;
 
-                if (!_readingProcess)
+                lock (_writeLock)
                     SwapBuffer();
 
                 var maxCopy = _writeLength - _writePosition;
@@ -93,7 +98,9 @@ namespace OctoAwesome.Network.Tests
                 if (maxCopy < count)
                     count = maxCopy;
 
-                Buffer.BlockCopy(buffer, offset, _writeBuffer, _writePosition, count);
+                lock (_writeLock)
+                    Buffer.BlockCopy(buffer, offset, _writeBuffer, _writePosition, count);
+
                 _writePosition += count;
                 _writingProcess = false;
                 return count;
@@ -101,8 +108,6 @@ namespace OctoAwesome.Network.Tests
 
             public int Read(byte[] buffer, int offset, int count)
             {
-                _readingProcess = true;
-
                 if (!_writingProcess)
                     SwapBuffer();
 
@@ -111,23 +116,32 @@ namespace OctoAwesome.Network.Tests
                 if (maxCopy < count)
                     count = maxCopy;
 
-                Array.Copy(_readBuffer, _readPosition, buffer, offset, count);
+                lock (_readLock)
+                    Array.Copy(_readBuffer, _readPosition, buffer, offset, count);
+
                 _readPosition += count;
-                _readingProcess = false;
                 return count;
             }
 
             private void SwapBuffer()
             {
-                _readingProcess = true;
-                _writingProcess = true;
+                lock (_readBuffer)
+                    lock (_writeBuffer)
+                    {
+                        if (_maxReadCount != _readPosition)
+                            return;
 
-                var refBuffer = _writeBuffer;
-                _writeBuffer = _readBuffer;
-                _readBuffer = refBuffer;
-                _maxReadCount = _writePosition;
-                _readPosition = 0;
-                _writePosition = 0;
+                        _writingProcess = true;
+
+
+                        var refBuffer = _writeBuffer;
+                        _writeBuffer = _readBuffer;
+                        _readBuffer = refBuffer;
+                        _maxReadCount = _writePosition;
+                        _writePosition = 0;
+                        _readPosition = 0;
+
+                    }
             }
         }
     }
