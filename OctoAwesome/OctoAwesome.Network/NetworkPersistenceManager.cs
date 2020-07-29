@@ -12,33 +12,27 @@ namespace OctoAwesome.Network
 {
     public class NetworkPersistenceManager : IPersistenceManager
     {
-        private Client client;
-        private IDefinitionManager definitionManager;
+        private readonly Client _client;
+        private readonly IDefinitionManager _definitionManager;
 
         public NetworkPersistenceManager(IDefinitionManager definitionManager)
         {
-            client = new Client();
-            client.PackageAvailable += ClientPackageAvailable;
-            this.definitionManager = definitionManager;
+            _client = new Client();
+            _client.PackageAvailable += ClientPackageAvailable;
+            _definitionManager = definitionManager;
         }
 
 
-        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager)
-        {
-            client.Connect(host, port);
-        }
+        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager) => _client.Connect(host, port);
 
         public void DeleteUniverse(Guid universeGuid)
         {
             //throw new NotImplementedException();
         }
 
-        public IUniverse[] ListUniverses()
-        {
-            throw new NotImplementedException();
-        }
+        public TaskCompletionSource<IUniverse[]> ListUniverses() => throw new NotImplementedException();
 
-        public IChunkColumn LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
+        public TaskCompletionSource<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
             var package = new Package((ushort)OfficialCommands.LoadColumn, 0);
 
@@ -52,24 +46,22 @@ namespace OctoAwesome.Network
 
                 package.Payload = memoryStream.ToArray();
             }
-            client.SendPackage(package);
+            _client.SendPackage(package);
 
-            package = client.SendAndReceive(package);
+            package = _client.SendAndReceive(package);
 
             using (var memoryStream = new MemoryStream(package.Payload))
             {
                 var column = new ChunkColumn();
-                column.Deserialize(memoryStream, definitionManager, planet.Id, columnIndex);
+                column.Deserialize(memoryStream, _definitionManager, planet.Id, columnIndex);
                 return column;
             }
-
-
         }
 
-        public IPlanet LoadPlanet(Guid universeGuid, int planetId)
+        public TaskCompletionSource<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
             var package = new Package((ushort)OfficialCommands.GetPlanet, 0);
-            package = client.SendAndReceive(package);
+            package = _client.SendAndReceive(package);
 
             var planet = new ComplexPlanet();
 
@@ -79,7 +71,7 @@ namespace OctoAwesome.Network
             return planet;
         }
 
-        public Player LoadPlayer(Guid universeGuid, string playername)
+        public TaskCompletionSource<Player> LoadPlayer(Guid universeGuid, string playername)
         {
             var playernameBytes = Encoding.UTF8.GetBytes(playername);
 
@@ -90,24 +82,24 @@ namespace OctoAwesome.Network
             //package.Write(playernameBytes);
 
 
-            package = client.SendAndReceive(package);
+            package = _client.SendAndReceive(package);
 
             var player = new Player();
 
             using (var ms = new MemoryStream(package.Payload))
             using (var br = new BinaryReader(ms))
             {
-                player.Deserialize(br, definitionManager);
+                player.Deserialize(br, _definitionManager);
             }
 
             return player;
         }
 
-        public IUniverse LoadUniverse(Guid universeGuid)
+        public TaskCompletionSource<IUniverse> LoadUniverse(Guid universeGuid)
         {
             var package = new Package((ushort)OfficialCommands.GetUniverse, 0);
             Thread.Sleep(60);
-            package = client.SendAndReceive(package);
+            package = _client.SendAndReceive(package);
 
             var universe = new Universe();
 
@@ -139,8 +131,7 @@ namespace OctoAwesome.Network
 
         private void ClientPackageAvailable(object sender, Package e)
         {
-            e.Command
+            
         }
-
     }
 }
