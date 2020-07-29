@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 
 namespace OctoAwesome.Network
 {
@@ -23,13 +23,14 @@ namespace OctoAwesome.Network
 
         public ulong Uid { get; set; }
 
-        private byte[] _header;
+        public bool IsImportantData { get; set; }
 
-        public Package(ushort command, int size, PackageType type = 0) : this()
+        public Package(ushort command, int size, PackageType type = 0, bool isImportantData = false) : this()
         {
             Type = type;
             Command = command;
             Payload = new byte[size];
+            IsImportantData = isImportantData;
         }
 
         public Package()
@@ -57,8 +58,8 @@ namespace OctoAwesome.Network
 
         public void SerializeSubPackages(OctoNetworkStream networkStream)
         {
-            var firstPackage = (int)networkStream.Length - SUB_HEAD_LENGTH;
-            var contentPackage = (int)networkStream.Length - SUB_CONTENT_HEAD_LENGTH;
+            var firstPackage = networkStream.Length - SUB_HEAD_LENGTH;
+            var contentPackage = networkStream.Length - SUB_CONTENT_HEAD_LENGTH;
             var count = (int)Math.Round((double)((Payload.Length - firstPackage) / contentPackage), MidpointRounding.AwayFromZero);
             var offset = firstPackage;
 
@@ -71,13 +72,13 @@ namespace OctoAwesome.Network
             for (int i = 0; i < count - 1; i++)
             {
                 WriteHead(networkStream);
-                networkStream.Write(_header, 0, _header.Length);
+                //networkStream.Write(_header, 0, _header.Length);
                 networkStream.Write(Payload, offset, contentPackage);
                 offset += contentPackage;
             }
 
             WriteHead(networkStream);
-            networkStream.Write(_header, 0, _header.Length);
+
             networkStream.Write(Payload, offset, Payload.Length - offset);
         }
 
@@ -95,8 +96,8 @@ namespace OctoAwesome.Network
 
         public void DeserializeSubPackages(OctoNetworkStream networkStream)
         {
-            var firstPackage = (int)networkStream.Length - SUB_HEAD_LENGTH;
-            var contentPackage = (int)networkStream.Length - SUB_CONTENT_HEAD_LENGTH;
+            var firstPackage = networkStream.Length - SUB_HEAD_LENGTH;
+            var contentPackage = networkStream.Length - SUB_CONTENT_HEAD_LENGTH;
 
             networkStream.Read(Payload, 0, 2);
 
