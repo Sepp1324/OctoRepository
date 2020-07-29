@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace OctoAwesome.Network
 {
@@ -10,24 +8,27 @@ namespace OctoAwesome.Network
     {
         //public delegate int ReceiveDelegate(object sender, (byte[] Data, int Offset, int Count) eventArgs);
         //public event ReceiveDelegate OnMessageRecived;
-        public event EventHandler<Package> PackageReceived;
+        public event EventHandler<OctoNetworkEventArgs> DataAvailable;
 
         protected readonly Socket Socket;
         protected readonly SocketAsyncEventArgs ReceiveArgs;
 
-        private byte _readSendQueueIndex;
-        private byte _nextSendQueueWriteIndex;
-        private bool _sending;
+        protected readonly OctoNetworkStream internalSendStream;
+        protected readonly OctoNetworkStream internalRecivedStream;
 
-        private readonly SocketAsyncEventArgs _sendArgs;
+        private byte readSendQueueIndex;
+        private byte nextSendQueueWriteIndex;
+        private bool sending;
 
-        private readonly (byte[] data, int len)[] _sendQueue;
-        private readonly object _sendLock;
+        private readonly SocketAsyncEventArgs sendArgs;
+
+        private readonly (byte[] data, int len)[] sendQueue;
+        private readonly object sendLock;
 
         protected BaseClient(Socket socket)
         {
-            _sendQueue = new (byte[] data, int len)[256];
-            _sendLock = new object();
+            sendQueue = new (byte[] data, int len)[256];
+            sendLock = new object();
 
             Socket = socket;
             Socket.NoDelay = true;
@@ -36,8 +37,12 @@ namespace OctoAwesome.Network
             ReceiveArgs.Completed += OnReceived;
             ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(2048), 0, 2048);
 
-            _sendArgs = new SocketAsyncEventArgs();
-            _sendArgs.Completed += OnSent;
+            sendArgs = new SocketAsyncEventArgs();
+            sendArgs.Completed += OnSent;
+
+            internalSendStream = new OctoNetworkStream();
+            internalRecivedStream = new OctoNetworkStream();
+
         }
 
         public void Start()
@@ -46,103 +51,48 @@ namespace OctoAwesome.Network
             {
                 if (Socket.ReceiveAsync(ReceiveArgs))
                     return;
-                int offset = 0;
-                do
-                {
-                    offset += ProcessInternal(ReceiveArgs.Buffer, offset, ReceiveArgs.BytesTransferred - offset);
-                } while (offset < ReceiveArgs.BytesTransferred);
+                Receive(ReceiveArgs);
             }
         }
 
         public void SendAsync(byte[] data, int len)
         {
-            lock (_sendLock)
+            lock (sendLock)
             {
-                if (_sending)
+                if (sending)
                 {
-                    _sendQueue[_nextSendQueueWriteIndex++] = (data, len);
+                    sendQueue[nextSendQueueWriteIndex++] = (data, len);
                     return;
                 }
 
-                _sending = true;
+                sending = true;
             }
+
             SendInternal(data, len);
         }
-        public void SendAsync(Package package)
-        {
-            throw new NotImplementedException(); //TODO: FIX
-
-            //var buffer = new byte[2048];
-            //int /*offset = 0,*/read = 0;
-            //do
-            //{
-            //    read = package.Read(buffer, 0, buffer.Length);
-            //    //offset += read;
-            //    SendAsync(buffer, read);
-
-            //} while (read >= buffer.Length);
-        }
-
-        public Package SendAndReceive(Package package)
-        {
-            Package returnPackage = new Package();
-
-            SendAsync(package);
-            _packageReceived.WaitOne();
-
-            lock (_receivedPackages)
-            {
-                return _receivedPackages.Dequeue();
-            }
-        }
-
-        private Package _returnPackage = new Package();
-        private Queue<Package> _receivedPackages = new Queue<Package>();
-        private AutoResetEvent _packageReceived = new AutoResetEvent(false);
-
-        protected virtual int ProcessInternal(byte[] receiveArgsBuffer, int receiveOffset, int receiveArgsCount)
-        {
-            throw new NotImplementedException(); //TODO: FIX
-            //int read = returnPackage.Write(receiveArgsBuffer, receiveOffset, receiveArgsCount);
-
-            //if (read < receiveArgsBuffer.Length - receiveOffset)
-            //{
-            //    lock (receivedPackages)
-            //    {
-            //        receivedPackages.Enqueue(returnPackage);
-            //    }
-            //    PackageReceived?.Invoke(this, returnPackage);
-            //    packageReceived.Set();
-            //    returnPackage = new Package();
-            //}
-            //return read;
-        }
-
-        //protected int OnMessageReceivedInvoke(byte[] receiveArgsBuffer,int receiveOffset, int receiveArgsCount)
-        //    => OnMessageRecived?.Invoke(this, (receiveArgsBuffer, receiveOffset, receiveArgsCount)) ?? 0;
-
+        
         private void SendInternal(byte[] data, int len)
         {
             while (true)
             {
-                _sendArgs.SetBuffer(data, 0, len);
+                sendArgs.SetBuffer(data, 0, len);
 
-                if (Socket.SendAsync(_sendArgs))
+                if (Socket.SendAsync(sendArgs))
                     return;
 
                 ArrayPool<byte>.Shared.Return(data);
 
-                lock (_sendLock)
+                lock (sendLock)
                 {
-                    if (_readSendQueueIndex < _nextSendQueueWriteIndex)
+                    if (readSendQueueIndex < nextSendQueueWriteIndex)
                     {
-                        (data, len) = _sendQueue[_readSendQueueIndex++];
+                        (data, len) = sendQueue[readSendQueueIndex++];
                     }
                     else
                     {
-                        _nextSendQueueWriteIndex = 0;
-                        _readSendQueueIndex = 0;
-                        _sending = false;
+                        nextSendQueueWriteIndex = 0;
+                        readSendQueueIndex = 0;
+                        sending = false;
                         return;
                     }
                 }
@@ -156,39 +106,46 @@ namespace OctoAwesome.Network
 
             ArrayPool<byte>.Shared.Return(e.Buffer);
 
-            lock (_sendLock)
+            lock (sendLock)
             {
-                if (_readSendQueueIndex < _nextSendQueueWriteIndex)
+                if (readSendQueueIndex < nextSendQueueWriteIndex)
                 {
-                    (data, len) = _sendQueue[_readSendQueueIndex++];
+                    (data, len) = sendQueue[readSendQueueIndex++];
                 }
                 else
                 {
-                    _nextSendQueueWriteIndex = 0;
-                    _readSendQueueIndex = 0;
-                    _sending = false;
+                    nextSendQueueWriteIndex = 0;
+                    readSendQueueIndex = 0;
+                    sending = false;
                     return;
                 }
             }
+
             SendInternal(data, len);
+        }
+
+        protected void Receive(SocketAsyncEventArgs e)
+        {
+            int offset = 0;
+            int count = 0;
+            do
+            {
+                count = internalRecivedStream.Write(e.Buffer, offset, e.BytesTransferred - offset);
+                DataAvailable?.Invoke(this, new OctoNetworkEventArgs { NetworkStream = internalRecivedStream, DataCount = count });
+                offset += count;
+            } while (offset < e.BytesTransferred);
         }
 
         private void OnReceived(object sender, SocketAsyncEventArgs e)
         {
-            int offset = 0;
-            do
-            {
-                offset += ProcessInternal(e.Buffer, offset, e.BytesTransferred - offset);
-            } while (offset < e.BytesTransferred);
+            Receive(e);
+
             while (Socket.Connected)
             {
                 if (Socket.ReceiveAsync(ReceiveArgs))
                     return;
-                offset = 0;
-                do
-                {
-                    offset += ProcessInternal(ReceiveArgs.Buffer, offset, ReceiveArgs.BytesTransferred - offset);
-                } while (offset < ReceiveArgs.BytesTransferred);
+
+                Receive(ReceiveArgs);
             }
         }
     }

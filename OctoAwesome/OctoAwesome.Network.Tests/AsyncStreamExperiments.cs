@@ -13,46 +13,52 @@ namespace OctoAwesome.Network.Tests
         public void ReadWriteSwap()
         {
             OctoNetworkStream test = new OctoNetworkStream();
-            byte[] _writeData = new byte[400];
-            byte[] _readData = new byte[400];
-            Random random = new Random();
+            byte[] writeData = new byte[400];
+            byte[] readData = new byte[400];
+            Random r = new Random();
 
-            random.NextBytes(_writeData);
+            r.NextBytes(writeData);
 
-            test.Write(_writeData, 0, _writeData.Length);
-            test.Read(_readData, 0, _readData.Length);
+            test.Write(writeData, 0, writeData.Length);
+            test.Read(readData, 0, readData.Length);
 
-            Assert.IsTrue(_writeData.SequenceEqual(_readData));
+            Assert.IsTrue(writeData.SequenceEqual(readData));
         }
 
         [TestMethod]
         public async Task ReadWriteSwapAsync()
         {
             OctoNetworkStream test = new OctoNetworkStream();
-            byte[] _writeData = new byte[400];
-            byte[] _readData = new byte[400];
-            Random random = new Random();
+            byte[] writeData = new byte[400];
+            byte[] readData = new byte[400];
+            Random r = new Random();
 
-            random.NextBytes(_writeData);
-
-            Task _readTask = new Task(() =>
+            r.NextBytes(writeData);
+            Task readTask = new Task(() =>
             {
                 int o = 0;
-
-                while (test.Read(_readData, o, 100) != 0)
+                while (test.Read(readData, o, 100) != 0)
                 {
                     Thread.Sleep(200);
                     o += 100;
                 }
             });
-            test.Write(_writeData, 0, _writeData.Length);
+            test.Write(writeData, 0, writeData.Length);
 
-            Thread.Sleep(1000);
-            _readTask.Start();
+            Thread.Sleep(100);
+            readTask.Start();
 
-            Assert.IsTrue(_writeData.SequenceEqual(_readData));
+            //Task writeTask = new Task(() => {
+            //    for (int i = 0; i < 5; i++)
+            //    {
+            //        Thread.Sleep(1000);
+            //    }
+
+            //});
+            Assert.IsTrue(writeData.SequenceEqual(readData));
+
         }
 
-        
+       
     }
 }
