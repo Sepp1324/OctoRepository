@@ -27,8 +27,8 @@ namespace OctoAwesome.Network
 
         public OctoNetworkStream(int capacity = 1024)
         {
-            _bufferB = new byte[capacity];
             _bufferA = new byte[capacity];
+            _bufferB = new byte[capacity];
             _readBuffer = _bufferA;
             _writeBuffer = _bufferB;
             _readLength = capacity;
@@ -50,6 +50,9 @@ namespace OctoAwesome.Network
 
             if (maxCopy < count)
                 count = maxCopy;
+
+            if (maxCopy < 1)
+                return maxCopy;
 
             lock (_writeLock)
                 Buffer.BlockCopy(buffer, offset, _writeBuffer, _writePosition, count);
@@ -82,11 +85,14 @@ namespace OctoAwesome.Network
 
             var maxCopy = _maxReadCount - _readPosition;
 
+            if (maxCopy < 1)
+                return maxCopy;
+
             if (maxCopy < count)
                 count = maxCopy;
 
             lock (_readLock)
-                Array.Copy(_readBuffer, _readPosition, buffer, offset, count);
+                Buffer.BlockCopy(_readBuffer, _readPosition, buffer, offset, count);
 
             _readPosition += count;
             return count;
@@ -97,11 +103,12 @@ namespace OctoAwesome.Network
             lock (_readBuffer)
                 lock (_writeBuffer)
                 {
-                    if (_maxReadCount != _readPosition)
+                    if (_readPosition > _maxReadCount)
+                        throw new IndexOutOfRangeException("_readPosition is greater then _maxRedCount in SwapBuffer (OctoNetWorkStream)");
+                    else if (_readPosition < _maxReadCount)
                         return;
 
                     _writingProcess = true;
-
 
                     var refBuffer = _writeBuffer;
                     _writeBuffer = _readBuffer;
