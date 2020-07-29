@@ -65,9 +65,6 @@ namespace OctoAwesome.Network
             Type = PackageType.Subhead;
 
             WriteHead(networkStream);
-            //_header[8] = (byte)(count >> 8);
-            //_header[9] = (byte)(count & 0xFF);
-            //networkStream.Write(_header, 0, _header.Length);
             networkStream.Write(Payload, 0, firstPackage);
             Type = PackageType.Subcontent;
 
@@ -138,7 +135,6 @@ namespace OctoAwesome.Network
             switch (Type)
             {
                 case PackageType.Normal:
-                    //header = new byte[HEAD_LENGTH];
                     networkStream.Write((byte)Type);
                     networkStream.Write((byte)(Command >> 8));
                     networkStream.Write((byte)(Command & 0xF));
@@ -147,7 +143,6 @@ namespace OctoAwesome.Network
                     networkStream.Write(bytes, 0, bytes.Length);
                     break;
                 case PackageType.Subhead:
-                    //header = new byte[SUB_HEAD_LENGTH];
                     networkStream.Write((byte)Type);
                     networkStream.Write((byte)(Command >> 8));
                     networkStream.Write((byte)(Command & 0xF));
@@ -158,7 +153,6 @@ namespace OctoAwesome.Network
                     networkStream.Write(bytes, 0, bytes.Length);
                     break;
                 case PackageType.Subcontent:
-                    //header = new byte[SUB_CONTENT_HEAD_LENGTH];
                     networkStream.Write((byte)Type);
                     bytes = BitConverter.GetBytes(Uid);
                     networkStream.Write(bytes, 0, bytes.Length);
