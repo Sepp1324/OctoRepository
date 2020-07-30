@@ -12,7 +12,7 @@ namespace OctoAwesome
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
-        Awaiter Load(out IUniverse[] universes);
+        Awaiter Load(out SerializableCollection<IUniverse> universes);
 
         /// <summary>
         /// Lädt das Universum mit der angegebenen Guid.

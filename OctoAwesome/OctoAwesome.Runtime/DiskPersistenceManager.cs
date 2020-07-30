@@ -133,24 +133,24 @@ namespace OctoAwesome.Runtime
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
-        public Awaiter Load(out IUniverse[] universes)
+        public Awaiter Load(out SerializableCollection<IUniverse> universes)
         {
             var root = GetRoot();
-            var taskCompletionSource = new TaskCompletionSource<IUniverse[]>();
             var awaiter = new Awaiter();
             
-            awaiter.Serializable = new SerializableCollection<IUniverse>();
+            universes = new SerializableCollection<IUniverse>();
+            awaiter.Serializable = universes;
 
             foreach (var folder in Directory.GetDirectories(root))
             {
                 var id = Path.GetFileNameWithoutExtension(folder); //folder.Replace(root + "\\", "");
 
-                if (Guid.TryParse(id, out Guid guid))
-                    universes.Add(LoadUniverse(guid).WaitOn<IUniverse>());
+                if (Guid.TryParse(id, out var guid))
+                    universes.Add((IUniverse)Load(out var universe, guid).WaitOn());
             }
 
-            taskCompletionSource.SetResult(universes.ToArray());
-            return taskCompletionSource.Task;
+            awaiter.SetResult(universes);
+            return awaiter;
         }
 
         /// <summary>

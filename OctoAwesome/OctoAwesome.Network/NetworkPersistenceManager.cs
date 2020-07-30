@@ -13,13 +13,13 @@ namespace OctoAwesome.Network
         private readonly Client _client;
         private readonly IDefinitionManager _definitionManager;
 
-        private Dictionary<uint, TaskCompletionSource<ISerializable>> _packages;
+        private Dictionary<uint, Awaiter> _packages;
 
         public NetworkPersistenceManager(IDefinitionManager definitionManager)
         {
             _client = new Client();
             _client.PackageAvailable += ClientPackageAvailable;
-            _packages = new Dictionary<uint, TaskCompletionSource<ISerializable>>();
+            _packages = new Dictionary<uint, Awaiter>();
             _definitionManager = definitionManager;
         }
 
@@ -31,9 +31,9 @@ namespace OctoAwesome.Network
             //throw new NotImplementedException();
         }
 
-        public Task<IUniverse[]> ListUniverses() => throw new NotImplementedException();
+        public Awaiter Load(out SerializableCollection<IUniverse> universes) => throw new NotImplementedException();
 
-        public Task<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
+        public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
             var package = new Package((ushort) OfficialCommands.LoadColumn, 0);
 
@@ -47,36 +47,26 @@ namespace OctoAwesome.Network
 
                 package.Payload = memoryStream.ToArray();
             }
+            
+            column = new ChunkColumn();
+            var awaiter = GetAwaiter(column, package.Uid);
+            
             _client.SendPackage(package);
-
-            using (var memoryStream = new MemoryStream(package.Payload))
-            using (var reader = new BinaryReader(memoryStream))
-            {
-                var column = new ChunkColumn();
-                column.Deserialize(reader, _definitionManager);
-
-                var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
-                _packages.Add(package.Uid, taskCompletionSource);
-                return taskCompletionSource.Task;
-            }
+            return awaiter;
         }
 
-        public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
+        public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
             var package = new Package((ushort) OfficialCommands.GetPlanet, 0);
-            package = _client.SendPackage(package);
-
-            var planet = new ComplexPlanet();
-
-            using (var memoryStream = new MemoryStream(package.Payload))
-            using (var reader = new BinaryReader(memoryStream))
-                planet.Deserialize(reader, null);
-
-            var taskCompletionSource = new TaskCompletionSource<IPlanet>();
-            return taskCompletionSource.Task;
+            
+            planet = new ComplexPlanet();
+            var awaiter = GetAwaiter(planet, package.Uid);
+            
+            _client.SendPackage(package);
+            return awaiter;
         }
 
-        public Task<Player> LoadPlayer(Guid universeGuid, string playerName)
+        public Awaiter Load(out Player player, Guid universeGuid, string playerName)
         {
             var playerNameBytes = Encoding.UTF8.GetBytes(playerName);
 
@@ -85,34 +75,30 @@ namespace OctoAwesome.Network
                 Payload = playerNameBytes
             };
 
-            package = _client.SendAndReceive(package);
-
-            var player = new Player();
-
-            using (var ms = new MemoryStream(package.Payload))
-            using (var br = new BinaryReader(ms))
-            {
-                player.Deserialize(br, _definitionManager);
-            }
-
-            var taskCompletionSource = new TaskCompletionSource<Player>();
-            return taskCompletionSource.Task;
+            player = new Player();
+            var awaiter = GetAwaiter(player, package.Uid);
+            
+            _client.SendPackage(package);
+            return awaiter;
         }
 
-        public Task<IUniverse> LoadUniverse(Guid universeGuid)
+        public Awaiter Load(out IUniverse universe, Guid universeGuid)
         {
             var package = new Package((ushort) OfficialCommands.GetUniverse, 0);
             Thread.Sleep(60);
-            package = _client.SendAndReceive(package);
 
-            var universe = new Universe();
+            universe = new Universe();
+            var awaiter = GetAwaiter(universe, package.Uid);
+            
+            _client.SendPackage(package);
+            return awaiter;
+        }
 
-            using (var memoryStream = new MemoryStream(package.Payload))
-            using (var reader = new BinaryReader(memoryStream))
-                universe.Deserialize(reader, null);
-
-            var taskCompletionSource = new TaskCompletionSource<IUniverse>();
-            return taskCompletionSource.Task;
+        private Awaiter GetAwaiter(ISerializable serializable, uint packageId)
+        {
+            var awaiter = new Awaiter() { Serializable = serializable};
+            _packages.Add(packageId, awaiter);
+            return awaiter;
         }
 
         public void SaveColumn(Guid universeGuid, int planetId, IChunkColumn column)
@@ -137,6 +123,10 @@ namespace OctoAwesome.Network
 
         private void ClientPackageAvailable(object sender, Package e)
         {
+            if (_packages.TryGetValue(e.Uid, out var awaiter))
+            {
+                awaiter.SetResult(e.Payload, _definitionManager);
+            }
         }
     }
 }

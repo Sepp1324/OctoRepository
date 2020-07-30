@@ -85,7 +85,11 @@ namespace OctoAwesome.Runtime
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
-        public IUniverse[] ListUniverses() => _persistenceManager.ListUniverses().Result;
+        public IUniverse[] ListUniverses()
+        {
+            _persistenceManager.Load(out var universes).WaitOn();
+            return universes.ToArray();
+        }
 
         /// <summary>
         /// Lädt das Universum mit der angegebenen Guid.
@@ -99,7 +103,8 @@ namespace OctoAwesome.Runtime
                 UnloadUniverse();
 
             // Neuen Daten loaden/generieren
-            CurrentUniverse = _persistenceManager.Load(universeId).Result;
+            _persistenceManager.Load(out var universe, universeId).WaitOn();
+            CurrentUniverse = universe;
             
             if (CurrentUniverse == null)
                 throw new Exception();
@@ -156,7 +161,7 @@ namespace OctoAwesome.Runtime
             if (!_planets.TryGetValue(id, out planet))
             {
                 // Versuch vorhandenen Planeten zu laden
-                planet = _persistenceManager.LoadPlanet(CurrentUniverse.Id, id).Result;
+                _persistenceManager.Load(out planet, CurrentUniverse.Id, id).WaitOn();
                 
                 if (planet == null)
                 {
@@ -183,7 +188,7 @@ namespace OctoAwesome.Runtime
             if (CurrentUniverse == null)
                 throw new Exception("No Universe loaded");
 
-            var player = _persistenceManager.LoadPlayer(CurrentUniverse.Id, playerName).Result ?? new Player();
+            _persistenceManager.Load(out var player, CurrentUniverse.Id, playerName).WaitOn();
             return player;
         }
 
@@ -204,7 +209,7 @@ namespace OctoAwesome.Runtime
             var planet = GetPlanet(planetId);
 
             // Load from disk
-            var column11 = _persistenceManager.LoadColumn(CurrentUniverse.Id, planet, index).Result;
+            _persistenceManager.Load(out var column11, CurrentUniverse.Id, planet, index).WaitOn();
             
             if (column11 == null)
             {
