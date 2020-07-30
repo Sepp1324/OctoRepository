@@ -19,7 +19,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <returns>Das geladene Universum.</returns>
-        Task<IUniverse> LoadUniverse(Guid universeGuid);
+        CustomAwaiter<IUniverse> LoadUniverse(Guid universeGuid);
 
         /// <summary>
         /// Speichert das Universum.

@@ -144,7 +144,7 @@ namespace OctoAwesome.Runtime
                 var id = Path.GetFileNameWithoutExtension(folder); //folder.Replace(root + "\\", "");
 
                 if (Guid.TryParse(id, out Guid guid))
-                    universes.Add(LoadUniverse(guid).Result);
+                    universes.Add(LoadUniverse(guid).WaitOn<IUniverse>());
             }
 
             taskCompletionSource.SetResult(universes.ToArray());
@@ -156,14 +156,14 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <returns>Das geladene Universum.</returns>
-        public Task<IUniverse> LoadUniverse(Guid universeGuid)
+        public CustomAwaiter<IUniverse> LoadUniverse(Guid universeGuid)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
 
             if (!File.Exists(file))
                 return null;
 
-            var taskCompletionSource = new TaskCompletionSource<IUniverse>();
+            var taskCompletionSource = new CustomAwaiter();
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             using (var zip = new GZipStream(stream, CompressionMode.Decompress))
@@ -172,7 +172,7 @@ namespace OctoAwesome.Runtime
                 IUniverse universe = new Universe();
                 universe.Deserialize(reader, null);
                 taskCompletionSource.SetResult(universe);
-                return taskCompletionSource.Task;
+                return taskCompletionSource;
             }
         }
 

@@ -9,6 +9,10 @@ namespace OctoAwesome.Network
         /// </summary>
         public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(int);
 
+        public static uint NextUid => _nextUid++;
+
+        private static uint _nextUid;
+
         public ushort Command { get; set; }
 
         public byte[] Payload { get; set; }
@@ -25,9 +29,7 @@ namespace OctoAwesome.Network
             Payload = new byte[size];
         }
 
-        public Package()
-        {
-        }
+        public Package() => Uid = NextUid;
         
         public Package(byte[] data) : this(0, data.Length)
         {

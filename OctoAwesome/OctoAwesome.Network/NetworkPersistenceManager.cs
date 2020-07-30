@@ -19,6 +19,7 @@ namespace OctoAwesome.Network
         {
             _client = new Client();
             _client.PackageAvailable += ClientPackageAvailable;
+            _packages = new Dictionary<uint, TaskCompletionSource<ISerializable>>();
             _definitionManager = definitionManager;
         }
 
@@ -46,10 +47,7 @@ namespace OctoAwesome.Network
 
                 package.Payload = memoryStream.ToArray();
             }
-
             _client.SendPackage(package);
-
-            package = _client.SendAndReceive(package);
 
             using (var memoryStream = new MemoryStream(package.Payload))
             using (var reader = new BinaryReader(memoryStream))
@@ -58,6 +56,7 @@ namespace OctoAwesome.Network
                 column.Deserialize(reader, _definitionManager);
 
                 var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
+                _packages.Add(package.Uid, taskCompletionSource);
                 return taskCompletionSource.Task;
             }
         }
