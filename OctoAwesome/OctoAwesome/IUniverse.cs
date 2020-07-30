@@ -6,7 +6,7 @@ namespace OctoAwesome
     /// <summary>
     /// Basisschnittstelle für die Universen in OctoAwesome. Ein Universum beinhaltet verschiedene Planeten und entspricht einem Speicherstand.
     /// </summary>
-    public interface IUniverse
+    public interface IUniverse : ISerializable
     {
         /// <summary>
         /// ID des Universums

@@ -23,19 +23,16 @@ namespace OctoAwesome.Basics
         /// <param name="generator">Instanz des Map-Generators</param>
         /// <param name="seed">Seed des Zufallsgenerators</param>
         public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed)
-            : base(id, universe, size, seed)
-        {
-            Initalize();
-        }
+            : base(id, universe, size, seed) => Initalize();
 
         public ComplexPlanet() : base()
         {
             //Initalize();
         }
 
-        public override void Deserialize(Stream stream)
+        public void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
-            base.Deserialize(stream);
+            base.Deserialize(reader, definitionManager);
             Initalize();
         }
 

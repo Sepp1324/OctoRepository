@@ -102,6 +102,7 @@
     <Compile Include="IResource.cs" />
     <Compile Include="IResourceManager.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="ISerializable.cs" />
     <Compile Include="ISettings.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="IUniverse.cs" />

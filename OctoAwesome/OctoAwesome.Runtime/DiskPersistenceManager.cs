@@ -27,7 +27,8 @@ namespace OctoAwesome.Runtime
         private IDefinitionManager _definitionManager;
         private IExtensionResolver _extensionResolver;
 
-        public DiskPersistenceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings Settings)
+        public DiskPersistenceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
+            ISettings Settings)
         {
             _extensionResolver = extensionResolver;
             _definitionManager = definitionManager;
@@ -103,14 +104,12 @@ namespace OctoAwesome.Runtime
                 }
             }
 
-            string file = Path.Combine(path, PlanetFilename);
+            var file = Path.Combine(path, PlanetFilename);
+
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
-            {
-                using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
-                {
-                    planet.Serialize(zip);
-                }
-            }
+            using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
+            using (BinaryWriter writer = new BinaryWriter(zip))
+                planet.Serialize(writer, null);
         }
 
         /// <summary>
@@ -146,11 +145,12 @@ namespace OctoAwesome.Runtime
 
             foreach (var folder in Directory.GetDirectories(root))
             {
-                var id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
+                var id = Path.GetFileNameWithoutExtension(folder); //folder.Replace(root + "\\", "");
 
                 if (Guid.TryParse(id, out Guid guid))
                     universes.Add(LoadUniverse(guid).Result);
             }
+
             taskCompletionSource.SetResult(universes.ToArray());
             return taskCompletionSource.Task;
         }
@@ -163,10 +163,10 @@ namespace OctoAwesome.Runtime
         public Task<IUniverse> LoadUniverse(Guid universeGuid)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
-            
+
             if (!File.Exists(file))
                 return null;
-            
+
             var taskCompletionSource = new TaskCompletionSource<IUniverse>();
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
@@ -190,25 +190,27 @@ namespace OctoAwesome.Runtime
         public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
-            var generatorInfo = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
-            
+            var generatorInfo =
+                Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
+
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
             IMapGenerator generator;
-            
+
             using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
             {
                 using (BinaryReader bw = new BinaryReader(stream))
                 {
                     var generatorName = bw.ReadString();
-                    generator = _extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
+                    generator = _extensionResolver.GetMapGenerator()
+                        .FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
                 }
             }
 
             if (generator == null)
                 throw new Exception("Unknown Generator");
-            
+
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
@@ -230,8 +232,9 @@ namespace OctoAwesome.Runtime
         /// <returns>Die neu geladene ChunkColumn.</returns>
         public Task<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(), string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
-            
+            var file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(),
+                string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
+
             if (!File.Exists(file))
                 return null;
 
@@ -242,7 +245,8 @@ namespace OctoAwesome.Runtime
                     using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                     {
                         var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
-                        taskCompletionSource.SetResult(planet.Generator.GenerateColumn(zip, _definitionManager, planet.Id, columnIndex));
+                        taskCompletionSource.SetResult(
+                            planet.Generator.GenerateColumn(zip, _definitionManager, planet.Id, columnIndex));
                         return taskCompletionSource.Task;
                     }
                 }
@@ -253,7 +257,10 @@ namespace OctoAwesome.Runtime
                 {
                     File.Delete(file);
                 }
-                catch (IOException) { }
+                catch (IOException)
+                {
+                }
+
                 return null;
             }
         }
@@ -268,7 +275,7 @@ namespace OctoAwesome.Runtime
         {
             //TODO: Später durch Playername ersetzen
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
-            
+
             if (!File.Exists(file))
                 return null;
 
@@ -280,7 +287,7 @@ namespace OctoAwesome.Runtime
                     {
                         Player player = new Player();
                         player.Deserialize(reader, _definitionManager);
-                        
+
                         var taskCompletionSource = new TaskCompletionSource<Player>();
                         taskCompletionSource.SetResult(player);
                         return taskCompletionSource.Task;
@@ -307,7 +314,7 @@ namespace OctoAwesome.Runtime
 
             // TODO: Player Name berücksichtigen
             var file = Path.Combine(path, "player.info");
-            
+
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))

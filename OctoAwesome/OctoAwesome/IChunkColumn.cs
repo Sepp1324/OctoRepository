@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
 using System.IO;
 
 namespace OctoAwesome
@@ -7,7 +6,7 @@ namespace OctoAwesome
     /// <summary>
     /// Basisinterface für Eine Chunksäule
     /// </summary>
-    public interface IChunkColumn
+    public interface IChunkColumn : ISerializable
     {
         /// <summary>
         /// Gibt an, ob die IChunkColumn schon von einem <see cref="IMapPopulator"/> bearbeitet wurde.

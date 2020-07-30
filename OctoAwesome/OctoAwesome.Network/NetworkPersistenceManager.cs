@@ -1,5 +1,6 @@
 ﻿using OctoAwesome.Basics;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,8 @@ namespace OctoAwesome.Network
         private readonly Client _client;
         private readonly IDefinitionManager _definitionManager;
 
+        private Dictionary<uint, TaskCompletionSource<ISerializable>> _packages;
+
         public NetworkPersistenceManager(IDefinitionManager definitionManager)
         {
             _client = new Client();
@@ -19,7 +22,8 @@ namespace OctoAwesome.Network
             _definitionManager = definitionManager;
         }
 
-        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager) => _client.Connect(host, port);
+        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) :
+            this(definitionManager) => _client.Connect(host, port);
 
         public void DeleteUniverse(Guid universeGuid)
         {
@@ -30,7 +34,7 @@ namespace OctoAwesome.Network
 
         public Task<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var package = new Package((ushort)OfficialCommands.LoadColumn, 0);
+            var package = new Package((ushort) OfficialCommands.LoadColumn, 0);
 
             using (var memoryStream = new MemoryStream())
             using (var binaryWriter = new BinaryWriter(memoryStream))
@@ -42,6 +46,7 @@ namespace OctoAwesome.Network
 
                 package.Payload = memoryStream.ToArray();
             }
+
             _client.SendPackage(package);
 
             package = _client.SendPackage(package);
@@ -50,7 +55,7 @@ namespace OctoAwesome.Network
             {
                 var column = new ChunkColumn();
                 column.Deserialize(memoryStream, _definitionManager, planet.Id, columnIndex);
-                
+
                 var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
                 return taskCompletionSource.Task;
             }
@@ -58,13 +63,14 @@ namespace OctoAwesome.Network
 
         public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
-            var package = new Package((ushort)OfficialCommands.GetPlanet, 0);
+            var package = new Package((ushort) OfficialCommands.GetPlanet, 0);
             package = _client.SendAndReceive(package);
 
             var planet = new ComplexPlanet();
 
             using (var memoryStream = new MemoryStream(package.Payload))
-                planet.Deserialize(memoryStream);
+            using (var reader = new BinaryReader(memoryStream))
+                planet.Deserialize(reader, null);
 
             var taskCompletionSource = new TaskCompletionSource<IPlanet>();
             return taskCompletionSource.Task;
@@ -74,7 +80,7 @@ namespace OctoAwesome.Network
         {
             var playerNameBytes = Encoding.UTF8.GetBytes(playerName);
 
-            var package = new Package((ushort)OfficialCommands.Whoami, playerNameBytes.Length)
+            var package = new Package((ushort) OfficialCommands.Whoami, playerNameBytes.Length)
             {
                 Payload = playerNameBytes
             };
@@ -88,14 +94,14 @@ namespace OctoAwesome.Network
             {
                 player.Deserialize(br, _definitionManager);
             }
-            
+
             var taskCompletionSource = new TaskCompletionSource<Player>();
             return taskCompletionSource.Task;
         }
 
         public Task<IUniverse> LoadUniverse(Guid universeGuid)
         {
-            var package = new Package((ushort)OfficialCommands.GetUniverse, 0);
+            var package = new Package((ushort) OfficialCommands.GetUniverse, 0);
             Thread.Sleep(60);
             package = _client.SendAndReceive(package);
 
@@ -130,7 +136,6 @@ namespace OctoAwesome.Network
 
         private void ClientPackageAvailable(object sender, Package e)
         {
-            
         }
     }
 }

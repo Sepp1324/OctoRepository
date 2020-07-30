@@ -1,6 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Blocks;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,8 +9,8 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            Index3 size = new Index3(12, 12, 3);
-            ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed)
+            var size = new Index3(12, 12, 3);
+            var planet = new ComplexPlanet(id, universe, size, this, seed)
             {
                 Generator = this
             };
@@ -23,31 +22,31 @@ namespace OctoAwesome.Basics
             IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
             //TODO More Generic, überdenken der Planetgeneration im allgemeinen (Heapmap + Highmap + Biome + Modding)
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().FirstOrDefault();
-            ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);
+            var sandIndex = (ushort) (Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);
 
             IBlockDefinition snowDefinition = definitions.OfType<SnowBlockDefinition>().FirstOrDefault();
-            ushort snowIndex = (ushort)(Array.IndexOf(definitions.ToArray(), snowDefinition) + 1);
+            var snowIndex = (ushort) (Array.IndexOf(definitions.ToArray(), snowDefinition) + 1);
 
             IBlockDefinition groundDefinition = definitions.OfType<GroundBlockDefinition>().FirstOrDefault();
-            ushort groundIndex = (ushort)(Array.IndexOf(definitions.ToArray(), groundDefinition) + 1);
+            var groundIndex = (ushort) (Array.IndexOf(definitions.ToArray(), groundDefinition) + 1);
 
             IBlockDefinition stoneDefinition = definitions.OfType<StoneBlockDefinition>().FirstOrDefault();
-            ushort stoneIndex = (ushort)(Array.IndexOf(definitions.ToArray(), stoneDefinition) + 1);
+            var stoneIndex = (ushort) (Array.IndexOf(definitions.ToArray(), stoneDefinition) + 1);
 
             IBlockDefinition waterDefinition = definitions.OfType<WaterBlockDefinition>().FirstOrDefault();
-            ushort waterIndex = (ushort)(Array.IndexOf(definitions.ToArray(), waterDefinition) + 1);
+            var waterIndex = (ushort) (Array.IndexOf(definitions.ToArray(), waterDefinition) + 1);
 
             IBlockDefinition grassDefinition = definitions.OfType<GrassBlockDefinition>().FirstOrDefault();
-            ushort grassIndex = (ushort)(Array.IndexOf(definitions.ToArray(), grassDefinition) + 1);
+            var grassIndex = (ushort) (Array.IndexOf(definitions.ToArray(), grassDefinition) + 1);
 
             if (!(planet is ComplexPlanet))
                 throw new ArgumentException("planet is not a Type of ComplexPlanet");
 
-            ComplexPlanet localPlanet = (ComplexPlanet)planet;
+            var localPlanet = (ComplexPlanet) planet;
 
-            float[,] localHeightmap = localPlanet.BiomeGenerator.GetHeightmap(index);
+            var localHeightmap = localPlanet.BiomeGenerator.GetHeightmap(index);
 
-            IChunk[] chunks = new IChunk[planet.Size.Z];
+            var chunks = new IChunk[planet.Size.Z];
             for (int i = 0; i < planet.Size.Z; i++)
                 chunks[i] = new Chunk(new Index3(index, i), planet.Id);
 
@@ -73,9 +72,13 @@ namespace OctoAwesome.Basics
                             {
                                 if (obersteSchicht > 0)
                                 {
-                                    float temp = localPlanet.ClimateMap.GetTemperature(new Index3(index.X * Chunk.CHUNKSIZE_X + x, index.Y * Chunk.CHUNKSIZE_Y + y, i * Chunk.CHUNKSIZE_Z + z));
+                                    var temp = localPlanet.ClimateMap.GetTemperature(
+                                        new Index3(index.X * Chunk.CHUNKSIZE_X + x, index.Y * Chunk.CHUNKSIZE_Y + y,
+                                            i * Chunk.CHUNKSIZE_Z + z));
 
-                                    if ((ozeanSurface || surfaceBlock) && (absoluteZ <= (localPlanet.BiomeGenerator.SeaLevel + 2)) && (absoluteZ >= (localPlanet.BiomeGenerator.SeaLevel - 2)))
+                                    if ((ozeanSurface || surfaceBlock) &&
+                                        (absoluteZ <= (localPlanet.BiomeGenerator.SeaLevel + 2)) &&
+                                        (absoluteZ >= (localPlanet.BiomeGenerator.SeaLevel - 2)))
                                     {
                                         chunks[i].SetBlock(x, y, z, sandIndex);
                                     }
@@ -118,6 +121,7 @@ namespace OctoAwesome.Basics
                                     {
                                         chunks[i].SetBlock(x, y, z, groundIndex);
                                     }
+
                                     obersteSchicht--;
                                 }
                                 else
@@ -127,11 +131,9 @@ namespace OctoAwesome.Basics
                             }
                             else if ((z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel)
                             {
-
                                 chunks[i].SetBlock(x, y, z, waterIndex);
                                 ozeanSurface = true;
                             }
-
                         }
                     }
                 }
@@ -145,12 +147,16 @@ namespace OctoAwesome.Basics
         public IPlanet GeneratePlanet(Stream stream)
         {
             IPlanet planet = new ComplexPlanet();
-            planet.Deserialize(stream);
+
+            using (var reader = new BinaryReader(stream))
+                planet.Deserialize(reader, null);
+
             planet.Generator = this;
             return planet;
         }
 
-        public IChunkColumn GenerateColumn(Stream stream, IDefinitionManager definitionManager, int planetId, Index2 index)
+        public IChunkColumn GenerateColumn(Stream stream, IDefinitionManager definitionManager, int planetId,
+            Index2 index)
         {
             IChunkColumn column = new ChunkColumn();
             column.Deserialize(stream, definitionManager, planetId, index);
