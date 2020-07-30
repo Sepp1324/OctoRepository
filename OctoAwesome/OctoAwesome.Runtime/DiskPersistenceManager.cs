@@ -133,11 +133,13 @@ namespace OctoAwesome.Runtime
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
-        public Task<IUniverse[]> ListUniverses()
+        public Awaiter Load(out IUniverse[] universes)
         {
             var root = GetRoot();
             var taskCompletionSource = new TaskCompletionSource<IUniverse[]>();
-            var universes = new List<IUniverse>();
+            var awaiter = new Awaiter();
+            
+            awaiter.Serializable = new SerializableCollection<IUniverse>();
 
             foreach (var folder in Directory.GetDirectories(root))
             {
@@ -156,23 +158,24 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <returns>Das geladene Universum.</returns>
-        public CustomAwaiter<IUniverse> LoadUniverse(Guid universeGuid)
+        public Awaiter Load(out IUniverse universe, Guid universeGuid)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
 
+            universe = new Universe();
+
             if (!File.Exists(file))
                 return null;
-
-            var taskCompletionSource = new CustomAwaiter();
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             using (var zip = new GZipStream(stream, CompressionMode.Decompress))
             using (var reader = new BinaryReader(zip))
             {
-                IUniverse universe = new Universe();
+                var awaiter = new Awaiter {Serializable = universe};
+
                 universe.Deserialize(reader, null);
-                taskCompletionSource.SetResult(universe);
-                return taskCompletionSource;
+                awaiter.SetResult(universe);
+                return awaiter;
             }
         }
 
@@ -182,12 +185,15 @@ namespace OctoAwesome.Runtime
         /// <param name="universeGuid">Guid des Universums</param>
         /// <param name="planetId">Index des Planeten</param>
         /// <returns></returns>
-        public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
+        public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
 
+            planet = new Planet();
+
             var generatorInfo =
                 Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
+
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
@@ -204,13 +210,15 @@ namespace OctoAwesome.Runtime
 
             if (generator == null)
                 throw new Exception("Unknown Generator");
+
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
                 using (var zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    var taskCompletionSource = new TaskCompletionSource<IPlanet>();
-                    taskCompletionSource.SetResult(generator.GeneratePlanet(zip));
-                    return taskCompletionSource.Task;
+                    var awaiter = new Awaiter {Serializable = planet};
+
+                    awaiter.SetResult(generator.GeneratePlanet(zip));
+                    return awaiter;
                 }
             }
         }
@@ -222,10 +230,13 @@ namespace OctoAwesome.Runtime
         /// <param name="planet">Index des Planeten.</param>
         /// <param name="columnIndex">Zu serialisierende ChunkColumn.</param>
         /// <returns>Die neu geladene ChunkColumn.</returns>
-        public Task<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
+        public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(),
                 string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
+            
+            column = new ChunkColumn();
+            
             if (!File.Exists(file))
                 return null;
             try
@@ -234,10 +245,9 @@ namespace OctoAwesome.Runtime
                 {
                     using (var zip = new GZipStream(stream, CompressionMode.Decompress))
                     {
-                        var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
-                        taskCompletionSource.SetResult(
-                            planet.Generator.GenerateColumn(zip, _definitionManager, planet.Id, columnIndex));
-                        return taskCompletionSource.Task;
+                        var awaiter = new Awaiter() {Serializable = column};
+                        awaiter.SetResult(planet.Generator.GenerateColumn(zip, _definitionManager, planet.Id, columnIndex));
+                        return awaiter;
                     }
                 }
             }
@@ -250,7 +260,6 @@ namespace OctoAwesome.Runtime
                 catch (IOException)
                 {
                 }
-
                 return null;
             }
         }
@@ -261,24 +270,26 @@ namespace OctoAwesome.Runtime
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <param name="playerName">Der Name des Spielers.</param>
         /// <returns></returns>
-        public Task<Player> LoadPlayer(Guid universeGuid, string playerName)
+        public Awaiter Load(out Player player, Guid universeGuid, string playerName)
         {
             //TODO: Später durch Playername ersetzen
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
+            
+            player = new Player();
+            
             if (!File.Exists(file))
                 return null;
+            
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = new BinaryReader(stream))
                 {
                     try
                     {
-                        var player = new Player();
+                        var awaiter = new Awaiter() {Serializable = player};
                         player.Deserialize(reader, _definitionManager);
-
-                        var taskCompletionSource = new TaskCompletionSource<Player>();
-                        taskCompletionSource.SetResult(player);
-                        return taskCompletionSource.Task;
+                        awaiter.SetResult(player);
+                        return awaiter;
                     }
                     catch (Exception)
                     {
@@ -286,7 +297,6 @@ namespace OctoAwesome.Runtime
                     }
                 }
             }
-
             return null;
         }
 

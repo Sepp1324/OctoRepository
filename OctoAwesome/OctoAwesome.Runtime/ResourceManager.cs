@@ -99,7 +99,7 @@ namespace OctoAwesome.Runtime
                 UnloadUniverse();
 
             // Neuen Daten loaden/generieren
-            CurrentUniverse = _persistenceManager.LoadUniverse(universeId).Result;
+            CurrentUniverse = _persistenceManager.Load(universeId).Result;
             
             if (CurrentUniverse == null)
                 throw new Exception();
