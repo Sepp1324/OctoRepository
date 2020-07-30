@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
@@ -21,37 +21,37 @@ namespace OctoAwesome.Runtime
 
         private const string ColumnFilename = "column_{0}_{1}.dat";
 
-        private DirectoryInfo root;
-        private ISettings Settings;
+        private DirectoryInfo _root;
+        private ISettings _settings;
 
-        private IDefinitionManager definitionManager;
-        private IExtensionResolver extensionResolver;
+        private IDefinitionManager _definitionManager;
+        private IExtensionResolver _extensionResolver;
 
         public DiskPersistenceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings Settings)
         {
-            this.extensionResolver = extensionResolver;
-            this.definitionManager = definitionManager;
-            this.Settings = Settings;
+            _extensionResolver = extensionResolver;
+            _definitionManager = definitionManager;
+            _settings = Settings;
         }
 
         private string GetRoot()
         {
-            if (root != null)
-                return root.FullName;
+            if (_root != null)
+                return _root.FullName;
 
-            string appconfig = Settings.Get<string>("ChunkRoot");
+            string appconfig = _settings.Get<string>("ChunkRoot");
             if (!string.IsNullOrEmpty(appconfig))
             {
-                root = new DirectoryInfo(appconfig);
-                if (!root.Exists) root.Create();
-                return root.FullName;
+                _root = new DirectoryInfo(appconfig);
+                if (!_root.Exists) _root.Create();
+                return _root.FullName;
             }
             else
             {
                 var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
-                if (!root.Exists) root.Create();
-                return root.FullName;
+                _root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
+                if (!_root.Exists) _root.Create();
+                return _root.FullName;
             }
         }
 
@@ -80,7 +80,7 @@ namespace OctoAwesome.Runtime
         /// <param name="universeGuid">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid universeGuid)
         {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString());
+            var path = Path.Combine(GetRoot(), universeGuid.ToString());
             Directory.Delete(path, true);
         }
 
@@ -129,7 +129,7 @@ namespace OctoAwesome.Runtime
             {
                 using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
                 {
-                    column.Serialize(zip, definitionManager);
+                    column.Serialize(zip, _definitionManager);
                 }
             }
         }
@@ -138,18 +138,21 @@ namespace OctoAwesome.Runtime
         /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
-        public IUniverse[] ListUniverses()
+        public Task<IUniverse[]> ListUniverses()
         {
-            string root = GetRoot();
-            List<IUniverse> universes = new List<IUniverse>();
+            var root = GetRoot();
+            var taskCompletionSource = new TaskCompletionSource<IUniverse[]>();
+            var universes = new List<IUniverse>();
+
             foreach (var folder in Directory.GetDirectories(root))
             {
-                string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
-                if (Guid.TryParse(id, out Guid guid))
-                    universes.Add(LoadUniverse(guid));
-            }
+                var id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
 
-            return universes.ToArray();
+                if (Guid.TryParse(id, out Guid guid))
+                    universes.Add(LoadUniverse(guid).Result);
+            }
+            taskCompletionSource.SetResult(universes.ToArray());
+            return taskCompletionSource.Task;
         }
 
         /// <summary>
@@ -157,11 +160,14 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <returns>Das geladene Universum.</returns>
-        public IUniverse LoadUniverse(Guid universeGuid)
+        public Task<IUniverse> LoadUniverse(Guid universeGuid)
         {
-            string file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
+            var file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
+            
             if (!File.Exists(file))
                 return null;
+            
+            var taskCompletionSource = new TaskCompletionSource<IUniverse>();
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
@@ -169,7 +175,8 @@ namespace OctoAwesome.Runtime
                 {
                     IUniverse universe = new Universe();
                     universe.Deserialize(zip);
-                    return universe;
+                    taskCompletionSource.SetResult(universe);
+                    return taskCompletionSource.Task;
                 }
             }
         }
@@ -180,20 +187,22 @@ namespace OctoAwesome.Runtime
         /// <param name="universeGuid">Guid des Universums</param>
         /// <param name="planetId">Index des Planeten</param>
         /// <returns></returns>
-        public IPlanet LoadPlanet(Guid universeGuid, int planetId)
+        public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
-            string file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
-            string generatorInfo = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
+            var file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
+            var generatorInfo = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
+            
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
-            IMapGenerator generator = null;
+            IMapGenerator generator;
+            
             using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
             {
                 using (BinaryReader bw = new BinaryReader(stream))
                 {
-                    string generatorName = bw.ReadString();
-                    generator = extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
+                    var generatorName = bw.ReadString();
+                    generator = _extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
                 }
             }
 
@@ -205,7 +214,9 @@ namespace OctoAwesome.Runtime
             {
                 using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    return generator.GeneratePlanet(zip);
+                    var taskCompletionSource = new TaskCompletionSource<IPlanet>();
+                    taskCompletionSource.SetResult(generator.GeneratePlanet(zip));
+                    return taskCompletionSource.Task;
                 }
             }
         }
@@ -217,9 +228,10 @@ namespace OctoAwesome.Runtime
         /// <param name="planet">Index des Planeten.</param>
         /// <param name="columnIndex">Zu serialisierende ChunkColumn.</param>
         /// <returns>Die neu geladene ChunkColumn.</returns>
-        public IChunkColumn LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
+        public Task<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            string file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(), string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
+            var file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(), string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
+            
             if (!File.Exists(file))
                 return null;
 
@@ -229,7 +241,9 @@ namespace OctoAwesome.Runtime
                 {
                     using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                     {
-                        return planet.Generator.GenerateColumn(zip, definitionManager, planet.Id, columnIndex);
+                        var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
+                        taskCompletionSource.SetResult(planet.Generator.GenerateColumn(zip, _definitionManager, planet.Id, columnIndex));
+                        return taskCompletionSource.Task;
                     }
                 }
             }
@@ -248,12 +262,13 @@ namespace OctoAwesome.Runtime
         /// Lädt einen Player.
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
-        /// <param name="playername">Der Name des Spielers.</param>
+        /// <param name="playerName">Der Name des Spielers.</param>
         /// <returns></returns>
-        public Player LoadPlayer(Guid universeGuid, string playername)
+        public Task<Player> LoadPlayer(Guid universeGuid, string playerName)
         {
             //TODO: Später durch Playername ersetzen
-            string file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
+            var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
+            
             if (!File.Exists(file))
                 return null;
 
@@ -264,8 +279,11 @@ namespace OctoAwesome.Runtime
                     try
                     {
                         Player player = new Player();
-                        player.Deserialize(reader, definitionManager);
-                        return player;
+                        player.Deserialize(reader, _definitionManager);
+                        
+                        var taskCompletionSource = new TaskCompletionSource<Player>();
+                        taskCompletionSource.SetResult(player);
+                        return taskCompletionSource.Task;
                     }
                     catch (Exception)
                     {
@@ -284,16 +302,17 @@ namespace OctoAwesome.Runtime
         /// <param name="player">Der Player.</param>
         public void SavePlayer(Guid universeGuid, Player player)
         {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString());
+            var path = Path.Combine(GetRoot(), universeGuid.ToString());
             Directory.CreateDirectory(path);
 
             // TODO: Player Name berücksichtigen
-            string file = Path.Combine(path, "player.info");
+            var file = Path.Combine(path, "player.info");
+            
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    player.Serialize(writer, definitionManager);
+                    player.Serialize(writer, _definitionManager);
                 }
             }
         }

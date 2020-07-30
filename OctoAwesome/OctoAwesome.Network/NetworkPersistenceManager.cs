@@ -1,9 +1,6 @@
 ﻿using OctoAwesome.Basics;
-using OctoAwesome.Network;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +19,6 @@ namespace OctoAwesome.Network
             _definitionManager = definitionManager;
         }
 
-
         public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager) => _client.Connect(host, port);
 
         public void DeleteUniverse(Guid universeGuid)
@@ -30,9 +26,9 @@ namespace OctoAwesome.Network
             //throw new NotImplementedException();
         }
 
-        public TaskCompletionSource<IUniverse[]> ListUniverses() => throw new NotImplementedException();
+        public Task<IUniverse[]> ListUniverses() => throw new NotImplementedException();
 
-        public TaskCompletionSource<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
+        public Task<IChunkColumn> LoadColumn(Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
             var package = new Package((ushort)OfficialCommands.LoadColumn, 0);
 
@@ -48,17 +44,19 @@ namespace OctoAwesome.Network
             }
             _client.SendPackage(package);
 
-            package = _client.SendAndReceive(package);
+            package = _client.SendPackage(package);
 
             using (var memoryStream = new MemoryStream(package.Payload))
             {
                 var column = new ChunkColumn();
                 column.Deserialize(memoryStream, _definitionManager, planet.Id, columnIndex);
-                return column;
+                
+                var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
+                return taskCompletionSource.Task;
             }
         }
 
-        public TaskCompletionSource<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
+        public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
             var package = new Package((ushort)OfficialCommands.GetPlanet, 0);
             package = _client.SendAndReceive(package);
@@ -68,19 +66,18 @@ namespace OctoAwesome.Network
             using (var memoryStream = new MemoryStream(package.Payload))
                 planet.Deserialize(memoryStream);
 
-            return planet;
+            var taskCompletionSource = new TaskCompletionSource<IPlanet>();
+            return taskCompletionSource.Task;
         }
 
-        public TaskCompletionSource<Player> LoadPlayer(Guid universeGuid, string playername)
+        public Task<Player> LoadPlayer(Guid universeGuid, string playerName)
         {
-            var playernameBytes = Encoding.UTF8.GetBytes(playername);
+            var playerNameBytes = Encoding.UTF8.GetBytes(playerName);
 
-            var package = new Package((ushort)OfficialCommands.Whoami, playernameBytes.Length)
+            var package = new Package((ushort)OfficialCommands.Whoami, playerNameBytes.Length)
             {
-                Payload = playernameBytes
+                Payload = playerNameBytes
             };
-            //package.Write(playernameBytes);
-
 
             package = _client.SendAndReceive(package);
 
@@ -91,11 +88,12 @@ namespace OctoAwesome.Network
             {
                 player.Deserialize(br, _definitionManager);
             }
-
-            return player;
+            
+            var taskCompletionSource = new TaskCompletionSource<Player>();
+            return taskCompletionSource.Task;
         }
 
-        public TaskCompletionSource<IUniverse> LoadUniverse(Guid universeGuid)
+        public Task<IUniverse> LoadUniverse(Guid universeGuid)
         {
             var package = new Package((ushort)OfficialCommands.GetUniverse, 0);
             Thread.Sleep(60);
@@ -106,7 +104,8 @@ namespace OctoAwesome.Network
             using (var memoryStream = new MemoryStream(package.Payload))
                 universe.Deserialize(memoryStream);
 
-            return universe;
+            var taskCompletionSource = new TaskCompletionSource<IUniverse>();
+            return taskCompletionSource.Task;
         }
 
         public void SaveColumn(Guid universeGuid, int planetId, IChunkColumn column)

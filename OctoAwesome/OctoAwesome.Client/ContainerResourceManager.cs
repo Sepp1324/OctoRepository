@@ -64,7 +64,7 @@ namespace OctoAwesome.Client
 
         public IUniverse[] ListUniverses() => resourceManager.ListUniverses();
 
-        public Player LoadPlayer(string playername) => resourceManager.LoadPlayer(playername);
+        public Player LoadPlayer(string playerName) => resourceManager.LoadPlayer(playerName);
 
         public void LoadUniverse(Guid universeId) => resourceManager.LoadUniverse(universeId);
 
