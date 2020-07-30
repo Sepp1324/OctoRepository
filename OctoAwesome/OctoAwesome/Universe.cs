@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace OctoAwesome
@@ -10,7 +7,6 @@ namespace OctoAwesome
     /// <summary>
     /// Ein Universum von OctoAwesome. Ein Universum beinhaltet verschiedene Planeten und entspricht einem Speicherstand.
     /// </summary>
-    [Serializable]
     public class Universe : IUniverse
     {
         /// <summary>
@@ -47,32 +43,27 @@ namespace OctoAwesome
             Name = name;
             Seed = seed;
         }
+        
+        /// <summary>
+        /// Serialisiert das Universum in den angegebenen Stream
+        /// </summary>
+        /// <param name="stream"></param>
+        public void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
+        {
+            writer.Write(Id.ToString());
+            writer.Write(Name);
+            writer.Write(Seed);
+        }
 
         /// <summary>
         /// Deserialisiert ein Universum aus dem angegebenen Stream
         /// </summary>
         /// <param name="stream"></param>
-        public void Deserialize(Stream stream)
+        public void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Universe));
-            IUniverse restored = serializer.Deserialize(stream) as IUniverse;
-
-            if (restored == null)
-                throw new Exception();
-
-            Id = restored.Id;
-            Name = restored.Name;
-            Seed = restored.Seed;
-        }
-
-        /// <summary>
-        /// Serialisiert das Universum in den angegebenen Stream
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Serialize(Stream stream)
-        {
-            XmlSerializer serializer = new XmlSerializer(GetType());
-            serializer.Serialize(stream, this);
+            Id = new Guid(reader.ReadString());
+            Name = reader.ReadString();
+            Seed = reader.ReadInt32();
         }
     }
 }

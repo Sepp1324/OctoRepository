@@ -62,16 +62,15 @@ namespace OctoAwesome.Runtime
         /// <param name="universe">Das zu speichernde Universum</param>
         public void SaveUniverse(IUniverse universe)
         {
-            string path = Path.Combine(GetRoot(), universe.Id.ToString());
+            var path = Path.Combine(GetRoot(), universe.Id.ToString());
             Directory.CreateDirectory(path);
 
-            string file = Path.Combine(path, UniverseFilename);
+            var file = Path.Combine(path, UniverseFilename);
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
+            using (var zip = new GZipStream(stream, CompressionMode.Compress))
+            using (var writer = new BinaryWriter(zip))
             {
-                using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
-                {
-                    universe.Serialize(zip);
-                }
+                universe.Serialize(writer, null);
             }
         }
 
@@ -92,13 +91,13 @@ namespace OctoAwesome.Runtime
         /// <param name="planet">Zu speichernder Planet</param>
         public void SavePlanet(Guid universeGuid, IPlanet planet)
         {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString());
+            var path = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString());
             Directory.CreateDirectory(path);
 
-            string generatorInfo = Path.Combine(path, PlanetGeneratorInfo);
+            var generatorInfo = Path.Combine(path, PlanetGeneratorInfo);
             using (Stream stream = File.Open(generatorInfo, FileMode.Create, FileAccess.Write))
             {
-                using (BinaryWriter bw = new BinaryWriter(stream))
+                using (var bw = new BinaryWriter(stream))
                 {
                     bw.Write(planet.Generator.GetType().FullName);
                 }
@@ -107,8 +106,8 @@ namespace OctoAwesome.Runtime
             var file = Path.Combine(path, PlanetFilename);
 
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
-            using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
-            using (BinaryWriter writer = new BinaryWriter(zip))
+            using (var zip = new GZipStream(stream, CompressionMode.Compress))
+            using (var writer = new BinaryWriter(zip))
                 planet.Serialize(writer, null);
         }
 
@@ -120,17 +119,14 @@ namespace OctoAwesome.Runtime
         /// <param name="column">Zu serialisierende ChunkColumn.</param>
         public void SaveColumn(Guid universeGuid, int planetId, IChunkColumn column)
         {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
+            var path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
             Directory.CreateDirectory(path);
 
-            string file = path = Path.Combine(path, string.Format(ColumnFilename, column.Index.X, column.Index.Y));
+            var file = path = Path.Combine(path, string.Format(ColumnFilename, column.Index.X, column.Index.Y));
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
-            {
-                using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
-                {
-                    column.Serialize(zip, _definitionManager);
-                }
-            }
+            using (var zip = new GZipStream(stream, CompressionMode.Compress))
+            using (var writer = new BinaryWriter(zip))
+                column.Serialize(writer, _definitionManager);
         }
 
         /// <summary>
@@ -170,14 +166,13 @@ namespace OctoAwesome.Runtime
             var taskCompletionSource = new TaskCompletionSource<IUniverse>();
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
+            using (var zip = new GZipStream(stream, CompressionMode.Decompress))
+            using (var reader = new BinaryReader(zip))
             {
-                using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
-                {
-                    IUniverse universe = new Universe();
-                    universe.Deserialize(zip);
-                    taskCompletionSource.SetResult(universe);
-                    return taskCompletionSource.Task;
-                }
+                IUniverse universe = new Universe();
+                universe.Deserialize(reader, null);
+                taskCompletionSource.SetResult(universe);
+                return taskCompletionSource.Task;
             }
         }
 
@@ -190,17 +185,16 @@ namespace OctoAwesome.Runtime
         public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
+
             var generatorInfo =
                 Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
-
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
             IMapGenerator generator;
-
             using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
             {
-                using (BinaryReader bw = new BinaryReader(stream))
+                using (var bw = new BinaryReader(stream))
                 {
                     var generatorName = bw.ReadString();
                     generator = _extensionResolver.GetMapGenerator()
@@ -210,11 +204,9 @@ namespace OctoAwesome.Runtime
 
             if (generator == null)
                 throw new Exception("Unknown Generator");
-
-
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
+                using (var zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
                     var taskCompletionSource = new TaskCompletionSource<IPlanet>();
                     taskCompletionSource.SetResult(generator.GeneratePlanet(zip));
@@ -234,15 +226,13 @@ namespace OctoAwesome.Runtime
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(),
                 string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
-
             if (!File.Exists(file))
                 return null;
-
             try
             {
                 using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
-                    using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
+                    using (var zip = new GZipStream(stream, CompressionMode.Decompress))
                     {
                         var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
                         taskCompletionSource.SetResult(
@@ -275,17 +265,15 @@ namespace OctoAwesome.Runtime
         {
             //TODO: Später durch Playername ersetzen
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
-
             if (!File.Exists(file))
                 return null;
-
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                using (BinaryReader reader = new BinaryReader(stream))
+                using (var reader = new BinaryReader(stream))
                 {
                     try
                     {
-                        Player player = new Player();
+                        var player = new Player();
                         player.Deserialize(reader, _definitionManager);
 
                         var taskCompletionSource = new TaskCompletionSource<Player>();
@@ -312,12 +300,11 @@ namespace OctoAwesome.Runtime
             var path = Path.Combine(GetRoot(), universeGuid.ToString());
             Directory.CreateDirectory(path);
 
-            // TODO: Player Name berücksichtigen
+// TODO: Player Name berücksichtigen
             var file = Path.Combine(path, "player.info");
-
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
             {
-                using (BinaryWriter writer = new BinaryWriter(stream))
+                using (var writer = new BinaryWriter(stream))
                 {
                     player.Serialize(writer, _definitionManager);
                 }

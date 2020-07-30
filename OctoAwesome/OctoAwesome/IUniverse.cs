@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace OctoAwesome
 {
@@ -22,17 +21,5 @@ namespace OctoAwesome
         /// Der Generierungsseed des Universums
         /// </summary>
         int Seed { get; }
-
-        /// <summary>
-        /// Serialisiert das Universum in den angegebenen Stream.
-        /// </summary>
-        /// <param name="stream">Zielstream</param>
-        void Serialize(Stream stream);
-
-        /// <summary>
-        /// Deserialisiert das Universum aus dem angegebenen Stream.
-        /// </summary>
-        /// <param name="stream">Quellstream</param>
-        void Deserialize(Stream stream);
     }
 }

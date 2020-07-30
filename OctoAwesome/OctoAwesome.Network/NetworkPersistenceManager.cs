@@ -49,12 +49,13 @@ namespace OctoAwesome.Network
 
             _client.SendPackage(package);
 
-            package = _client.SendPackage(package);
+            package = _client.SendAndReceive(package);
 
             using (var memoryStream = new MemoryStream(package.Payload))
+            using (var reader = new BinaryReader(memoryStream))
             {
                 var column = new ChunkColumn();
-                column.Deserialize(memoryStream, _definitionManager, planet.Id, columnIndex);
+                column.Deserialize(reader, _definitionManager);
 
                 var taskCompletionSource = new TaskCompletionSource<IChunkColumn>();
                 return taskCompletionSource.Task;
@@ -64,7 +65,7 @@ namespace OctoAwesome.Network
         public Task<IPlanet> LoadPlanet(Guid universeGuid, int planetId)
         {
             var package = new Package((ushort) OfficialCommands.GetPlanet, 0);
-            package = _client.SendAndReceive(package);
+            package = _client.SendPackage(package);
 
             var planet = new ComplexPlanet();
 
@@ -108,7 +109,8 @@ namespace OctoAwesome.Network
             var universe = new Universe();
 
             using (var memoryStream = new MemoryStream(package.Payload))
-                universe.Deserialize(memoryStream);
+            using (var reader = new BinaryReader(memoryStream))
+                universe.Deserialize(reader, null);
 
             var taskCompletionSource = new TaskCompletionSource<IUniverse>();
             return taskCompletionSource.Task;

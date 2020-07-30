@@ -159,7 +159,9 @@ namespace OctoAwesome.Basics
             Index2 index)
         {
             IChunkColumn column = new ChunkColumn();
-            column.Deserialize(stream, definitionManager, planetId, index);
+
+            using (var reader = new BinaryReader(stream))
+                column.Deserialize(reader, definitionManager);
             return column;
         }
     }
