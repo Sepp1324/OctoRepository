@@ -11,38 +11,39 @@ namespace OctoAwesome
     /// </summary>
     public sealed class GlobalChunkCache : IGlobalChunkCache
     {
+        public event EventHandler<IChunk> ChunkChanged;
+
         private readonly ConcurrentQueue<CacheItem> _dirtyItems = new ConcurrentQueue<CacheItem>();
         private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
         private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
         /// <summary>
         /// Dictionary, das alle <see cref="CacheItem"/>s hält.
         /// </summary>
-        private readonly Dictionary<Index3, CacheItem> cache;
-        private Queue<CacheItem> newChunks;
-        private Queue<CacheItem> oldChunks;
+        private readonly Dictionary<Index3, CacheItem> _cache;
+        private Queue<CacheItem> _newChunks;
+        private Queue<CacheItem> _oldChunks;
 
-        private object updateLockObject = new object();
+        private object _updateLockObject = new object();
 
         /// <summary>
         /// Funktion, die für das Laden der Chunks verwendet wird
         /// </summary>
-        private readonly Func<int, Index2, IChunkColumn> loadDelegate;
+        private readonly Func<int, Index2, IChunkColumn> _loadDelegate;
 
         /// <summary>
         /// Routine, die für das Speichern der Chunks verwendet wird.
         /// </summary>
-        private readonly Action<int, Index2, IChunkColumn> saveDelegate;
+        private readonly Action<int, Index2, IChunkColumn> _saveDelegate;
 
-        private readonly Func<int, IPlanet> loadPlanetDelagte;
+        private readonly Func<int, IPlanet> _loadPlanetDelagte;
 
         /// <summary>
         /// Objekt, das für die Locks benutzt wird
         /// </summary>
-        private readonly object lockObject = new object();
+        private readonly object _lockObject = new object();
 
         // TODO: Früher oder später nach draußen auslagern
-        private Thread cleanupThread;
-
+        private Thread _cleanupThread;
 
         /// <summary>
         /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
@@ -51,9 +52,9 @@ namespace OctoAwesome
         {
             get
             {
-                lock (lockObject)
+                lock (_lockObject)
                 {
-                    return cache.Count;
+                    return _cache.Count;
                 }
             }
         }
@@ -72,20 +73,20 @@ namespace OctoAwesome
         public GlobalChunkCache(Func<int, Index2, IChunkColumn> loadDelegate, Func<int, IPlanet> loadPlanetDelegate,
             Action<int, Index2, IChunkColumn> saveDelegate)
         {
-            this.loadDelegate = loadDelegate ?? throw new ArgumentNullException("loadDelegate");
-            this.saveDelegate = saveDelegate ?? throw new ArgumentNullException("saveDelegate");
-            loadPlanetDelagte = loadPlanetDelegate ?? throw new ArgumentNullException(nameof(loadPlanetDelegate));
+            _loadDelegate = loadDelegate ?? throw new ArgumentNullException("loadDelegate");
+            _saveDelegate = saveDelegate ?? throw new ArgumentNullException("saveDelegate");
+            _loadPlanetDelagte = loadPlanetDelegate ?? throw new ArgumentNullException(nameof(loadPlanetDelegate));
 
-            cache = new Dictionary<Index3, CacheItem>();
-            newChunks = new Queue<CacheItem>();
-            oldChunks = new Queue<CacheItem>();
+            _cache = new Dictionary<Index3, CacheItem>();
+            _newChunks = new Queue<CacheItem>();
+            _oldChunks = new Queue<CacheItem>();
 
-            cleanupThread = new Thread(BackgroundCleanup)
+            _cleanupThread = new Thread(BackgroundCleanup)
             {
                 IsBackground = true,
                 Priority = ThreadPriority.Lowest
             };
-            cleanupThread.Start();
+            _cleanupThread.Start();
         }
 
         /// <summary>
@@ -98,9 +99,9 @@ namespace OctoAwesome
         {
             CacheItem cacheItem = null;
 
-            lock (lockObject)
+            lock (_lockObject)
             {
-                if (!cache.TryGetValue(new Index3(position, planet), out cacheItem))
+                if (!_cache.TryGetValue(new Index3(position, planet), out cacheItem))
                 {
                     //TODO: Überdenken
                     if (passive)
@@ -117,7 +118,7 @@ namespace OctoAwesome
 
                     cacheItem.Changed += ItemChanged;
                     //_dirtyItems.Enqueue(cacheItem);
-                    cache.Add(new Index3(position, planet), cacheItem);
+                    _cache.Add(new Index3(position, planet), cacheItem);
                     //_autoResetEvent.Set();
                 }
 
@@ -131,11 +132,11 @@ namespace OctoAwesome
             {
                 if (cacheItem.ChunkColumn == null)
                 {
-                    cacheItem.ChunkColumn = loadDelegate(planet, position);
+                    cacheItem.ChunkColumn = _loadDelegate(planet, position);
 
-                    lock (updateLockObject)
+                    lock (_updateLockObject)
                     {
-                        newChunks.Enqueue(cacheItem);
+                        _newChunks.Enqueue(cacheItem);
                     }
                 }
             }
@@ -144,12 +145,13 @@ namespace OctoAwesome
         }
 
         public bool IsChunkLoaded(int planet, Index2 position)
-            => cache.ContainsKey(new Index3(position, planet));
+            => _cache.ContainsKey(new Index3(position, planet));
 
-        private void ItemChanged(CacheItem obj)
+        private void ItemChanged(CacheItem obj, IChunk chunk)
         {
             _dirtyItems.Enqueue(obj);
             _autoResetEvent.Set();
+            ChunkChanged?.Invoke(this, chunk);
         }
 
         /// <summary>
@@ -160,21 +162,20 @@ namespace OctoAwesome
         /// <returns>Chunk Instanz oder null, falls nicht geladen</returns>
         public IChunkColumn Peek(int planet, Index2 position)
         {
-            if (cache.TryGetValue(new Index3(position, planet), out CacheItem cacheItem))
+            if (_cache.TryGetValue(new Index3(position, planet), out CacheItem cacheItem))
                 return cacheItem.ChunkColumn;
 
             return null;
         }
-
 
         /// <summary>
         /// Löscht den gesamten Inhalt des Caches.
         /// </summary>
         public void Clear()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
-                foreach (var value in cache.Values)
+                foreach (var value in _cache.Values)
                 {
                     value.References = 0;
                     value.PassiveReference = 0;
@@ -192,9 +193,9 @@ namespace OctoAwesome
         public void Release(int planet, Index2 position, bool passive)
         {
             CacheItem cacheItem;
-            lock (lockObject)
+            lock (_lockObject)
             {
-                if (!cache.TryGetValue(new Index3(position, planet), out cacheItem))
+                if (!_cache.TryGetValue(new Index3(position, planet), out cacheItem))
                 {
                     if (!passive)
                     {
@@ -235,7 +236,7 @@ namespace OctoAwesome
                 {
                     lock (item)
                     {
-                        saveDelegate(item.Planet, item.Index, item.ChunkColumn);
+                        _saveDelegate(item.Planet, item.Index, item.ChunkColumn);
                     }
                 }
 
@@ -247,14 +248,14 @@ namespace OctoAwesome
                         {
                             var key = new Index3(ci.Index, ci.Planet);
 
-                            lock (lockObject)
+                            lock (_lockObject)
                             {
                                 ci.Changed -= ItemChanged;
-                                cache.Remove(key);
+                                _cache.Remove(key);
                             }
-                            lock (updateLockObject)
+                            lock (_updateLockObject)
                             {
-                                oldChunks.Enqueue(ci);
+                                _oldChunks.Enqueue(ci);
                             }
                         }
                     }
@@ -268,25 +269,25 @@ namespace OctoAwesome
         /// <param name="id">ID des Planeten</param>
         /// <returns>Planet</returns>
         public IPlanet GetPlanet(int id)
-            => loadPlanetDelagte(id);
+            => _loadPlanetDelagte(id);
 
         public void BeforeSimulationUpdate(Simulation simulation)
         {
-            lock (updateLockObject)
+            lock (_updateLockObject)
             {
                 //Neue Chunks in die Simulation einpflegen
-                while (newChunks.Count > 0)
+                while (_newChunks.Count > 0)
                 {
-                    var chunk = newChunks.Dequeue();
+                    var chunk = _newChunks.Dequeue();
 
                     foreach (var entity in chunk.ChunkColumn.Entities)
                         simulation.AddEntity(entity);
                 }
 
                 //Alte Chunks aus der Siumaltion entfernen
-                while (oldChunks.Count > 0)
+                while (_oldChunks.Count > 0)
                 {
-                    var chunk = oldChunks.Dequeue();
+                    var chunk = _oldChunks.Dequeue();
 
                     foreach (var entity in chunk.ChunkColumn.Entities)
                         simulation.RemoveEntity(entity);
@@ -297,9 +298,9 @@ namespace OctoAwesome
         public void AfterSimulationUpdate(Simulation simulation)
         {
             //TODO: Überarbeiten
-            lock (lockObject)
+            lock (_lockObject)
             {
-                var failChunkEntities = cache
+                var failChunkEntities = _cache
                     .Where(chunk => chunk.Value.ChunkColumn != null)
                     .SelectMany(chunk => chunk.Value.ChunkColumn.Entities.FailChunkEntity())
                     .ToArray();
@@ -317,9 +318,9 @@ namespace OctoAwesome
                     }
                     else
                     {
-                        targetchunk = loadDelegate(entity.CurrentPlanet, entity.TargetChunk);
+                        targetchunk = _loadDelegate(entity.CurrentPlanet, entity.TargetChunk);
                         targetchunk.Entities.Add(entity.Entity);
-                        saveDelegate(entity.CurrentPlanet, entity.TargetChunk, targetchunk);
+                        _saveDelegate(entity.CurrentPlanet, entity.TargetChunk, targetchunk);
                         simulation.RemoveEntity(entity.Entity);
                     }
                 }
@@ -362,10 +363,10 @@ namespace OctoAwesome
                 }
             }
 
-            public event Action<CacheItem> Changed;
+            public event Action<CacheItem, IChunk> Changed;
 
-            private void OnChanged(IChunkColumn arg1, IChunk arg2, int arg3)
-                => Changed?.Invoke(this);
+            private void OnChanged(IChunkColumn chunkColumn , IChunk chunk, int changeCounter)
+                => Changed?.Invoke(this, chunk);
         }
     }
 }

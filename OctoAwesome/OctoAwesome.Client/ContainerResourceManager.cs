@@ -49,10 +49,14 @@ namespace OctoAwesome.Client
 
             IsMultiplayer = multiplayer;
 
-            //if (multiplayer)
-            //{
-            //    _resourceManager.LoadUniverse(new Guid());
-            //}
+            if (multiplayer)
+            {
+                _resourceManager.GlobalChunkCache.ChunkChanged += (s, c) =>
+                {
+                    var networkPersistence = (NetworkPersistenceManager)persistenceManager;
+                    networkPersistence.SendChangedChunk(c);
+                };
+            }
         }
 
         public void DeleteUniverse(Guid id) => _resourceManager.DeleteUniverse(id);

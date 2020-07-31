@@ -5,6 +5,7 @@
         Whoami = 11,
         GetUniverse = 12,
         GetPlanet = 13,
-        LoadColumn = 14
+        LoadColumn = 14,
+        ChunkChanged = 15
     }
 }

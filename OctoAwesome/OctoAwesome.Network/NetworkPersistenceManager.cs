@@ -120,6 +120,11 @@ namespace OctoAwesome.Network
             //throw new NotImplementedException();
         }
 
+        public void SendChangedChunk(IChunk c)
+        {
+            var package = new Package((ushort)OfficialCommands.ChunkChanged, 0); 
+        }
+
         private void ClientPackageAvailable(object sender, Package e)
         {
             if (_packages.TryGetValue(e.Uid, out var awaiter))
