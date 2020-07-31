@@ -1,70 +1,63 @@
 ﻿using engenious;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
         public bool IsRunning { get; private set; }
-        public IDefinitionManager DefinitionManager => definitionManager;
+
+        public IDefinitionManager DefinitionManager => _definitionManager;
 
         public Simulation Simulation
         {
             get
             {
-                lock (mainLock)
-                    return simulation;
+                lock (_mainLock)
+                    return _simulation;
             }
             set
             {
-                lock (mainLock)
-                    simulation = value;
+                lock (_mainLock)
+                    _simulation = value;
             }
         }
 
         public GameTime GameTime { get; private set; }
 
-        private Simulation simulation;
-        private ExtensionLoader extensionLoader;
-        private DefinitionManager definitionManager;
+        public ResourceManager ResourceManager { get; private set; }
 
+        private Simulation _simulation;
+        private ExtensionLoader _extensionLoader;
+        private DefinitionManager _definitionManager;
 
+        private ISettings _settings;
 
-        private ResourceManager resourceManager;
-
-
-
-        private ISettings settings;
-
-        private Thread backgroundThread;
-        private object mainLock;
+        private Thread _backgroundThread;
+        private object _mainLock;
 
         public SimulationManager(ISettings settings)
         {
-            mainLock = new object();
+            _mainLock = new object();
 
-            this.settings = settings; //TODO: Where are the settings?
+            this._settings = settings; //TODO: Where are the settings?
 
-            extensionLoader = new ExtensionLoader(settings);
-            extensionLoader.LoadExtensions();
+            _extensionLoader = new ExtensionLoader(settings);
+            _extensionLoader.LoadExtensions();
 
-            definitionManager = new DefinitionManager(extensionLoader);
+            _definitionManager = new DefinitionManager(_extensionLoader);
 
-            var persistenceManager = new DiskPersistenceManager(extensionLoader, definitionManager, settings);
+            var persistenceManager = new DiskPersistenceManager(_extensionLoader, _definitionManager, settings);
 
-            resourceManager = new ResourceManager(extensionLoader, definitionManager, settings, persistenceManager);
+            ResourceManager = new ResourceManager(_extensionLoader, _definitionManager, settings, persistenceManager);
 
             //For Release resourceManager.LoadUniverse(new Guid()); 
-            resourceManager.NewUniverse("test_universe", 043848723);
+            ResourceManager.NewUniverse("test_universe", 043848723);
 
-            simulation = new Simulation(resourceManager, extensionLoader);
-            backgroundThread = new Thread(SimulationLoop)
+            _simulation = new Simulation(ResourceManager, _extensionLoader);
+            _backgroundThread = new Thread(SimulationLoop)
             {
                 Name = "Simulation Loop",
                 IsBackground = true
@@ -76,29 +69,29 @@ namespace OctoAwesome.Network
             IsRunning = true;
             GameTime = new GameTime();
 
-            simulation.NewGame("bla", 42);
+            _simulation.NewGame("bla", 42);
 
-            backgroundThread.Start();
+            _backgroundThread.Start();
         }
 
         public void Stop()
         {
             IsRunning = false;
-            simulation.ExitGame();
-            backgroundThread.Abort();
+            _simulation.ExitGame();
+            _backgroundThread.Abort();
         }
 
-        public IUniverse GetUniverse() => resourceManager.CurrentUniverse;
+        public IUniverse GetUniverse() => ResourceManager.CurrentUniverse;
 
         public IUniverse NewUniverse()
         {
             throw new NotImplementedException();
         }
 
-        public IPlanet GetPlanet(int planetId) => resourceManager.GetPlanet(planetId);
+        public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
 
-        public IChunkColumn LoadColumn(Guid guid, int planetId, Index2 index2) 
-            => resourceManager.LoadChunkColumn(planetId, index2);
+        public IChunkColumn LoadColumn(Guid guid, int planetId, Index2 index2)
+            => ResourceManager.LoadChunkColumn(planetId, index2);
 
         private void SimulationLoop()
         {
