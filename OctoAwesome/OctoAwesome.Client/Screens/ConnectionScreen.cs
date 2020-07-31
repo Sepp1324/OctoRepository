@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MonoGameUi;
 using engenious;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Runtime;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -14,13 +9,13 @@ namespace OctoAwesome.Client.Screens
     {
         public new ScreenComponent Manager => (ScreenComponent)base.Manager;
 
-        private ISettings settings;
-        private OctoGame game;
+        private ISettings _settings;
+        private OctoGame _game;
 
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
-            settings = Manager.Game.Settings;
-            game = Manager.Game;
+            _settings = Manager.Game.Settings;
+            _game = Manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
             Title = Languages.OctoClient.CreateUniverse;
@@ -52,16 +47,14 @@ namespace OctoAwesome.Client.Screens
             createButton.Visible = true;
             createButton.LeftMouseClick += (s, e) =>
             {
-                game.Settings.Set("server", input.Text);
-                ((ContainerResourceManager)game.ResourceManager)
-                    .CreateManager(game.ExtensionLoader, game.DefinitionManager, game.Settings, true);
+                _game.Settings.Set("server", input.Text);
+                ((ContainerResourceManager)_game.ResourceManager).CreateManager(_game.ExtensionLoader, _game.DefinitionManager, _game.Settings, true);
 
-                manager.NavigateToScreen(new GameScreen(manager));
+                //manager.NavigateToScreen(new GameScreen(manager));
 
                 PlayMultiplayer(manager);
             };
             panel.Controls.Add(createButton);
-
         }
 
         private void PlayMultiplayer(ScreenComponent manager)

@@ -105,7 +105,7 @@ namespace OctoAwesome.Runtime
             // Neuen Daten loaden/generieren
             _persistenceManager.Load(out var universe, universeId).WaitOn();
             CurrentUniverse = universe;
-            
+
             if (CurrentUniverse == null)
                 throw new Exception();
         }
@@ -157,13 +157,12 @@ namespace OctoAwesome.Runtime
                 throw new Exception("No Universe loaded");
 
             IPlanet planet;
-            
+
             if (!_planets.TryGetValue(id, out planet))
             {
-                // Versuch vorhandenen Planeten zu laden
-                _persistenceManager.Load(out planet, CurrentUniverse.Id, id).WaitOn();
-                
-                if (planet == null)
+                var awaiter = _persistenceManager.Load(out planet, CurrentUniverse.Id, id);
+
+                if (awaiter == null)
                 {
                     // Keiner da -> neu erzeugen
                     Random rand = new Random(CurrentUniverse.Seed + id);
@@ -172,6 +171,10 @@ namespace OctoAwesome.Runtime
                     IMapGenerator generator = generators[index];
                     planet = generator.GeneratePlanet(CurrentUniverse.Id, id, CurrentUniverse.Seed + id);
                     // persistenceManager.SavePlanet(universe.Id, planet);
+                }
+                else
+                {
+                    awaiter.WaitOn();
                 }
                 _planets.Add(id, planet);
             }
@@ -209,12 +212,15 @@ namespace OctoAwesome.Runtime
             var planet = GetPlanet(planetId);
 
             // Load from disk
-            _persistenceManager.Load(out var column11, CurrentUniverse.Id, planet, index).WaitOn();
-            
-            if (column11 == null)
+            var awaiter = _persistenceManager.Load(out var column11, CurrentUniverse.Id, planet, index);
+
+            if (awaiter == null)
             {
                 IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
                 column11 = column;
+            } else
+            {
+                awaiter.WaitOn();
             }
 
             var column00 = GlobalChunkCache.Peek(planet.Id, Index2.NormalizeXY(index + new Index2(-1, -1), planet.Size));

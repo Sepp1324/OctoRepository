@@ -6,29 +6,27 @@ namespace OctoAwesome.Network
 {
     public abstract class BaseClient
     {
-        //public delegate int ReceiveDelegate(object sender, (byte[] Data, int Offset, int Count) eventArgs);
-        //public event ReceiveDelegate OnMessageRecived;
         public event EventHandler<OctoNetworkEventArgs> DataAvailable;
 
         protected readonly Socket Socket;
         protected readonly SocketAsyncEventArgs ReceiveArgs;
 
-        protected readonly OctoNetworkStream internalSendStream;
-        protected readonly OctoNetworkStream internalRecivedStream;
+        protected readonly OctoNetworkStream _internalSendStream;
+        protected readonly OctoNetworkStream _internalRecivedStream;
 
-        private byte readSendQueueIndex;
-        private byte nextSendQueueWriteIndex;
-        private bool sending;
+        private byte _readSendQueueIndex;
+        private byte _nextSendQueueWriteIndex;
+        private bool _sending;
 
-        private readonly SocketAsyncEventArgs sendArgs;
+        private readonly SocketAsyncEventArgs _sendArgs;
 
-        private readonly (byte[] data, int len)[] sendQueue;
-        private readonly object sendLock;
+        private readonly (byte[] data, int len)[] _sendQueue;
+        private readonly object _sendLock;
 
         protected BaseClient(Socket socket)
         {
-            sendQueue = new (byte[] data, int len)[256];
-            sendLock = new object();
+            _sendQueue = new (byte[] data, int len)[256];
+            _sendLock = new object();
 
             Socket = socket;
             Socket.NoDelay = true;
@@ -37,11 +35,11 @@ namespace OctoAwesome.Network
             ReceiveArgs.Completed += OnReceived;
             ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(2048), 0, 2048);
 
-            sendArgs = new SocketAsyncEventArgs();
-            sendArgs.Completed += OnSent;
+            _sendArgs = new SocketAsyncEventArgs();
+            _sendArgs.Completed += OnSent;
 
-            internalSendStream = new OctoNetworkStream();
-            internalRecivedStream = new OctoNetworkStream();
+            _internalSendStream = new OctoNetworkStream();
+            _internalRecivedStream = new OctoNetworkStream();
 
         }
 
@@ -57,15 +55,15 @@ namespace OctoAwesome.Network
 
         public void SendAsync(byte[] data, int len)
         {
-            lock (sendLock)
+            lock (_sendLock)
             {
-                if (sending)
+                if (_sending)
                 {
-                    sendQueue[nextSendQueueWriteIndex++] = (data, len);
+                    _sendQueue[_nextSendQueueWriteIndex++] = (data, len);
                     return;
                 }
 
-                sending = true;
+                _sending = true;
             }
 
             SendInternal(data, len);
@@ -75,24 +73,22 @@ namespace OctoAwesome.Network
         {
             while (true)
             {
-                sendArgs.SetBuffer(data, 0, len);
+                _sendArgs.SetBuffer(data, 0, len);
 
-                if (Socket.SendAsync(sendArgs))
+                if (Socket.SendAsync(_sendArgs))
                     return;
 
-                ArrayPool<byte>.Shared.Return(data);
-
-                lock (sendLock)
+                lock (_sendLock)
                 {
-                    if (readSendQueueIndex < nextSendQueueWriteIndex)
+                    if (_readSendQueueIndex < _nextSendQueueWriteIndex)
                     {
-                        (data, len) = sendQueue[readSendQueueIndex++];
+                        (data, len) = _sendQueue[_readSendQueueIndex++];
                     }
                     else
                     {
-                        nextSendQueueWriteIndex = 0;
-                        readSendQueueIndex = 0;
-                        sending = false;
+                        _nextSendQueueWriteIndex = 0;
+                        _readSendQueueIndex = 0;
+                        _sending = false;
                         return;
                     }
                 }
@@ -104,23 +100,20 @@ namespace OctoAwesome.Network
             byte[] data;
             int len;
 
-            ArrayPool<byte>.Shared.Return(e.Buffer);
-
-            lock (sendLock)
+            lock (_sendLock)
             {
-                if (readSendQueueIndex < nextSendQueueWriteIndex)
+                if (_readSendQueueIndex < _nextSendQueueWriteIndex)
                 {
-                    (data, len) = sendQueue[readSendQueueIndex++];
+                    (data, len) = _sendQueue[_readSendQueueIndex++];
                 }
                 else
                 {
-                    nextSendQueueWriteIndex = 0;
-                    readSendQueueIndex = 0;
-                    sending = false;
+                    _nextSendQueueWriteIndex = 0;
+                    _readSendQueueIndex = 0;
+                    _sending = false;
                     return;
                 }
             }
-
             SendInternal(data, len);
         }
 
@@ -130,8 +123,8 @@ namespace OctoAwesome.Network
             int count = 0;
             do
             {
-                count = internalRecivedStream.Write(e.Buffer, offset, e.BytesTransferred - offset);
-                DataAvailable?.Invoke(this, new OctoNetworkEventArgs { NetworkStream = internalRecivedStream, DataCount = count });
+                count = _internalRecivedStream.Write(e.Buffer, offset, e.BytesTransferred - offset);
+                DataAvailable?.Invoke(this, new OctoNetworkEventArgs { NetworkStream = _internalRecivedStream, DataCount = count });
                 offset += count;
             } while (offset < e.BytesTransferred);
         }

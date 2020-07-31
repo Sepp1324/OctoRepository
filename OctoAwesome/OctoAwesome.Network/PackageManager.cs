@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class PackageManager
     {
         public List<BaseClient> ConnectedClients { get; set; }
-        private Dictionary<BaseClient, Package> packages;
+        private Dictionary<BaseClient, Package> _packages;
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
 
 
         public PackageManager()
         {
-            packages = new Dictionary<BaseClient, Package>();
+            _packages = new Dictionary<BaseClient, Package>();
+            ConnectedClients = new List<BaseClient>();
         }
 
-        public void AddConnectedClient(BaseClient client)
-        {
-            client.DataAvailable += ClientDataAvailable;
-        }
+        public void AddConnectedClient(BaseClient client) =>  client.DataAvailable += ClientDataAvailable;
 
         public void SendPackage(Package package, BaseClient client)
         {
@@ -35,10 +30,12 @@ namespace OctoAwesome.Network
             Package package;
             var baseClient = (BaseClient)sender; 
             byte[] bytes = new byte[e.DataCount];
-            if (!packages.TryGetValue(baseClient, out package))
+
+            if (!_packages.TryGetValue(baseClient, out package))
             {
                 package = new Package();
-                packages.Add(baseClient, package);
+                _packages.Add(baseClient, package);
+
                 if (e.DataCount >= Package.HEAD_LENGTH)
                 {
                     e.NetworkStream.Read(bytes, 0, Package.HEAD_LENGTH);
@@ -52,7 +49,7 @@ namespace OctoAwesome.Network
 
             if (package.IsComplete)
             {
-                packages.Remove(baseClient);
+                _packages.Remove(baseClient);
                 PackageAvailable?.Invoke(this, new OctoPackageAvailableEventArgs { BaseClient = baseClient, Package = package });
             }
         }
