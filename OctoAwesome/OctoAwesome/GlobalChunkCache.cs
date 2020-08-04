@@ -11,7 +11,7 @@ namespace OctoAwesome
     /// </summary>
     public sealed class GlobalChunkCache : IGlobalChunkCache
     {
-        public event EventHandler<IChunk> ChunkChanged;
+        public event EventHandler<IChunkColumn> ChunkColumnChanged;
 
         private readonly ConcurrentQueue<CacheItem> _dirtyItems = new ConcurrentQueue<CacheItem>();
         private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
@@ -147,11 +147,11 @@ namespace OctoAwesome
         public bool IsChunkLoaded(int planet, Index2 position)
             => _cache.ContainsKey(new Index3(position, planet));
 
-        private void ItemChanged(CacheItem obj, IChunk chunk)
+        private void ItemChanged(CacheItem obj, IChunkColumn chunkColumn)
         {
             _dirtyItems.Enqueue(obj);
             _autoResetEvent.Set();
-            ChunkChanged?.Invoke(this, chunk);
+            ChunkColumnChanged?.Invoke(this, chunkColumn);
         }
 
         /// <summary>
@@ -363,10 +363,10 @@ namespace OctoAwesome
                 }
             }
 
-            public event Action<CacheItem, IChunk> Changed;
+            public event Action<CacheItem, IChunkColumn> Changed;
 
             private void OnChanged(IChunkColumn chunkColumn , IChunk chunk, int changeCounter)
-                => Changed?.Invoke(this, chunk);
+                => Changed?.Invoke(this, chunkColumn);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CommandManagementSystem.Attributes;
+using OctoAwesome.Network;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -29,6 +30,22 @@ namespace OctoAwesome.GameServer.Commands
                 column.Serialize(writer, Program.ServerHandler.SimulationManager.DefinitionManager);
                 return memoryStream.ToArray();
             }
+        }
+
+        [Command((ushort) OfficialCommands.SaveColumn)]
+        public static byte[] SaveColumn(byte[] data)
+        {
+            var chunkColumn = new ChunkColumn();
+
+            using (var stream = new MemoryStream(data))
+            using (var reader = new BinaryReader(stream))
+            {
+                chunkColumn.Deserialize(reader, Program.ServerHandler.SimulationManager.DefinitionManager);
+            }
+
+            Program.ServerHandler.SimulationManager.Simulation.ResourceManager.SaveChunkColumn(chunkColumn);
+
+            return null;
         }
     }
 }

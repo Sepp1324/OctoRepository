@@ -13,6 +13,8 @@ namespace OctoAwesome.Tests
 
         public List<PlanetIndex3> Loaded { get; private set; }
 
+        public event EventHandler<IChunkColumn> ChunkColumnChanged;
+
         public int LoadedChunkColumns
         {
             get

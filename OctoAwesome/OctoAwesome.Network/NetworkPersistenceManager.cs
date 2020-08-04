@@ -120,17 +120,22 @@ namespace OctoAwesome.Network
             //throw new NotImplementedException();
         }
 
-        public void SendChangedChunk(IChunk c)
+        public void SendChangedChunkColumn(IChunkColumn chunkColumn)
         {
-            var package = new Package((ushort)OfficialCommands.ChunkChanged, 0); 
+            var package = new Package((ushort)OfficialCommands.SaveColumn, 0); 
+            
+            using(var stream = new MemoryStream(package.Payload))
+            using (var writer = new BinaryWriter(stream))
+            {
+                chunkColumn.Serialize(writer, _definitionManager);
+            }
+            _client.SendPackage(package);
         }
 
         private void ClientPackageAvailable(object sender, Package e)
         {
             if (_packages.TryGetValue(e.Uid, out var awaiter))
-            {
                 awaiter.SetResult(e.Payload, _definitionManager);
-            }
         }
     }
 }

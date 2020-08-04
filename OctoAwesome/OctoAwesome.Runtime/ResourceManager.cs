@@ -271,12 +271,12 @@ namespace OctoAwesome.Runtime
             return column11;
         }
 
+        public void SaveChunkColumn(IChunkColumn chunkColumn) => SaveChunkColumn(chunkColumn.Planet, chunkColumn.Index, chunkColumn);
+
         private void SaveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
             if (!_disablePersistence && value.ChangeCounter > 0) //value.Chunks.Any(c => c.ChangeCounter > 0)
-            {
                 _persistenceManager.SaveColumn(CurrentUniverse.Id, planetId, value);
-            }
         }
 
         public void SaveEntity(Entity entity)

@@ -6,6 +6,6 @@
         GetUniverse = 12,
         GetPlanet = 13,
         LoadColumn = 14,
-        ChunkChanged = 15
+        SaveColumn = 15
     }
 }

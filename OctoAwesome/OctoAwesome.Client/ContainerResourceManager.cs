@@ -51,10 +51,10 @@ namespace OctoAwesome.Client
 
             if (multiplayer)
             {
-                _resourceManager.GlobalChunkCache.ChunkChanged += (s, c) =>
+                _resourceManager.GlobalChunkCache.ChunkColumnChanged += (s, c) =>
                 {
                     var networkPersistence = (NetworkPersistenceManager)persistenceManager;
-                    networkPersistence.SendChangedChunk(c);
+                    networkPersistence.SendChangedChunkColumn(c);
                 };
             }
         }
@@ -78,5 +78,7 @@ namespace OctoAwesome.Client
         public void SavePlayer(Player player) => _resourceManager.SavePlayer(player);
 
         public void UnloadUniverse() => _resourceManager.UnloadUniverse();
+
+        public void SaveChunkColumn(IChunkColumn chunkColumn) => _resourceManager.SaveChunkColumn(chunkColumn);
     }
 }
