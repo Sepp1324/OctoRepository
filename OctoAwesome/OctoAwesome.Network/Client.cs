@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.IO;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using System.Buffers;
 using System.Net;
 using System.Text;
 using System.Linq;
-using System.Threading;
-using System.Net.NetworkInformation;
 
 namespace OctoAwesome.Network
 {
@@ -18,8 +12,8 @@ namespace OctoAwesome.Network
         public bool IsClient { get; set; }
         public event EventHandler<Package> PackageAvailable;
 
-        private Package currentPackage;
-        private static int clientReceived;
+        private Package _currentPackage;
+        private static int _clientReceived;
 
         public Client() :
             base(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
@@ -66,24 +60,24 @@ namespace OctoAwesome.Network
         private void ClientDataAvailable(object sender, OctoNetworkEventArgs e)
         {
             byte[] bytes = new byte[e.DataCount];
-            if (currentPackage == null)
+            if (_currentPackage == null)
             {
-                currentPackage = new Package();
+                _currentPackage = new Package();
                 if (e.DataCount >= Package.HEAD_LENGTH)
                 {
                     e.NetworkStream.Read(bytes, 0, Package.HEAD_LENGTH);
-                    currentPackage.TryDeserializeHeader(bytes);
+                    _currentPackage.TryDeserializeHeader(bytes);
                     e.DataCount -= Package.HEAD_LENGTH;
                 }
             }
 
             e.NetworkStream.Read(bytes, 0, e.DataCount);
-            currentPackage.DeserializePayload(bytes, 0, e.DataCount);
+            _currentPackage.DeserializePayload(bytes, 0, e.DataCount);
 
-            if (currentPackage.IsComplete)
+            if (_currentPackage.IsComplete)
             {
-                PackageAvailable?.Invoke(this, currentPackage);
-                currentPackage = null;
+                PackageAvailable?.Invoke(this, _currentPackage);
+                _currentPackage = null;
             }
         }
     }
