@@ -62,11 +62,16 @@ namespace OctoAwesome.Network
             return true;
         }
 
-        public void DeserializePayload(byte[] buffer, int offset, int count)
+        public int DeserializePayload(byte[] buffer, int offset, int count)
         {
+            if (_internalOffset + count > Payload.Length)
+                count = Payload.Length - _internalOffset;
+
             Buffer.BlockCopy(buffer, offset, Payload, _internalOffset, count);
             _internalOffset += count;
+            return count;
         }
+
         public void DeserializePackage(byte[] buffer)
         {
             TryDeserializeHeader(buffer);

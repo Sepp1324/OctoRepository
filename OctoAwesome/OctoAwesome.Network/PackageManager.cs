@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace OctoAwesome.Network
 {
@@ -8,15 +10,17 @@ namespace OctoAwesome.Network
         public List<BaseClient> ConnectedClients { get; set; }
         private Dictionary<BaseClient, Package> _packages;
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
+        private byte[] _receiveBuffer;
 
 
         public PackageManager()
         {
             _packages = new Dictionary<BaseClient, Package>();
             ConnectedClients = new List<BaseClient>();
+            _receiveBuffer = new byte[0];
         }
 
-        public void AddConnectedClient(BaseClient client) =>  client.DataAvailable += ClientDataAvailable;
+        public void AddConnectedClient(BaseClient client) => client.DataAvailable += ClientDataAvailable;
 
         public void SendPackage(Package package, BaseClient client)
         {
@@ -27,11 +31,19 @@ namespace OctoAwesome.Network
 
         private void ClientDataAvailable(object sender, OctoNetworkEventArgs e)
         {
-            Package package;
-            var baseClient = (BaseClient)sender; 
-            byte[] bytes = new byte[e.DataCount];
+            var baseClient = (BaseClient)sender;
+            byte[] bytes;
 
-            if (!_packages.TryGetValue(baseClient, out package))
+            if (_receiveBuffer.Length > 0)
+            {
+                bytes = _receiveBuffer.Concat(new byte[e.DataCount]).ToArray();
+            }
+            else
+            {
+                bytes = new byte[e.DataCount];
+            }
+
+            if (!_packages.TryGetValue(baseClient, out Package package))
             {
                 package = new Package();
                 _packages.Add(baseClient, package);
@@ -42,15 +54,26 @@ namespace OctoAwesome.Network
                     package.TryDeserializeHeader(bytes);
                     e.DataCount -= Package.HEAD_LENGTH;
                 }
+                else
+                {
+                    _receiveBuffer = new byte[e.DataCount];
+                    e.NetworkStream.Read(_receiveBuffer, 0, e.DataCount);
+                    _packages.Remove(baseClient);
+                    return;
+                }
             }
 
             e.NetworkStream.Read(bytes, 0, e.DataCount);
-            package.DeserializePayload(bytes, 0, e.DataCount);
+            var count = package.DeserializePayload(bytes, 0, e.DataCount);
 
             if (package.IsComplete)
             {
                 _packages.Remove(baseClient);
+
                 PackageAvailable?.Invoke(this, new OctoPackageAvailableEventArgs { BaseClient = baseClient, Package = package });
+
+                if (e.DataCount - count > 0)
+                    ClientDataAvailable(sender, new OctoNetworkEventArgs() { DataCount = e.DataCount - count, NetworkStream = e.NetworkStream });
             }
         }
     }
