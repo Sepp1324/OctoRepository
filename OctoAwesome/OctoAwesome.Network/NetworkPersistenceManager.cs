@@ -124,10 +124,11 @@ namespace OctoAwesome.Network
         {
             var package = new Package((ushort)OfficialCommands.SaveColumn, 0); 
             
-            using(var stream = new MemoryStream(package.Payload))
+            using(var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
                 chunkColumn.Serialize(writer, _definitionManager);
+                package.Payload = stream.ToArray();
             }
             _client.SendPackage(package);
         }

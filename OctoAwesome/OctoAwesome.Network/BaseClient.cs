@@ -68,7 +68,7 @@ namespace OctoAwesome.Network
 
             SendInternal(data, len);
         }
-        
+
         private void SendInternal(byte[] data, int len)
         {
             while (true)
@@ -119,12 +119,19 @@ namespace OctoAwesome.Network
 
         protected void Receive(SocketAsyncEventArgs e)
         {
+            if (e.BytesTransferred < 1)
+                return;
+
             int offset = 0;
-            int count = 0;
             do
             {
-                count = _internalRecivedStream.Write(e.Buffer, offset, e.BytesTransferred - offset);
-                DataAvailable?.Invoke(this, new OctoNetworkEventArgs { NetworkStream = _internalRecivedStream, DataCount = count });
+                int count = _internalRecivedStream.Write(e.Buffer, offset, e.BytesTransferred - offset);
+
+                if (count > 0)
+                    DataAvailable?.Invoke(this, new OctoNetworkEventArgs { NetworkStream = _internalRecivedStream, DataCount = count });
+                else
+                    Console.WriteLine("Bytes: " + e.BytesTransferred);
+
                 offset += count;
             } while (offset < e.BytesTransferred);
         }

@@ -33,7 +33,7 @@ namespace OctoAwesome.GameServer
 
         private static void PackageManagerPackageAvailable(object sender, OctoPackageAvailableEventArgs e)
         {
-            e.Package.Payload = _defaultManager.Dispatch(e.Package.Command, e.Package.Payload);
+            e.Package.Payload = _defaultManager.Dispatch(e.Package.Command, e.Package.Payload) ?? new byte[0];
             Console.WriteLine(e.Package.Command);
             _packageManager.SendPackage(e.Package, e.BaseClient);
         }
