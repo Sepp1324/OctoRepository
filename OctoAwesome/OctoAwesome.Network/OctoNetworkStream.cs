@@ -51,7 +51,10 @@ namespace OctoAwesome.Network
                 count = maxCopy;
 
             if (maxCopy < 1)
+            {
+                _writingProcess = false;
                 return maxCopy;
+            }
 
             lock (_writeLock)
                 Buffer.BlockCopy(buffer, offset, _writeBuffer, _writePosition, count);
@@ -70,7 +73,10 @@ namespace OctoAwesome.Network
             SwapBuffer();
 
             if (_writeLength == _writePosition)
+            {
+                _writingProcess = false;
                 return 0;
+            }
 
             lock (_writeLock)
                 _writeBuffer[_writePosition++] = data;
@@ -95,7 +101,7 @@ namespace OctoAwesome.Network
 
             lock (_readLock)
                 Buffer.BlockCopy(_readBuffer, _readPosition, buffer, offset, count);
-            
+
             _readPosition += count;
 
             return count;
@@ -111,7 +117,6 @@ namespace OctoAwesome.Network
                     else if (_readPosition < _maxReadCount)
                         return;
 
-                    _writingProcess = true;
                     var refBuf = _writeBuffer;
                     _writeBuffer = _readBuffer;
                     _readBuffer = refBuf;
@@ -120,6 +125,6 @@ namespace OctoAwesome.Network
                     _readPosition = 0;
                 }
         }
-        
+
     }
 }

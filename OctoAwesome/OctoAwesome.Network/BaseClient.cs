@@ -62,7 +62,6 @@ namespace OctoAwesome.Network
                     _sendQueue[_nextSendQueueWriteIndex++] = (data, len);
                     return;
                 }
-
                 _sending = true;
             }
 

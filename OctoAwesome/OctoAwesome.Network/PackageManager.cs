@@ -17,7 +17,7 @@ namespace OctoAwesome.Network
         {
             _packages = new Dictionary<BaseClient, Package>();
             ConnectedClients = new List<BaseClient>();
-            _receiveBuffer = new byte[0];
+            //_receiveBuffer = new byte[0];
         }
 
         public void AddConnectedClient(BaseClient client) => client.DataAvailable += ClientDataAvailable;
@@ -32,35 +32,34 @@ namespace OctoAwesome.Network
         private void ClientDataAvailable(object sender, OctoNetworkEventArgs e)
         {
             var baseClient = (BaseClient)sender;
-            byte[] bytes;
 
-            if (_receiveBuffer.Length > 0)
-            {
-                bytes = _receiveBuffer.Concat(new byte[e.DataCount]).ToArray();
-            }
-            else
-            {
-                bytes = new byte[e.DataCount];
-            }
+            byte[] bytes = new byte[e.DataCount];
 
             if (!_packages.TryGetValue(baseClient, out Package package))
             {
                 package = new Package();
                 _packages.Add(baseClient, package);
 
-                if (e.DataCount >= Package.HEAD_LENGTH)
-                {
-                    e.NetworkStream.Read(bytes, 0, Package.HEAD_LENGTH);
-                    package.TryDeserializeHeader(bytes);
-                    e.DataCount -= Package.HEAD_LENGTH;
-                }
-                else
-                {
-                    _receiveBuffer = new byte[e.DataCount];
-                    e.NetworkStream.Read(_receiveBuffer, 0, e.DataCount);
-                    _packages.Remove(baseClient);
-                    return;
-                }
+                //if (e.DataCount >= Package.HEAD_LENGTH)
+                //{
+                int current = 0;
+
+
+                current = e.NetworkStream.Read(bytes, current, Package.HEAD_LENGTH - current);
+
+                if (current != Package.HEAD_LENGTH)
+                    Console.WriteLine($"Package wos not complete; Bytes received: {current}");
+
+                package.TryDeserializeHeader(bytes);
+                e.DataCount -= Package.HEAD_LENGTH;
+                //}
+                //else
+                //{
+                //    _receiveBuffer = new byte[e.DataCount];
+                //    e.NetworkStream.Read(_receiveBuffer, 0, e.DataCount);
+                //    _packages.Remove(baseClient);
+                //    return;
+                //}
             }
 
             e.NetworkStream.Read(bytes, 0, e.DataCount);
