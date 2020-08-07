@@ -61,8 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="NOTICE" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Network\OctoAwesome.Network.csproj">
@@ -78,6 +76,13 @@
       <Name>OctoAwesome</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="CommandManagementSystem">
+      <Version>3.0.0-alpha2</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.3</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
