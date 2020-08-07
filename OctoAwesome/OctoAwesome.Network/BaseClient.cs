@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Reactive;
 
 namespace OctoAwesome.Network
 {
-    public abstract class BaseClient
+    public abstract class BaseClient : ObservableBase<OctoNetworkEventArgs>
     {
         public event EventHandler<OctoNetworkEventArgs> DataAvailable;
 
@@ -17,6 +19,8 @@ namespace OctoAwesome.Network
         private byte _readSendQueueIndex;
         private byte _nextSendQueueWriteIndex;
         private bool _sending;
+
+        private readonly List<IObserver<OctoNetworkEventArgs>> _observers;
 
         private readonly SocketAsyncEventArgs _sendArgs;
 
@@ -41,6 +45,7 @@ namespace OctoAwesome.Network
             _internalSendStream = new OctoNetworkStream();
             _internalRecivedStream = new OctoNetworkStream();
 
+            _observers = new List<IObserver<OctoNetworkEventArgs>>();
         }
 
         public void Start()
@@ -65,6 +70,12 @@ namespace OctoAwesome.Network
                 _sending = true;
             }
             SendInternal(data, len);
+        }
+
+        protected override IDisposable SubscribeCore(IObserver<OctoNetworkEventArgs> observer)
+        {
+            _observers.Add(observer);
+            return observer as IDisposable;
         }
 
         private void SendInternal(byte[] data, int len)
@@ -127,8 +138,8 @@ namespace OctoAwesome.Network
 
                 if (count > 0)
                     DataAvailable?.Invoke(this, new OctoNetworkEventArgs { NetworkStream = _internalRecivedStream, DataCount = count });
-                else
-                    Console.WriteLine("Bytes: " + e.BytesTransferred);
+
+
 
                 offset += count;
             } while (offset < e.BytesTransferred);
@@ -146,5 +157,7 @@ namespace OctoAwesome.Network
                 Receive(ReceiveArgs);
             }
         }
+
+
     }
 }

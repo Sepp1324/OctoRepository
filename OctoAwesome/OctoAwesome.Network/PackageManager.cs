@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+using System.Reactive;
 
 namespace OctoAwesome.Network
 {
-    public class PackageManager
+    public class PackageManager : ObserverBase<OctoNetworkEventArgs>
     {
         public List<BaseClient> ConnectedClients { get; set; }
         private Dictionary<BaseClient, Package> _packages;
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
-        private byte[] _receiveBuffer;
 
 
         public PackageManager()
         {
             _packages = new Dictionary<BaseClient, Package>();
             ConnectedClients = new List<BaseClient>();
-            //_receiveBuffer = new byte[0];
         }
 
         public void AddConnectedClient(BaseClient client) => client.DataAvailable += ClientDataAvailable;
@@ -40,8 +37,6 @@ namespace OctoAwesome.Network
                 package = new Package();
                 _packages.Add(baseClient, package);
 
-                //if (e.DataCount >= Package.HEAD_LENGTH)
-                //{
                 int current = 0;
 
 
@@ -52,14 +47,6 @@ namespace OctoAwesome.Network
 
                 package.TryDeserializeHeader(bytes);
                 e.DataCount -= Package.HEAD_LENGTH;
-                //}
-                //else
-                //{
-                //    _receiveBuffer = new byte[e.DataCount];
-                //    e.NetworkStream.Read(_receiveBuffer, 0, e.DataCount);
-                //    _packages.Remove(baseClient);
-                //    return;
-                //}
             }
 
             e.NetworkStream.Read(bytes, 0, e.DataCount);
@@ -74,6 +61,21 @@ namespace OctoAwesome.Network
                 if (e.DataCount - count > 0)
                     ClientDataAvailable(sender, new OctoNetworkEventArgs() { DataCount = e.DataCount - count, NetworkStream = e.NetworkStream });
             }
+        }
+
+        protected override void OnNextCore(OctoNetworkEventArgs value)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnErrorCore(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnCompletedCore()
+        {
+            throw new NotImplementedException();
         }
     }
 }
