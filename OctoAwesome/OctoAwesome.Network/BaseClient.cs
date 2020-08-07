@@ -64,7 +64,6 @@ namespace OctoAwesome.Network
                 }
                 _sending = true;
             }
-
             SendInternal(data, len);
         }
 
