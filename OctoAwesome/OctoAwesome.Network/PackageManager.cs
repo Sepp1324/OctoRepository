@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
 
 namespace OctoAwesome.Network
 {
-    public class PackageManager : ObserverBase<OctoNetworkEventArgs>
+    public class PackageManager : IObserver<OctoNetworkEventArgs>
     {
-        public List<BaseClient> ConnectedClients { get; set; }
-        private Dictionary<BaseClient, Package> packages;
+        public List<Subscription<OctoNetworkEventArgs>> Subscriptions { get; set; }
+
+        private Dictionary<BaseClient, Package> _packages;
+
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
+
         private readonly byte[] receiveBuffer;
 
         public PackageManager()
         {
-            packages = new Dictionary<BaseClient, Package>();
-            ConnectedClients = new List<BaseClient>();
+            _packages = new Dictionary<BaseClient, Package>();
+            Subscriptions = new List<Subscription<OctoNetworkEventArgs>>();
         }
 
-        public void AddConnectedClient(BaseClient client) => client.Subscribe(this);
+        public void AddConnectedClient(BaseClient client)
+        {
+            client.Subscribe(this);
+        }
 
         public void SendPackage(Package package, BaseClient client)
         {
@@ -34,10 +38,10 @@ namespace OctoAwesome.Network
             byte[] bytes;
             bytes = new byte[e.DataCount];
 
-            if (!packages.TryGetValue(baseClient, out Package package))
+            if (!_packages.TryGetValue(baseClient, out Package package))
             {
                 package = new Package();
-                packages.Add(baseClient, package);
+                _packages.Add(baseClient, package);
 
                 int current = 0;
 
@@ -46,22 +50,21 @@ namespace OctoAwesome.Network
                 if (current != Package.HEAD_LENGTH)
                 {
                     Console.WriteLine($"Package was not complete, only got: {current} bytes");
-                    packages.Remove(baseClient);
+                    _packages.Remove(baseClient);
                     return;
                 }
-
-
                 package.TryDeserializeHeader(bytes);
                 e.DataCount -= Package.HEAD_LENGTH;
             }
 
             if (e.DataCount > 0)
                 e.NetworkStream.Read(bytes, 0, e.DataCount);
+
             var count = package.DeserializePayload(bytes, 0, e.DataCount);
 
             if (package.IsComplete)
             {
-                packages.Remove(baseClient);
+                _packages.Remove(baseClient);
                 PackageAvailable?.Invoke(this, new OctoPackageAvailableEventArgs { BaseClient = baseClient, Package = package });
 
                 if (e.DataCount - count > 0)
@@ -69,12 +72,19 @@ namespace OctoAwesome.Network
             }
         }
 
-        protected override void OnNextCore(OctoNetworkEventArgs args)
+        public void OnNext(OctoNetworkEventArgs value)
         {
-            ClientDataAvailable(args);
+            throw new NotImplementedException();
         }
 
-        protected override void OnErrorCore(Exception error) => throw new NotImplementedException();
-        protected override void OnCompletedCore() => throw new NotImplementedException();
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
