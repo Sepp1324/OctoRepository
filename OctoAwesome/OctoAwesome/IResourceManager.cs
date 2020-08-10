@@ -13,12 +13,12 @@ namespace OctoAwesome
         /// Erzuegt ein neues Universum.
         /// </summary>
         /// <param name="name">Name des neuen Universums.</param>
-        /// <param name="seed">Weltgenerator-Seed fÃ¼r das neue Universum.</param>
+        /// <param name="seed">Weltgenerator-Seed für das neue Universum.</param>
         /// <returns>Die Guid des neuen Universums.</returns>
         Guid NewUniverse(string name, int seed);
 
         /// <summary>
-        /// LÃ¤dt das Universum fÃ¼r die angegebene GUID.
+        /// Lädt das Universum für die angegebene GUID.
         /// </summary>
         /// <param name="universeId">Die Guid des Universums.</param>
         void LoadUniverse(Guid universeId);
@@ -29,28 +29,28 @@ namespace OctoAwesome
         IUniverse CurrentUniverse { get; }
 
         /// <summary>
-        /// EntlÃ¤dt das aktuelle Universum.
+        /// Entlädt das aktuelle Universum.
         /// </summary>
         void UnloadUniverse();
 
         /// <summary>
-        /// Gibt alle Universen zurÃ¼ck, die geladen werden kÃ¶nnen.
+        /// Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
         IUniverse[] ListUniverses();
 
         /// <summary>
-        /// LÃ¶scht ein Universum.
+        /// Löscht ein Universum.
         /// </summary>
         /// <param name="id">Die Guid des Universums.</param>
         void DeleteUniverse(Guid id);
 
         /// <summary>
-        /// LÃ¤dt einen Player.
+        /// Lädt einen Player.
         /// </summary>
-        /// <param name="playerName">Der Name des Players.</param>
+        /// <param name="playername">Der Name des Players.</param>
         /// <returns></returns>
-        Player LoadPlayer(string playerName);
+        Player LoadPlayer(string playername);
 
         /// <summary>
         /// Speichert einen Player.
@@ -59,27 +59,25 @@ namespace OctoAwesome
         void SavePlayer(Player player);
 
         /// <summary>
-        /// EntlÃ¤dt das aktuelle Universum
+        /// Entlädt das aktuelle Universum
         /// </summary>
-        /// <returns>Das gewÃ¼nschte Universum, falls es existiert</returns>
+        /// <returns>Das gewünschte Universum, falls es existiert</returns>
         IUniverse GetUniverse();
 
         /// <summary>
-        /// Gibt den Planeten mit der angegebenen ID zurÃ¼ck
+        /// Gibt den Planeten mit der angegebenen ID zurück
         /// </summary>
-        /// <param name="planetId">Die Planteten-ID des gewÃ¼nschten Planeten</param>
-        /// <returns>Der gewÃ¼nschte Planet, falls er existiert</returns>
+        /// <param name="planetId">Die Planteten-ID des gewünschten Planeten</param>
+        /// <returns>Der gewünschte Planet, falls er existiert</returns>
         IPlanet GetPlanet(int planetId);
 
         /// <summary>
-        /// Cache der fÃ¼r alle Chunks verwaltet und diese an lokale Caches weiter gibt.
+        /// Cache der für alle Chunks verwaltet und diese an lokale Caches weiter gibt.
         /// </summary>
         IGlobalChunkCache GlobalChunkCache { get; }
         Player CurrentPlayer { get; }
 
         void SaveEntity(Entity entity);
-
         void SaveChunkColumn(IChunkColumn value);
-
     }
 }

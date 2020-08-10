@@ -1,32 +1,37 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
     public class Awaiter
     {
         public ISerializable Serializable { get; set; }
-
-        private readonly ManualResetEventSlim _manualResetEventSlim;
-        private bool _alreadyDeserialized;
+        private readonly ManualResetEventSlim manualReset;
+        private bool alreadyDeserialized;
 
         public Awaiter()
         {
-            _manualResetEventSlim = new ManualResetEventSlim(false);
+            manualReset = new ManualResetEventSlim(false);
         }
 
         public ISerializable WaitOn()
         {
-            if (!_alreadyDeserialized)
-                _manualResetEventSlim.Wait();
+            if (!alreadyDeserialized)
+                manualReset.Wait();
+
             return Serializable;
         }
 
         public void SetResult(ISerializable serializable)
         {
             Serializable = serializable;
-            _manualResetEventSlim.Set();
-            _alreadyDeserialized = true;
+            manualReset.Set();
+            alreadyDeserialized = true;
         }
 
         public void SetResult(byte[] bytes, IDefinitionManager definitionManager)
@@ -36,8 +41,8 @@ namespace OctoAwesome
             {
                 Serializable.Deserialize(reader, definitionManager);
             }
-            _manualResetEventSlim.Set();
-            _alreadyDeserialized = true;
+            manualReset.Set();
+            alreadyDeserialized = true;
         }
     }
 }

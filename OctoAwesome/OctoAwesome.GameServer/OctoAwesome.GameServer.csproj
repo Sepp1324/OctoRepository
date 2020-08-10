@@ -32,14 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Command Management System, Version=3.0.0.146, Culture=neutral, PublicKeyToken=304a821013b0b687, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandManagementSystem.3.0.0-alpha2\lib\net46\Command Management System.dll</HintPath>
-    </Reference>
-    <Reference Include="engenious, Version=0.2.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -81,7 +77,7 @@
       <Version>3.0.0-alpha2</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>4.7.3</Version>
+      <Version>4.5.10</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

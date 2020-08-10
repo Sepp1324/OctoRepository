@@ -1,8 +1,11 @@
-﻿using System;
-using System.Threading;
+﻿using CommandManagementSystem;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using OctoAwesome.Network;
+using System;
+using System.Net;
+using System.Threading;
 
 namespace OctoAwesome.GameServer
 {
@@ -10,8 +13,8 @@ namespace OctoAwesome.GameServer
     {
         public static ServerHandler ServerHandler { get; set; }
 
-        private static ManualResetEvent _manualResetEvent;
-        private static Logger _logger;
+        private static ManualResetEvent manualResetEvent;
+        private static Logger logger;
 
         private static void Main(string[] args)
         {
@@ -21,16 +24,18 @@ namespace OctoAwesome.GameServer
             config.AddRule(LogLevel.Trace, LogLevel.Fatal, new FileTarget("octoawesome.logfile") { FileName = "server.log" });
 
             LogManager.Configuration = config;
-            _logger = LogManager.GetCurrentClassLogger(typeof(Program));
+            logger = LogManager.GetCurrentClassLogger(typeof(Program));
             
-            _manualResetEvent = new ManualResetEvent(false);
-
-            _logger.Info("Server started");
+            manualResetEvent = new ManualResetEvent(false);
+                        
+            logger.Info("Server start");
             ServerHandler = new ServerHandler();
             ServerHandler.Start();
 
-            Console.CancelKeyPress += (s, e) => _manualResetEvent.Set();
-            _manualResetEvent.WaitOne();
+            Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
+            manualResetEvent.WaitOne();
         }
+
+        
     }
 }

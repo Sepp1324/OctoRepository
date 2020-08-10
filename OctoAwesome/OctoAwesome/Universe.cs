@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome
 {
@@ -43,17 +45,6 @@ namespace OctoAwesome
             Name = name;
             Seed = seed;
         }
-        
-        /// <summary>
-        /// Serialisiert das Universum in den angegebenen Stream
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
-        {
-            writer.Write(Id.ToString());
-            writer.Write(Name);
-            writer.Write(Seed);
-        }
 
         /// <summary>
         /// Deserialisiert ein Universum aus dem angegebenen Stream
@@ -65,5 +56,18 @@ namespace OctoAwesome
             Name = reader.ReadString();
             Seed = reader.ReadInt32();
         }
+
+        /// <summary>
+        /// Serialisiert das Universum in den angegebenen Stream
+        /// </summary>
+        /// <param name="stream"></param>
+        public void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
+        {
+             writer.Write(Id.ToString());
+             writer.Write(Name);
+             writer.Write(Seed);
+        }
+
+ 
     }
 }

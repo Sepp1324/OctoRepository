@@ -1,29 +1,29 @@
-﻿using OctoAwesome.Basics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using OctoAwesome.Basics;
 
 namespace OctoAwesome.Network
 {
     public class NetworkPersistenceManager : IPersistenceManager
     {
-        private readonly Client _client;
-        private readonly IDefinitionManager _definitionManager;
+        private Client client;
+        private readonly IDefinitionManager definitionManager;
 
-        private Dictionary<uint, Awaiter> _packages;
+        private Dictionary<uint, Awaiter> packages;
 
         public NetworkPersistenceManager(IDefinitionManager definitionManager)
         {
-            _client = new Client();
-            _client.PackageAvailable += ClientPackageAvailable;
-            _packages = new Dictionary<uint, Awaiter>();
-            _definitionManager = definitionManager;
+            client = new Client();
+            client.PackageAvailable += ClientPackageAvailable;
+            packages = new Dictionary<uint, Awaiter>();
+            this.definitionManager = definitionManager;
         }
 
-        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) :
-            this(definitionManager) => _client.Connect(host, port);
+
+        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager) => client.Connect(host, port);
 
         public void DeleteUniverse(Guid universeGuid)
         {
@@ -34,7 +34,7 @@ namespace OctoAwesome.Network
 
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var package = new Package((ushort) OfficialCommands.LoadColumn, 0);
+            var package = new Package((ushort)OfficialCommands.LoadColumn, 0);
 
             using (var memoryStream = new MemoryStream())
             using (var binaryWriter = new BinaryWriter(memoryStream))
@@ -46,57 +46,62 @@ namespace OctoAwesome.Network
 
                 package.Payload = memoryStream.ToArray();
             }
-            
             column = new ChunkColumn();
-            var awaiter = GetAwaiter(column, package.Uid);
-            
-            _client.SendPackage(package);
+            var awaiter = GetAwaiter(column, package.UId);
+
+            client.SendPackage(package);
+
             return awaiter;
         }
 
         public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
-            var package = new Package((ushort) OfficialCommands.GetPlanet, 0);
-            
+            var package = new Package((ushort)OfficialCommands.GetPlanet, 0);
             planet = new ComplexPlanet();
-            var awaiter = GetAwaiter(planet, package.Uid);
-            
-            _client.SendPackage(package);
+            var awaiter = GetAwaiter(planet, package.UId);
+            client.SendPackage(package);
+
+
             return awaiter;
         }
 
-        public Awaiter Load(out Player player, Guid universeGuid, string playerName)
+        public Awaiter Load(out Player player, Guid universeGuid, string playername)
         {
-            var playerNameBytes = Encoding.UTF8.GetBytes(playerName);
+            var playernameBytes = Encoding.UTF8.GetBytes(playername);
 
-            var package = new Package((ushort) OfficialCommands.Whoami, playerNameBytes.Length)
+            var package = new Package((ushort)OfficialCommands.Whoami, playernameBytes.Length)
             {
-                Payload = playerNameBytes
+                Payload = playernameBytes
             };
 
             player = new Player();
-            var awaiter = GetAwaiter(player, package.Uid);
-            
-            _client.SendPackage(package);
+            var awaiter = GetAwaiter(player, package.UId);
+            client.SendPackage(package);
+
             return awaiter;
         }
 
         public Awaiter Load(out IUniverse universe, Guid universeGuid)
         {
-            var package = new Package((ushort) OfficialCommands.GetUniverse, 0);
+            var package = new Package((ushort)OfficialCommands.GetUniverse, 0);
             Thread.Sleep(60);
 
             universe = new Universe();
-            var awaiter = GetAwaiter(universe, package.Uid);
-            
-            _client.SendPackage(package);
+            var awaiter = GetAwaiter(universe, package.UId);
+            client.SendPackage(package);
+
+
             return awaiter;
         }
 
-        private Awaiter GetAwaiter(ISerializable serializable, uint packageId)
+        private Awaiter GetAwaiter(ISerializable serializable, uint packageUId)
         {
-            var awaiter = new Awaiter() { Serializable = serializable};
-            _packages.Add(packageId, awaiter);
+            var awaiter = new Awaiter
+            {
+                Serializable = serializable
+            };
+            packages.Add(packageUId, awaiter);
+
             return awaiter;
         }
 
@@ -122,21 +127,26 @@ namespace OctoAwesome.Network
 
         public void SendChangedChunkColumn(IChunkColumn chunkColumn)
         {
-            var package = new Package((ushort)OfficialCommands.SaveColumn, 0); 
-            
-            using(var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
+            var package = new Package((ushort)OfficialCommands.SaveColumn, 0);
+
+            using (var ms = new MemoryStream())
+            using (var bw = new BinaryWriter(ms))
             {
-                chunkColumn.Serialize(writer, _definitionManager);
-                package.Payload = stream.ToArray();
+                chunkColumn.Serialize(bw, definitionManager);
+                package.Payload = ms.ToArray();
             }
-            _client.SendPackage(package);
+            
+
+            client.SendPackage(package); 
         }
 
         private void ClientPackageAvailable(object sender, Package e)
         {
-            if (_packages.TryGetValue(e.Uid, out var awaiter))
-                awaiter.SetResult(e.Payload, _definitionManager);
+            if (packages.TryGetValue(e.UId, out var awaiter))
+            {
+                awaiter.SetResult(e.Payload, definitionManager);
+            }
         }
+
     }
 }

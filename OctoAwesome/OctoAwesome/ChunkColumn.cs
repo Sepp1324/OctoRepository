@@ -29,7 +29,6 @@ namespace OctoAwesome
             Chunks = chunks;
             Index = columnIndex;
             Entities = new EntityList(this);
-
             foreach (var chunk in chunks)
             {
                 chunk.Changed += OnChunkChanged;
@@ -69,12 +68,12 @@ namespace OctoAwesome
         {
             for (int z = Chunks.Length * Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
             {
+
                 if (GetBlock(x, y, z) != 0)
                 {
                     return z;
                 }
             }
-
             return -1;
         }
 
@@ -86,22 +85,38 @@ namespace OctoAwesome
         /// <summary>
         /// Die Chunks der Säule.
         /// </summary>
-        public IChunk[] Chunks { get; private set; }
+        public IChunk[] Chunks
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Gibt an, ob die ChunkColumn schon von einem <see cref="IMapPopulator"/> bearbeitet wurde.
         /// </summary>
-        public bool Populated { get; set; }
+        public bool Populated
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Der Index des Planeten.
         /// </summary>
-        public int Planet { get; private set; }
+        public int Planet
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Die Position der Säule.
         /// </summary>
-        public Index2 Index { get; private set; }
+        public Index2 Index
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Liefet den Block an der angegebenen Koordinate zurück.
@@ -119,7 +134,7 @@ namespace OctoAwesome
         /// <returns>Block-ID der angegebenen Koordinate</returns>
         public ushort GetBlock(int x, int y, int z)
         {
-            var index = z / Chunk.CHUNKSIZE_Z;
+            int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
             return Chunks[index].GetBlock(x, y, z);
         }
@@ -133,7 +148,7 @@ namespace OctoAwesome
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
         public int GetBlockMeta(int x, int y, int z)
         {
-            var index = z / Chunk.CHUNKSIZE_Z;
+            int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
             return Chunks[index].GetBlockMeta(x, y, z);
         }
@@ -147,7 +162,7 @@ namespace OctoAwesome
         /// <returns>Ein Array aller Ressourcen des Blocks</returns>
         public ushort[] GetBlockResources(int x, int y, int z)
         {
-            var index = z / Chunk.CHUNKSIZE_Z;
+            int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
             return Chunks[index].GetBlockResources(x, y, z);
         }
@@ -158,8 +173,7 @@ namespace OctoAwesome
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
         /// <param name="meta">(Optional) Metainformationen für den Block</param>
-        public void SetBlock(Index3 index, ushort block, int meta = 0) =>
-            SetBlock(index.X, index.Y, index.Z, block, meta);
+        public void SetBlock(Index3 index, ushort block, int meta = 0) => SetBlock(index.X, index.Y, index.Z, block, meta);
 
         /// <summary>
         /// Überschreibt den Block an der angegebenen Koordinate.
@@ -171,7 +185,7 @@ namespace OctoAwesome
         /// <param name="block">Die neue Block-ID</param>
         public void SetBlock(int x, int y, int z, ushort block, int meta = 0)
         {
-            var index = z / Chunk.CHUNKSIZE_Z;
+            int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
             Chunks[index].SetBlock(x, y, z, block, meta);
         }
@@ -185,7 +199,7 @@ namespace OctoAwesome
         /// <param name="meta">(Optional) Metainformationen für den Block</param>
         public void SetBlockMeta(int x, int y, int z, int meta)
         {
-            var index = z / Chunk.CHUNKSIZE_Z;
+            int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
             Chunks[index].SetBlockMeta(x, y, z, meta);
         }
@@ -199,7 +213,7 @@ namespace OctoAwesome
         /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         public void SetBlockResources(int x, int y, int z, ushort[] resources)
         {
-            var index = z / Chunk.CHUNKSIZE_Z;
+            int index = z / Chunk.CHUNKSIZE_Z;
             z %= Chunk.CHUNKSIZE_Z;
             Chunks[index].SetBlockResources(x, y, z, resources);
         }
@@ -212,46 +226,43 @@ namespace OctoAwesome
         public void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
         {
             // Definitionen sammeln
-            var definitions = new List<IBlockDefinition>();
-            
+            List<IBlockDefinition> definitions = new List<IBlockDefinition>();
             for (int c = 0; c < Chunks.Length; c++)
             {
-                var chunk = Chunks[c];
-                
+                IChunk chunk = Chunks[c];
                 for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] != 0)
                     {
-                        var definition =
-                            (IBlockDefinition) definitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
+                        IBlockDefinition definition = (IBlockDefinition)definitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
                         if (!definitions.Contains(definition))
                             definitions.Add(definition);
                     }
                 }
             }
 
-            var longIndex = definitions.Count > 254;
-            writer.Write((byte) ((longIndex) ? 1 : 0));
+            bool longIndex = definitions.Count > 254;
+            writer.Write((byte)((longIndex) ? 1 : 0));
 
             // Schreibe Phase 1 (Column Meta: Heightmap, populated, chunkcount)
-            writer.Write((byte) Chunks.Length); // Chunk Count
+            writer.Write((byte)Chunks.Length); // Chunk Count
             writer.Write(Populated); // Populated
             writer.Write(Index.X);
             writer.Write(Index.Y);
             writer.Write(Planet);
-            
+
             for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++) // Heightmap
-            for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
-                writer.Write((ushort) Heights[x, y]);
+                for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+                    writer.Write((ushort)Heights[x, y]);
 
             for (int i = 0; i < Chunks.Length; i++) // Change Counter
                 writer.Write(Chunks[i].ChangeCounter);
 
             // Schreibe Phase 2 (Block Definitionen)
             if (longIndex)
-                writer.Write((ushort) definitions.Count);
+                writer.Write((ushort)definitions.Count);
             else
-                writer.Write((byte) definitions.Count);
+                writer.Write((byte)definitions.Count);
 
             foreach (var definition in definitions)
                 writer.Write(definition.GetType().FullName);
@@ -259,27 +270,26 @@ namespace OctoAwesome
             // Schreibe Phase 3 (Chunk Infos)
             for (int c = 0; c < Chunks.Length; c++)
             {
-                var chunk = Chunks[c];
-
+                IChunk chunk = Chunks[c];
                 for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] == 0)
                     {
                         // Definition Index (Air)
                         if (longIndex)
-                            writer.Write((ushort) 0);
+                            writer.Write((ushort)0);
                         else
-                            writer.Write((byte) 0);
+                            writer.Write((byte)0);
                     }
                     else
                     {
                         // Definition Index
-                        var definition = (IBlockDefinition) definitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
+                        IBlockDefinition definition = (IBlockDefinition)definitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
 
                         if (longIndex)
-                            writer.Write((ushort) (definitions.IndexOf(definition) + 1));
+                            writer.Write((ushort)(definitions.IndexOf(definition) + 1));
                         else
-                            writer.Write((byte) (definitions.IndexOf(definition) + 1));
+                            writer.Write((byte)(definitions.IndexOf(definition) + 1));
 
                         // Meta Data
                         if (definition.HasMetaData)
@@ -292,17 +302,18 @@ namespace OctoAwesome
             writer.Write(Entities.Count);
             foreach (var entity in Entities)
             {
-                using (var memoryStream = new MemoryStream())
+                using (MemoryStream memorystream = new MemoryStream())
                 {
                     writer.Write(entity.GetType().AssemblyQualifiedName);
 
-                    using (var componentBinaryStream = new BinaryWriter(memoryStream))
+                    using (BinaryWriter componentbinarystream = new BinaryWriter(memorystream))
                     {
                         try
                         {
-                            entity.Serialize(componentBinaryStream, definitionManager);
-                            writer.Write((int) memoryStream.Length);
-                            memoryStream.WriteTo(writer.BaseStream);
+                            entity.Serialize(componentbinarystream, definitionManager);
+                            writer.Write((int)memorystream.Length);
+                            memorystream.WriteTo(writer.BaseStream);
+
                         }
                         catch (Exception)
                         {
@@ -323,100 +334,97 @@ namespace OctoAwesome
         /// <param name="planetId">Der Index des Planeten</param>
         public void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
-                var longIndex = reader.ReadByte() > 0;
+            bool longIndex = reader.ReadByte() > 0;
 
-                // Phase 1 (Column Meta: Heightmap, populated, chunkcount)
-                Chunks = new Chunk[reader.ReadByte()]; // Chunk Count
+            // Phase 1 (Column Meta: Heightmap, populated, chunkcount)
+            Chunks = new Chunk[reader.ReadByte()]; // Chunk Count
 
-                Populated = reader.ReadBoolean(); // Populated
+            Populated = reader.ReadBoolean(); // Populated
 
-                Index = new Index2(reader.ReadInt32(), reader.ReadInt32());
-                Planet = reader.ReadInt32();
+            Index = new Index2(reader.ReadInt32(), reader.ReadInt32());
+            Planet = reader.ReadInt32();
 
-                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++) // Heightmap
+            for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++) // Heightmap
                 for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     Heights[x, y] = reader.ReadUInt16();
 
-                var counter = new int[Chunks.Length];
+            int[] counter = new int[Chunks.Length];
 
-                for (int i = 0; i < Chunks.Length; i++) // ChangeCounter
-                    counter[i] = reader.ReadInt32();
+            for (int i = 0; i < Chunks.Length; i++) // ChangeCounter
+                counter[i] = reader.ReadInt32();
+            
+            // Phase 2 (Block Definitionen)
+            List<IDefinition> types = new List<IDefinition>();
+            Dictionary<ushort, ushort> map = new Dictionary<ushort, ushort>();
 
-                // Phase 2 (Block Definitionen)
-                var types = new List<IDefinition>();
-                var map = new Dictionary<ushort, ushort>();
+            int typecount = longIndex ? reader.ReadUInt16() : reader.ReadByte();
 
-                int typeCount = longIndex ? reader.ReadUInt16() : reader.ReadByte();
+            for (int i = 0; i < typecount; i++)
+            {
+                string typeName = reader.ReadString();
+                IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
+                var blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
+                types.Add(blockDefinition);
 
-                for (int i = 0; i < typeCount; i++)
+                map.Add((ushort)types.Count, (ushort)(Array.IndexOf(definitions, blockDefinition) + 1));
+            }
+
+            // Phase 3 (Chunk Infos)
+            for (int c = 0; c < Chunks.Length; c++)
+            {
+                IChunk chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
+                chunk.Changed += OnChunkChanged;
+
+                for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
-                    var typeName = reader.ReadString();
-                    var definitions = definitionManager.GetDefinitions().ToArray();
-                    var blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
-                    types.Add(blockDefinition);
-
-                    map.Add((ushort) types.Count, (ushort) (Array.IndexOf(definitions, blockDefinition) + 1));
-                }
-
-                // Phase 3 (Chunk Infos)
-                for (int c = 0; c < Chunks.Length; c++)
-                {
-                    var chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
-                    chunk.Changed += OnChunkChanged;
-
-                    for (int i = 0; i < chunk.Blocks.Length; i++)
+                    ushort typeIndex = longIndex ? reader.ReadUInt16() : reader.ReadByte();
+                    chunk.MetaData[i] = 0;
+                    if (typeIndex > 0)
                     {
-                        var typeIndex = longIndex ? reader.ReadUInt16() : reader.ReadByte();
-                        chunk.MetaData[i] = 0;
+                        chunk.Blocks[i] = map[typeIndex];
 
-                        if (typeIndex > 0)
+                        var definition = (IBlockDefinition)definitionManager.GetDefinitionByIndex(map[typeIndex]);
+
+                        if (definition.HasMetaData)
+                            chunk.MetaData[i] = reader.ReadInt32();
+                    }
+                }
+                chunk.ChangeCounter = counter[c];
+            }
+
+            //Entities lesen
+            var count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                var name = reader.ReadString();
+                var length = reader.ReadInt32();
+
+                byte[] buffer = new byte[length];
+                reader.Read(buffer, 0, length);
+
+                try
+                {
+                    var type = Type.GetType(name);
+
+                    if (type == null)
+                        continue;
+
+                    Entity entity = (Entity)Activator.CreateInstance(type);
+
+                    using (MemoryStream memorystream = new MemoryStream(buffer))
+                    {
+                        using (BinaryReader componentbinarystream = new BinaryReader(memorystream))
                         {
-                            chunk.Blocks[i] = map[typeIndex];
-
-                            var definition = (IBlockDefinition) definitionManager.GetDefinitionByIndex(map[typeIndex]);
-
-                            if (definition.HasMetaData)
-                                chunk.MetaData[i] = reader.ReadInt32();
+                            entity.Deserialize(componentbinarystream, definitionManager);
                         }
                     }
 
-                    chunk.ChangeCounter = counter[c];
+                    Entities.Add(entity);
                 }
-
-                //Entities lesen
-                var count = reader.ReadInt32();
-                for (int i = 0; i < count; i++)
+                catch (Exception)
                 {
-                    var name = reader.ReadString();
-                    var length = reader.ReadInt32();
-
-                    byte[] buffer = new byte[length];
-                    reader.Read(buffer, 0, length);
-
-                    try
-                    {
-                        var type = Type.GetType(name);
-
-                        if (type == null)
-                            continue;
-
-                        Entity entity = (Entity) Activator.CreateInstance(type);
-
-                        using (MemoryStream memorystream = new MemoryStream(buffer))
-                        {
-                            using (BinaryReader componentbinarystream = new BinaryReader(memorystream))
-                            {
-                                entity.Deserialize(componentbinarystream, definitionManager);
-                            }
-                        }
-
-                        Entities.Add(entity);
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
                 }
+            }
         }
 
         public event Action<IChunkColumn, IChunk, int> Changed;

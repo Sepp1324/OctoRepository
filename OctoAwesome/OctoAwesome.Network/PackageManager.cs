@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 
 namespace OctoAwesome.Network
@@ -7,17 +8,17 @@ namespace OctoAwesome.Network
     public class PackageManager : ObserverBase<OctoNetworkEventArgs>
     {
         public List<BaseClient> ConnectedClients { get; set; }
-        private Dictionary<BaseClient, Package> _packages;
+        private Dictionary<BaseClient, Package> packages;
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
-
+        private readonly byte[] receiveBuffer;
 
         public PackageManager()
         {
-            _packages = new Dictionary<BaseClient, Package>();
+            packages = new Dictionary<BaseClient, Package>();
             ConnectedClients = new List<BaseClient>();
         }
 
-        public void AddConnectedClient(BaseClient client) => client.DataAvailable += ClientDataAvailable;
+        public void AddConnectedClient(BaseClient client) => client.Subscribe(this);
 
         public void SendPackage(Package package, BaseClient client)
         {
@@ -26,56 +27,54 @@ namespace OctoAwesome.Network
             client.SendAsync(bytes, bytes.Length);
         }
 
-        private void ClientDataAvailable(object sender, OctoNetworkEventArgs e)
+        private void ClientDataAvailable(OctoNetworkEventArgs e)
         {
-            var baseClient = (BaseClient)sender;
+            var baseClient = e.Client;
 
-            byte[] bytes = new byte[e.DataCount];
+            byte[] bytes;
+            bytes = new byte[e.DataCount];
 
-            if (!_packages.TryGetValue(baseClient, out Package package))
+            if (!packages.TryGetValue(baseClient, out Package package))
             {
                 package = new Package();
-                _packages.Add(baseClient, package);
+                packages.Add(baseClient, package);
 
                 int current = 0;
 
-
-                current = e.NetworkStream.Read(bytes, current, Package.HEAD_LENGTH - current);
+                current += e.NetworkStream.Read(bytes, current, Package.HEAD_LENGTH - current);
 
                 if (current != Package.HEAD_LENGTH)
-                    Console.WriteLine($"Package wos not complete; Bytes received: {current}");
+                {
+                    Console.WriteLine($"Package was not complete, only got: {current} bytes");
+                    packages.Remove(baseClient);
+                    return;
+                }
+
 
                 package.TryDeserializeHeader(bytes);
                 e.DataCount -= Package.HEAD_LENGTH;
             }
 
-            e.NetworkStream.Read(bytes, 0, e.DataCount);
+            if (e.DataCount > 0)
+                e.NetworkStream.Read(bytes, 0, e.DataCount);
             var count = package.DeserializePayload(bytes, 0, e.DataCount);
 
             if (package.IsComplete)
             {
-                _packages.Remove(baseClient);
-
+                packages.Remove(baseClient);
                 PackageAvailable?.Invoke(this, new OctoPackageAvailableEventArgs { BaseClient = baseClient, Package = package });
 
                 if (e.DataCount - count > 0)
-                    ClientDataAvailable(sender, new OctoNetworkEventArgs() { DataCount = e.DataCount - count, NetworkStream = e.NetworkStream });
+                    ClientDataAvailable(new OctoNetworkEventArgs() { Client = baseClient, DataCount = e.DataCount - count, NetworkStream = e.NetworkStream });
             }
         }
 
-        protected override void OnNextCore(OctoNetworkEventArgs value)
+        protected override void OnNextCore(OctoNetworkEventArgs args)
         {
-            throw new NotImplementedException();
+            ClientDataAvailable(args);
         }
 
-        protected override void OnErrorCore(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnCompletedCore()
-        {
-            throw new NotImplementedException();
-        }
+        protected override void OnErrorCore(Exception error) => throw new NotImplementedException();
+        protected override void OnCompletedCore() => throw new NotImplementedException();
     }
 }

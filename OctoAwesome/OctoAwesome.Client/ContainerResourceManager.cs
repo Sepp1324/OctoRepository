@@ -1,6 +1,10 @@
 ﻿using OctoAwesome.Network;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -9,29 +13,26 @@ namespace OctoAwesome.Client
     /// </summary>
     public class ContainerResourceManager : IResourceManager
     {
-        public IDefinitionManager DefinitionManager => _resourceManager.DefinitionManager;
-
-        public IUniverse CurrentUniverse => _resourceManager.CurrentUniverse;
-
-        public IGlobalChunkCache GlobalChunkCache => _resourceManager.GlobalChunkCache;
+        public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
+        public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
+        public IGlobalChunkCache GlobalChunkCache => resourceManager.GlobalChunkCache;
 
         public bool IsMultiplayer { get; private set; }
+        public Player CurrentPlayer => resourceManager.CurrentPlayer;
 
-        public Player CurrentPlayer => _resourceManager.CurrentPlayer;
-
-        private ResourceManager _resourceManager;
+        private ResourceManager resourceManager;
 
         public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
             ISettings settings, bool multiplayer)
         {
             IPersistenceManager persistenceManager;
 
-            if (_resourceManager != null)
+            if (resourceManager != null)
             {
-                if (_resourceManager.CurrentUniverse != null)
-                    _resourceManager.UnloadUniverse();
+                if (resourceManager.CurrentUniverse != null)
+                    resourceManager.UnloadUniverse();
 
-                _resourceManager = null;
+                resourceManager = null;
             }
 
 
@@ -45,40 +46,38 @@ namespace OctoAwesome.Client
                 persistenceManager = new DiskPersistenceManager(extensionResolver, definitionManager, settings);
             }
 
-            _resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
+            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
 
             IsMultiplayer = multiplayer;
 
             if (multiplayer)
             {
-                _resourceManager.GlobalChunkCache.ChunkColumnChanged += (s, c) =>
-                {
+                resourceManager.GlobalChunkCache.ChunkColumnChanged += (s,c) => {
                     var networkPersistence = (NetworkPersistenceManager)persistenceManager;
                     networkPersistence.SendChangedChunkColumn(c);
                 };
             }
         }
 
-        public void DeleteUniverse(Guid id) => _resourceManager.DeleteUniverse(id);
+        public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);
 
-        public IPlanet GetPlanet(int planetId) => _resourceManager.GetPlanet(planetId);
+        public IPlanet GetPlanet(int planetId) => resourceManager.GetPlanet(planetId);
 
-        public IUniverse GetUniverse() => _resourceManager.GetUniverse();
+        public IUniverse GetUniverse() => resourceManager.GetUniverse();
 
-        public IUniverse[] ListUniverses() => _resourceManager.ListUniverses();
+        public IUniverse[] ListUniverses() => resourceManager.ListUniverses();
 
-        public Player LoadPlayer(string playerName) => _resourceManager.LoadPlayer(playerName);
+        public Player LoadPlayer(string playername) => resourceManager.LoadPlayer(playername);
 
-        public void LoadUniverse(Guid universeId) => _resourceManager.LoadUniverse(universeId);
+        public void LoadUniverse(Guid universeId) => resourceManager.LoadUniverse(universeId);
 
-        public Guid NewUniverse(string name, int seed) => _resourceManager.NewUniverse(name, seed);
+        public Guid NewUniverse(string name, int seed) => resourceManager.NewUniverse(name, seed);
 
-        public void SaveEntity(Entity entity) => _resourceManager.SaveEntity(entity);
+        public void SaveEntity(Entity entity) => resourceManager.SaveEntity(entity);
 
-        public void SavePlayer(Player player) => _resourceManager.SavePlayer(player);
+        public void SavePlayer(Player player) => resourceManager.SavePlayer(player);
 
-        public void UnloadUniverse() => _resourceManager.UnloadUniverse();
-
-        public void SaveChunkColumn(IChunkColumn chunkColumn) => _resourceManager.SaveChunkColumn(chunkColumn);
+        public void UnloadUniverse() => resourceManager.UnloadUniverse();
+        public void SaveChunkColumn(IChunkColumn chunkColumn) => resourceManager.SaveChunkColumn(chunkColumn);
     }
 }

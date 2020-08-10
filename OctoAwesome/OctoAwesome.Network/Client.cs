@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections;
+using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using System.Buffers;
 using System.Net;
 using System.Text;
 using System.Linq;
+using System.Threading;
+using System.Net.NetworkInformation;
 
 namespace OctoAwesome.Network
 {
@@ -12,13 +18,12 @@ namespace OctoAwesome.Network
         public bool IsClient { get; set; }
         public event EventHandler<Package> PackageAvailable;
 
-        private Package _currentPackage;
-        private static int _clientReceived;
+        private Package currentPackage;
+        private static int clientReceived;
 
         public Client() :
             base(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
         {
-            DataAvailable += ClientDataAvailable;
         }
 
         public void SendPing()
@@ -36,6 +41,10 @@ namespace OctoAwesome.Network
             Socket.BeginConnect(new IPEndPoint(address, port), OnConnected, null);
         }
 
+        protected override void Notify(OctoNetworkEventArgs args)
+        {
+            ClientDataAvailable(args);
+        }
 
         private void OnConnected(IAsyncResult ar)
         {
@@ -57,27 +66,27 @@ namespace OctoAwesome.Network
             SendAsync(bytes, bytes.Length);
         }
 
-        private void ClientDataAvailable(object sender, OctoNetworkEventArgs e)
+        private void ClientDataAvailable(OctoNetworkEventArgs e)
         {
             byte[] bytes = new byte[e.DataCount];
-            if (_currentPackage == null)
+            if (currentPackage == null)
             {
-                _currentPackage = new Package();
+                currentPackage = new Package();
                 if (e.DataCount >= Package.HEAD_LENGTH)
                 {
                     e.NetworkStream.Read(bytes, 0, Package.HEAD_LENGTH);
-                    _currentPackage.TryDeserializeHeader(bytes);
+                    currentPackage.TryDeserializeHeader(bytes);
                     e.DataCount -= Package.HEAD_LENGTH;
                 }
             }
 
             e.NetworkStream.Read(bytes, 0, e.DataCount);
-            _currentPackage.DeserializePayload(bytes, 0, e.DataCount);
+            currentPackage.DeserializePayload(bytes, 0, e.DataCount);
 
-            if (_currentPackage.IsComplete)
+            if (currentPackage.IsComplete)
             {
-                PackageAvailable?.Invoke(this, _currentPackage);
-                _currentPackage = null;
+                PackageAvailable?.Invoke(this, currentPackage);
+                currentPackage = null;
             }
         }
     }

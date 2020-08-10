@@ -23,17 +23,9 @@ namespace OctoAwesome.Tests
         public Index3 Size { get; private set; }
 
         public Guid Universe { get; private set; }
+        IMapGenerator IPlanet.Generator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        IMapGenerator IPlanet.Generator
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
-        public void Serialize(BinaryWriter writer, IDefinitionManager definitionManager) =>
-            throw new NotImplementedException();
-
-        public void Deserialize(BinaryReader reader, IDefinitionManager definitionManager) =>
-            throw new NotImplementedException();
+        public void Deserialize(BinaryReader reader, IDefinitionManager definitionManager) => throw new NotImplementedException();
+        public void Serialize(BinaryWriter writer, IDefinitionManager definitionManager) => throw new NotImplementedException();
     }
 }

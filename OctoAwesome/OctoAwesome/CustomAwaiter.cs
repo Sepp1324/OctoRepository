@@ -1,29 +1,24 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System.Threading;
 
 namespace OctoAwesome
 {
     public class CustomAwaiter
     {
-        private ISerializable _result;
-        
-        private ManualResetEventSlim _manualResetEventSlim;
-        
-        public CustomAwaiter()
-        {
-            _manualResetEventSlim = new ManualResetEventSlim(false);
-        }
+        private ISerializable result;
+        private ManualResetEventSlim manualReset;
+
+        public CustomAwaiter() => manualReset = new ManualResetEventSlim(false);
 
         public T WaitOn<T>() where T : ISerializable
         {
-            _manualResetEventSlim.Wait();
-            return (T) _result;
+            manualReset.Wait();
+            return (T)result;
         }
-        
+
         public void SetResult(ISerializable result)
         {
-            _result = result;
-            _manualResetEventSlim.Set();
+            this.result = result;
+            manualReset.Set();
         }
     }
 
