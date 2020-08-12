@@ -4,109 +4,94 @@ namespace OctoAwesome.Network
 {
     public class OctoNetworkStream
     {
-        public int Length => _writeBuffer.Length;
+        public int Length => writeBuffer.Length;
 
-        private byte[] _readBuffer;
-        private byte[] _writeBuffer;
+        private byte[] readBuffer;
+        private byte[] writeBuffer;
 
-        private readonly byte[] _bufferA;
-        private readonly byte[] _bufferB;
+        private readonly byte[] bufferA;
+        private readonly byte[] bufferB;
 
-        private readonly object _readLock;
-        private readonly object _writeLock;
+        private readonly object readLock;
+        private readonly object writeLock;
 
-        private readonly int _writeLength;
-        private readonly int _readLength;
+        private readonly int writeLength;
+        private readonly int readLength;
 
-        private int _maxReadCount;
+        private int maxReadCount;
 
-        private int _readPosition;
-        private int _writePosition;
+        private int readPosition;
+        private int writePosition;
 
-        private bool _writingProcess;
+        private bool writingProcess;
 
         public OctoNetworkStream(int capacity = 1024)
         {
-            _bufferA = new byte[capacity];
-            _bufferB = new byte[capacity];
-            _readBuffer = _bufferA;
-            _writeBuffer = _bufferB;
-            _readLength = capacity;
-            _writeLength = capacity;
-            _readPosition = 0;
-            _writePosition = 0;
-            _readLock = new object();
-            _writeLock = new object();
+            bufferA = new byte[capacity];
+            bufferB = new byte[capacity];
+            readBuffer = bufferA;
+            writeBuffer = bufferB;
+            readLength = capacity;
+            writeLength = capacity;
+            readPosition = 0;
+            writePosition = 0;
+            readLock = new object();
+            writeLock = new object();
         }
 
         public int Write(byte[] buffer, int offset, int count)
         {
-            _writingProcess = true;
+            writingProcess = true;
 
             SwapBuffer();
 
-            var maxCopy = _writeLength - _writePosition;
+            var maxCopy = writeLength - writePosition;
 
             if (maxCopy < count)
                 count = maxCopy;
 
             if (maxCopy < 1)
             {
-                _writingProcess = false;
+                writingProcess = false;
                 return maxCopy;
             }
 
-            lock (_writeLock)
-                Buffer.BlockCopy(buffer, offset, _writeBuffer, _writePosition, count);
+            lock (writeLock)
+                Buffer.BlockCopy(buffer, offset, writeBuffer, writePosition, count);
 
-            _writePosition += count;
+            writePosition += count;
 
-            _writingProcess = false;
+            writingProcess = false;
 
-            return count;
-        }
-
-        public int DataAvailable(int count)
-        {
-            if (!_writingProcess)
-                SwapBuffer();
-
-            var maxCopy = _maxReadCount - _readPosition;
-
-            if (maxCopy < 1)
-                return maxCopy;
-
-            if (maxCopy < count)
-                count = maxCopy;
             return count;
         }
 
         public int Write(byte data)
         {
-            _writingProcess = true;
+            writingProcess = true;
 
             SwapBuffer();
 
-            if (_writeLength == _writePosition)
+            if (writeLength == writePosition)
             {
-                _writingProcess = false;
+                writingProcess = false;
                 return 0;
             }
 
-            lock (_writeLock)
-                _writeBuffer[_writePosition++] = data;
+            lock (writeLock)
+                writeBuffer[writePosition++] = data;
 
-            _writingProcess = false;
+            writingProcess = false;
 
             return 1;
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            if (!_writingProcess)
+            if (!writingProcess)
                 SwapBuffer();
 
-            var maxCopy = _maxReadCount - _readPosition;
+            var maxCopy = maxReadCount - readPosition;
 
             if (maxCopy < 1)
                 return maxCopy;
@@ -114,31 +99,49 @@ namespace OctoAwesome.Network
             if (maxCopy < count)
                 count = maxCopy;
 
-            lock (_readLock)
-                Buffer.BlockCopy(_readBuffer, _readPosition, buffer, offset, count);
+            lock (readLock)
+                Buffer.BlockCopy(readBuffer, readPosition, buffer, offset, count);
 
-            _readPosition += count;
+            readPosition += count;
+
+            return count;
+        }
+
+        public int DataAvailable(int count)
+        {
+            if (!writingProcess)
+                SwapBuffer();
+
+            var maxCopy = maxReadCount - readPosition;
+
+            if (maxCopy < 1)
+                return maxCopy;
+
+            if (maxCopy < count)
+                count = maxCopy;
 
             return count;
         }
 
         private void SwapBuffer()
         {
-            lock (_readLock)
-                lock (_writeLock)
+            lock (readLock)
+                lock (writeLock)
                 {
-                    if (_readPosition > _maxReadCount)
+                    if (readPosition > maxReadCount)
                         throw new IndexOutOfRangeException("ReadPositin is greater than MaxReadCount in OctoNetworkStream");
-                    else if (_readPosition < _maxReadCount)
+                    else if (readPosition < maxReadCount)
                         return;
 
-                    var refBuf = _writeBuffer;
-                    _writeBuffer = _readBuffer;
-                    _readBuffer = refBuf;
-                    _maxReadCount = _writePosition;
-                    _writePosition = 0;
-                    _readPosition = 0;
+                    var refBuf = writeBuffer;
+                    writeBuffer = readBuffer;
+                    readBuffer = refBuf;
+                    maxReadCount = writePosition;
+                    writePosition = 0;
+                    readPosition = 0;
                 }
         }
+
+
     }
 }

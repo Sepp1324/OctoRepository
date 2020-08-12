@@ -9,19 +9,19 @@ namespace OctoAwesome.Network
         /// </summary>
         public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(uint);
 
-        public static uint NextUId => _nextUid++;
-
+        public static uint NextUId => nextUid++;
+        private static uint nextUid; 
         public ushort Command { get; set; }
 
         public byte[] Payload { get; set; }
 
         public uint UId { get; set; }
 
-        public bool IsComplete => _internalOffset == Payload.Length;
+        public bool IsComplete => internalOffset == Payload.Length;
 
-        private static uint _nextUid;
+        public int PayloadRest => Payload.Length - internalOffset;
 
-        private int _internalOffset;
+        private int internalOffset;
 
         public Package(ushort command, int size) : this()
         {
@@ -29,8 +29,8 @@ namespace OctoAwesome.Network
             Payload = new byte[size];
         }
 
-        public Package() : this(true) { }
-
+        public Package() : this(true)
+        { }
         public Package(bool setUid)
         {
             if (setUid)
@@ -49,17 +49,17 @@ namespace OctoAwesome.Network
             Command = (ushort)((buffer[0] << 8) | buffer[1]);
             Payload = new byte[BitConverter.ToInt32(buffer, 2)];
             UId = BitConverter.ToUInt32(buffer, 6);
-            _internalOffset = 0;
+            internalOffset = 0;
             return true;
         }
 
         public int DeserializePayload(byte[] buffer, int offset, int count)
         {
-            if (_internalOffset + count > Payload.Length)
-                count = Payload.Length - _internalOffset;
+            if (internalOffset + count > Payload.Length)
+                count = PayloadRest;
 
-            Buffer.BlockCopy(buffer, offset, Payload, _internalOffset, count);
-            _internalOffset += count;
+            Buffer.BlockCopy(buffer, offset, Payload, internalOffset, count);
+            internalOffset += count;
 
             return count;
         }
@@ -67,7 +67,7 @@ namespace OctoAwesome.Network
         {
             TryDeserializeHeader(buffer);
             Buffer.BlockCopy(buffer, HEAD_LENGTH, Payload, 0, Payload.Length);
-            _internalOffset = Payload.Length;
+            internalOffset = Payload.Length;
         }
 
         public int SerializePackage(byte[] buffer)

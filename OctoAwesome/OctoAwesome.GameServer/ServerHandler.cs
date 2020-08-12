@@ -2,7 +2,11 @@
 using NLog;
 using OctoAwesome.Network;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
@@ -10,56 +14,56 @@ namespace OctoAwesome.GameServer
     {
         public SimulationManager SimulationManager { get; set; }
 
-        private readonly Logger _logger;
-        private readonly Server _server;
-        private readonly PackageManager _packageManager;
-        private readonly DefaultCommandManager<ushort, byte[], byte[]> _defaultManager;
-
+        private readonly Logger logger;
+        private readonly Server server;
+        private readonly PackageManager packageManager;
+        private readonly DefaultCommandManager<ushort, byte[], byte[]> defaultManager;
+                
         public ServerHandler()
         {
-            _logger = LogManager.GetCurrentClassLogger();
+            logger = LogManager.GetCurrentClassLogger();
 
-            _server = new Server();
+            server = new Server();
             SimulationManager = new SimulationManager(new Settings());
-            _packageManager = new PackageManager();
-            _defaultManager = new DefaultCommandManager<ushort, byte[], byte[]>(typeof(ServerHandler).Namespace + ".Commands");
+            packageManager = new PackageManager();
+            defaultManager = new DefaultCommandManager<ushort, byte[], byte[]>(typeof(ServerHandler).Namespace + ".Commands");
         }
 
         public void Start()
         {
-            _packageManager.PackageAvailable += PackageManagerPackageAvailable;
-            _packageManager.Start();
+            packageManager.PackageAvailable += PackageManagerPackageAvailable;
+            packageManager.Start();
 
-            _server.Start(IPAddress.Any, 8888);
-            _server.OnClientConnected += ServerOnClientConnected;
+            server.Start(IPAddress.Any, 8888);
+            server.OnClientConnected += ServerOnClientConnected;
         }
 
         private void PackageManagerPackageAvailable(object sender, OctoPackageAvailableEventArgs e)
         {
             if (e.Package.Command == 0 && e.Package.Payload.Length == 0)
             {
-                _logger.Debug("Received null package");
+                logger.Debug("Received null package");
                 return;
             }
-            _logger.Trace("Received a new Package with ID: " + e.Package.UId);
+            logger.Trace("Received a new Package with ID: " + e.Package.UId);
             try
             {
-                e.Package.Payload = _defaultManager.Dispatch(e.Package.Command, e.Package.Payload) ?? new byte[0];
+                e.Package.Payload = defaultManager.Dispatch(e.Package.Command, e.Package.Payload) ?? new byte[0];
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Dispatch failed in Command " + e.Package.Command);
+                logger.Error(ex, "Dispatch failed in Command " + e.Package.Command);
                 return;
             }
 
-            _logger.Trace(e.Package.Command);
-            _packageManager.SendPackage(e.Package, e.BaseClient);
+            logger.Trace(e.Package.Command);
+            packageManager.SendPackage(e.Package, e.BaseClient);
         }
 
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
-            _logger.Debug("Hurra ein neuer Spieler");
-            _packageManager.AddConnectedClient(e);
+            logger.Debug("Hurra ein neuer Spieler");
+            packageManager.AddConnectedClient(e);
         }
 
     }

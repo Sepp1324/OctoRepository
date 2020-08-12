@@ -9,9 +9,8 @@ namespace OctoAwesome.Network
     public class Subscription<T> : IDisposable
     {
         public IObservable<T> Observable { get; private set; }
-
-        public IObserver<T> Observer { get; set; }
-
+        public IObserver<T> Observer { get; private set; }
+        
         public Subscription(IObservable<T> observable, IObserver<T> observer)
         {
             Observable = observable;
@@ -20,7 +19,6 @@ namespace OctoAwesome.Network
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 }
