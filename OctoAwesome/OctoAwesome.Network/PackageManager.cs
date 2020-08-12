@@ -1,22 +1,27 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class PackageManager : IObserver<OctoNetworkEventArgs>
     {
-        public List<Subscription<OctoNetworkEventArgs>> Subscriptions { get; set; }
-
-        private Dictionary<BaseClient, Package> _packages;
-
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
 
-        private readonly byte[] receiveBuffer;
+        public List<Subscription<OctoNetworkEventArgs>> Subscriptions { get; set; }
+
+        private readonly ConcurrentQueue<OctoNetworkEventArgs> _receivingQueue;
+        private CancellationTokenSource _cancellationTokenSource;
+        private Dictionary<BaseClient, Package> _packages;
 
         public PackageManager()
         {
             _packages = new Dictionary<BaseClient, Package>();
             Subscriptions = new List<Subscription<OctoNetworkEventArgs>>();
+            _receivingQueue = new ConcurrentQueue<OctoNetworkEventArgs>();
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public void AddConnectedClient(BaseClient client)
@@ -72,10 +77,7 @@ namespace OctoAwesome.Network
             }
         }
 
-        public void OnNext(OctoNetworkEventArgs value)
-        {
-            throw new NotImplementedException();
-        }
+        public void OnNext(OctoNetworkEventArgs value) => _receivingQueue.Enqueue(value);
 
         public void OnError(Exception error)
         {
@@ -85,6 +87,30 @@ namespace OctoAwesome.Network
         public void OnCompleted()
         {
             throw new NotImplementedException();
+        }
+
+        public Task Start()
+        {
+            var task =  new Task(InternalProcess, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning);
+            task.Start(TaskScheduler.Default);
+            return task;
+        }
+
+        public void Stop()
+        {
+            _cancellationTokenSource.Cancel();
+        }
+
+        private void InternalProcess()
+        {
+            while(!_cancellationTokenSource.IsCancellationRequested)
+            {
+                if (_receivingQueue.IsEmpty)
+                    continue;
+
+                if (_receivingQueue.TryDequeue(out OctoNetworkEventArgs eventArgs))
+                    ClientDataAvailable(eventArgs);
+            }
         }
     }
 }

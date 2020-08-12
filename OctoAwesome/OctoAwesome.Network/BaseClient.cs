@@ -144,7 +144,7 @@ namespace OctoAwesome.Network
 
         private void Notify(OctoNetworkEventArgs octoNetworkEventArgs)
         {
-            throw new NotImplementedException();
+            _observers.ForEach(o => o.OnNext(octoNetworkEventArgs));
         }
 
         private void OnReceived(object sender, SocketAsyncEventArgs e)
