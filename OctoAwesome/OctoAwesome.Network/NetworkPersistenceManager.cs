@@ -11,28 +11,18 @@ namespace OctoAwesome.Network
     {
         private Client client;
         private readonly IDefinitionManager definitionManager;
-        private readonly PackageManager packageManager;
 
         private Dictionary<uint, Awaiter> packages;
 
         public NetworkPersistenceManager(IDefinitionManager definitionManager)
         {
             client = new Client();
-            packageManager = new PackageManager();
-            packageManager.Start();
 
-            packageManager.PackageAvailable += ClientPackageAvailable;
             packages = new Dictionary<uint, Awaiter>();
             this.definitionManager = definitionManager;
         }
 
-
-        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) 
-            : this(definitionManager)
-        {
-            client.Connect(host, port);
-            packageManager.AddConnectedClient(client);
-        }
+        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager) => client.Connect(host, port);
 
         public void DeleteUniverse(Guid universeGuid)
         {

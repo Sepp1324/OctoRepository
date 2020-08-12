@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace OctoAwesome.Network
         private byte readSendQueueIndex;
         private byte nextSendQueueWriteIndex;
         private bool sending;
-
+        private Package currentPackage;
         private readonly ConcurrentBag<IObserver<Package>> observers;
         private readonly CancellationTokenSource cancellationTokenSource;
         private readonly SocketAsyncEventArgs sendArgs;
@@ -154,17 +153,46 @@ namespace OctoAwesome.Network
             } while (!Socket.ReceiveAsync(e));
         }
 
-        private void OnReceived(object sender, SocketAsyncEventArgs e)
+        private int DataReceived(byte[] buffer, int length, int bufferOffset)
         {
-            Receive(e);
+            int offset = 0;
 
-            while (Socket.Connected)
+            if (currentPackage == null)
             {
-                if (Socket.ReceiveAsync(ReceiveArgs))
-                    return;
+                currentPackage = new Package(false)
+                {
+                    BaseClient = this
+                };
 
-                Receive(ReceiveArgs);
+                if (length - bufferOffset < Package.HEAD_LENGTH)
+                {
+                    throw new Exception("Buffer is to small for Package d:^(");
+                }
+                else
+                {
+                    if (currentPackage.TryDeserializeHeader(buffer, bufferOffset))
+                    {
+                        offset += Package.HEAD_LENGTH;
+                    }
+                    else
+                    {
+                        throw new InvalidCastException("Cannot deserialize Header with hese bytes d:^(");
+                    }
+                }
             }
+
+            offset += currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));
+
+            if (currentPackage.IsComplete)
+            {
+                foreach (var observer in observers)
+                    Task.Run(() => observer.OnNext(currentPackage), cancellationTokenSource.Token);
+
+                currentPackage = null;
+            }
+            return offset;
         }
+
+        private void OnReceived(object sender, SocketAsyncEventArgs e) => Receive(e);
     }
 }
