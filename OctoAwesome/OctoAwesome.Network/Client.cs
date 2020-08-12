@@ -55,6 +55,12 @@ namespace OctoAwesome.Network
             SendAsync(bytes, bytes.Length);
         }
 
+        protected override void Notify(OctoNetworkEventArgs octoNetworkEventArgs)
+        {
+            ClientDataAvailable(octoNetworkEventArgs);
+            base.Notify(octoNetworkEventArgs);
+        }
+
         private void ClientDataAvailable(OctoNetworkEventArgs e)
         {
             byte[] bytes = new byte[e.DataCount];

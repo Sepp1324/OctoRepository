@@ -121,7 +121,6 @@ namespace OctoAwesome.Network
                     return;
                 }
             }
-
             SendInternal(data, len);
         }
 
@@ -142,7 +141,7 @@ namespace OctoAwesome.Network
             } while (offset < e.BytesTransferred);
         }
 
-        private void Notify(OctoNetworkEventArgs octoNetworkEventArgs)
+        protected virtual void Notify(OctoNetworkEventArgs octoNetworkEventArgs)
         {
             _observers.ForEach(o => o.OnNext(octoNetworkEventArgs));
         }

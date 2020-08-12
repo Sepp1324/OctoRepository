@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,11 +11,12 @@ namespace OctoAwesome.Network
     {
         public event EventHandler<OctoPackageAvailableEventArgs> PackageAvailable;
 
-        public List<Subscription<OctoNetworkEventArgs>> Subscriptions { get; set; }
+        public List<Subscription<OctoNetworkEventArgs>> Subscriptions { get; private set; }
 
         private readonly ConcurrentQueue<OctoNetworkEventArgs> _receivingQueue;
-        private CancellationTokenSource _cancellationTokenSource;
-        private Dictionary<BaseClient, Package> _packages;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly Dictionary<BaseClient, Package> _packages;
+        private readonly MemoryStream _backupStream;
 
         public PackageManager()
         {
@@ -22,6 +24,7 @@ namespace OctoAwesome.Network
             Subscriptions = new List<Subscription<OctoNetworkEventArgs>>();
             _receivingQueue = new ConcurrentQueue<OctoNetworkEventArgs>();
             _cancellationTokenSource = new CancellationTokenSource();
+            _backupStream = new MemoryStream();
         }
 
         public void AddConnectedClient(BaseClient client)
@@ -39,25 +42,39 @@ namespace OctoAwesome.Network
         private void ClientDataAvailable(OctoNetworkEventArgs e)
         {
             var baseClient = e.Client;
+            var data = e.NetworkStream.DataAvailable(Package.HEAD_LENGTH);
 
             byte[] bytes;
             bytes = new byte[e.DataCount];
 
             if (!_packages.TryGetValue(baseClient, out Package package))
             {
+                int offset = 0;
+
+                if (_backupStream.Length > 0)
+                {
+                    e.DataCount += (int)_backupStream.Length;
+                    _backupStream.Read(bytes, 0, (int)_backupStream.Length);
+                    offset = (int)_backupStream.Length;
+                    _backupStream.Position = 0;
+                    _backupStream.SetLength(0);
+                }
+
+                data += offset;
+
+                if (data < Package.HEAD_LENGTH)
+                {
+                    e.NetworkStream.Read(bytes, offset, data);
+                    _backupStream.Write(bytes, 0, data);
+                    _backupStream.Position = 0;
+                    return;
+                }
+
                 package = new Package();
                 _packages.Add(baseClient, package);
 
-                int current = 0;
+                offset += e.NetworkStream.Read(bytes, offset, Package.HEAD_LENGTH - offset);
 
-                current += e.NetworkStream.Read(bytes, current, Package.HEAD_LENGTH - current);
-
-                if (current != Package.HEAD_LENGTH)
-                {
-                    Console.WriteLine($"Package was not complete, only got: {current} bytes");
-                    _packages.Remove(baseClient);
-                    return;
-                }
                 package.TryDeserializeHeader(bytes);
                 e.DataCount -= Package.HEAD_LENGTH;
             }
@@ -91,7 +108,7 @@ namespace OctoAwesome.Network
 
         public Task Start()
         {
-            var task =  new Task(InternalProcess, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning);
+            var task = new Task(InternalProcess, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning);
             task.Start(TaskScheduler.Default);
             return task;
         }
@@ -103,7 +120,7 @@ namespace OctoAwesome.Network
 
         private void InternalProcess()
         {
-            while(!_cancellationTokenSource.IsCancellationRequested)
+            while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 if (_receivingQueue.IsEmpty)
                     continue;
