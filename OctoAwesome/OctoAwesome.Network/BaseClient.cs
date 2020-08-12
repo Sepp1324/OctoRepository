@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
-    public abstract class BaseClient : IObservable<OctoNetworkEventArgs>
+    public abstract class BaseClient : IObservable<Package>
     {
-        //public delegate int ReceiveDelegate(object sender, (byte[] Data, int Offset, int Count) eventArgs);
-        //public event ReceiveDelegate OnMessageRecived;
-
         protected readonly Socket Socket;
         protected readonly SocketAsyncEventArgs ReceiveArgs;
-
-        protected readonly OctoNetworkStream internalSendStream;
-        protected readonly OctoNetworkStream internalRecivedStream;
 
         private byte readSendQueueIndex;
         private byte nextSendQueueWriteIndex;
         private bool sending;
-        private readonly List<IObserver<OctoNetworkEventArgs>> observers;
+
+        private readonly ConcurrentBag<IObserver<Package>> observers;
+        private readonly CancellationTokenSource cancellationTokenSource;
         private readonly SocketAsyncEventArgs sendArgs;
 
         private readonly (byte[] data, int len)[] sendQueue;
@@ -36,26 +34,32 @@ namespace OctoAwesome.Network
 
             ReceiveArgs = new SocketAsyncEventArgs();
             ReceiveArgs.Completed += OnReceived;
-            ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(2048), 0, 2048);
+            ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(1024 * 1024), 0, 1024 * 1024);
 
             sendArgs = new SocketAsyncEventArgs();
             sendArgs.Completed += OnSent;
 
-            internalSendStream = new OctoNetworkStream();
-            internalRecivedStream = new OctoNetworkStream();
-
-            observers = new List<IObserver<OctoNetworkEventArgs>>();
-
+            observers = new ConcurrentBag<IObserver<Package>>();
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public void Start()
+        public Task Start()
         {
-            while (true)
+            return Task.Run(() =>
             {
                 if (Socket.ReceiveAsync(ReceiveArgs))
                     return;
+
                 Receive(ReceiveArgs);
-            }
+            }, cancellationTokenSource.Token);
+        }
+
+        public void Stop()
+        {
+            foreach (var observer in observers)
+                observer.OnCompleted();
+
+            cancellationTokenSource.Cancel();
         }
 
         public void SendAsync(byte[] data, int len)
@@ -67,18 +71,23 @@ namespace OctoAwesome.Network
                     sendQueue[nextSendQueueWriteIndex++] = (data, len);
                     return;
                 }
-
                 sending = true;
             }
-
             SendInternal(data, len);
         }
 
+        public void SendPackage(Package package)
+        {
+            byte[] bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
+            package.SerializePackage(bytes, 0);
+            SendAsync(bytes, bytes.Length);
+        }
 
-        public IDisposable Subscribe(IObserver<OctoNetworkEventArgs> observer)
+
+        public IDisposable Subscribe(IObserver<Package> observer)
         {
             observers.Add(observer);
-            return new Subscription<OctoNetworkEventArgs>(this, observer);
+            return new Subscription<Package>(this, observer);
         }
 
         private void SendInternal(byte[] data, int len)
@@ -126,32 +135,23 @@ namespace OctoAwesome.Network
                     return;
                 }
             }
-
             SendInternal(data, len);
         }
 
         protected void Receive(SocketAsyncEventArgs e)
         {
-            if (e.BytesTransferred < 1)
-                return;
-
-            int offset = 0;
-            int count = 0;
             do
             {
-                count = internalRecivedStream.Write(e.Buffer, offset, e.BytesTransferred - offset);
+                if (e.BytesTransferred < 1)
+                    return;
 
-                if (count > 0)
-                    Notify(new OctoNetworkEventArgs { Client = this, NetworkStream = internalRecivedStream, DataCount = count });
+                int offset = 0;
 
-
-                offset += count;
-            } while (offset < e.BytesTransferred);
-        }
-
-        protected virtual void Notify(OctoNetworkEventArgs octoNetworkEventArgs)
-        {
-            observers.ForEach(o => o.OnNext(octoNetworkEventArgs));
+                do
+                {
+                    offset += DataReceived(e.Buffer, e.BytesTransferred, offset);
+                } while (offset < e.BytesTransferred);
+            } while (!Socket.ReceiveAsync(e));
         }
 
         private void OnReceived(object sender, SocketAsyncEventArgs e)
@@ -166,6 +166,5 @@ namespace OctoAwesome.Network
                 Receive(ReceiveArgs);
             }
         }
-
     }
 }
