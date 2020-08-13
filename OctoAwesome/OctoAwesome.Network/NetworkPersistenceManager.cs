@@ -7,9 +7,11 @@ using OctoAwesome.Basics;
 
 namespace OctoAwesome.Network
 {
-    public class NetworkPersistenceManager : IPersistenceManager
+    public class NetworkPersistenceManager : IPersistenceManager, IObserver<Package>
     {
         private Client client;
+
+        private readonly IDisposable subscription;
         private readonly IDefinitionManager definitionManager;
 
         private Dictionary<uint, Awaiter> packages;
@@ -17,6 +19,7 @@ namespace OctoAwesome.Network
         public NetworkPersistenceManager(IDefinitionManager definitionManager)
         {
             client = new Client();
+            subscription = client.Subscribe(this);
 
             packages = new Dictionary<uint, Awaiter>();
             this.definitionManager = definitionManager;
@@ -139,13 +142,16 @@ namespace OctoAwesome.Network
             client.SendPackage(package); 
         }
 
-        private void ClientPackageAvailable(object sender, OctoPackageAvailableEventArgs e)
+        public void OnNext(Package value)
         {
-            if (packages.TryGetValue(e.Package.UId, out var awaiter))
+            if (packages.TryGetValue(value.UId, out var awaiter))
             {
-                awaiter.SetResult(e.Package.Payload, definitionManager);
+                awaiter.SetResult(value.Payload, definitionManager);
             }
         }
 
+        public void OnError(Exception error) => throw error;
+
+        public void OnCompleted() => subscription.Dispose();
     }
 }
