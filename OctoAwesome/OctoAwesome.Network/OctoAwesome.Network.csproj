@@ -51,7 +51,6 @@
     <Compile Include="ConnectedClient.cs" />
     <Compile Include="NetworkPersistenceManager.cs" />
     <Compile Include="OctoNetworkStream.cs" />
-    <Compile Include="OctoPackageAvailableEventArgs.cs" />
     <Compile Include="OfficialCommands.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

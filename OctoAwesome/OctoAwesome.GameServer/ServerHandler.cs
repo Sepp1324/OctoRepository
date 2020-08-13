@@ -2,10 +2,7 @@
 using NLog;
 using OctoAwesome.Network;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
@@ -35,7 +32,7 @@ namespace OctoAwesome.GameServer
         
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
-            logger.Debug("Hurra ein neuer Spieler");
+            logger.Debug("Client connected");
             e.Subscribe(this);
         }
 
