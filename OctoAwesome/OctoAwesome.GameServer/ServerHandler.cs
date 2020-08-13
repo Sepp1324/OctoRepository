@@ -37,7 +37,7 @@ namespace OctoAwesome.GameServer
 
         public void OnNext(Package value)
         {
-            if (value.Command == 0 && value.Payload.Length == 0)
+            if (value.Command == 0 && value.Payload.Length == 0) //TODO: Fix NullReference
             {
                 logger.Debug("Received null package");
                 return;
