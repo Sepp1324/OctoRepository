@@ -1,7 +1,10 @@
-﻿using NLog;
+﻿using CommandManagementSystem;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
+using OctoAwesome.Network;
 using System;
+using System.Net;
 using System.Threading;
 
 namespace OctoAwesome.GameServer
@@ -25,12 +28,14 @@ namespace OctoAwesome.GameServer
             
             manualResetEvent = new ManualResetEvent(false);
                         
-            logger.Info("Server started");
+            logger.Info("Server start");
             ServerHandler = new ServerHandler();
             ServerHandler.Start();
 
             Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
             manualResetEvent.WaitOne();
         }
+
+        
     }
 }

@@ -10,6 +10,7 @@ namespace OctoAwesome.Network
         public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(uint);
 
         public static uint NextUId => nextUid++;
+        private static uint nextUid;
 
         public BaseClient BaseClient { get; set; }
 
@@ -23,8 +24,6 @@ namespace OctoAwesome.Network
 
         public int PayloadRest => Payload.Length - internalOffset;
 
-        private static uint nextUid;
-
         private int internalOffset;
 
         public Package(ushort command, int size) : this()
@@ -33,15 +32,17 @@ namespace OctoAwesome.Network
             Payload = new byte[size];
         }
 
-        public Package() : this(true) { }
-
+        public Package() : this(true)
+        { }
         public Package(bool setUid)
         {
             if (setUid)
                 UId = NextUId;
         }
 
-        public Package(byte[] data) : this(0, data.Length) { }
+        public Package(byte[] data) : this(0, data.Length)
+        {
+        }
 
         public bool TryDeserializeHeader(byte[] buffer, int offset)
         {
@@ -65,7 +66,6 @@ namespace OctoAwesome.Network
 
             return count;
         }
-
         public void DeserializePackage(byte[] buffer, int offset)
         {
             TryDeserializeHeader(buffer, offset);

@@ -61,9 +61,6 @@
     <Compile Include="Subscription.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Basics\OctoAwesome.Basics.csproj">
       <Project>{739F0779-A605-49C9-A298-FE30DC628C9E}</Project>
       <Name>OctoAwesome.Basics</Name>
@@ -86,9 +83,6 @@
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

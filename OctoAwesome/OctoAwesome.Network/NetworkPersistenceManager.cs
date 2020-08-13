@@ -10,7 +10,6 @@ namespace OctoAwesome.Network
     public class NetworkPersistenceManager : IPersistenceManager, IObserver<Package>
     {
         private Client client;
-
         private readonly IDisposable subscription;
         private readonly IDefinitionManager definitionManager;
 
@@ -25,7 +24,12 @@ namespace OctoAwesome.Network
             this.definitionManager = definitionManager;
         }
 
-        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) : this(definitionManager) => client.Connect(host, port);
+
+        public NetworkPersistenceManager(string host, ushort port, IDefinitionManager definitionManager) 
+            : this(definitionManager)
+        {
+            client.Connect(host, port);
+        }
 
         public void DeleteUniverse(Guid universeGuid)
         {
@@ -150,8 +154,10 @@ namespace OctoAwesome.Network
             }
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error) 
+            => throw error;
 
-        public void OnCompleted() => subscription.Dispose();
+        public void OnCompleted() 
+            => subscription.Dispose();
     }
 }

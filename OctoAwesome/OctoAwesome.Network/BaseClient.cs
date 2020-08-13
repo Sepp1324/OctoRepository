@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,11 +18,12 @@ namespace OctoAwesome.Network
         private bool sending;
         private Package currentPackage;
         private readonly ConcurrentBag<IObserver<Package>> observers;
-        private readonly CancellationTokenSource cancellationTokenSource;
+
         private readonly SocketAsyncEventArgs sendArgs;
 
         private readonly (byte[] data, int len)[] sendQueue;
         private readonly object sendLock;
+        private readonly CancellationTokenSource cancellationTokenSource;
 
         protected BaseClient(Socket socket)
         {
@@ -56,7 +58,9 @@ namespace OctoAwesome.Network
         public void Stop()
         {
             foreach (var observer in observers)
+            {
                 observer.OnCompleted();
+            }
 
             cancellationTokenSource.Cancel();
         }
@@ -70,8 +74,10 @@ namespace OctoAwesome.Network
                     sendQueue[nextSendQueueWriteIndex++] = (data, len);
                     return;
                 }
+
                 sending = true;
             }
+
             SendInternal(data, len);
         }
 
@@ -81,7 +87,6 @@ namespace OctoAwesome.Network
             package.SerializePackage(bytes, 0);
             SendAsync(bytes, bytes.Length);
         }
-
 
         public IDisposable Subscribe(IObserver<Package> observer)
         {
@@ -134,7 +139,13 @@ namespace OctoAwesome.Network
                     return;
                 }
             }
+
             SendInternal(data, len);
+        }
+
+        private void OnReceived(object sender, SocketAsyncEventArgs e)
+        {
+            Receive(e);
         }
 
         protected void Receive(SocketAsyncEventArgs e)
@@ -149,7 +160,9 @@ namespace OctoAwesome.Network
                 do
                 {
                     offset += DataReceived(e.Buffer, e.BytesTransferred, offset);
+
                 } while (offset < e.BytesTransferred);
+
             } while (!Socket.ReceiveAsync(e));
         }
 
@@ -166,7 +179,7 @@ namespace OctoAwesome.Network
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)
                 {
-                    throw new Exception("Buffer is to small for Package d:^(");
+                    throw new Exception("buffer is not enough for package");
                 }
                 else
                 {
@@ -176,7 +189,7 @@ namespace OctoAwesome.Network
                     }
                     else
                     {
-                        throw new InvalidCastException("Cannot deserialize Header with hese bytes d:^(");
+                        throw new InvalidCastException("Can not deserialize header with these bytes :(");
                     }
                 }
             }
@@ -186,13 +199,12 @@ namespace OctoAwesome.Network
             if (currentPackage.IsComplete)
             {
                 foreach (var observer in observers)
-                    Task.Run(() => observer.OnNext(currentPackage), cancellationTokenSource.Token);
+                    observer.OnNext(currentPackage);
 
                 currentPackage = null;
             }
+
             return offset;
         }
-
-        private void OnReceived(object sender, SocketAsyncEventArgs e) => Receive(e);
     }
 }

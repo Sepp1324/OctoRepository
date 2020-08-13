@@ -2,7 +2,11 @@
 using NLog;
 using OctoAwesome.Network;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
@@ -28,35 +32,40 @@ namespace OctoAwesome.GameServer
             server.Start(IPAddress.Any, 8888);
             server.OnClientConnected += ServerOnClientConnected;
         }
-
+        
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
-            logger.Debug("Client connected");
+            logger.Debug("Hurra ein neuer Spieler");
             e.Subscribe(this);
         }
 
         public void OnNext(Package value)
         {
-            if (value.Command == 0 && value.Payload.Length == 0) //TODO: Fix NullReference
+            Task.Run(() =>
             {
-                logger.Debug("Received null package");
-                return;
-            }
-            logger.Trace("Received a new Package with ID: " + value.UId);
-            try
-            {
-                value.Payload = defaultManager.Dispatch(value.Command, value.Payload) ?? new byte[0];
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Dispatch failed in Command " + value.Command);
-                return;
-            }
-            logger.Trace(value.Command);
-            value.BaseClient.SendPackage(value);
+                if (value.Command == 0 && value.Payload.Length == 0)
+                {
+                    logger.Debug("Received null package");
+                    return;
+                }
+                logger.Trace("Received a new Package with ID: " + value.UId);
+                try
+                {
+                    value.Payload = defaultManager.Dispatch(value.Command, value.Payload) ?? new byte[0];
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Dispatch failed in Command " + value.Command);
+                    return;
+                }
+
+                logger.Trace(value.Command);
+                value.BaseClient.SendPackage(value);
+            });
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error) 
+            => throw error;
 
         public void OnCompleted()
         {
