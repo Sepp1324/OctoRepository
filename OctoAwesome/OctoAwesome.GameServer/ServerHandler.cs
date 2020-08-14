@@ -61,8 +61,7 @@ namespace OctoAwesome.GameServer
             });
         }
 
-        public void OnError(Exception error) 
-            => throw error;
+        public void OnError(Exception error) => throw error;
 
         public void OnCompleted()
         {
