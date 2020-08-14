@@ -9,7 +9,7 @@ namespace OctoAwesome
     /// <summary>
     /// Schnittstelle zwischen Applikation und Welt-Modell.
     /// </summary>
-    public sealed class Simulation : IUpdateSubscribe
+    public sealed class Simulation : IUpdateSubscriber
     {
         // private List<ActorHost> actorHosts = new List<ActorHost>();
         // private Stopwatch watch = new Stopwatch();

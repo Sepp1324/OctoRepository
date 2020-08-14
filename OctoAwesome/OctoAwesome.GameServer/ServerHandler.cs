@@ -1,6 +1,8 @@
 ﻿using CommandManagementSystem;
 using NLog;
 using OctoAwesome.Network;
+using OctoAwesome.Notifications;
+using OctoAwesome.Runtime;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,6 +13,10 @@ namespace OctoAwesome.GameServer
     {
         public SimulationManager SimulationManager { get; set; }
 
+        public IUpdateHub UpdateHub { get; private set; }
+
+        public IUpdateProvider UpdateProvider { get; set; }
+
         private readonly Logger logger;
         private readonly Server server;
         private readonly DefaultCommandManager<ushort, byte[], byte[]> defaultManager;
@@ -18,6 +24,10 @@ namespace OctoAwesome.GameServer
         public ServerHandler()
         {
             logger = LogManager.GetCurrentClassLogger();
+
+            var updateHub = new UpdateHub();
+            UpdateHub = updateHub;
+            UpdateProvider = updateHub;
 
             server = new Server();
             SimulationManager = new SimulationManager(new Settings());
@@ -33,7 +43,8 @@ namespace OctoAwesome.GameServer
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
             logger.Debug("Client connected");
-            e.Subscribe(this);
+            e.ServerSubscription = e.Subscribe(this);
+            e.ProviderSubscription = UpdateProvider.Subscribe(e);
         }
 
         public void OnNext(Package value)

@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Notifications
 {
-    public interface IUpdateSubscribe : IObserver<Notification>
+    public interface IUpdateSubscriber : IObserver<Notification>
     {
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace OctoAwesome.Network
 {
-    public enum OfficialCommands : ushort
+    public enum OfficialCommand : ushort
     {
         //0 - 100; System-Commdans
         //100 - 200; General-Commands

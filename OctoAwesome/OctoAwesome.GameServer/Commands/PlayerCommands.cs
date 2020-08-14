@@ -13,7 +13,7 @@ namespace OctoAwesome.GameServer.Commands
 {
     public static class PlayerCommands
     {
-        [Command((ushort)OfficialCommands.Whoami)]
+        [Command((ushort)OfficialCommand.Whoami)]
         public static byte[] Whoami(byte[] data)
         {
             string playername = Encoding.UTF8.GetString(data);

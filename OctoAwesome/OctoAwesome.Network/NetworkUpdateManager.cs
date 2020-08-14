@@ -20,10 +20,10 @@ namespace OctoAwesome.Network
         {
             switch (package.Command)
             {
-                case (ushort)OfficialCommands.NewEntity:
+                case (ushort)OfficialCommand.NewEntity:
                     updateHub.Push(new EntityNotification());
                     break;
-                case (ushort)OfficialCommands.RemoveEntity:
+                case (ushort)OfficialCommand.RemoveEntity:
                     break;
                 default: 
                     break;
