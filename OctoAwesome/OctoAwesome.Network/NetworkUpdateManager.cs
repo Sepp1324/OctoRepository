@@ -1,4 +1,6 @@
 ﻿using OctoAwesome.Notifications;
+using OctoAwesome.Runtime;
+using OctoAwesome.Serialization;
 using System;
 
 namespace OctoAwesome.Network
@@ -8,12 +10,14 @@ namespace OctoAwesome.Network
         private readonly Client client;
         private readonly IUpdateHub updateHub;
         private readonly IDisposable subscription;
+        private readonly IDefinitionManager definitionManager;
 
-        public NetworkUpdateManager(Client client, IUpdateHub updateHub)
+        public NetworkUpdateManager(Client client, IUpdateHub updateHub, IDefinitionManager manager)
         {
             this.client = client;
             this.updateHub = updateHub;
             subscription = client.Subscribe(this);
+            definitionManager = manager;
         }
 
         public void OnNext(Package package)
@@ -21,11 +25,16 @@ namespace OctoAwesome.Network
             switch (package.Command)
             {
                 case (ushort)OfficialCommand.NewEntity:
-                    updateHub.Push(new EntityNotification());
+                    var remoteEntity = Serializer.Deserialize<RemoteEntity>(package.Payload, definitionManager);
+                    updateHub.Push(new EntityNotification()
+                    {
+                        Entity = remoteEntity,
+                        Type = EntityNotification.ActionType.Add
+                    });
                     break;
                 case (ushort)OfficialCommand.RemoveEntity:
                     break;
-                default: 
+                default:
                     break;
 
             }
