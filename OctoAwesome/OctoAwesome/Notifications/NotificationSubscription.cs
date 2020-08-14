@@ -5,9 +5,9 @@ namespace OctoAwesome.Notifications
     public sealed class NotificationSubscription : IDisposable
     {
         private IUpdateProvider updateProvider;
-        private IUpdateSubscribe subscriber;
+        private IObserver<Notification> subscriber;
 
-        public NotificationSubscription(IUpdateProvider updateProvider, IUpdateSubscribe subscriber)
+        public NotificationSubscription(IUpdateProvider updateProvider, IObserver<Notification> subscriber)
         {
             this.subscriber = subscriber;
             this.updateProvider = updateProvider; 

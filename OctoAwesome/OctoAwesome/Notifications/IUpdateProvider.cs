@@ -4,6 +4,6 @@ namespace OctoAwesome.Notifications
 {
     public interface IUpdateProvider : IObservable<Notification>
     {
-        void Unsubscribe(IUpdateSubscribe subscriber);
+        void Unsubscribe(IObserver<Notification> subscriber);
     }
 }

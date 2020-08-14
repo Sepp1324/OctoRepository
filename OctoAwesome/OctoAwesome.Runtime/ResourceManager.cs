@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OctoAwesome.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -63,10 +64,20 @@ namespace OctoAwesome.Runtime
             bool.TryParse(settings.Get<string>("DisablePersistence"), out disablePersistence);
         }
 
+        public void InsertUpdateHub(UpdateHub updateHub)
+        {
+            UpdateHub = updateHub;
+            UpdateProvider = updateHub;
+        }
+
         /// <summary>
         /// Der <see cref="IGlobalChunkCache"/>, der im Spiel verwendet werden soll.
         /// </summary>
         public IGlobalChunkCache GlobalChunkCache => globalChunkCache;
+
+        public IUpdateProvider UpdateProvider { get; private set; }
+
+        public IUpdateHub UpdateHub { get; private set; }
 
         /// <summary>
         /// Erzuegt ein neues Universum.

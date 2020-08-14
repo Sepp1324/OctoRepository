@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Network;
+using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
 
@@ -18,8 +19,19 @@ namespace OctoAwesome.Client
         public bool IsMultiplayer { get; private set; }
         public Player CurrentPlayer => resourceManager.CurrentPlayer;
 
+        public IUpdateProvider UpdateProvider { get; }
+
+        public IUpdateHub UpdateHub { get; }
+
         private ResourceManager resourceManager;
         private NetworkUpdateManager networkUpdateManager;
+
+        public ContainerResourceManager()
+        {
+            var updateHub = new UpdateHub();
+            UpdateHub = updateHub;
+            UpdateProvider = updateHub;
+        }
 
         public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
             ISettings settings, bool multiplayer)
@@ -49,6 +61,7 @@ namespace OctoAwesome.Client
             }
 
             resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
+            resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
 
             IsMultiplayer = multiplayer;
 

@@ -110,6 +110,7 @@
     <Compile Include="LocalChunkCache.cs" />
     <Compile Include="MapPopulator.cs" />
     <Compile Include="Notifications\EntityNotification.cs" />
+    <Compile Include="Notifications\IUpdateHub.cs" />
     <Compile Include="Notifications\IUpdateProvider.cs" />
     <Compile Include="Notifications\IUpdateSubscribe.cs" />
     <Compile Include="Notifications\Notification.cs" />
