@@ -32,10 +32,21 @@ namespace OctoAwesome.Network
             switch(value)
             {
                 case ServerDataNotification serverDataNotification:
+                    if (serverDataNotification.Match(0))
+                        BuildAndSendPackage(serverDataNotification.Data, serverDataNotification.OfficialCommand);
                     break;
                 default:
                     break;
             }
+        }
+
+        private void BuildAndSendPackage(byte[] data, OfficialCommand officialCommand)
+        {
+            SendPackage(new Package()
+            {
+                Payload = data,
+                Command = (ushort)officialCommand
+            });
         }
     }
 }

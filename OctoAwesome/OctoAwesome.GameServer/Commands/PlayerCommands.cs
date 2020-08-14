@@ -2,17 +2,23 @@
 using engenious;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Network;
+using OctoAwesome.Network.ServerNotifications;
+using OctoAwesome.Notifications;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
     public static class PlayerCommands
     {
+        private static IUpdateHub updateHub;
+
+        static PlayerCommands()
+        {
+            updateHub = Program.ServerHandler.UpdateHub;
+        }
+
         [Command((ushort)OfficialCommand.Whoami)]
         public static byte[] Whoami(byte[] data)
         {
@@ -26,7 +32,15 @@ namespace OctoAwesome.GameServer.Commands
             {
                 player.Serialize(bw, Program.ServerHandler.SimulationManager.DefinitionManager);
                 Console.WriteLine(playername);
-                return ms.ToArray();
+
+                var array = ms.ToArray();
+
+                updateHub.Push(new ServerDataNotification()
+                {
+                    Data = array,
+                    OfficialCommand = OfficialCommand.NewEntity
+                });
+                return array;
             }
         }
     }

@@ -9,11 +9,11 @@ namespace OctoAwesome.Network.ServerNotifications
 
         public OfficialCommand OfficialCommand { get; set; }
 
-        public List<int> PlayerIds { get; set; }
+        public HashSet<int> PlayerIds { get; set; }
 
         public ServerDataNotification()
         {
-            PlayerIds = new List<int>();
+            PlayerIds = new HashSet<int>();
         }
 
         public override bool Match<T>(T filter)
