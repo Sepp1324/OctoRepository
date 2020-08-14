@@ -10,6 +10,8 @@
         LoadColumn = 14,
         SaveColumn = 15,
         //400 - 500; Entity-Updates
-        PositionUpdate = 401
+        NewEntity = 401,
+        RemoveEntity = 402,
+        PositionUpdate = 403
     }
 }
