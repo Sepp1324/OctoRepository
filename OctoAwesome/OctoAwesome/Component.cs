@@ -9,9 +9,12 @@ namespace OctoAwesome
     {
         public bool Enabled { get; set; }
 
+        public bool Sendable { get; set; }
+
         public Component()
         {
             Enabled = true;
+            Sendable = false;
         }
 
         /// <summary>
