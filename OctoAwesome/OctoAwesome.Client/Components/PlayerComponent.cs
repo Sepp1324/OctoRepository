@@ -1,8 +1,5 @@
-﻿using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using engenious;
 using OctoAwesome.EntityComponents;
 
@@ -47,8 +44,6 @@ namespace OctoAwesome.Client.Components
         public ToolBarComponent Toolbar { get; private set; }
 
         public PositionComponent Position { get; private set; }
-
-        // public ActorHost ActorHost { get; private set; }
 
         public Index3? SelectedBox { get; set; }
 

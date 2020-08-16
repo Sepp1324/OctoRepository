@@ -8,34 +8,28 @@ namespace OctoAwesome
     {
         public int RemoteID { get; set; }
 
-        public override void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
+        public RemoteEntity()
         {
-            writer.Write(RemoteID);
 
+        }
+
+        public RemoteEntity(Entity originEntity)
+        {
             var sendableComponents = Components.Where(component => component.Sendable);
-            writer.Write(sendableComponents.Count());
 
             foreach (var component in sendableComponents)
-            {
-                writer.Write(component.GetType().FullName);
-                component.Serialize(writer, definitionManager);
-            }
+                Components.AddComponent(component);
+        }
+
+        public override void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
+        {
+            Components.Serialize(writer, definitionManager);
             base.Serialize(writer, definitionManager);
         }
 
         public override void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
-            RemoteID = reader.ReadInt32();
-
-            var count = reader.ReadInt32();
-
-            for(int i = 0; i < count; i++)
-            {
-                var name = reader.ReadString();
-                var component = (Component)Activator.CreateInstance(Type.GetType(name, false));
-                component.Deserialize(reader, definitionManager);
-            }
-
+            Components.Deserialize(reader, definitionManager);
             base.Deserialize(reader, definitionManager);
         }
     }

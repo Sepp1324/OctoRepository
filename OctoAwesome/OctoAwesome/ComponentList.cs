@@ -49,15 +49,10 @@ namespace OctoAwesome
         /// Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
-        public void AddComponent<V>(V component)
-            where V : T
-        {
-            AddComponent(component, false);
-        }
+        public void AddComponent<V>(V component) where V : T => AddComponent(component, false);
 
 
-        public void AddComponent<V>(V component, bool replace)
-            where V : T
+        public void AddComponent<V>(V component, bool replace) where V : T
         {
             Type type = component.GetType();
 
@@ -72,7 +67,6 @@ namespace OctoAwesome
                     return;
                 }
             }
-
             insertValidator?.Invoke(component);
             components.Add(type, component);
             onInserter?.Invoke(component);
@@ -83,10 +77,7 @@ namespace OctoAwesome
         /// </summary>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
-        public bool ContainsComponent<V>()
-        {
-            return components.ContainsKey(typeof(V));
-        }
+        public bool ContainsComponent<V>() => components.ContainsKey(typeof(V));
 
         /// <summary>
         /// Returns the Component of the given Type or null
@@ -97,7 +88,6 @@ namespace OctoAwesome
         {
             if (components.TryGetValue(typeof(V), out T result))
                 return (V)result;
-
             return null;
         }
 
@@ -109,16 +99,17 @@ namespace OctoAwesome
         public bool RemoveComponent<V>() where V : T
         {
             T component;
+
             if (!components.TryGetValue(typeof(V), out component))
                 return false;
 
             removeValidator?.Invoke(component);
+
             if (components.Remove(typeof(V)))
             {
                 onRemover?.Invoke(component);
                 return true;
             }
-
             return false;
         }
 
@@ -130,28 +121,11 @@ namespace OctoAwesome
         public virtual void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
         {
             writer.Write(components.Count);
+
             foreach (var componente in components)
             {
-                using (MemoryStream memorystream = new MemoryStream())
-                {
-                    writer.Write(componente.Key.AssemblyQualifiedName);
-
-                    using (BinaryWriter componentbinarystream = new BinaryWriter(memorystream))
-                    {
-                        try
-                        {
-                            componente.Value.Serialize(componentbinarystream, definitionManager);
-                            writer.Write((int)memorystream.Length);
-                            memorystream.WriteTo(writer.BaseStream);
-
-                        }
-                        catch (Exception)
-                        {
-                            writer.Write(0);
-                            //throw; //TODO #CleanUp throw?
-                        }
-                    }
-                }
+                writer.Write(componente.Key.AssemblyQualifiedName);
+                componente.Value.Serialize(writer, definitionManager);
             }
         }
 
@@ -163,46 +137,21 @@ namespace OctoAwesome
         public virtual void Deserialize(BinaryReader reader, IDefinitionManager definitionManager)
         {
             var count = reader.ReadInt32();
+
             for (int i = 0; i < count; i++)
             {
                 var name = reader.ReadString();
-                var length = reader.ReadInt32();
 
-                var startPosition = reader.BaseStream.Position;
+                var type = Type.GetType(name);
 
-                try
+                T component;
+
+                if (!components.TryGetValue(type, out component))
                 {
-                    var type = Type.GetType(name);
-
-                    if (type == null)
-                        continue;
-
-                    T component;
-
-                    if (!components.TryGetValue(type, out component))
-                    {
-                        component = (T)Activator.CreateInstance(type);
-                        components.Add(type, component);
-                    }
-
-                    byte[] buffer = new byte[length];
-                    reader.Read(buffer, 0, length);
-
-                    using (MemoryStream memoryStream = new MemoryStream(buffer))
-                    {
-                        using (BinaryReader componentBinaryStream = new BinaryReader(memoryStream))
-                        {
-                            component.Deserialize(componentBinaryStream, definitionManager);
-                        }
-                    }
+                    component = (T)Activator.CreateInstance(type);
+                    components.Add(type, component);
                 }
-                catch (Exception)
-                {
-                }
-                finally
-                {
-                    reader.BaseStream.Position = startPosition + length;
-                }
+                component.Deserialize(reader, definitionManager);
             }
         }
     }
