@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using OctoAwesome.Serialization;
+using System.IO;
 
 namespace OctoAwesome
 {
@@ -8,7 +9,6 @@ namespace OctoAwesome
     public abstract class Component : ISerializable
     {
         public bool Enabled { get; set; }
-
         public bool Sendable { get; set; }
 
         public Component()
@@ -24,7 +24,7 @@ namespace OctoAwesome
         /// <param name="definitionManager">Der aktuell verwendete <see cref="IDefinitionManager"/>.</param>
         public virtual void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
         {
-            writer.Write(Enabled);
+            writer.Write(Enabled); 
         }
 
         /// <summary>

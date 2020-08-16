@@ -5,8 +5,11 @@ using OctoAwesome.Network;
 using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -19,21 +22,29 @@ namespace OctoAwesome.GameServer.Commands
             updateHub = Program.ServerHandler.UpdateHub;
         }
 
+
         [Command((ushort)OfficialCommand.Whoami)]
         public static byte[] Whoami(byte[] data)
         {
             string playername = Encoding.UTF8.GetString(data);
-            var player = new RemoteEntity(new Player());
+            var player = new Player();
+            updateHub.Push(new EntityNotification()
+            {
+                Entity = player,
+                Type = EntityNotification.ActionType.Add
+            });
 
-            player.Components.AddComponent(new PositionComponent { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) });
-            player.Components.AddComponent(new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
+            var remotePlayer = new RemoteEntity(player);
+
+            remotePlayer.Components.AddComponent(new PositionComponent { Position = new Coordinate(0, new Index3(0, 0, 41), new Vector3(0, 0, 0)) });
+            remotePlayer.Components.AddComponent(new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
+            remotePlayer.Components.AddComponent(new BodyComponent());
 
             using (var ms = new MemoryStream())
             using (var bw = new BinaryWriter(ms))
             {
-                player.Serialize(bw, Program.ServerHandler.SimulationManager.DefinitionManager);
+                remotePlayer.Serialize(bw, Program.ServerHandler.SimulationManager.DefinitionManager);
                 Console.WriteLine(playername);
-
                 var array = ms.ToArray();
 
                 updateHub.Push(new ServerDataNotification()
@@ -41,7 +52,14 @@ namespace OctoAwesome.GameServer.Commands
                     Data = array,
                     OfficialCommand = OfficialCommand.NewEntity
                 });
-                return array;
+
+            }
+            using (var ms = new MemoryStream())
+            using (var bw = new BinaryWriter(ms))
+            {
+                player.Serialize(bw, Program.ServerHandler.SimulationManager.DefinitionManager);
+
+                return ms.ToArray();
             }
         }
     }

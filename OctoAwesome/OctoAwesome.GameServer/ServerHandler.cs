@@ -4,7 +4,10 @@ using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
@@ -12,15 +15,13 @@ namespace OctoAwesome.GameServer
     public class ServerHandler : IObserver<Package>
     {
         public SimulationManager SimulationManager { get; set; }
-
         public IUpdateHub UpdateHub { get; private set; }
-
         public IUpdateProvider UpdateProvider { get; set; }
 
         private readonly Logger logger;
         private readonly Server server;
         private readonly DefaultCommandManager<ushort, byte[], byte[]> defaultManager;
-                
+
         public ServerHandler()
         {
             logger = LogManager.GetCurrentClassLogger();
@@ -30,19 +31,20 @@ namespace OctoAwesome.GameServer
             UpdateProvider = updateHub;
 
             server = new Server();
-            SimulationManager = new SimulationManager(new Settings());
+            SimulationManager = new SimulationManager(new Settings(), updateHub);
             defaultManager = new DefaultCommandManager<ushort, byte[], byte[]>(typeof(ServerHandler).Namespace + ".Commands");
         }
 
         public void Start()
         {
+            SimulationManager.Start(); //Temp
             server.Start(IPAddress.Any, 8888);
             server.OnClientConnected += ServerOnClientConnected;
         }
-        
+
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
-            logger.Debug("Client connected");
+            logger.Debug("Hurra ein neuer Spieler");
             e.ServerSubscription = e.Subscribe(this);
             e.ProviderSubscription = UpdateProvider.Subscribe(e);
         }
@@ -72,7 +74,8 @@ namespace OctoAwesome.GameServer
             });
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+            => throw error;
 
         public void OnCompleted()
         {

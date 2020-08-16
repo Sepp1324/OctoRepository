@@ -1,7 +1,7 @@
-﻿using OctoAwesome.Notifications;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OctoAwesome.Notifications;
 
 namespace OctoAwesome.Runtime
 {
@@ -23,10 +23,10 @@ namespace OctoAwesome.Runtime
         }
 
         private Guid DEFAULT_UNIVERSE = Guid.Parse("{3C4B1C38-70DC-4B1D-B7BE-7ED9F4B1A66D}");
-        private bool disablePersistence = false;
+        private readonly bool disablePersistence = false;
         private IPersistenceManager persistenceManager = null;
         private GlobalChunkCache globalChunkCache = null;
-        private List<IMapPopulator> populators = null;
+        private readonly List<IMapPopulator> populators = null;
         private Dictionary<int, IPlanet> planets;
         private Player player;
 
@@ -87,7 +87,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Die Guid des neuen Universums.</returns>
         public Guid NewUniverse(string name, int seed)
         {
-            var guid = Guid.NewGuid();
+            Guid guid = Guid.NewGuid();
             CurrentUniverse = new Universe(guid, name, seed);
             persistenceManager.SaveUniverse(CurrentUniverse);
             return guid;
@@ -173,8 +173,7 @@ namespace OctoAwesome.Runtime
             if (CurrentUniverse == null)
                 throw new Exception("No Universe loaded");
 
-            IPlanet planet;
-            if (!planets.TryGetValue(id, out planet))
+            if (!planets.TryGetValue(id, out IPlanet planet))
             {
                 // Versuch vorhandenen Planeten zu laden
                 var awaiter = persistenceManager.Load(out planet, CurrentUniverse.Id, id);
@@ -216,6 +215,7 @@ namespace OctoAwesome.Runtime
                 player = new Player();
             else
                 awaiter.WaitOn();
+
             return player;
         }
 
@@ -291,9 +291,9 @@ namespace OctoAwesome.Runtime
                     populator.Populate(this, planet, column01, column11, column02, column12);
                 column01.Populated = true;
             }
+
             return column11;
         }
-
         public void SaveChunkColumn(IChunkColumn chunkColumn)
             => SaveChunkColumn(chunkColumn.Planet, chunkColumn.Index, chunkColumn);
 

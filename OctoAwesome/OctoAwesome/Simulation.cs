@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using engenious;
+﻿using engenious;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace OctoAwesome
 {
@@ -11,10 +13,6 @@ namespace OctoAwesome
     /// </summary>
     public sealed class Simulation : IUpdateSubscriber
     {
-        // private List<ActorHost> actorHosts = new List<ActorHost>();
-        // private Stopwatch watch = new Stopwatch();
-        // private Thread thread;
-
         public IResourceManager ResourceManager { get; private set; }
 
         /// <summary>
@@ -35,6 +33,7 @@ namespace OctoAwesome
         private int nextId = 1;
 
         private readonly IExtensionResolver extensionResolver;
+
         private readonly HashSet<Entity> entities = new HashSet<Entity>();
         private IDisposable subscription;
 
@@ -170,7 +169,12 @@ namespace OctoAwesome
             extensionResolver.ExtendEntity(entity);
             entity.Initialize(ResourceManager);
             entity.Simulation = this;
-            entity.Id = nextId++;
+
+            if (entity.Id == 0)
+                entity.Id = nextId++;
+            else
+                nextId++;
+
             entities.Add(entity);
 
             foreach (var component in Components)
@@ -225,7 +229,10 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+        {
+            throw error;
+        }
 
         public void OnCompleted()
         {

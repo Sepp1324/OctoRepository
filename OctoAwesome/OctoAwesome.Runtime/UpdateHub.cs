@@ -1,7 +1,10 @@
 ﻿using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
@@ -21,6 +24,7 @@ namespace OctoAwesome.Runtime
             observerSemaphore.Wait();
             observers.Add(observer);
             observerSemaphore.Release();
+
             return new NotificationSubscription(this, observer);
         }
 
@@ -37,6 +41,7 @@ namespace OctoAwesome.Runtime
 
             foreach (var observer in observers)
                 observer.OnNext(notification);
+
             observerSemaphore.Release();
         }
 
@@ -48,7 +53,7 @@ namespace OctoAwesome.Runtime
                 observer.OnCompleted();
 
             observers.Clear();
-            observerSemaphore.Release();
+            observerSemaphore.Release();            
         }
     }
 }

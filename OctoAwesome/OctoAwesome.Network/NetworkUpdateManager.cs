@@ -1,5 +1,5 @@
-﻿using OctoAwesome.Notifications;
-using OctoAwesome.Runtime;
+﻿using OctoAwesome.Network;
+using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
 
@@ -36,12 +36,14 @@ namespace OctoAwesome.Network
                     break;
                 default:
                     break;
-
             }
+
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+            => throw error;
 
-        public void OnCompleted() => subscription.Dispose();
+        public void OnCompleted()
+            => subscription.Dispose();
     }
 }

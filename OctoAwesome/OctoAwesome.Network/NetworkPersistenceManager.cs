@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using OctoAwesome.Basics;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Network
 {
@@ -134,17 +135,35 @@ namespace OctoAwesome.Network
                 chunkColumn.Serialize(bw, definitionManager);
                 package.Payload = ms.ToArray();
             }
+
+
             client.SendPackage(package);
         }
 
         public void OnNext(Package package)
         {
-            if (packages.TryGetValue(package.UId, out var awaiter))
-                awaiter.SetResult(package.Payload, definitionManager);
+            switch (package.OfficialCommand)
+            {
+                case OfficialCommand.Whoami:
+                case OfficialCommand.GetUniverse:
+                case OfficialCommand.GetPlanet:
+                case OfficialCommand.LoadColumn:
+                case OfficialCommand.SaveColumn:
+                    if (packages.TryGetValue(package.UId, out var awaiter))
+                    {
+                        awaiter.SetResult(package.Payload, definitionManager);
+                        packages.Remove(package.UId);
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+            => throw error;
 
-        public void OnCompleted() => subscription.Dispose();
+        public void OnCompleted()
+            => subscription.Dispose();
     }
 }

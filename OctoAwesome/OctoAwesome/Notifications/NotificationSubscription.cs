@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
@@ -10,14 +14,14 @@ namespace OctoAwesome.Notifications
         public NotificationSubscription(IUpdateProvider updateProvider, IObserver<Notification> subscriber)
         {
             this.subscriber = subscriber;
-            this.updateProvider = updateProvider; 
+            this.updateProvider = updateProvider;
         }
 
         public void Dispose()
         {
             updateProvider.Unsubscribe(subscriber);
-
             updateProvider = null;
+
             subscriber = null;
         }
     }

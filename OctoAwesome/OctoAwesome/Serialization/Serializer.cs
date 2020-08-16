@@ -1,10 +1,15 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
     public static class Serializer
     {
+
         public static byte[] Serialize<T>(T obj, IDefinitionManager manager) where T : ISerializable
         {
             using (var stream = new MemoryStream())
@@ -24,6 +29,7 @@ namespace OctoAwesome.Serialization
                 obj.Deserialize(reader, manager);
                 return obj;
             }
+
         }
     }
 }

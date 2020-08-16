@@ -1,5 +1,10 @@
 ﻿using engenious;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -42,8 +47,12 @@ namespace OctoAwesome.EntityComponents
             float posX = reader.ReadSingle();
             float posY = reader.ReadSingle();
             float posZ = reader.ReadSingle();
+            int chunkIndexX = reader.ReadInt32();
+            int chunkIndexY = reader.ReadInt32();
+            int chunkIndexZ = reader.ReadInt32();
 
             Position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
+            //Position.ChunkIndex = new Index3(chunkIndexX, chunkIndexY, chunkIndexX);
         }
     }
 }
