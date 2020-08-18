@@ -1,28 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public sealed class NotificationSubscription : IDisposable
     {
-        private IUpdateProvider updateProvider;
-        private IObserver<Notification> subscriber;
+        private INotificationObservable observable;
+        private INotificationObserver observer;
+        private string channel;
 
-        public NotificationSubscription(IUpdateProvider updateProvider, IObserver<Notification> subscriber)
+        public NotificationSubscription(INotificationObservable observable, INotificationObserver observer, string channel)
         {
-            this.subscriber = subscriber;
-            this.updateProvider = updateProvider;
+            this.observer = observer;
+            this.observable = observable;
+            this.channel = channel;
         }
 
         public void Dispose()
         {
-            updateProvider.Unsubscribe(subscriber);
-            updateProvider = null;
+            observer.OnCompleted();
+            observable.Unsubscribe(observer, channel);
 
-            subscriber = null;
+            observable = null;
+            observer = null;
         }
     }
 }

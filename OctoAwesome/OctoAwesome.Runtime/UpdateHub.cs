@@ -1,34 +1,36 @@
 ﻿using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
-    public class UpdateHub : IUpdateProvider, IUpdateHub, IDisposable
+    public class UpdateHub : IUpdateHub, IDisposable
     {
-        private readonly HashSet<IObserver<Notification>> observers;
+        private readonly  observers;
         private readonly SemaphoreSlim observerSemaphore;
 
         public UpdateHub()
         {
-            observers = new HashSet<IObserver<Notification>>();
+            observers = new Dictionary<string, HashSet<INotificationObserver>>();
             observerSemaphore = new SemaphoreSlim(1, 1);
         }
 
-        public IDisposable Subscribe(IObserver<Notification> observer)
+        public IDisposable Subscribe(INotificationObserver observer, string channel = "none")
         {
             observerSemaphore.Wait();
             observers.Add(observer);
             observerSemaphore.Release();
 
-            return new NotificationSubscription(this, observer);
+            return new NotificationSubscription(this, observer, channel);
         }
 
-        public void Unsubscribe(IObserver<Notification> subscriber)
+        public void Unsubscribe(INotificationObserver observer, string channel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unsubscribe(INotificationObserver observer)
         {
             observerSemaphore.Wait();
             observers.Remove(subscriber);
@@ -53,7 +55,7 @@ namespace OctoAwesome.Runtime
                 observer.OnCompleted();
 
             observers.Clear();
-            observerSemaphore.Release();            
+            observerSemaphore.Release();
         }
     }
 }

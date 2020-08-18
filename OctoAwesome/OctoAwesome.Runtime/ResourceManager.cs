@@ -58,7 +58,6 @@ namespace OctoAwesome.Runtime
                 (i) => GetPlanet(i),
                 (p, i, c) => SaveChunkColumn(p, i, c));
 
-
             planets = new Dictionary<int, IPlanet>();
 
             bool.TryParse(settings.Get<string>("DisablePersistence"), out disablePersistence);
@@ -133,9 +132,7 @@ namespace OctoAwesome.Runtime
             globalChunkCache.Clear();
 
             foreach (var planet in planets)
-            {
                 persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-            }
             planets.Clear();
 
             CurrentUniverse = null;
@@ -146,10 +143,7 @@ namespace OctoAwesome.Runtime
         /// Entlädt das aktuelle Universum
         /// </summary>
         /// <returns>Das gewünschte Universum, falls es existiert</returns>
-        public IUniverse GetUniverse()
-        {
-            return CurrentUniverse;
-        }
+        public IUniverse GetUniverse() => CurrentUniverse;
 
         /// <summary>
         /// Löscht ein Universum.
@@ -237,6 +231,7 @@ namespace OctoAwesome.Runtime
 
             // Load from disk
             var awaiter = persistenceManager.Load(out IChunkColumn column11, CurrentUniverse.Id, planet, index);
+
             if (awaiter == null)
             {
                 IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
@@ -294,15 +289,12 @@ namespace OctoAwesome.Runtime
 
             return column11;
         }
-        public void SaveChunkColumn(IChunkColumn chunkColumn)
-            => SaveChunkColumn(chunkColumn.Planet, chunkColumn.Index, chunkColumn);
+        public void SaveChunkColumn(IChunkColumn chunkColumn) => SaveChunkColumn(chunkColumn.Planet, chunkColumn.Index, chunkColumn);
 
         private void SaveChunkColumn(int planetId, Index2 index, IChunkColumn value)
         {
-            if (!disablePersistence && value.ChangeCounter > 0) //value.Chunks.Any(c => c.ChangeCounter > 0)
-            {
+            if (!disablePersistence && value.ChangeCounter > 0) 
                 persistenceManager.SaveColumn(CurrentUniverse.Id, planetId, value);
-            }
         }
 
         public void SaveEntity(Entity entity)
