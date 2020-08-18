@@ -1,80 +1,52 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OctoAwesome.Notifications
 {
     public class NotificationChannelCollection : IEnumerable
     {
-        private Dictionary<string, HashSet<INotificationObserver>> internalDictionary;
+        private readonly Dictionary<string, HashSet<INotificationObserver>> internalDictionary;
 
-        public NotificationChannelCollection()
+        public NotificationChannelCollection() => internalDictionary = new Dictionary<string, HashSet<INotificationObserver>>();
+
+        public HashSet<INotificationObserver> this[string channel] => internalDictionary[channel];
+
+        public ICollection<string> Channels => internalDictionary.Keys;
+
+        public int Count => internalDictionary.Count;
+
+        public void Add(string channel, INotificationObserver value)
         {
-            internalDictionary = new Dictionary<string, HashSet<INotificationObserver>>();
+            if (internalDictionary.TryGetValue(channel, out var hashSet))
+                hashSet.Add(value);
+            else
+                internalDictionary.Add(channel, new HashSet<INotificationObserver> { value });
         }
 
-        public INotificationObserver this[string key] { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public void Clear() => internalDictionary.Clear();
 
-        public ICollection<string> Keys => throw new System.NotImplementedException();
+        public bool Contains(INotificationObserver item) => internalDictionary.Values.Any(i => i == item);
 
-        public ICollection<INotificationObserver> Values => throw new System.NotImplementedException();
+        public bool Contains(string key) => internalDictionary.ContainsKey(key);
 
-        public int Count => throw new System.NotImplementedException();
+        public IEnumerator GetEnumerator() => internalDictionary.GetEnumerator();
 
-        public bool IsReadOnly => throw new System.NotImplementedException();
+        public bool Remove(string key) => internalDictionary.Remove(key);
 
-        public void Add(string key, INotificationObserver value)
+        public bool Remove(INotificationObserver item)
         {
-            throw new System.NotImplementedException();
+            var retVal = false;
+
+            foreach (var hashSet in internalDictionary.Values)
+                retVal = retVal ? retVal : hashSet.Remove(item);
+            return retVal;
         }
 
-        public void Add(KeyValuePair<string, INotificationObserver> item)
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool Remove(string key, INotificationObserver item) => internalDictionary[key].Remove(item);
 
-        public void Clear()
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool TryGetValue(string key, out HashSet<INotificationObserver> value) => internalDictionary.TryGetValue(key, out value);
 
-        public bool Contains(KeyValuePair<string, INotificationObserver> item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool ContainsKey(string key)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void CopyTo(KeyValuePair<string, INotificationObserver>[] array, int arrayIndex)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerator<KeyValuePair<string, INotificationObserver>> GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Remove(string key)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Remove(KeyValuePair<string, INotificationObserver> item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool TryGetValue(string key, out INotificationObserver value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
