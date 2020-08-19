@@ -2,6 +2,10 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -11,21 +15,21 @@ namespace OctoAwesome.Client
     public class ContainerResourceManager : IResourceManager
     {
         public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
-
         public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
-
         public IGlobalChunkCache GlobalChunkCache => resourceManager.GlobalChunkCache;
 
         public bool IsMultiplayer { get; private set; }
-
         public Player CurrentPlayer => resourceManager.CurrentPlayer;
-
+        
         public IUpdateHub UpdateHub { get; }
 
         private ResourceManager resourceManager;
         private NetworkUpdateManager networkUpdateManager;
 
-        public ContainerResourceManager() => UpdateHub = new UpdateHub();
+        public ContainerResourceManager()
+        {
+            UpdateHub = new UpdateHub();
+        }
 
         public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
             ISettings settings, bool multiplayer)
@@ -39,6 +43,7 @@ namespace OctoAwesome.Client
 
                 resourceManager = null;
             }
+
 
             if (multiplayer)
             {
@@ -86,7 +91,6 @@ namespace OctoAwesome.Client
         public void SavePlayer(Player player) => resourceManager.SavePlayer(player);
 
         public void UnloadUniverse() => resourceManager.UnloadUniverse();
-
         public void SaveChunkColumn(IChunkColumn chunkColumn) => resourceManager.SaveChunkColumn(chunkColumn);
     }
 }

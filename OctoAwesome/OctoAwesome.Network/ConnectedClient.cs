@@ -1,13 +1,16 @@
 ﻿using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using System;
+using System.Buffers;
 using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 
 namespace OctoAwesome.Network
 {
     public class ConnectedClient : BaseClient, INotificationObserver
     {
-        public IDisposable HubSubscription { get; set; }
+        public IDisposable NetworkChannelSubscription { get; set; }
         public IDisposable ServerSubscription { get; set; }
 
         public ConnectedClient(Socket socket) : base(socket)
