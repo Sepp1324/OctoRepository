@@ -5,11 +5,8 @@ using OctoAwesome.Network;
 using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -32,7 +29,7 @@ namespace OctoAwesome.GameServer.Commands
             {
                 Entity = player,
                 Type = EntityNotification.ActionType.Add
-            });
+            }, "simulation");
 
             var remotePlayer = new RemoteEntity(player);
 
@@ -51,9 +48,10 @@ namespace OctoAwesome.GameServer.Commands
                 {
                     Data = array,
                     OfficialCommand = OfficialCommand.NewEntity
-                });
+                }, "network");
 
             }
+
             using (var ms = new MemoryStream())
             using (var bw = new BinaryWriter(ms))
             {

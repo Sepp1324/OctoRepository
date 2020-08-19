@@ -1,12 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using OctoAwesome.Runtime;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace OctoAwesome.Network.Tests
 {
@@ -15,10 +9,7 @@ namespace OctoAwesome.Network.Tests
     {
         private SimulationManager simulationManager;
 
-        public SimulationManagerTests()
-        {
-            simulationManager = new SimulationManager(new Settings());
-        }
+        public SimulationManagerTests() => simulationManager = new SimulationManager(new Settings(), new UpdateHub());
 
         [TestMethod]
         public void StartStopTest()

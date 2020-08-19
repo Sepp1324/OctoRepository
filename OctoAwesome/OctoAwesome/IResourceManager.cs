@@ -77,12 +77,12 @@ namespace OctoAwesome
         /// </summary>
         IGlobalChunkCache GlobalChunkCache { get; }
 
-        IUpdateProvider UpdateProvider { get; }
         IUpdateHub UpdateHub { get; }
 
         Player CurrentPlayer { get; }
 
         void SaveEntity(Entity entity);
+
         void SaveChunkColumn(IChunkColumn value);
     }
 }

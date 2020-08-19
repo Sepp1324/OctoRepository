@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OctoAwesome.Notifications
 {
-    public class NotificationChannelCollection : IEnumerable
+    public class NotificationChannelCollection :  IEnumerable<KeyValuePair<string, HashSet<INotificationObserver>>>
     {
         private readonly Dictionary<string, HashSet<INotificationObserver>> internalDictionary;
 
@@ -15,6 +15,8 @@ namespace OctoAwesome.Notifications
         public ICollection<string> Channels => internalDictionary.Keys;
 
         public int Count => internalDictionary.Count;
+
+        public Dictionary<string, HashSet<INotificationObserver>>.ValueCollection Values => internalDictionary.Values;
 
         public void Add(string channel, INotificationObserver value)
         {
@@ -30,7 +32,7 @@ namespace OctoAwesome.Notifications
 
         public bool Contains(string key) => internalDictionary.ContainsKey(key);
 
-        public IEnumerator GetEnumerator() => internalDictionary.GetEnumerator();
+        public Dictionary<string, HashSet<INotificationObserver>>.Enumerator GetEnumerator() => internalDictionary.GetEnumerator();
 
         public bool Remove(string key) => internalDictionary.Remove(key);
 
@@ -47,6 +49,8 @@ namespace OctoAwesome.Notifications
 
         public bool TryGetValue(string key, out HashSet<INotificationObserver> value) => internalDictionary.TryGetValue(key, out value);
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator<KeyValuePair<string, HashSet<INotificationObserver>>> IEnumerable<KeyValuePair<string, HashSet<INotificationObserver>>>.GetEnumerator() => internalDictionary.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => internalDictionary.GetEnumerator();
     }
 }

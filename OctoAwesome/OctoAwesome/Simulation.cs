@@ -1,9 +1,7 @@
 ﻿using engenious;
-using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace OctoAwesome
@@ -11,7 +9,7 @@ namespace OctoAwesome
     /// <summary>
     /// Schnittstelle zwischen Applikation und Welt-Modell.
     /// </summary>
-    public sealed class Simulation : IUpdateSubscriber
+    public sealed class Simulation : INotificationObserver
     {
         public IResourceManager ResourceManager { get; private set; }
 
@@ -43,7 +41,7 @@ namespace OctoAwesome
         public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver)
         {
             ResourceManager = resourceManager;
-            subscription = resourceManager.UpdateProvider.Subscribe(this);
+            subscription = resourceManager.UpdateHub.Subscribe(this, "network");
 
             this.extensionResolver = extensionResolver;
             State = SimulationState.Ready;

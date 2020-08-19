@@ -7,19 +7,19 @@ namespace OctoAwesome.Runtime
 {
     public class UpdateHub : IUpdateHub, IDisposable
     {
-        private readonly  observers;
+        private readonly NotificationChannelCollection observers;
         private readonly SemaphoreSlim observerSemaphore;
 
         public UpdateHub()
         {
-            observers = new Dictionary<string, HashSet<INotificationObserver>>();
+            observers = new NotificationChannelCollection();
             observerSemaphore = new SemaphoreSlim(1, 1);
         }
 
         public IDisposable Subscribe(INotificationObserver observer, string channel = "none")
         {
             observerSemaphore.Wait();
-            observers.Add(observer);
+            observers.Add(channel, observer);
             observerSemaphore.Release();
 
             return new NotificationSubscription(this, observer, channel);
@@ -27,13 +27,27 @@ namespace OctoAwesome.Runtime
 
         public void Unsubscribe(INotificationObserver observer, string channel)
         {
-            throw new NotImplementedException();
+            observerSemaphore.Wait();
+            observers.Remove(channel, observer);
+            observerSemaphore.Release();
         }
 
         public void Unsubscribe(INotificationObserver observer)
         {
             observerSemaphore.Wait();
-            observers.Remove(subscriber);
+            observers.Remove(observer);
+            observerSemaphore.Release();
+        }
+
+        public void Push(Notification notification, string channel)
+        {
+            observerSemaphore.Wait();
+
+            if (observers.TryGetValue(channel, out var observerSet))
+            {
+                foreach (var observer in observerSet)
+                    observer.OnNext(notification);
+            }
             observerSemaphore.Release();
         }
 
@@ -41,8 +55,9 @@ namespace OctoAwesome.Runtime
         {
             observerSemaphore.Wait();
 
-            foreach (var observer in observers)
-                observer.OnNext(notification);
+            foreach (var observerSet in observers)
+                foreach (var observer in observerSet.Value)
+                    observer.OnNext(notification);
 
             observerSemaphore.Release();
         }
@@ -51,8 +66,9 @@ namespace OctoAwesome.Runtime
         {
             observerSemaphore.Wait();
 
-            foreach (var observer in observers)
-                observer.OnCompleted();
+            foreach (var observerSet in observers)
+                foreach (var observer in observerSet.Value)
+                    observer.OnCompleted();
 
             observers.Clear();
             observerSemaphore.Release();
