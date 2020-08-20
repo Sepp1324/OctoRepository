@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Network;
-using OctoAwesome.Notifications;
+﻿using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
 
@@ -16,6 +15,7 @@ namespace OctoAwesome.Network
         {
             this.client = client;
             this.updateHub = updateHub;
+
             subscription = client.Subscribe(this);
             definitionManager = manager;
         }
