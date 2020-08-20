@@ -1,9 +1,7 @@
 ﻿using engenious;
-using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace OctoAwesome
@@ -35,8 +33,7 @@ namespace OctoAwesome
         private readonly IExtensionResolver extensionResolver;
 
         private readonly HashSet<Entity> entities = new HashSet<Entity>();
-        private IDisposable networkSubscription;
-        private readonly IDisposable simmulationSubscription;
+        private readonly IDisposable simulationSubscription;
 
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
@@ -44,8 +41,7 @@ namespace OctoAwesome
         public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver)
         {
             ResourceManager = resourceManager;
-            networkSubscription = resourceManager.UpdateHub.Subscribe(this, "network");
-            simmulationSubscription = resourceManager.UpdateHub.Subscribe(this, "simulation");
+            simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.SIMULATION);
 
             this.extensionResolver = extensionResolver;
             State = SimulationState.Ready;
@@ -240,18 +236,11 @@ namespace OctoAwesome
 
         public void OnCompleted()
         {
-            networkSubscription.Dispose();
-            networkSubscription = null;
+            
         }
 
-        public void OnUpdate(Notification notification)
-        {
-            ResourceManager.UpdateHub.Push(notification, "network");
-        }
+        public void OnUpdate(Notification notification) => ResourceManager.UpdateHub.Push(notification, DefaultChannels.NETWORK);
 
-        private void EntityUpdate(EntityNotification notification)
-        {
-            notification.Entity?.Update(notification);
-        }
+        private void EntityUpdate(EntityNotification notification) => notification.Entity?.Update(notification);
     }
 }
