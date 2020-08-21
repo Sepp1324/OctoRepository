@@ -1,6 +1,5 @@
 ﻿using OctoAwesome.Notifications;
 using System;
-using System.Security.Cryptography.X509Certificates;
 
 namespace OctoAwesome
 {
@@ -23,9 +22,9 @@ namespace OctoAwesome
             OnSetEntity();
         }
 
-        public virtual void OnUpdate(Notification notification)
+        public virtual void OnUpdate(SerializableNotification notification)
         {
-            
+
         }
 
         protected virtual void OnSetEntity()
@@ -33,7 +32,7 @@ namespace OctoAwesome
 
         }
 
-        protected virtual void Update(Notification notification)
+        protected virtual void Update(SerializableNotification notification)
         {
             Entity?.OnUpdate(notification);
         }

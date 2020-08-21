@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Notifications;
+﻿using OctoAwesome.Network;
+using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
 using System.IO;
@@ -17,8 +18,7 @@ namespace OctoAwesome.Network
         {
             this.client = client;
             this.updateHub = updateHub;
-
-            hubSubscription = updateHub.Subscribe(this, DefaultChannels.NETWORK);
+            hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
             clientSubscription = client.Subscribe(this);
             definitionManager = manager;
         }
@@ -28,48 +28,38 @@ namespace OctoAwesome.Network
             switch (package.Command)
             {
                 case (ushort)OfficialCommand.EntityNotification:
-                    var entityNotification = new EntityNotification();
-
-                    using (var stream = new MemoryStream(package.Payload))
-                    using (var reader = new BinaryReader(stream))
-                    {
-                        entityNotification.Deserialize(reader);
-                    }
-                    updateHub.Push(entityNotification, DefaultChannels.SIMULATION);
+                    var entityNotification = Serializer.Deserialize<EntityNotification>(package.Payload, definitionManager);
+                    updateHub.Push(entityNotification, DefaultChannels.Simulation);
                     break;
                 default:
                     break;
             }
         }
 
-        public void OnError(Exception error) => throw error;
-
-        public void OnCompleted() => clientSubscription.Dispose();
-
         public void OnNext(Notification value)
         {
             ushort command;
+            byte[] payload;
             switch (value)
             {
-                case EntityNotification _:
+                case EntityNotification entityNotification:
                     command = (ushort)OfficialCommand.EntityNotification;
+                    payload = Serializer.Serialize(entityNotification, definitionManager);
                     break;
                 default:
                     return;
             }
 
-            if (value is ISerializable notification)
+            client.SendPackage(new Package(command, 0)
             {
-                using (var stream = new MemoryStream())
-                using (var writer = new BinaryWriter(stream))
-                {
-                    notification.Serialize(writer, definitionManager);
-                    client.SendPackage(new Package(command, (int)stream.Length)
-                    {
-                        Payload = stream.ToArray()
-                    });
-                }
-            }
+                Payload = payload
+            });
         }
+
+        public void OnError(Exception error)
+            => throw error;
+
+        public void OnCompleted()
+            => clientSubscription.Dispose();
     }
 }

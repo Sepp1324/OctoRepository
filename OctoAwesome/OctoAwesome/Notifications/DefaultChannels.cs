@@ -2,8 +2,8 @@
 {
     public static class DefaultChannels
     {
-        public const string NONE = "none";
-        public const string NETWORK = "network";
-        public const string SIMULATION = "simulation";
+        public const string None = "none";
+        public const string Network = "network";
+        public const string Simulation = "simulation";
     }
 }

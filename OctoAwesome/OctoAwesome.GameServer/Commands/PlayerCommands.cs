@@ -4,9 +4,13 @@ using OctoAwesome.EntityComponents;
 using OctoAwesome.Network;
 using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
+using OctoAwesome.Serialization;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -14,7 +18,10 @@ namespace OctoAwesome.GameServer.Commands
     {
         private static IUpdateHub updateHub;
 
-        static PlayerCommands() => updateHub = Program.ServerHandler.UpdateHub;
+        static PlayerCommands()
+        {
+            updateHub = Program.ServerHandler.UpdateHub;
+        }
 
 
         [Command((ushort)OfficialCommand.Whoami)]
@@ -22,11 +29,12 @@ namespace OctoAwesome.GameServer.Commands
         {
             string playername = Encoding.UTF8.GetString(data);
             var player = new Player();
+
             updateHub.Push(new EntityNotification()
             {
                 Entity = player,
                 Type = EntityNotification.ActionType.Add
-            }, DefaultChannels.SIMULATION);
+            }, DefaultChannels.Simulation);
 
             var remotePlayer = new RemoteEntity(player);
 
@@ -34,27 +42,16 @@ namespace OctoAwesome.GameServer.Commands
             remotePlayer.Components.AddComponent(new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
             remotePlayer.Components.AddComponent(new BodyComponent());
 
-            using (var ms = new MemoryStream())
-            using (var bw = new BinaryWriter(ms))
+            Console.WriteLine(playername);
+
+            updateHub.Push(new EntityNotification()
             {
-                remotePlayer.Serialize(bw, Program.ServerHandler.SimulationManager.DefinitionManager);
-                Console.WriteLine(playername);
-                var array = ms.ToArray();
+                Entity = remotePlayer,
+                Type = EntityNotification.ActionType.Add
+            }, DefaultChannels.Network);
+            
 
-                updateHub.Push(new ServerDataNotification()
-                {
-                    Data = array,
-                    OfficialCommand = OfficialCommand.EntityNotification
-                }, DefaultChannels.NETWORK);
-
-            }
-            using (var ms = new MemoryStream())
-            using (var bw = new BinaryWriter(ms))
-            {
-                player.Serialize(bw, Program.ServerHandler.SimulationManager.DefinitionManager);
-
-                return ms.ToArray();
-            }
+            return Serializer.Serialize(player, Program.ServerHandler.SimulationManager.DefinitionManager);
         }
     }
 }

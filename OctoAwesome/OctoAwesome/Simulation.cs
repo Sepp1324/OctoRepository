@@ -1,7 +1,9 @@
 ﻿using engenious;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace OctoAwesome
@@ -33,7 +35,7 @@ namespace OctoAwesome
         private readonly IExtensionResolver extensionResolver;
 
         private readonly HashSet<Entity> entities = new HashSet<Entity>();
-        private readonly IDisposable simulationSubscription;
+        private readonly IDisposable simmulationSubscription;
 
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
@@ -41,7 +43,7 @@ namespace OctoAwesome
         public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver)
         {
             ResourceManager = resourceManager;
-            simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.SIMULATION);
+            simmulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
 
             this.extensionResolver = extensionResolver;
             State = SimulationState.Ready;
@@ -211,8 +213,8 @@ namespace OctoAwesome
 
             ResourceManager.SaveEntity(entity);
         }
-
-        public void RemoveEntity(int entityId) => RemoveEntity(entities.First(entity => entity.Id == entityId));
+        public void RemoveEntity(int entityId)
+            => RemoveEntity(entities.First(e => e.Id == entityId));
 
         public void OnNext(Notification value)
         {
@@ -231,15 +233,22 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+        {
+            throw error;
+        }
 
         public void OnCompleted()
         {
-
         }
 
-        public void OnUpdate(Notification notification) => ResourceManager.UpdateHub.Push(notification, DefaultChannels.NETWORK);
+        public void OnUpdate(SerializableNotification notification)
+        {
+            ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
+        }
 
-        private void EntityUpdate(EntityNotification notification) => entities.First(entity => entity.Id == notification.EntityId).Update(notification);
+        private void EntityUpdate(EntityNotification notification) 
+            => entities.First(e => e.Id == notification.EntityId).Update(notification.Notification);
+
     }
 }
