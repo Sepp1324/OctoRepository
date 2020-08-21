@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome.Network
+﻿namespace OctoAwesome.Network
 {
     public enum OfficialCommand : ushort
     {
@@ -16,8 +10,6 @@ namespace OctoAwesome.Network
         LoadColumn = 104,
         SaveColumn = 105,
         //400 - 500 Entity Updates
-        NewEntity = 401,
-        RemoveEntity = 402,
-        PositionUpdate = 403,
+        EntityNotification = 401
     }
 }

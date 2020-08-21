@@ -212,13 +212,15 @@ namespace OctoAwesome
             ResourceManager.SaveEntity(entity);
         }
 
+        public void RemoveEntity(int entityId) => RemoveEntity(entities.First(entity => entity.Id == entityId));
+
         public void OnNext(Notification value)
         {
             switch (value)
             {
                 case EntityNotification entityNotification:
                     if (entityNotification.Type == EntityNotification.ActionType.Remove)
-                        RemoveEntity(entityNotification.Entity);
+                        RemoveEntity(entityNotification.EntityId);
                     else if (entityNotification.Type == EntityNotification.ActionType.Add)
                         AddEntity(entityNotification.Entity);
                     else if (entityNotification.Type == EntityNotification.ActionType.Update)
@@ -229,18 +231,15 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error)
-        {
-            throw error;
-        }
+        public void OnError(Exception error) => throw error;
 
         public void OnCompleted()
         {
-            
+
         }
 
         public void OnUpdate(Notification notification) => ResourceManager.UpdateHub.Push(notification, DefaultChannels.NETWORK);
 
-        private void EntityUpdate(EntityNotification notification) => notification.Entity?.Update(notification);
+        private void EntityUpdate(EntityNotification notification) => entities.First(entity => entity.Id == notification.EntityId).Update(notification);
     }
 }

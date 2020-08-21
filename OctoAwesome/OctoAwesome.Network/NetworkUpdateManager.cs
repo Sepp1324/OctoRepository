@@ -1,6 +1,7 @@
 ﻿using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
+using System.IO;
 
 namespace OctoAwesome.Network
 {
@@ -26,15 +27,15 @@ namespace OctoAwesome.Network
         {
             switch (package.Command)
             {
-                case (ushort)OfficialCommand.NewEntity:
-                    var remoteEntity = Serializer.Deserialize<RemoteEntity>(package.Payload, definitionManager);
-                    updateHub.Push(new EntityNotification()
+                case (ushort)OfficialCommand.EntityNotification:
+                    var entityNotification = new EntityNotification();
+
+                    using (var stream = new MemoryStream(package.Payload))
+                    using (var reader = new BinaryReader(stream))
                     {
-                        Entity = remoteEntity,
-                        Type = EntityNotification.ActionType.Add
-                    }, DefaultChannels.SIMULATION);
-                    break;
-                case (ushort)OfficialCommand.RemoveEntity:
+                        entityNotification.Deserialize(reader);
+                    }
+                    updateHub.Push(entityNotification, DefaultChannels.SIMULATION);
                     break;
                 default:
                     break;
@@ -45,6 +46,30 @@ namespace OctoAwesome.Network
 
         public void OnCompleted() => clientSubscription.Dispose();
 
-        public void OnNext(Notification value) => client.SendPackage(new Package());
+        public void OnNext(Notification value)
+        {
+            ushort command;
+            switch (value)
+            {
+                case EntityNotification _:
+                    command = (ushort)OfficialCommand.EntityNotification;
+                    break;
+                default:
+                    return;
+            }
+
+            if (value is ISerializable notification)
+            {
+                using (var stream = new MemoryStream())
+                using (var writer = new BinaryWriter(stream))
+                {
+                    notification.Serialize(writer, definitionManager);
+                    client.SendPackage(new Package(command, (int)stream.Length)
+                    {
+                        Payload = stream.ToArray()
+                    });
+                }
+            }
+        }
     }
 }

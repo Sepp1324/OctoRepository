@@ -5,11 +5,8 @@ using OctoAwesome.Network;
 using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -17,10 +14,7 @@ namespace OctoAwesome.GameServer.Commands
     {
         private static IUpdateHub updateHub;
 
-        static PlayerCommands()
-        {
-            updateHub = Program.ServerHandler.UpdateHub;
-        }
+        static PlayerCommands() => updateHub = Program.ServerHandler.UpdateHub;
 
 
         [Command((ushort)OfficialCommand.Whoami)]
@@ -32,7 +26,7 @@ namespace OctoAwesome.GameServer.Commands
             {
                 Entity = player,
                 Type = EntityNotification.ActionType.Add
-            }, "simulation");
+            }, DefaultChannels.SIMULATION);
 
             var remotePlayer = new RemoteEntity(player);
 
@@ -50,8 +44,8 @@ namespace OctoAwesome.GameServer.Commands
                 updateHub.Push(new ServerDataNotification()
                 {
                     Data = array,
-                    OfficialCommand = OfficialCommand.NewEntity
-                }, "network");
+                    OfficialCommand = OfficialCommand.EntityNotification
+                }, DefaultChannels.NETWORK);
 
             }
             using (var ms = new MemoryStream())
