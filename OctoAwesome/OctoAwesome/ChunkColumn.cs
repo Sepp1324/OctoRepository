@@ -32,10 +32,9 @@ namespace OctoAwesome
             Chunks = chunks;
             Index = columnIndex;
             Entities = new EntityList(this);
+
             foreach (var chunk in chunks)
-            {
                 chunk.Changed += OnChunkChanged;
-            }
         }
 
         private void OnChunkChanged(IChunk arg1, int arg2)
@@ -59,23 +58,16 @@ namespace OctoAwesome
         public void CalculateHeights()
         {
             for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
-            {
                 for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
-                {
                     Heights[x, y] = GetTopBlockHeight(x, y);
-                }
-            }
         }
 
         private int GetTopBlockHeight(int x, int y)
         {
             for (int z = Chunks.Length * Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
             {
-
                 if (GetBlock(x, y, z) != 0)
-                {
                     return z;
-                }
             }
             return -1;
         }
@@ -432,8 +424,7 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk, int> Changed;
 
-        public void SetCache(IGlobalChunkCache globalChunkCache)
-            => this.globalChunkCache = globalChunkCache;
+        public void SetCache(IGlobalChunkCache globalChunkCache) => this.globalChunkCache = globalChunkCache;
 
         public void OnUpdate(SerializableNotification notification)
         {
@@ -447,11 +438,7 @@ namespace OctoAwesome
         public void Update(SerializableNotification notification)
         {
             if (notification is ChunkNotification chunkNotification)
-            {
-                Chunks
-                    .FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)
-                    .Update(notification);
-            }
+                Chunks.FirstOrDefault(c => c.Index == chunkNotification.ChunkPos).Update(notification);
         }
     }
 }
