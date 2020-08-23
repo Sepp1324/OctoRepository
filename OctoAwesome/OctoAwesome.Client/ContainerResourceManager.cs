@@ -2,6 +2,8 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Linq;
+using System.Net;
 
 namespace OctoAwesome.Client
 {
@@ -16,7 +18,7 @@ namespace OctoAwesome.Client
 
         public bool IsMultiplayer { get; private set; }
         public Player CurrentPlayer => resourceManager.CurrentPlayer;
-        
+
         public IUpdateHub UpdateHub { get; }
 
         private ResourceManager resourceManager;
@@ -43,9 +45,37 @@ namespace OctoAwesome.Client
 
             if (multiplayer)
             {
-                var host = settings.Get<string>("server").Trim().Split(':');
+                var rawIPaddress = settings.Get<string>("server").Trim();
+                string host;
+                IPAddress ipAddress;
+                int port = -1;
+
+                if (!IPAddress.TryParse(rawIPaddress, out ipAddress))
+                {
+                    string stringIpAddress;
+
+                    if (rawIPaddress[0] == '[') //IPv6 with Ports 
+                    {
+                        port = int.Parse(rawIPaddress.Split(':').Last());
+                        stringIpAddress = rawIPaddress.Substring(1, rawIPaddress.IndexOf(']') - 1);
+                    }
+                    else if (IPAddress.TryParse(rawIPaddress.Substring(0, rawIPaddress.IndexOf(':')), out ipAddress))
+                    {
+                        port = int.Parse(rawIPaddress.Split(':').Last());
+                    }
+                    else if (rawIPaddress.Contains(':'))
+                    {
+                        port = int.Parse(rawIPaddress.Split(':').Last());
+                    }
+                    host = rawIPaddress;
+                }
+                else
+                {
+                    host = rawIPaddress;
+                }
+
                 var client = new Network.Client();
-                client.Connect(host[0], host.Length > 1 ? ushort.Parse(host[1]) : (ushort)8888);
+                client.Connect(host, port > 0 ? (ushort)port : (ushort)8888);
                 persistenceManager = new NetworkPersistenceManager(client, definitionManager);
                 networkUpdateManager = new NetworkUpdateManager(client, UpdateHub, definitionManager);
             }
@@ -61,7 +91,8 @@ namespace OctoAwesome.Client
 
             if (multiplayer)
             {
-                resourceManager.GlobalChunkCache.ChunkColumnChanged += (s,c) => {
+                resourceManager.GlobalChunkCache.ChunkColumnChanged += (s, c) =>
+                {
                     var networkPersistence = (NetworkPersistenceManager)persistenceManager;
                     networkPersistence.SendChangedChunkColumn(c);
                 };
