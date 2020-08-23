@@ -59,7 +59,7 @@ namespace OctoAwesome.Client
                         port = int.Parse(rawIPaddress.Split(':').Last());
                         stringIpAddress = rawIPaddress.Substring(1, rawIPaddress.IndexOf(']') - 1);
                     }
-                    else if (IPAddress.TryParse(rawIPaddress.Substring(0, rawIPaddress.IndexOf(':')), out ipAddress))
+                    else if (rawIPaddress.Contains(':') && IPAddress.TryParse(rawIPaddress.Substring(0, rawIPaddress.IndexOf(':')), out ipAddress))
                     {
                         port = int.Parse(rawIPaddress.Split(':').Last());
                         stringIpAddress = ipAddress.ToString();
