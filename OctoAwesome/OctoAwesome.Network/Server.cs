@@ -33,7 +33,7 @@ namespace OctoAwesome.Network
                     ipV4Socket.Bind(endpoint);
 
                 ipV4Socket.Listen(1024);
-                ipV4Socket.BeginAccept(OnClientAccepted, null);
+                ipV4Socket.BeginAccept(OnClientAccepted, ipV4Socket);
             }
             if (endpoints.Any(x => x.AddressFamily == AddressFamily.InterNetworkV6))
             {
@@ -41,7 +41,7 @@ namespace OctoAwesome.Network
                     ipV6Socket.Bind(endpoint);
 
                 ipV6Socket.Listen(1024);
-                ipV6Socket.BeginAccept(OnClientAccepted, null);
+                ipV6Socket.BeginAccept(OnClientAccepted, ipV6Socket);
             }
         }
 
@@ -53,7 +53,9 @@ namespace OctoAwesome.Network
 
         private void OnClientAccepted(IAsyncResult ar)
         {
-            var tmpSocket = ipV4Socket.EndAccept(ar);
+            var socket = ar.AsyncState as Socket;
+            var tmpSocket = socket.EndAccept(ar);
+
             tmpSocket.NoDelay = true;
 
             var client = new ConnectedClient(tmpSocket);
@@ -63,7 +65,7 @@ namespace OctoAwesome.Network
 
             lock (lockObj)
                 connectedClients.Add(client);
-            ipV4Socket.BeginAccept(OnClientAccepted, null);
+            socket.BeginAccept(OnClientAccepted, socket);
         }
     }
 }
