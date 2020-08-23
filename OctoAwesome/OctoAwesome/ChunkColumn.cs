@@ -34,13 +34,15 @@ namespace OctoAwesome
             Entities = new EntityList(this);
 
             foreach (var chunk in chunks)
+            {
                 chunk.Changed += OnChunkChanged;
+                chunk.SetColumn(this);
+            }
         }
 
         private void OnChunkChanged(IChunk arg1, int arg2)
         {
-            ChangeCounter++;
-            Changed?.Invoke(this, arg1, arg2);
+            
         }
 
         /// <summary>
@@ -369,6 +371,7 @@ namespace OctoAwesome
             {
                 IChunk chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
                 chunk.Changed += OnChunkChanged;
+                chunk.SetColumn(this);
 
                 for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
@@ -432,6 +435,8 @@ namespace OctoAwesome
             {
                 chunkNotification.ChunkColumnIndex = Index;
                 globalChunkCache.OnUpdate(notification);
+                ChangeCounter++;
+                //Changed?.Invoke(this, arg1, arg2);
             }
         }
 

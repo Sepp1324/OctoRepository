@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
@@ -13,35 +10,50 @@ namespace OctoAwesome.Network
     {
         public event EventHandler<ConnectedClient> OnClientConnected;
 
-        private Socket socket;
-        private List<ConnectedClient> connectedClients;
+        private readonly Socket ipV4Socket;
+        private readonly Socket ipV6Socket;
+        private readonly List<ConnectedClient> connectedClients;
         private readonly object lockObj;
 
         public Server()
         {
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            lockObj = new object();
-
-        }
-
-        public void Start(IPAddress address, ushort port)
-        {
+            ipV4Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            ipV6Socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
             connectedClients = new List<ConnectedClient>();
-            socket.Bind(new IPEndPoint(address, port));
-            socket.Listen(1024);
-            socket.BeginAccept(OnClientAccepted, null);
+            lockObj = new object();
         }
+
+        public void Start(params IPEndPoint[] endpoints)
+        {
+            connectedClients.Clear();
+
+            if (endpoints.Any(x => x.AddressFamily == AddressFamily.InterNetwork))
+            {
+                foreach (var endpoint in endpoints.Where(e => e.AddressFamily == AddressFamily.InterNetwork))
+                    ipV4Socket.Bind(endpoint);
+
+                ipV4Socket.Listen(1024);
+                ipV4Socket.BeginAccept(OnClientAccepted, null);
+            }
+            if (endpoints.Any(x => x.AddressFamily == AddressFamily.InterNetworkV6))
+            {
+                foreach (var endpoint in endpoints.Where(e => e.AddressFamily == AddressFamily.InterNetworkV6))
+                    ipV6Socket.Bind(endpoint);
+
+                ipV6Socket.Listen(1024);
+                ipV6Socket.BeginAccept(OnClientAccepted, null);
+            }
+        }
+
         public void Start(string host, ushort port)
         {
-            var address = Dns.GetHostAddresses(host).FirstOrDefault(
-                a => a.AddressFamily == socket.AddressFamily);
-
-            Start(address, port);
+            var address = Dns.GetHostAddresses(host).Where(a => a.AddressFamily == ipV4Socket.AddressFamily || a.AddressFamily == ipV6Socket.AddressFamily);
+            Start(address.Select(a => new IPEndPoint(a, port)).ToArray());
         }
 
         private void OnClientAccepted(IAsyncResult ar)
         {
-            var tmpSocket = socket.EndAccept(ar);
+            var tmpSocket = ipV4Socket.EndAccept(ar);
             tmpSocket.NoDelay = true;
 
             var client = new ConnectedClient(tmpSocket);
@@ -51,7 +63,7 @@ namespace OctoAwesome.Network
 
             lock (lockObj)
                 connectedClients.Add(client);
-            socket.BeginAccept(OnClientAccepted, null);
+            ipV4Socket.BeginAccept(OnClientAccepted, null);
         }
     }
 }
