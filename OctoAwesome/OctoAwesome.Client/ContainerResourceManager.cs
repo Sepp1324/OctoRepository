@@ -62,12 +62,18 @@ namespace OctoAwesome.Client
                     else if (IPAddress.TryParse(rawIPaddress.Substring(0, rawIPaddress.IndexOf(':')), out ipAddress))
                     {
                         port = int.Parse(rawIPaddress.Split(':').Last());
+                        stringIpAddress = ipAddress.ToString();
                     }
                     else if (rawIPaddress.Contains(':'))
                     {
                         port = int.Parse(rawIPaddress.Split(':').Last());
+                        stringIpAddress = rawIPaddress.Split(':').First();
                     }
-                    host = rawIPaddress;
+                    else
+                    {
+                        stringIpAddress = rawIPaddress;
+                    }
+                    host = stringIpAddress;
                 }
                 else
                 {
