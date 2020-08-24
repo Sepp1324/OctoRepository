@@ -215,8 +215,8 @@ namespace OctoAwesome
 
             ResourceManager.SaveEntity(entity);
         }
-        public void RemoveEntity(int entityId)
-            => RemoveEntity(entities.First(e => e.Id == entityId));
+
+        public void RemoveEntity(int entityId) => RemoveEntity(entities.First(e => e.Id == entityId));
 
         public void OnNext(Notification value)
         {

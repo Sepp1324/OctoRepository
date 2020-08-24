@@ -2,11 +2,6 @@
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -14,10 +9,7 @@ namespace OctoAwesome.GameServer.Commands
     {
         private static readonly IUpdateHub updateHub;
 
-        static NotificationCommands()
-        {
-            updateHub = Program.ServerHandler.UpdateHub;
-        }
+        static NotificationCommands() => updateHub = Program.ServerHandler.UpdateHub;
 
         [Command((ushort)OfficialCommand.EntityNotification)]
         public static byte[] EntityNotification(byte[] data)
@@ -32,6 +24,7 @@ namespace OctoAwesome.GameServer.Commands
         {
             var chunkNotification = Serializer.Deserialize<ChunkNotification>(data, null);
             updateHub.Push(chunkNotification, DefaultChannels.Chunk);
+            updateHub.Push(chunkNotification, DefaultChannels.Network);
             return null;
         }
     }
