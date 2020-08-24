@@ -127,17 +127,15 @@ namespace OctoAwesome.Network
 
         public void SendChangedChunkColumn(IChunkColumn chunkColumn)
         {
-            var package = new Package((ushort)OfficialCommand.SaveColumn, 0);
+            //var package = new Package((ushort)OfficialCommand.SaveColumn, 0);
 
-            using (var ms = new MemoryStream())
-            using (var bw = new BinaryWriter(ms))
-            {
-                chunkColumn.Serialize(bw, definitionManager);
-                package.Payload = ms.ToArray();
-            }
-
-
-            client.SendPackage(package);
+            //using (var ms = new MemoryStream())
+            //using (var bw = new BinaryWriter(ms))
+            //{
+            //    chunkColumn.Serialize(bw, definitionManager);
+            //    package.Payload = ms.ToArray();
+            //}
+            //client.SendPackage(package);
         }
 
         public void OnNext(Package package)
@@ -160,10 +158,8 @@ namespace OctoAwesome.Network
             }
         }
 
-        public void OnError(Exception error)
-            => throw error;
+        public void OnError(Exception error) => throw error;
 
-        public void OnCompleted()
-            => subscription.Dispose();
+        public void OnCompleted() => subscription.Dispose();
     }
 }

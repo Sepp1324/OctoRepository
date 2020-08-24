@@ -243,8 +243,24 @@ namespace OctoAwesome
         public void OnCompleted()
         { }
 
-        public void OnUpdate(SerializableNotification notification) => ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
+        public void OnUpdate(SerializableNotification notification)
+        {
+            if (!IsServerSide)
+                ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
+        }
 
-        private void EntityUpdate(EntityNotification notification) => entities.First(e => e.Id == notification.EntityId).Update(notification.Notification);
+        private void EntityUpdate(EntityNotification notification)
+        {
+            var entity = entities.FirstOrDefault(e => e.Id == notification.EntityId);
+
+            if(entity == null)
+            {
+
+            }
+            else
+            {
+                entity.Update(notification.Notification);
+            }
+        }
     }
 }

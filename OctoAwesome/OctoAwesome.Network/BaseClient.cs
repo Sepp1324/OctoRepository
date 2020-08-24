@@ -141,14 +141,10 @@ namespace OctoAwesome.Network
                     return;
                 }
             }
-
             SendInternal(data, len);
         }
 
-        private void OnReceived(object sender, SocketAsyncEventArgs e)
-        {
-            Receive(e);
-        }
+        private void OnReceived(object sender, SocketAsyncEventArgs e) => Receive(e);
 
         protected void Receive(SocketAsyncEventArgs e)
         {
@@ -181,7 +177,10 @@ namespace OctoAwesome.Network
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)
                 {
-                    throw new Exception("buffer is not enough for package");
+                    var exception = new Exception($"Buffer is to small for Head-Deserialization [length: {length} | offset: {bufferOffset}]");
+                    exception.Data.Add(nameof(length), length);
+                    exception.Data.Add(nameof(bufferOffset), bufferOffset);
+                    throw exception;
                 }
                 else
                 {

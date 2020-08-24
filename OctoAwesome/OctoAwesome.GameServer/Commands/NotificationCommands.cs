@@ -16,6 +16,7 @@ namespace OctoAwesome.GameServer.Commands
         {
             var entityNotification = Serializer.Deserialize<EntityNotification>(data, null);
             updateHub.Push(entityNotification, DefaultChannels.Simulation);
+            updateHub.Push(entityNotification, DefaultChannels.Network);
             return null;
         }
 

@@ -48,7 +48,7 @@ namespace OctoAwesome.Client.Components
             effect.TextureEnabled = true;
             graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
 
-            using (var writer = File.AppendText(Path.Combine(".", "render.log"))) //TODO: Uncomment if Multiplayer test
+            //using (var writer = File.AppendText(Path.Combine(".", "render.log"))) //TODO: Uncomment if Multiplayer test
                 foreach (var pass in effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();

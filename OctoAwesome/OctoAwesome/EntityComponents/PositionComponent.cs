@@ -1,12 +1,6 @@
 ﻿using engenious;
 using OctoAwesome.Notifications;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -22,8 +16,7 @@ namespace OctoAwesome.EntityComponents
                 var positionBlockX = ((int)(position.BlockPosition.X * 100)) / 100f;
                 var positionBlockY = ((int)(position.BlockPosition.Y * 100)) / 100f;
 
-                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY
-                    || position.BlockPosition.Z != value.BlockPosition.Z;
+                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || position.BlockPosition.Z != value.BlockPosition.Z;
 
                 SetValue(ref position, value);
             }
@@ -34,10 +27,7 @@ namespace OctoAwesome.EntityComponents
         private Coordinate position;
         private bool posUpdate;
 
-        public PositionComponent()
-        {
-            Sendable = true;
-        }
+        public PositionComponent() => Sendable = true;
 
         public override void Serialize(BinaryWriter writer, IDefinitionManager definitionManager)
         {
@@ -74,7 +64,6 @@ namespace OctoAwesome.EntityComponents
 
             if (callerName == nameof(Position) && posUpdate)
             {
-
                 var updateNotification = new PropertyChangedNotification
                 {
                     Issuer = nameof(PositionComponent),
@@ -87,7 +76,6 @@ namespace OctoAwesome.EntityComponents
                     Serialize(writer, null);
                     updateNotification.Value = stream.ToArray();
                 }
-
                 Update(updateNotification);
             }
         }
