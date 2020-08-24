@@ -12,25 +12,27 @@ namespace OctoAwesome.Client
     /// </summary>
     public class ContainerResourceManager : IResourceManager
     {
+        private ResourceManager resourceManager;
+        private NetworkUpdateManager networkUpdateManager;
+
         public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
+
         public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
+
         public IGlobalChunkCache GlobalChunkCache => resourceManager.GlobalChunkCache;
 
         public bool IsMultiplayer { get; private set; }
+
         public Player CurrentPlayer => resourceManager.CurrentPlayer;
 
         public IUpdateHub UpdateHub { get; }
-
-        private ResourceManager resourceManager;
-        private NetworkUpdateManager networkUpdateManager;
 
         public ContainerResourceManager()
         {
             UpdateHub = new UpdateHub();
         }
 
-        public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
-            ISettings settings, bool multiplayer)
+        public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, bool multiplayer)
         {
             IPersistenceManager persistenceManager;
 

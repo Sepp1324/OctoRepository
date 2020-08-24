@@ -12,12 +12,12 @@ namespace OctoAwesome
     /// </summary>
     public sealed class GlobalChunkCache : IGlobalChunkCache
     {
-
         public event EventHandler<IChunkColumn> ChunkColumnChanged;
 
         private readonly ConcurrentQueue<CacheItem> _dirtyItems = new ConcurrentQueue<CacheItem>();
         private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
         private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
+
         /// <summary>
         /// Dictionary, das alle <see cref="CacheItem"/>s hält.
         /// </summary>
@@ -137,6 +137,7 @@ namespace OctoAwesome
                 if (cacheItem.ChunkColumn == null)
                 {
                     cacheItem.ChunkColumn = loadDelegate(planet, position);
+                    cacheItem.ChunkColumn.SetCache(this);
 
                     lock (updateLockObject)
                     {
@@ -171,7 +172,6 @@ namespace OctoAwesome
 
             return null;
         }
-
 
         /// <summary>
         /// Löscht den gesamten Inhalt des Caches.
