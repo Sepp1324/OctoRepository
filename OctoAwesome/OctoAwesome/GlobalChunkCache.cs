@@ -362,8 +362,7 @@ namespace OctoAwesome
             }
         }
 
-        public void InsertUpdateHub(IUpdateHub updateHub) 
-            => this.updateHub = updateHub;
+        public void InsertUpdateHub(IUpdateHub updateHub) => this.updateHub = updateHub;
 
         /// <summary>
         /// Element für den Cache

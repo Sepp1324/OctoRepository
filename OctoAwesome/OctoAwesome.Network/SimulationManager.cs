@@ -8,6 +8,14 @@ namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
+        private Simulation simulation;
+        private readonly ExtensionLoader extensionLoader;
+        private readonly DefinitionManager definitionManager;
+        private readonly ISettings settings;
+        private readonly Thread backgroundThread;
+        private readonly object mainLock;
+        private readonly IDisposable chunkSubscription;
+
         public bool IsRunning { get; private set; }
 
         public IDefinitionManager DefinitionManager => definitionManager;
@@ -29,16 +37,6 @@ namespace OctoAwesome.Network
         public GameTime GameTime { get; private set; }
 
         public ResourceManager ResourceManager { get; private set; }
-
-        private Simulation simulation;
-        private ExtensionLoader extensionLoader;
-        private DefinitionManager definitionManager;
-
-        private ISettings settings;
-
-        private Thread backgroundThread;
-        private object mainLock;
-        private IDisposable chunkSubscription;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
@@ -62,8 +60,11 @@ namespace OctoAwesome.Network
             //For Release resourceManager.LoadUniverse(new Guid()); 
             ResourceManager.NewUniverse("test_universe", 043848723);
 
-            simulation = new Simulation(ResourceManager, extensionLoader);
-            simulation.IsServerSide = true;
+            simulation = new Simulation(ResourceManager, extensionLoader)
+            {
+                IsServerSide = true
+            };
+
             backgroundThread = new Thread(SimulationLoop)
             {
                 Name = "Simulation Loop",

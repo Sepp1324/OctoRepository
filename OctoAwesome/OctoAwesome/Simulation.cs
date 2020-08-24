@@ -13,6 +13,13 @@ namespace OctoAwesome
     /// </summary>
     public sealed class Simulation : INotificationObserver
     {
+        private int nextId = 1;
+
+        private readonly IExtensionResolver extensionResolver;
+
+        private readonly HashSet<Entity> entities = new HashSet<Entity>();
+
+        private readonly IDisposable simmulationSubscription;
         public IResourceManager ResourceManager { get; private set; }
 
         public bool IsServerSide { get; set; }
@@ -32,13 +39,6 @@ namespace OctoAwesome
         /// </summary>
         public List<Entity> Entities => entities.ToList();
 
-        private int nextId = 1;
-
-        private readonly IExtensionResolver extensionResolver;
-
-        private readonly HashSet<Entity> entities = new HashSet<Entity>();
-        private readonly IDisposable simmulationSubscription;
-
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
         /// </summary>
@@ -54,7 +54,6 @@ namespace OctoAwesome
                 ValidateAddComponent, ValidateRemoveComponent, null, null);
 
             extensionResolver.ExtendSimulation(this);
-
         }
 
         private void ValidateAddComponent(SimulationComponent component)
@@ -239,22 +238,13 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error)
-        {
-            throw error;
-        }
+        public void OnError(Exception error) => throw error;
 
         public void OnCompleted()
-        {
-        }
+        { }
 
-        public void OnUpdate(SerializableNotification notification)
-        {
-            ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
-        }
+        public void OnUpdate(SerializableNotification notification) => ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
 
-        private void EntityUpdate(EntityNotification notification) 
-            => entities.First(e => e.Id == notification.EntityId).Update(notification.Notification);
-
+        private void EntityUpdate(EntityNotification notification) => entities.First(e => e.Id == notification.EntityId).Update(notification.Notification);
     }
 }
