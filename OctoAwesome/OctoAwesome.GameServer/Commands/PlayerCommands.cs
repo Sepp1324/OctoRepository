@@ -2,15 +2,10 @@
 using engenious;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Network;
-using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -18,10 +13,7 @@ namespace OctoAwesome.GameServer.Commands
     {
         private static IUpdateHub updateHub;
 
-        static PlayerCommands()
-        {
-            updateHub = Program.ServerHandler.UpdateHub;
-        }
+        static PlayerCommands() => updateHub = Program.ServerHandler.UpdateHub;
 
 
         [Command((ushort)OfficialCommand.Whoami)]
@@ -49,8 +41,6 @@ namespace OctoAwesome.GameServer.Commands
                 Entity = remotePlayer,
                 Type = EntityNotification.ActionType.Add
             }, DefaultChannels.Network);
-
-
             return Serializer.Serialize(player, Program.ServerHandler.SimulationManager.DefinitionManager);
         }
     }

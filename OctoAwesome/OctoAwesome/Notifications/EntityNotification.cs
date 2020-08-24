@@ -1,10 +1,5 @@
 ﻿using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
@@ -24,6 +19,16 @@ namespace OctoAwesome.Notifications
         public PropertyChangedNotification Notification { get; set; }
 
         private Entity entity;
+
+        public EntityNotification()
+        {
+
+        }
+
+        public EntityNotification(int id) : this()
+        {
+            EntityId = id;
+        }
 
         public override void Deserialize(BinaryReader reader, IDefinitionManager definitionManager = null)
         {
@@ -56,6 +61,7 @@ namespace OctoAwesome.Notifications
             }
 
             var subNotification = Notification != null;
+
             writer.Write(subNotification);
             if (subNotification)
             {                
@@ -70,7 +76,8 @@ namespace OctoAwesome.Notifications
             None,
             Add,
             Remove,
-            Update
+            Update,
+            Request
         }
     }
 }
