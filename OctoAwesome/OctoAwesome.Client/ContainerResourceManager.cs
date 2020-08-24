@@ -50,11 +50,11 @@ namespace OctoAwesome.Client
                 IPAddress ipAddress;
                 int port = -1;
 
-                if (!IPAddress.TryParse(rawIPaddress, out ipAddress))
+                if (rawIPaddress[0] == '[' || !IPAddress.TryParse(rawIPaddress, out ipAddress))
                 {
                     string stringIpAddress;
 
-                    if (rawIPaddress[0] == '[') //IPv6 with Ports 
+                    if (rawIPaddress[0] == '[') //IPv6 with Ports
                     {
                         port = int.Parse(rawIPaddress.Split(':').Last());
                         stringIpAddress = rawIPaddress.Substring(1, rawIPaddress.IndexOf(']') - 1);
@@ -64,12 +64,12 @@ namespace OctoAwesome.Client
                         port = int.Parse(rawIPaddress.Split(':').Last());
                         stringIpAddress = ipAddress.ToString();
                     }
-                    else if (rawIPaddress.Contains(':'))
+                    else if (rawIPaddress.Contains(':')) //Domain with Ports
                     {
                         port = int.Parse(rawIPaddress.Split(':').Last());
                         stringIpAddress = rawIPaddress.Split(':').First();
                     }
-                    else
+                    else //Domain without Port
                     {
                         stringIpAddress = rawIPaddress;
                     }
