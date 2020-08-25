@@ -289,8 +289,8 @@ namespace OctoAwesome
                             writer.Write((byte)(definitions.IndexOf(definition) + 1));
 
                         // Meta Data
-                        if (definition.HasMetaData)
-                            writer.Write(chunk.MetaData[i]);
+                        //if (definition.HasMetaData)
+                        //    writer.Write(chunk.MetaData[i]);
                     }
                 }
             }
@@ -376,15 +376,15 @@ namespace OctoAwesome
                 for (int i = 0; i < chunk.Blocks.Length; i++)
                 {
                     ushort typeIndex = longIndex ? reader.ReadUInt16() : reader.ReadByte();
-                    chunk.MetaData[i] = 0;
+                    //chunk.MetaData[i] = 0;
                     if (typeIndex > 0)
                     {
                         chunk.Blocks[i] = map[typeIndex];
 
                         var definition = (IBlockDefinition)definitionManager.GetDefinitionByIndex(map[typeIndex]);
 
-                        if (definition.HasMetaData)
-                            chunk.MetaData[i] = reader.ReadInt32();
+                        //if (definition.HasMetaData)
+                        //    chunk.MetaData[i] = reader.ReadInt32();
                     }
                 }
                 chunk.ChangeCounter = counter[c];
