@@ -60,21 +60,13 @@ namespace OctoAwesome.Runtime
 
             populators = extensionResolver.GetMapPopulator().OrderBy(p => p.Order).ToList();
 
-            globalChunkCache = new GlobalChunkCache(
-                (p, i) => LoadChunkColumn(p, i),
-                (i) => GetPlanet(i),
-                (p, i, c) => SaveChunkColumn(p, i, c));
-
-
+            globalChunkCache = new GlobalChunkCache((p, i) => LoadChunkColumn(p, i), (i) => GetPlanet(i), (p, i, c) => SaveChunkColumn(p, i, c));
             planets = new Dictionary<int, IPlanet>();
 
             bool.TryParse(settings.Get<string>("DisablePersistence"), out disablePersistence);
         }
 
-        public void InsertUpdateHub(UpdateHub updateHub)
-        {
-            UpdateHub = updateHub;
-        }
+        public void InsertUpdateHub(UpdateHub updateHub) => UpdateHub = updateHub;
 
         /// <summary>
         /// Erzuegt ein neues Universum.
@@ -130,9 +122,7 @@ namespace OctoAwesome.Runtime
             globalChunkCache.Clear();
 
             foreach (var planet in planets)
-            {
                 persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-            }
             planets.Clear();
 
             CurrentUniverse = null;
@@ -189,10 +179,8 @@ namespace OctoAwesome.Runtime
                 {
                     awaiter.WaitOn();
                 }
-
                 planets.Add(id, planet);
             }
-
             return planet;
         }
 

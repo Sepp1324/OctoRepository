@@ -27,13 +27,13 @@ namespace OctoAwesome
         /// Array, das die Metadaten zu den Blöcken eines Chunks enthält.
         /// Der Index ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
         /// </summary>
-        int[] MetaData { get; }
+        //int[] MetaData { get; }
 
         /// <summary>
         /// Verzweigtes Array, das die Ressourcen zu den Blöcken eines Chunks enthält.
         /// Der Index der ersten Dimension ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
         /// </summary>
-        ushort[][] Resources { get; }
+        //ushort[][] Resources { get; }
 
         /// <summary>
         /// Veränderungs-Counter zur Ermittlung von Änderungen.<para/>

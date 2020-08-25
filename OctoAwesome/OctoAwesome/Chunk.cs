@@ -55,14 +55,13 @@ namespace OctoAwesome
         /// Array, das die Metadaten zu den Blöcken eines Chunks enthält.
         /// Der Index ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
         /// </summary>
-        public int[] MetaData { get; private set; }
+        //public int[] MetaData { get; private set; }
 
         /// <summary>
         /// Verzweigtes Array, das die Ressourcen zu den Blöcken eines Chunks enthält.
         /// Der Index der ersten Dimension ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
         /// </summary>
-        public ushort[][] Resources { get; private set; }
-
+        //public ushort[][] Resources { get; private set; }
 
         /// <summary>
         /// Chunk Index innerhalb des Planeten.
@@ -88,8 +87,8 @@ namespace OctoAwesome
         public Chunk(Index3 pos, int planet)
         {
             Blocks = new ushort[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z];
-            MetaData = new int[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z];
-            Resources = new ushort[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z][];
+            //MetaData = new int[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z];
+            //Resources = new ushort[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z][];
 
             Index = pos;
             Planet = planet;
@@ -133,7 +132,7 @@ namespace OctoAwesome
         public void SetBlock(int flatIndex, ushort block, int meta = 0)
         {
             Blocks[flatIndex] = block;
-            MetaData[flatIndex] = meta;
+            //MetaData[flatIndex] = meta;
             ChangeCounter++;
             Changed?.Invoke(this, ChangeCounter);
 
@@ -147,7 +146,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
-        public int GetBlockMeta(int x, int y, int z) => MetaData[GetFlatIndex(x, y, z)];
+        public int GetBlockMeta(int x, int y, int z) => 0; //MetaData[GetFlatIndex(x, y, z)];
 
         /// <summary>
         /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 
@@ -158,7 +157,7 @@ namespace OctoAwesome
         /// <param name="meta">Die neuen Metadaten</param>
         public void SetBlockMeta(int x, int y, int z, int meta)
         {
-            MetaData[GetFlatIndex(x, y, z)] = meta;
+            //MetaData[GetFlatIndex(x, y, z)] = meta;
             ChangeCounter++;
             Changed?.Invoke(this, ChangeCounter);
         }
@@ -170,7 +169,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <returns>Ein Array aller Ressourcen des Blocks</returns>
-        public ushort[] GetBlockResources(int x, int y, int z) => Resources[GetFlatIndex(x, y, z)];
+        public ushort[] GetBlockResources(int x, int y, int z) => new ushort[0]; //Resources[GetFlatIndex(x, y, z)];
 
         /// <summary>
         /// Ändert die Ressourcen des Blocks an der angegebenen Koordinate
@@ -181,7 +180,7 @@ namespace OctoAwesome
         /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         public void SetBlockResources(int x, int y, int z, ushort[] resources)
         {
-            Resources[GetFlatIndex(x, y, z)] = resources;
+            //Resources[GetFlatIndex(x, y, z)] = resources;
             ChangeCounter++;
             Changed?.Invoke(this, ChangeCounter);
         }
@@ -195,7 +194,7 @@ namespace OctoAwesome
             if (notification is ChunkNotification chunkNotification)
             {
                 Blocks[chunkNotification.FlatIndex] = chunkNotification.Block;
-                MetaData[chunkNotification.FlatIndex] = chunkNotification.Meta;
+                //MetaData[chunkNotification.FlatIndex] = chunkNotification.Meta;
                 ChangeCounter++;
                 Changed?.Invoke(this, ChangeCounter);
             }
