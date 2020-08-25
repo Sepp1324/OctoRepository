@@ -1,21 +1,18 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using engenious;
 
 namespace OctoAwesome.Client.Screens
 {
     class CreateUniverseScreen : BaseScreen
     {
-        new ScreenComponent Manager;
+        new readonly ScreenComponent Manager;
+        private readonly Textbox nameInput;
+        private readonly Textbox seedInput;
+        readonly Button createButton;
 
-        Textbox nameInput, seedInput;
-        Button createButton;
-
-        private ISettings settings;
+        private readonly ISettings settings;
 
         public CreateUniverseScreen(ScreenComponent manager) : base(manager)
         {
@@ -28,17 +25,21 @@ namespace OctoAwesome.Client.Screens
 
             SetDefaultBackground();
 
-            Panel panel = new Panel(manager);
-            panel.VerticalAlignment = VerticalAlignment.Stretch;
-            panel.HorizontalAlignment = HorizontalAlignment.Stretch;
-            panel.Margin = Border.All(50);
-            panel.Background = new BorderBrush(Color.White * 0.5f);
-            panel.Padding = Border.All(10);
+            var panel = new Panel(manager)
+            {
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Margin = Border.All(50),
+                Background = new BorderBrush(Color.White * 0.5f),
+                Padding = Border.All(10)
+            };
             Controls.Add(panel);
 
-            Grid grid = new Grid(manager);
-            grid.VerticalAlignment = VerticalAlignment.Stretch;
-            grid.HorizontalAlignment = HorizontalAlignment.Stretch;
+            var grid = new Grid(manager)
+            {
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
             panel.Controls.Add(grid);
 
             grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
@@ -63,8 +64,7 @@ namespace OctoAwesome.Client.Screens
                     return;
 
                 int? seed = null;
-                int textseed;
-                if (int.TryParse(seedInput.Text, out textseed))
+                if (int.TryParse(seedInput.Text, out int textseed))
                     seed = textseed;
 
                 manager.Player.SetEntity(null);
@@ -72,29 +72,22 @@ namespace OctoAwesome.Client.Screens
                 Guid guid = Manager.Game.Simulation.NewGame(nameInput.Text, seed);
                 settings.Set("LastUniverse", guid.ToString());
 
-                Player player = manager.Game.Simulation.LoginPlayer(Guid.Empty);
+                Player player = manager.Game.Simulation.LoginPlayer(""); //TODO: Fix
                 manager.Game.Player.SetEntity(player);
 
                 manager.NavigateToScreen(new GameScreen(manager));
             };
             panel.Controls.Add(createButton);
-
-        }
-
-        private void AddLabeledControl(Grid grid, String name, Control c)
-        {
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count -1);
-            grid.AddControl(c, 1, grid.Rows.Count - 1);
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 10 });
         }
 
         private Textbox GetTextbox()
         {
-            Textbox t = new Textbox(Manager);
-            t.HorizontalAlignment = HorizontalAlignment.Stretch;
-            t.VerticalAlignment = VerticalAlignment.Stretch;
-            t.Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black);
+            var t = new Textbox(Manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
+            };
             return t;
         }
     }

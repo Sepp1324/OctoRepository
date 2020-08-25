@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MonoGameUi;
 using engenious;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Runtime;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -14,12 +9,10 @@ namespace OctoAwesome.Client.Screens
     {
         public new ScreenComponent Manager => (ScreenComponent)base.Manager;
 
-        private ISettings settings;
-        private OctoGame game;
+        private readonly OctoGame game;
 
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
-            settings = Manager.Game.Settings;
             game = Manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
@@ -37,14 +30,31 @@ namespace OctoAwesome.Client.Screens
             };
             Controls.Add(panel);
 
-            var input = new Textbox(manager)
+            var grid = new Grid(manager)
             {
-                Text = "localhost",
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                //VerticalAlignment = VerticalAlignment.Stretch,
-                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch
             };
-            panel.Controls.Add(input);
+            panel.Controls.Add(grid);
+
+            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
+            grid.Columns.Add(new ColumnDefinition() { Width = 1, ResizeMode = ResizeMode.Parts });
+
+            var serverNameInput = new Textbox(manager)
+            {
+                Text = game.Settings.Get("server", "localhost"),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black),
+            };
+            AddLabeledControl(grid, "Host:", serverNameInput);
+
+            var playerNameInput = new Textbox(manager)
+            {
+                Text = game.Settings.Get("player", "Horst"),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black),
+            };
+            AddLabeledControl(grid, "Username:", playerNameInput);
 
             var createButton = Button.TextButton(manager, Languages.OctoClient.Connect);
             createButton.HorizontalAlignment = HorizontalAlignment.Center;
@@ -52,24 +62,24 @@ namespace OctoAwesome.Client.Screens
             createButton.Visible = true;
             createButton.LeftMouseClick += (s, e) =>
             {
-                game.Settings.Set("server", input.Text);
-                ((ContainerResourceManager)game.ResourceManager)
-                    .CreateManager(game.ExtensionLoader, game.DefinitionManager, game.Settings, true);
-                
-                PlayMultiplayer(manager);
-            };
-            panel.Controls.Add(createButton);
+                game.Settings.Set("server", serverNameInput.Text);
+                game.Settings.Set("player", playerNameInput.Text);
 
+                ((ContainerResourceManager)game.ResourceManager).CreateManager(game.ExtensionLoader, game.DefinitionManager, game.Settings, true);
+                PlayMultiplayer(manager, playerNameInput.Text);
+            };
+            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
+            grid.AddControl(createButton, 1, grid.Rows.Count - 1);
         }
 
-        private void PlayMultiplayer(ScreenComponent manager)
+        private void PlayMultiplayer(ScreenComponent manager, string playerName)
         {
             Manager.Player.SetEntity(null);
 
             Manager.Game.Simulation.LoadGame(Guid.Empty);
             //settings.Set("LastUniverse", levelList.SelectedItem.Id.ToString());
 
-            Player player = Manager.Game.Simulation.LoginPlayer(Guid.Empty);
+            Player player = Manager.Game.Simulation.LoginPlayer(playerName);
             Manager.Game.Player.SetEntity(player);
 
             Manager.NavigateToScreen(new GameScreen(manager));
