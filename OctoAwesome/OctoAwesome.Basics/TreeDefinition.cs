@@ -52,6 +52,6 @@
         /// <param name="index">Die Position des Baums. X, Y in lokalen Chunk-Koordinaten, Z in absoluten Koordinaten.</param>
         /// <param name="builder">Der <see cref="LocalBuilder"/> zum Setzen des Baums.</param>
         /// <param name="seed">Seed für das zufälligere Pflanzen.</param>
-        public abstract void PlantTree(IDefinitionManager definitionManager, IPlanet planet, Index3 index, LocalBuilder builder, int seed);
+        public abstract void PlantTree(IPlanet planet, Index3 index, LocalBuilder builder, int seed);
     }
 }
