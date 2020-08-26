@@ -1,4 +1,5 @@
 ﻿using engenious;
+using OctoAwesome.Common;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using System;
@@ -28,6 +29,16 @@ namespace OctoAwesome
         public SimulationState State { get; private set; }
 
         /// <summary>
+        /// Die Guid des aktuell geladenen Universums.
+        /// </summary>
+        public Guid UniverseId { get; private set; }
+
+        /// <summary>
+        /// Dienste des Spiels.
+        /// </summary>
+        public IGameService Service { get; }
+
+        /// <summary>
         /// List of all Entities.
         /// </summary>
         public List<Entity> Entities => entities.ToList();
@@ -42,13 +53,15 @@ namespace OctoAwesome
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
         /// </summary>
-        public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver)
+        public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver, IGameService service)
         {
             ResourceManager = resourceManager;
             simmulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
 
             this.extensionResolver = extensionResolver;
             State = SimulationState.Ready;
+            UniverseId = Guid.Empty;
+            Service = service;
 
             Components = new ComponentList<SimulationComponent>(
                 ValidateAddComponent, ValidateRemoveComponent, null, null);

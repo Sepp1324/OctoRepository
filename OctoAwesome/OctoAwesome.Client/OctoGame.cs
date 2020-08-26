@@ -26,6 +26,8 @@ namespace OctoAwesome.Client
 
         public Components.SimulationComponent Simulation { get; private set; }
 
+        public GameService Service { get; private set; }
+
         public ScreenComponent Screen { get; private set; }
 
         public KeyMapper KeyMapper { get; private set; }
@@ -61,6 +63,7 @@ namespace OctoAwesome.Client
             ExtensionLoader = new ExtensionLoader(Settings);
             ExtensionLoader.LoadExtensions();
 
+            Service = new GameService(ResourceManager);
             //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             int width = Settings.Get("Width", 1080);
