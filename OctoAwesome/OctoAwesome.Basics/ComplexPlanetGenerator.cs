@@ -152,11 +152,11 @@ namespace OctoAwesome.Basics
             return planet;
         }
 
-        public IChunkColumn GenerateColumn(Stream stream, IDefinitionManager definitionManager, int planetId, Index2 index)
+        public IChunkColumn GenerateColumn(Stream stream, int planetId, Index2 index)
         {
             IChunkColumn column = new ChunkColumn();
             using(var reader = new BinaryReader(stream))
-                column.Deserialize(reader, definitionManager);
+                column.Deserialize(reader);
             return column;
         }
     }
