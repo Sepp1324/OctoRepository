@@ -66,7 +66,7 @@ namespace OctoAwesome.Basics
             return planet;
         }
 
-        
+
 
         public IChunkColumn GenerateColumn(Stream stream, IDefinitionManager definitionManager, int planetId, Index2 index)
         {

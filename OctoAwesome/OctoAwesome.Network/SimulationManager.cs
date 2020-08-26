@@ -32,6 +32,7 @@ namespace OctoAwesome.Network
         public GameTime GameTime { get; private set; }
 
         public ResourceManager ResourceManager { get; private set; }
+        public GameService Service { get; }
 
         private Simulation simulation;
         private ExtensionLoader extensionLoader;
@@ -61,8 +62,8 @@ namespace OctoAwesome.Network
 
             chunkSubscription = updateHub.Subscribe(ResourceManager.GlobalChunkCache, DefaultChannels.Chunk);
             ResourceManager.GlobalChunkCache.InsertUpdateHub(updateHub);
-
-            simulation = new Simulation(ResourceManager, extensionLoader)
+            Service = new GameService(ResourceManager);
+            simulation = new Simulation(ResourceManager, extensionLoader, Service)
             {
                 IsServerSide = true
             };
@@ -82,7 +83,7 @@ namespace OctoAwesome.Network
 
             if (string.IsNullOrWhiteSpace(universe) || true) //TODO: If the load mechanism is repaired remove true
             {
-                var guid = simulation.NewGame("melmak", new Random().Next());
+                var guid = simulation.NewGame("melmack", new Random().Next());
                 settings.Set("LastUniverse", guid.ToString());
             }
             else
