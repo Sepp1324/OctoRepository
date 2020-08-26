@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Notifications;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -81,36 +80,6 @@ namespace OctoAwesome.Tests
         }
 
         public void AfterSimulationUpdate(Simulation simulation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnUpdate(SerializableNotification notification)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(SerializableNotification notification)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertUpdateHub(IUpdateHub updateHub)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnNext(Notification value)
         {
             throw new NotImplementedException();
         }

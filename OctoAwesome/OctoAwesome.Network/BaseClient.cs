@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,15 @@ namespace OctoAwesome.Network
 {
     public abstract class BaseClient : IObservable<Package>
     {
+        private static uint NextId => ++nextId;
+        private static uint nextId;
+
+        static BaseClient()
+        {
+            nextId = 0;
+        }
+        public uint Id { get; }
+
         protected Socket Socket;
         protected readonly SocketAsyncEventArgs ReceiveArgs;
 
@@ -28,7 +38,6 @@ namespace OctoAwesome.Network
         {
             sendQueue = new (byte[] data, int len)[256];
             sendLock = new object();
-
             ReceiveArgs = new SocketAsyncEventArgs();
             ReceiveArgs.Completed += OnReceived;
             ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(1024 * 1024), 0, 1024 * 1024);
@@ -38,8 +47,9 @@ namespace OctoAwesome.Network
 
             observers = new ConcurrentBag<IObserver<Package>>();
             cancellationTokenSource = new CancellationTokenSource();
-        }
 
+            Id = NextId;
+        }
         protected BaseClient(Socket socket) : this()
         {
             Socket = socket;
@@ -141,10 +151,14 @@ namespace OctoAwesome.Network
                     return;
                 }
             }
+
             SendInternal(data, len);
         }
 
-        private void OnReceived(object sender, SocketAsyncEventArgs e) => Receive(e);
+        private void OnReceived(object sender, SocketAsyncEventArgs e)
+        {
+            Receive(e);
+        }
 
         protected void Receive(SocketAsyncEventArgs e)
         {
@@ -177,10 +191,10 @@ namespace OctoAwesome.Network
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)
                 {
-                    var exception = new Exception($"Buffer is to small for Head-Deserialization [length: {length} | offset: {bufferOffset}]");
-                    exception.Data.Add(nameof(length), length);
-                    exception.Data.Add(nameof(bufferOffset), bufferOffset);
-                    throw exception;
+                    var ex = new Exception($"Buffer is to small for package head deserialization [length: {length} | offset: {bufferOffset}]");
+                    ex.Data.Add(nameof(length), length);
+                    ex.Data.Add(nameof(bufferOffset), bufferOffset);
+                    throw ex;
                 }
                 else
                 {

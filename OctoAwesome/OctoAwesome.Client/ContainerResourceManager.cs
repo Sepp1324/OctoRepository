@@ -2,8 +2,11 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -12,27 +15,27 @@ namespace OctoAwesome.Client
     /// </summary>
     public class ContainerResourceManager : IResourceManager
     {
-        private ResourceManager resourceManager;
-        private NetworkUpdateManager networkUpdateManager;
-
         public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
-
         public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
-
         public IGlobalChunkCache GlobalChunkCache => resourceManager.GlobalChunkCache;
 
-        public bool IsMultiplayer { get; private set; }
+        private IDisposable chunkSubscription;
 
+        public bool IsMultiplayer { get; private set; }
         public Player CurrentPlayer => resourceManager.CurrentPlayer;
 
         public IUpdateHub UpdateHub { get; }
+
+        private ResourceManager resourceManager;
+        private NetworkUpdateManager networkUpdateManager;
 
         public ContainerResourceManager()
         {
             UpdateHub = new UpdateHub();
         }
 
-        public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, bool multiplayer)
+        public void CreateManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
+            ISettings settings, bool multiplayer)
         {
             IPersistenceManager persistenceManager;
 
@@ -47,39 +50,38 @@ namespace OctoAwesome.Client
 
             if (multiplayer)
             {
-                var rawIPaddress = settings.Get<string>("server").Trim();
+                var rawIpAddress = settings.Get<string>("server").Trim();
                 string host;
-                IPAddress ipAddress;
+                IPAddress iPAddress;
                 int port = -1;
-
-                if (rawIPaddress[0] == '[' || !IPAddress.TryParse(rawIPaddress, out ipAddress))
+                if (rawIpAddress[0] == '[' || !IPAddress.TryParse(rawIpAddress, out iPAddress)) //IPV4 || IPV6 without port
                 {
                     string stringIpAddress;
-
-                    if (rawIPaddress[0] == '[') //IPv6 with Ports
+                    if (rawIpAddress[0] == '[') // IPV6 with Port
                     {
-                        port = int.Parse(rawIPaddress.Split(':').Last());
-                        stringIpAddress = rawIPaddress.Substring(1, rawIPaddress.IndexOf(']') - 1);
+                        port = int.Parse(rawIpAddress.Split(':').Last());
+                        stringIpAddress = rawIpAddress.Substring(1, rawIpAddress.IndexOf(']') - 1);
                     }
-                    else if (rawIPaddress.Contains(':') && IPAddress.TryParse(rawIPaddress.Substring(0, rawIPaddress.IndexOf(':')), out ipAddress))
+                    else if (rawIpAddress.Contains(':') && 
+                        IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
                     {
-                        port = int.Parse(rawIPaddress.Split(':').Last());
-                        stringIpAddress = ipAddress.ToString();
+                        port = int.Parse(rawIpAddress.Split(':').Last());
+                        stringIpAddress = iPAddress.ToString();
                     }
-                    else if (rawIPaddress.Contains(':')) //Domain with Ports
+                    else if (rawIpAddress.Contains(':')) //Domain with Port
                     {
-                        port = int.Parse(rawIPaddress.Split(':').Last());
-                        stringIpAddress = rawIPaddress.Split(':').First();
+                        port = int.Parse(rawIpAddress.Split(':').Last());
+                        stringIpAddress = rawIpAddress.Split(':').First();
                     }
                     else //Domain without Port
                     {
-                        stringIpAddress = rawIPaddress;
+                        stringIpAddress = rawIpAddress;
                     }
                     host = stringIpAddress;
                 }
                 else
                 {
-                    host = rawIPaddress;
+                    host = rawIpAddress;
                 }
 
                 var client = new Network.Client();
@@ -95,6 +97,9 @@ namespace OctoAwesome.Client
             resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
             resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
 
+            chunkSubscription = UpdateHub.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
+            GlobalChunkCache.InsertUpdateHub(UpdateHub);
+
             IsMultiplayer = multiplayer;
 
             if (multiplayer)
@@ -105,6 +110,8 @@ namespace OctoAwesome.Client
                     networkPersistence.SendChangedChunkColumn(c);
                 };
             }
+
+
         }
 
         public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);

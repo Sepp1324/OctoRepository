@@ -3,6 +3,7 @@ using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace OctoAwesome
@@ -12,13 +13,6 @@ namespace OctoAwesome
     /// </summary>
     public sealed class Simulation : INotificationObserver
     {
-        private int nextId = 1;
-
-        private readonly IExtensionResolver extensionResolver;
-
-        private readonly HashSet<Entity> entities = new HashSet<Entity>();
-
-        private readonly IDisposable simmulationSubscription;
         public IResourceManager ResourceManager { get; private set; }
 
         public bool IsServerSide { get; set; }
@@ -38,6 +32,13 @@ namespace OctoAwesome
         /// </summary>
         public List<Entity> Entities => entities.ToList();
 
+        private int nextId = 1;
+
+        private readonly IExtensionResolver extensionResolver;
+
+        private readonly HashSet<Entity> entities = new HashSet<Entity>();
+        private readonly IDisposable simmulationSubscription;
+
         /// <summary>
         /// Erzeugt eine neue Instaz der Klasse Simulation.
         /// </summary>
@@ -53,6 +54,7 @@ namespace OctoAwesome
                 ValidateAddComponent, ValidateRemoveComponent, null, null);
 
             extensionResolver.ExtendSimulation(this);
+
         }
 
         private void ValidateAddComponent(SimulationComponent component)
@@ -214,8 +216,8 @@ namespace OctoAwesome
 
             ResourceManager.SaveEntity(entity);
         }
-
-        public void RemoveEntity(int entityId) => RemoveEntity(entities.First(e => e.Id == entityId));
+        public void RemoveEntity(int entityId)
+            => RemoveEntity(entities.First(e => e.Id == entityId));
 
         public void OnNext(Notification value)
         {
@@ -239,10 +241,14 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+        {
+            throw error;
+        }
 
         public void OnCompleted()
-        { }
+        {
+        }
 
         public void OnUpdate(SerializableNotification notification)
         {
@@ -253,8 +259,7 @@ namespace OctoAwesome
         private void EntityUpdate(EntityNotification notification)
         {
             var entity = entities.FirstOrDefault(e => e.Id == notification.EntityId);
-
-            if(entity == null)
+            if (entity == null)
             {
                 ResourceManager.UpdateHub.Push(new EntityNotification(notification.EntityId)
                 {
@@ -267,12 +272,12 @@ namespace OctoAwesome
             }
         }
 
-        private void RequestEntity(EntityNotification notification)
+        private void RequestEntity(EntityNotification entityNotification)
         {
             if (!IsServerSide)
                 return;
 
-            var entity = entities.FirstOrDefault(e => e.Id == notification.EntityId);
+            var entity = entities.FirstOrDefault(e => e.Id == entityNotification.EntityId);
 
             if (entity == null)
                 return;
@@ -284,7 +289,7 @@ namespace OctoAwesome
 
             ResourceManager.UpdateHub.Push(new EntityNotification()
             {
-                Entity = new RemoteEntity(entity),
+                Entity = remoteEntity,
                 Type = EntityNotification.ActionType.Add
             }, DefaultChannels.Network);
         }

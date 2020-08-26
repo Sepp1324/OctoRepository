@@ -1,7 +1,7 @@
-﻿using System;
+﻿using engenious;
 using MonoGameUi;
-using engenious;
 using OctoAwesome.Client.Components;
+using System;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -35,6 +35,7 @@ namespace OctoAwesome.Client.Screens
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
+
             panel.Controls.Add(grid);
 
             grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
@@ -44,15 +45,16 @@ namespace OctoAwesome.Client.Screens
             {
                 Text = game.Settings.Get("server", "localhost"),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black),
+                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
             };
             AddLabeledControl(grid, "Host:", serverNameInput);
 
             var playerNameInput = new Textbox(manager)
             {
-                Text = game.Settings.Get("player", "Horst"),
+                Text = game.Settings.Get("player", "USERNAME"),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black),
+                Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
+
             };
             AddLabeledControl(grid, "Username:", playerNameInput);
 
@@ -65,11 +67,15 @@ namespace OctoAwesome.Client.Screens
                 game.Settings.Set("server", serverNameInput.Text);
                 game.Settings.Set("player", playerNameInput.Text);
 
-                ((ContainerResourceManager)game.ResourceManager).CreateManager(game.ExtensionLoader, game.DefinitionManager, game.Settings, true);
+                ((ContainerResourceManager)game.ResourceManager)
+                    .CreateManager(game.ExtensionLoader, game.DefinitionManager, game.Settings, true);
+
                 PlayMultiplayer(manager, playerNameInput.Text);
             };
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.AddControl(createButton, 1, grid.Rows.Count - 1);
+
+            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto,  });
+            grid.AddControl(createButton, 1, grid.Rows.Count -1);
+
         }
 
         private void PlayMultiplayer(ScreenComponent manager, string playerName)

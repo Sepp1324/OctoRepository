@@ -1,7 +1,6 @@
-﻿using MonoGameUi;
+﻿using engenious.Input;
+using MonoGameUi;
 using OctoAwesome.Client.Components;
-using System;
-using engenious.Input;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -49,10 +48,10 @@ namespace OctoAwesome.Client.Screens
             base.OnKeyPress(args);
         }
 
-        protected void AddLabeledControl(Grid grid, String name, Control c)
+        protected void AddLabeledControl(Grid grid, string name, Control c)
         {
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count -1);
+            grid.AddControl(new Label(Manager) { Text = name }, 0, grid.Rows.Count - 1);
             grid.AddControl(c, 1, grid.Rows.Count - 1);
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 10 });
         }

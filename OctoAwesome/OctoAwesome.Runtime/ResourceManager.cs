@@ -21,12 +21,10 @@ namespace OctoAwesome.Runtime
             }
             private set => player = value;
         }
-
         /// <summary>
         /// Der <see cref="IGlobalChunkCache"/>, der im Spiel verwendet werden soll.
         /// </summary>
         public IGlobalChunkCache GlobalChunkCache => globalChunkCache;
-
         public IUpdateHub UpdateHub { get; private set; }
 
         private Guid DEFAULT_UNIVERSE = Guid.Parse("{3C4B1C38-70DC-4B1D-B7BE-7ED9F4B1A66D}");
@@ -60,13 +58,21 @@ namespace OctoAwesome.Runtime
 
             populators = extensionResolver.GetMapPopulator().OrderBy(p => p.Order).ToList();
 
-            globalChunkCache = new GlobalChunkCache((p, i) => LoadChunkColumn(p, i), (i) => GetPlanet(i), (p, i, c) => SaveChunkColumn(p, i, c));
+            globalChunkCache = new GlobalChunkCache(
+                (p, i) => LoadChunkColumn(p, i),
+                (i) => GetPlanet(i),
+                (p, i, c) => SaveChunkColumn(p, i, c));
+
+
             planets = new Dictionary<int, IPlanet>();
 
             bool.TryParse(settings.Get<string>("DisablePersistence"), out disablePersistence);
         }
 
-        public void InsertUpdateHub(UpdateHub updateHub) => UpdateHub = updateHub;
+        public void InsertUpdateHub(UpdateHub updateHub)
+        {
+            UpdateHub = updateHub;
+        }
 
         /// <summary>
         /// Erzuegt ein neues Universum.
@@ -122,7 +128,9 @@ namespace OctoAwesome.Runtime
             globalChunkCache.Clear();
 
             foreach (var planet in planets)
+            {
                 persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
+            }
             planets.Clear();
 
             CurrentUniverse = null;
@@ -179,8 +187,10 @@ namespace OctoAwesome.Runtime
                 {
                     awaiter.WaitOn();
                 }
+
                 planets.Add(id, planet);
             }
+
             return planet;
         }
 

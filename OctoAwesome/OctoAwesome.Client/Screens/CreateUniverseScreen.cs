@@ -1,7 +1,7 @@
-﻿using MonoGameUi;
+﻿using engenious;
+using MonoGameUi;
 using OctoAwesome.Client.Components;
 using System;
-using engenious;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -43,10 +43,11 @@ namespace OctoAwesome.Client.Screens
             panel.Controls.Add(grid);
 
             grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
-            grid.Columns.Add(new ColumnDefinition() { Width = 1,ResizeMode = ResizeMode.Parts });
+            grid.Columns.Add(new ColumnDefinition() { Width = 1, ResizeMode = ResizeMode.Parts });
 
             nameInput = GetTextbox();
-            nameInput.TextChanged += (s, e) => {
+            nameInput.TextChanged += (s, e) =>
+            {
                 createButton.Visible = !string.IsNullOrEmpty(e.NewValue);
             };
             AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Name), nameInput);
@@ -64,7 +65,8 @@ namespace OctoAwesome.Client.Screens
                     return;
 
                 int? seed = null;
-                if (int.TryParse(seedInput.Text, out int textseed))
+                int textseed;
+                if (int.TryParse(seedInput.Text, out textseed))
                     seed = textseed;
 
                 manager.Player.SetEntity(null);
@@ -72,12 +74,13 @@ namespace OctoAwesome.Client.Screens
                 Guid guid = Manager.Game.Simulation.NewGame(nameInput.Text, seed);
                 settings.Set("LastUniverse", guid.ToString());
 
-                Player player = manager.Game.Simulation.LoginPlayer(""); //TODO: Fix
+                Player player = manager.Game.Simulation.LoginPlayer("");
                 manager.Game.Player.SetEntity(player);
 
                 manager.NavigateToScreen(new GameScreen(manager));
             };
             panel.Controls.Add(createButton);
+
         }
 
         private Textbox GetTextbox()

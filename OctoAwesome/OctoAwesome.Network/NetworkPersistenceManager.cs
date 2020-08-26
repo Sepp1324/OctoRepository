@@ -135,6 +135,8 @@ namespace OctoAwesome.Network
             //    chunkColumn.Serialize(bw, definitionManager);
             //    package.Payload = ms.ToArray();
             //}
+
+
             //client.SendPackage(package);
         }
 
@@ -158,8 +160,10 @@ namespace OctoAwesome.Network
             }
         }
 
-        public void OnError(Exception error) => throw error;
+        public void OnError(Exception error)
+            => throw error;
 
-        public void OnCompleted() => subscription.Dispose();
+        public void OnCompleted()
+            => subscription.Dispose();
     }
 }

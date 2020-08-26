@@ -40,15 +40,13 @@ namespace OctoAwesome.Client.Components
         }
 
         private int i = 0;
-
         public void Draw(Matrix view, Matrix projection, Index3 chunkOffset, Index2 planetSize)
         {
             effect.Projection = projection;
             effect.View = view;
             effect.TextureEnabled = true;
             graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
-
-            //using (var writer = File.AppendText(Path.Combine(".", "render.log"))) //TODO: Uncomment if Multiplayer test
+            using (var writer = File.AppendText(Path.Combine(".", "render.log")))
                 foreach (var pass in effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();

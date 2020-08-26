@@ -2,22 +2,17 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
-        private Simulation simulation;
-        private readonly ExtensionLoader extensionLoader;
-        private readonly DefinitionManager definitionManager;
-        private readonly ISettings settings;
-        private readonly Thread backgroundThread;
-        private readonly object mainLock;
-        private readonly IDisposable chunkSubscription;
-
         public bool IsRunning { get; private set; }
-
         public IDefinitionManager DefinitionManager => definitionManager;
 
         public Simulation Simulation
@@ -38,6 +33,16 @@ namespace OctoAwesome.Network
 
         public ResourceManager ResourceManager { get; private set; }
 
+        private Simulation simulation;
+        private ExtensionLoader extensionLoader;
+        private DefinitionManager definitionManager;
+
+        private ISettings settings;
+
+        private Thread backgroundThread;
+        private object mainLock;
+        private IDisposable chunkSubscription;
+
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
             mainLock = new object();
@@ -56,7 +61,7 @@ namespace OctoAwesome.Network
 
             chunkSubscription = updateHub.Subscribe(ResourceManager.GlobalChunkCache, DefaultChannels.Chunk);
             ResourceManager.GlobalChunkCache.InsertUpdateHub(updateHub);
-            
+
             //For Release resourceManager.LoadUniverse(new Guid()); 
             ResourceManager.NewUniverse("test_universe", 043848723);
 
@@ -64,7 +69,6 @@ namespace OctoAwesome.Network
             {
                 IsServerSide = true
             };
-
             backgroundThread = new Thread(SimulationLoop)
             {
                 Name = "Simulation Loop",
@@ -91,16 +95,22 @@ namespace OctoAwesome.Network
 
         public IUniverse GetUniverse() => ResourceManager.CurrentUniverse;
 
-        public IUniverse NewUniverse() => throw new NotImplementedException();
+        public IUniverse NewUniverse()
+        {
+            throw new NotImplementedException();
+        }
 
         public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
 
-        public IChunkColumn LoadColumn(Guid guid, int planetId, Index2 index2) => ResourceManager.LoadChunkColumn(planetId, index2);
+        public IChunkColumn LoadColumn(Guid guid, int planetId, Index2 index2) 
+            => ResourceManager.LoadChunkColumn(planetId, index2);
 
         private void SimulationLoop()
-        { 
+        {
             while (IsRunning)
+            {
                 Simulation.Update(GameTime);
+            }
         }
     }
 }
