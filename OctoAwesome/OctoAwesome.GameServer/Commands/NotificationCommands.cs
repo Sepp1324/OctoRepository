@@ -2,11 +2,6 @@
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -22,7 +17,7 @@ namespace OctoAwesome.GameServer.Commands
         [Command((ushort)OfficialCommand.EntityNotification)]
         public static byte[] EntityNotification(CommandParameter parameter)
         {
-            var entityNotification = Serializer.Deserialize<EntityNotification>(parameter.Data, null);
+            var entityNotification = Serializer.Deserialize<EntityNotification>(parameter.Data);
             entityNotification.SenderId = parameter.ClientId;
             updateHub.Push(entityNotification, DefaultChannels.Simulation);
             updateHub.Push(entityNotification, DefaultChannels.Network);
@@ -32,7 +27,7 @@ namespace OctoAwesome.GameServer.Commands
         [Command((ushort)OfficialCommand.ChunkNotification)]
         public static byte[] ChunkNotification(CommandParameter parameter)
         {
-            var chunkNotification = Serializer.Deserialize<ChunkNotification>(parameter.Data, null);
+            var chunkNotification = Serializer.Deserialize<ChunkNotification>(parameter.Data);
             chunkNotification.SenderId = parameter.ClientId;
             updateHub.Push(chunkNotification, DefaultChannels.Chunk);
             updateHub.Push(chunkNotification, DefaultChannels.Network);
