@@ -1,14 +1,18 @@
-﻿using OctoAwesome.Notifications;
+﻿using OctoAwesome.Network.ServerNotifications;
+using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
+using System.Buffers;
+using System.IO;
 using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 
 namespace OctoAwesome.Network
 {
     public sealed class ConnectedClient : BaseClient, INotificationObserver
     {
         public IDisposable NetworkChannelSubscription { get; set; }
-
         public IDisposable ServerSubscription { get; set; }
 
         public ConnectedClient(Socket socket) : base(socket)
@@ -46,6 +50,7 @@ namespace OctoAwesome.Network
                 default:
                     return;
             }
+
             BuildAndSendPackage(payload, command);
         }
 
