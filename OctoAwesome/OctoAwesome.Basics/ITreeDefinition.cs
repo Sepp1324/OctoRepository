@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace OctoAwesome.Basics
+﻿namespace OctoAwesome.Basics
 {
     /// <summary>
     /// Basisschnittstelle für Baumdefinitionen, die vom TreePopulator verarbeitet werden sollen.
@@ -47,6 +42,6 @@ namespace OctoAwesome.Basics
         /// <param name="index">Die Position des Baums. X, Y in lokalen Chunk-Koordinaten, Z in absoluten Koordinaten.</param>
         /// <param name="builder">Der <see cref="LocalBuilder"/> zum Setzen des Baums.</param>
         /// <param name="seed">Seed für das zufälligere Pflanzen.</param>
-        void PlantTree(IDefinitionManager definitionManager, IPlanet planet, Index3 index, LocalBuilder builder, int seed);
+        void PlantTree(IPlanet planet, Index3 index, LocalBuilder builder, int seed);
     }
 }
