@@ -1,43 +1,68 @@
 ﻿using CommandManagementSystem;
+using Newtonsoft.Json;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using OctoAwesome.Network;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
-    class Program
+    internal class Program
     {
-        public static Server Server { get; private set; }
+        public static ServerHandler ServerHandler { get; set; }
 
         private static ManualResetEvent manualResetEvent;
-        private static DefaultCommandManager<ushort, byte[], byte[]> defaultManager;
+        private static Logger logger;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            defaultManager = new DefaultCommandManager<ushort, byte[], byte[]>(typeof(Program).Namespace + ".Commands");
+            var config = new LoggingConfiguration();
+
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new ColoredConsoleTarget("octoawesome.logconsole"));
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new FileTarget("octoawesome.logfile")
+            {
+                FileName = $"./logs/server-{DateTime.Now.ToString("ddMMyy_hhmmss")}.log"
+            });
+
+            LogManager.Configuration = config;
+            logger = LogManager.GetCurrentClassLogger();
+
             manualResetEvent = new ManualResetEvent(false);
-            Server = new Server();
-            Server.OnClientConnected += ServerOnClientConnected;
-            Console.WriteLine("Server start");
-            Server.Start(IPAddress.Any, 8888);
+
+            logger.Info("Server start");
+
+            var fileInfo = new FileInfo(Path.Combine(".", "settings.json"));
+            Settings settings;
+
+
+            if (!fileInfo.Exists)
+            {
+                logger.Debug("Create new Default Settings");
+                settings = new Settings()
+                {
+                    FileInfo = fileInfo
+                };
+                settings.Save();
+            }
+            else
+            {
+                logger.Debug("Load Settings");
+                settings = new Settings(fileInfo);                
+            }
+
+            ServerHandler = new ServerHandler(settings);
+            ServerHandler.Start();
+
             Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
             manualResetEvent.WaitOne();
+            settings.Save();
         }
 
-        private static void ServerOnClientConnected(object sender, ConnectedClient e)
-        {
-            Console.WriteLine("Hurra ein neuer Spieler");
 
-            e.OnMessageRecived += (s, args) =>
-            {
-                var package = new Package(args.Data.Take(args.Count).ToArray());
-                defaultManager.DispatchAsync(package.Command, package.Payload);
-            };
-        }
     }
 }

@@ -164,7 +164,7 @@ namespace OctoAwesome
                 (int)Math.Floor(position.Z));
 
             block += shift;
-            position = position - shift;
+            position -= shift;
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace OctoAwesome
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns>Das Ergebnis der Addition</returns>
-        public static Coordinate operator +(Coordinate i1, Vector3 i2) 
+        public static Coordinate operator +(Coordinate i1, Vector3 i2)
             => new Coordinate(i1.Planet, i1.block, i1.position + i2);
 
         /// <summary>
@@ -210,5 +210,22 @@ namespace OctoAwesome
                     {(block.X + position.X).ToString("0.00")}/
                     {(block.Y + position.Y).ToString("0.00")}/
                     {(block.Z + position.Z).ToString("0.00")})";
+
+        /// <summary>
+        /// Compare this object with an other object
+        /// </summary>
+        /// <param name="obj">a other object</param>
+        /// <returns>true if both objects are equal</returns>
+        public override bool Equals(object obj)
+        {
+            if(obj is Coordinate coordinate)
+                return base.Equals(obj) || 
+                   ( Planet == coordinate.Planet &&
+                     position == coordinate.position &&
+                     block == coordinate.block
+                   );
+
+            return base.Equals(obj);
+        }
     }
 }

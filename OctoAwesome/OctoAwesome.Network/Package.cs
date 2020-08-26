@@ -1,48 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class Package
     {
-        public byte Type { get; set; }
+        /// <summary>
+        /// Bytesize of Header
+        /// </summary>
+        public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(uint);
+
+        public static uint NextUId => nextUid++;
+        private static uint nextUid;
+
+        public BaseClient BaseClient { get; set; }
+
+        public OfficialCommand OfficialCommand => (OfficialCommand)Command;
         public ushort Command { get; set; }
 
         public byte[] Payload { get; set; }
 
-        public Package(ushort command, int size, byte type = 0)
+        public uint UId { get; set; }
+
+        public bool IsComplete => internalOffset == Payload.Length;
+
+        public int PayloadRest => Payload.Length - internalOffset;
+
+        private int internalOffset;
+
+        public Package(ushort command, int size) : this()
         {
-            Type = type;
             Command = command;
             Payload = new byte[size];
         }
+
+        public Package() : this(true)
+        { }
+        public Package(bool setUid)
+        {
+            if (setUid)
+                UId = NextUId;
+        }
+
         public Package(byte[] data) : this(0, data.Length)
         {
-            Write(data);
         }
 
-        public void Write(byte[] buffer)
+        public bool TryDeserializeHeader(byte[] buffer, int offset)
         {
-            Type = buffer[0];
-            Command = (ushort)(buffer[1] << 8 | buffer[2]);
+            if (buffer.Length < HEAD_LENGTH)
+                return false;
 
-            Array.Copy(buffer, 3, Payload, 0, buffer.Length - 3);
+            Command = (ushort)((buffer[offset] << 8) | buffer[offset + 1]);
+            Payload = new byte[BitConverter.ToInt32(buffer, offset + 2)];
+            UId = BitConverter.ToUInt32(buffer, offset + 6);
+            internalOffset = 0;
+            return true;
         }
 
-        public int Read(byte[] buffer)
+        public int DeserializePayload(byte[] buffer, int offset, int count)
         {
-            buffer[0] = Type;
-            buffer[1] = (byte)(Command >> 8);
-            buffer[2] = (byte)(Command & 0xF);
+            if (internalOffset + count > Payload.Length)
+                count = PayloadRest;
 
-            Array.Copy(Payload, 0, buffer, 3, Payload.Length);
+            Buffer.BlockCopy(buffer, offset, Payload, internalOffset, count);
+            internalOffset += count;
 
-            return Payload.Length + 3;
+            return count;
+        }
+        public void DeserializePackage(byte[] buffer, int offset)
+        {
+            TryDeserializeHeader(buffer, offset);
+            Buffer.BlockCopy(buffer, offset + HEAD_LENGTH, Payload, 0, Payload.Length);
+            internalOffset = Payload.Length;
+        }
+
+        public int SerializePackage(byte[] buffer, int offset)
+        {
+            buffer[offset] = (byte)(Command >> 8);
+            buffer[offset + 1] = (byte)(Command & 0xFF);
+            var bytes = BitConverter.GetBytes(Payload.Length);
+            Buffer.BlockCopy(bytes, 0, buffer, offset + 2, 4);
+            bytes = BitConverter.GetBytes(UId);
+            Buffer.BlockCopy(bytes, 0, buffer, offset + 6, 4);
+            Buffer.BlockCopy(Payload, 0, buffer, offset + HEAD_LENGTH, Payload.Length);
+            return Payload.Length + HEAD_LENGTH;
         }
 
     }

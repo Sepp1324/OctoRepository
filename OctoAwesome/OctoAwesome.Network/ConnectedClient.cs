@@ -1,36 +1,66 @@
-﻿using System;
+﻿using OctoAwesome.Network.ServerNotifications;
+using OctoAwesome.Notifications;
+using OctoAwesome.Serialization;
+using System;
 using System.Buffers;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
 namespace OctoAwesome.Network
 {
-    public class ConnectedClient : BaseClient
+    public sealed class ConnectedClient : BaseClient, INotificationObserver
     {
-        private static int received;
-        
+        public IDisposable NetworkChannelSubscription { get; set; }
+        public IDisposable ServerSubscription { get; set; }
 
         public ConnectedClient(Socket socket) : base(socket)
         {
-
+            
         }
 
-        protected override void ProcessInternal(byte[] receiveArgsBuffer, int receiveArgsCount)
+        public void OnCompleted()
         {
-            OnMessageReceivedInvoke(receiveArgsBuffer, receiveArgsCount);
+        }
 
-            var tmpString = Encoding.UTF8.GetString(receiveArgsBuffer, 0, receiveArgsCount);
-            var increment = Interlocked.Increment(ref received);
-            if (increment > 0 && increment % 10000 == 0)
-                Console.WriteLine("SERVER RECEIVED 10000 msgs");
+        public void OnError(Exception error)
+        {
+            Socket.Close();
+            throw error;
+        }
 
-            if (tmpString.StartsWith("+PING"))
+        public void OnNext(Notification value)
+        {
+            if (value.SenderId == Id)
+                return;
+
+            OfficialCommand command;
+            byte[] payload;
+            switch (value)
             {
-                var buffer = ArrayPool<byte>.Shared.Rent(4);
-                Encoding.UTF8.GetBytes("-PONG", 0, 4, buffer, 0);
-                Send(buffer, 4);
+                case EntityNotification entityNotification:
+                    command = OfficialCommand.EntityNotification;
+                    payload = Serializer.Serialize(entityNotification, null);
+                    break;
+                case ChunkNotification chunkNotification:
+                    command = OfficialCommand.ChunkNotification;
+                    payload = Serializer.Serialize(chunkNotification, null);
+                    break;
+                default:
+                    return;
             }
+
+            BuildAndSendPackage(payload, command);
+        }
+
+        private void BuildAndSendPackage(byte[] data, OfficialCommand officialCommand)
+        {
+            SendPackage(new Package()
+            {
+                Payload = data,
+                Command = (ushort)officialCommand
+            });
         }
     }
 }
