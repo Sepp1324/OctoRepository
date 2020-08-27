@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OctoAwesome
 {
-    public partial class StandaloneTypeContainer : ITypeContainer
+    public sealed class StandaloneTypeContainer : ITypeContainer
     {
 
         private readonly Dictionary<Type, TypeInformation> typeInformationRegister;
