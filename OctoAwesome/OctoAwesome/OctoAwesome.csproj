@@ -87,6 +87,7 @@
     <Compile Include="IExtensionLoader.cs" />
     <Compile Include="IExtensionResolver.cs" />
     <Compile Include="IInventoryableDefinition.cs" />
+    <Compile Include="InstanceBehaviour.cs" />
     <Compile Include="IPersistenceManager.cs" />
     <Compile Include="IClimateMap.cs" />
     <Compile Include="IDefinitionManager.cs" />

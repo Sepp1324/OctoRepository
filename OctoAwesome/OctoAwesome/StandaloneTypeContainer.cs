@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OctoAwesome
 {
-    public class StandaloneTypeContainer : ITypeContainer
+    public partial class StandaloneTypeContainer : ITypeContainer
     {
 
         private readonly Dictionary<Type, TypeInformation> typeInformationRegister;
@@ -102,11 +102,6 @@ namespace OctoAwesome
         }
 
         public T CreateObject<T>() where T : class => (T)CreateObject(typeof(T));
-
-        public enum InstanceBehaviour
-        {
-            Instance, Singleton
-        }
 
         private class TypeInformation
         {
