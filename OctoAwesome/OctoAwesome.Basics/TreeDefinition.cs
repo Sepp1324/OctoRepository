@@ -47,7 +47,6 @@
         /// <summary>
         /// Pflanzt einen Baum.
         /// </summary>
-        /// <param name="definitionManager">Der verwendete <see cref="IDefinitionManager"/>.</param>
         /// <param name="planet">Der aktuelle Planet.</param>
         /// <param name="index">Die Position des Baums. X, Y in lokalen Chunk-Koordinaten, Z in absoluten Koordinaten.</param>
         /// <param name="builder">Der <see cref="LocalBuilder"/> zum Setzen des Baums.</param>

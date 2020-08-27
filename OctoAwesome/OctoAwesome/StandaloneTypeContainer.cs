@@ -57,7 +57,7 @@ namespace OctoAwesome
             var tmpList = new List<object>();
             foreach (var constructor in type.GetConstructors().OrderByDescending(c => c.GetParameters().Length))
             {
-                bool next = false;
+                bool next = false;                
                 foreach (var parameter in constructor.GetParameters())
                 {
                     if (TryResolve(parameter.ParameterType, out object instance))

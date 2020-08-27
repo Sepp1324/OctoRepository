@@ -141,11 +141,6 @@
     <Compile Include="Universe.cs" />
     <Compile Include="UpdateableEntity.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="engenious">
-      <Version>0.2.0-alpha</Version>
-    </PackageReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

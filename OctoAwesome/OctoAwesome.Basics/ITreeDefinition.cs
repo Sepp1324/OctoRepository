@@ -1,4 +1,9 @@
-﻿namespace OctoAwesome.Basics
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome.Basics
 {
     /// <summary>
     /// Basisschnittstelle für Baumdefinitionen, die vom TreePopulator verarbeitet werden sollen.
@@ -37,7 +42,6 @@
         /// <summary>
         /// Pflanzt einen Baum.
         /// </summary>
-        /// <param name="definitionManager">Der verwendete <see cref="IDefinitionManager"/>.</param>
         /// <param name="planet">Der aktuelle Planet.</param>
         /// <param name="index">Die Position des Baums. X, Y in lokalen Chunk-Koordinaten, Z in absoluten Koordinaten.</param>
         /// <param name="builder">Der <see cref="LocalBuilder"/> zum Setzen des Baums.</param>
