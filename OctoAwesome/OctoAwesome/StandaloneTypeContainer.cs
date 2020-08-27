@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OctoAwesome
 {
-    public class StandaloneTypeContainer
+    public class StandaloneTypeContainer : ITypeContainer
     {
 
         private readonly Dictionary<Type, TypeInformation> typeInformationRegister;
@@ -27,6 +27,24 @@ namespace OctoAwesome
             typeRegister.Add(registrar, type);
         }
 
+        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(T), instanceBehaviour);
+
+        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
+
+        public void Register(Type type, object singleton) => typeInformationRegister.Add(type, new TypeInformation(this, type, InstanceBehaviour.Singleton, singleton));
+
+        public void Register(Type registrar, Type type, object singleton)
+        {
+            if (!typeInformationRegister.ContainsKey(type))
+                typeInformationRegister.Add(type, new TypeInformation(this, type, InstanceBehaviour.Singleton, singleton));
+
+            typeRegister.Add(registrar, type);
+        }
+
+        public void Register<T>(T singleton) where T : class => Register(typeof(T), singleton);
+
+        public void Register<TRegistrar, T>(object singleton) where T : class => Register(typeof(TRegistrar), typeof(T), singleton);
+
         public bool TryResolve(Type type, out object instance)
         {
             if (typeInformationRegister.TryGetValue(type, out TypeInformation typeInformation))
@@ -48,12 +66,19 @@ namespace OctoAwesome
             return instance == null;
         }
 
+        public bool TryResolve<T>(out T instance) where T : class
+        {
+            bool result = TryResolve(typeof(T), out var obj);
+            instance = (T)obj;
+            return result;
+        }
+
         public object CreateObject(Type type)
         {
             var tmpList = new List<object>();
             foreach (var constructor in type.GetConstructors().OrderByDescending(c => c.GetParameters().Length))
             {
-                bool next = false;                
+                bool next = false;
                 foreach (var parameter in constructor.GetParameters())
                 {
                     if (TryResolve(parameter.ParameterType, out object instance))
@@ -76,6 +101,8 @@ namespace OctoAwesome
             return null;
         }
 
+        public T CreateObject<T>() where T : class => (T)CreateObject(typeof(T));
+
         public enum InstanceBehaviour
         {
             Instance, Singleton
@@ -90,11 +117,12 @@ namespace OctoAwesome
             private readonly Type type;
             private object singeltonInstance;
 
-            public TypeInformation(StandaloneTypeContainer container, Type type, InstanceBehaviour instanceBehaviour)
+            public TypeInformation(StandaloneTypeContainer container, Type type, InstanceBehaviour instanceBehaviour, object instance = null)
             {
                 this.type = type;
                 Behaviour = instanceBehaviour;
                 typeContainer = container;
+                singeltonInstance = instance;
             }
 
             private object CreateObject()

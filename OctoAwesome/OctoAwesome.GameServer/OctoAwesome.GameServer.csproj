@@ -75,9 +75,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommandManagementSystem">
-      <Version>3.0.0-alpha2</Version>
-    </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.5.11</Version>
     </PackageReference>
