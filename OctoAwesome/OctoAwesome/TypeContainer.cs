@@ -36,5 +36,9 @@ namespace OctoAwesome
         public static bool TryResolve(Type type, out object resolvedInstance) => instance.TryResolve(type, out resolvedInstance);
 
         public static bool TryResolve<T>(out T resolvedInstance) where T : class => instance.TryResolve<T>(out resolvedInstance);
+
+        public static object Get(Type type) => instance.Get(type);
+
+        public static T Get<T>() where T : class => instance.Get<T>();
     }
 }

@@ -2,12 +2,9 @@
 using engenious.Graphics;
 using engenious.Helper;
 using OctoAwesome.EntityComponents;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -78,7 +75,7 @@ namespace OctoAwesome.Client.Components
                         var position = positioncomp.Position;
                         var body = entity.Components.GetComponent<BodyComponent>();
 
-                        HeadComponent head = new HeadComponent(Simulation.Simulation.ResourceManager.DefinitionManager);
+                        HeadComponent head = new HeadComponent();
                         if (entity.Components.ContainsComponent<HeadComponent>())
                             head = entity.Components.GetComponent<HeadComponent>();
 

@@ -2,11 +2,8 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -86,12 +83,12 @@ namespace OctoAwesome.Client
 
                 var client = new Network.Client();
                 client.Connect(host, port > 0 ? (ushort)port : (ushort)8888);
-                persistenceManager = new NetworkPersistenceManager(client, definitionManager);
-                networkUpdateManager = new NetworkUpdateManager(client, UpdateHub, definitionManager);
+                persistenceManager = new NetworkPersistenceManager(client);
+                networkUpdateManager = new NetworkUpdateManager(client, UpdateHub);
             }
             else
             {
-                persistenceManager = new DiskPersistenceManager(extensionResolver, definitionManager, settings);
+                persistenceManager = new DiskPersistenceManager(extensionResolver, settings);
             }
 
             resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);

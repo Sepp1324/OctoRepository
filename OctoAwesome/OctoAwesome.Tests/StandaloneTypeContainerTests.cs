@@ -1,5 +1,4 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 
 namespace OctoAwesome.Tests
 {
@@ -14,6 +13,8 @@ namespace OctoAwesome.Tests
         [Fact]
         public void InstanceTest()
         {
+            var type = typeof(StandaloneTypeContainer);
+
             var typeContainer = new StandaloneTypeContainer();
             typeContainer.Register(typeof(StandaloneTypeContainer));
             typeContainer.Register(typeof(TestClass));
@@ -45,7 +46,7 @@ namespace OctoAwesome.Tests
             Assert.Null(instanceA);
         }
 
-        private class TestClass : ITestInterface
+        public class TestClass : ITestInterface
         {
 
         }

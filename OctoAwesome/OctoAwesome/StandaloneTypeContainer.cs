@@ -47,22 +47,7 @@ namespace OctoAwesome
 
         public bool TryResolve(Type type, out object instance)
         {
-            if (typeInformationRegister.TryGetValue(type, out TypeInformation typeInformation))
-            {
-                instance = typeInformation.Instance;
-                return true;
-            }
-
-            if (typeRegister.TryGetValue(type, out var searchType))
-            {
-                if (typeInformationRegister.TryGetValue(searchType, out typeInformation))
-                {
-                    instance = typeInformation.Instance;
-                    return true;
-                }
-            }
-
-            instance = Activator.CreateInstance(type);
+            instance = Get(type);
             return instance != null;
         }
 
@@ -72,6 +57,21 @@ namespace OctoAwesome
             instance = (T)obj;
             return result;
         }
+
+        public object Get(Type type)
+        {
+            if (typeInformationRegister.TryGetValue(type, out TypeInformation typeInformation))
+                return typeInformation.Instance;
+
+            if (typeRegister.TryGetValue(type, out var searchType))
+            {
+                if (typeInformationRegister.TryGetValue(searchType, out typeInformation))
+                    return typeInformation.Instance;
+            }
+            return Activator.CreateInstance(type);
+        }
+
+        public T Get<T>() where T : class => (T)Get(typeof(T));
 
         public object CreateObject(Type type)
         {

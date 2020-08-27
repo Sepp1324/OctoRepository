@@ -16,7 +16,7 @@ namespace OctoAwesome
         void Register<TRegistrar, T>(object singleton) where T : class;
         bool TryResolve(Type type, out object instance);
         bool TryResolve<T>(out T instance) where T : class;
-
         object Get(Type type);
+        T Get<T>() where T : class;
     }
 }

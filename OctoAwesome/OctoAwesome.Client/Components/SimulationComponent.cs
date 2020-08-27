@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using engenious;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Common;
@@ -80,7 +79,7 @@ namespace OctoAwesome.Client.Components
                 throw new NotSupportedException();
 
             Player player = resourceManager.LoadPlayer(playerName);
-            player.Components.AddComponent(new RenderComponent(resourceManager.DefinitionManager) { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
+            player.Components.AddComponent(new RenderComponent() { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
             Simulation.AddEntity(player);
 
 
