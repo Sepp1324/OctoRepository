@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -19,10 +17,8 @@ namespace OctoAwesome
         }
 
 
-        public void Register(Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance)
-        {
-            typeInformationRegister.Add(type, new TypeInformation(this, type, instanceBehaviour));
-        }
+        public void Register(Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) => typeInformationRegister.Add(type, new TypeInformation(this, type, instanceBehaviour));
+
         public void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance)
         {
             if (!typeInformationRegister.ContainsKey(type))
@@ -77,14 +73,12 @@ namespace OctoAwesome
 
                 return constructor.Invoke(type, tmpList.ToArray());
             }
-
             return null;
         }
 
         public enum InstanceBehaviour
         {
-            Instance,
-            Singleton
+            Instance, Singleton
         }
 
         private class TypeInformation
