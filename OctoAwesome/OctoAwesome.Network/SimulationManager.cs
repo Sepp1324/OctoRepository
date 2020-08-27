@@ -53,6 +53,12 @@ namespace OctoAwesome.Network
             extensionLoader = new ExtensionLoader(settings);
             extensionLoader.LoadExtensions();
 
+            TypeContainer.Register(extensionLoader);
+            TypeContainer.Register<IExtensionLoader, ExtensionLoader>(extensionLoader);
+            TypeContainer.Register<IExtensionResolver, ExtensionLoader>(extensionLoader);
+            TypeContainer.Register<DefinitionManager>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<IDefinitionManager, DefinitionManager>(InstanceBehaviour.Singleton);
+            
             definitionManager = new DefinitionManager(extensionLoader);
 
             var persistenceManager = new DiskPersistenceManager(extensionLoader, settings);

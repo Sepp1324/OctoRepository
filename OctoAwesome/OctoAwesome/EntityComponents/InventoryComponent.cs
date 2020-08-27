@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -21,13 +18,18 @@ namespace OctoAwesome.EntityComponents
 
         public override void Deserialize(BinaryReader reader)
         {
+            IDefinitionManager definitionManager;
+
+            if (!TypeContainer.TryResolve(out definitionManager))
+                return;
+
             base.Deserialize(reader);
 
             var count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
                 string name = reader.ReadString();
-                var definition = DefinitionManager.GetDefinitions().FirstOrDefault(d => d.GetType().FullName == name);
+                var definition = definitionManager.GetDefinitions().FirstOrDefault(d => d.GetType().FullName == name);
                 var amount = reader.ReadDecimal();
 
                 if (definition == null || !(definition is IInventoryableDefinition))

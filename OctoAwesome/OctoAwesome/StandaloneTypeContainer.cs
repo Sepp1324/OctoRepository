@@ -63,7 +63,7 @@ namespace OctoAwesome
             }
 
             instance = Activator.CreateInstance(type);
-            return instance == null;
+            return instance != null;
         }
 
         public bool TryResolve<T>(out T instance) where T : class

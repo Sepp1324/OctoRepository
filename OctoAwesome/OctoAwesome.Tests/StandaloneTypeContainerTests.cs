@@ -52,7 +52,10 @@ namespace OctoAwesome.Tests
 
         private class SecondTestClass
         {
+            public SecondTestClass(string test)
+            {
 
+            }
         }
 
         private interface ITestInterface
