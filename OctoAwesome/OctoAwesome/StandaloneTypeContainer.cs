@@ -16,10 +16,7 @@ namespace OctoAwesome
             typeRegister = new Dictionary<Type, Type>();
         }
 
-
-        public void Register(Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) => typeInformationRegister.Add(type, new TypeInformation(this, type, instanceBehaviour));
-
-        public void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance)
+        public void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour)
         {
             if (!typeInformationRegister.ContainsKey(type))
                 typeInformationRegister.Add(type, new TypeInformation(this, type, instanceBehaviour));
@@ -27,11 +24,9 @@ namespace OctoAwesome
             typeRegister.Add(registrar, type);
         }
 
-        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(T), instanceBehaviour);
+        public void Register<T>(InstanceBehaviour instanceBehaviour) where T : class => Register(typeof(T), typeof(T), instanceBehaviour);
 
-        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
-
-        public void Register(Type type, object singleton) => typeInformationRegister.Add(type, new TypeInformation(this, type, InstanceBehaviour.Singleton, singleton));
+        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
 
         public void Register(Type registrar, Type type, object singleton)
         {
@@ -41,7 +36,7 @@ namespace OctoAwesome
             typeRegister.Add(registrar, type);
         }
 
-        public void Register<T>(T singleton) where T : class => Register(typeof(T), singleton);
+        public void Register<T>(T singleton) where T : class => Register(typeof(T), typeof(T), singleton);
 
         public void Register<TRegistrar, T>(object singleton) where T : class => Register(typeof(TRegistrar), typeof(T), singleton);
 

@@ -17,15 +17,11 @@ namespace OctoAwesome
 
         public static T CreateObject<T>() where T : class => instance.CreateObject<T>();
 
-        public static void Register(Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) => instance.Register(type, instanceBehaviour);
-
-        public static void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) => instance.Register(registrar, type, instanceBehaviour);
+        public static void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour) => instance.Register(registrar, type, instanceBehaviour);
 
         public static void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => instance.Register<T>(instanceBehaviour);
 
         public static void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => instance.Register<TRegistrar, T>(instanceBehaviour);
-
-        public static void Register(Type type, object singleton) => instance.Register(type, singleton);
 
         public static void Register(Type registrar, Type type, object singleton) => instance.Register(registrar, type, singleton);
 

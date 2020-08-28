@@ -18,7 +18,7 @@ namespace OctoAwesome.Tests
             var typeContainer = new StandaloneTypeContainer();
             typeContainer.Register(typeof(StandaloneTypeContainer));
             typeContainer.Register(typeof(TestClass));
-            typeContainer.Register(typeof(ITestInterface), typeof(TestClass));
+            typeContainer.Register(typeof(ITestInterface), typeof(TestClass), InstanceBehaviour.Instance);
 
             var result = typeContainer.TryResolve(typeof(TestClass), out var instanceA);
             Assert.True(result);
