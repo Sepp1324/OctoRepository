@@ -5,19 +5,14 @@ namespace OctoAwesome.Tests
     public class StandaloneTypeContainerTests
     {
         [Fact]
-        public void InitializationTest()
-        {
-            new StandaloneTypeContainer();
-        }
+        public void InitializationTest() => _ = new StandaloneTypeContainer();
 
         [Fact]
         public void InstanceTest()
         {
-            var type = typeof(StandaloneTypeContainer);
-
             var typeContainer = new StandaloneTypeContainer();
-            typeContainer.Register(typeof(StandaloneTypeContainer));
-            typeContainer.Register(typeof(TestClass));
+            typeContainer.Register<StandaloneTypeContainer>(InstanceBehaviour.Instance);
+            typeContainer.Register<TestClass>();
             typeContainer.Register(typeof(ITestInterface), typeof(TestClass), InstanceBehaviour.Instance);
 
             var result = typeContainer.TryResolve(typeof(TestClass), out var instanceA);

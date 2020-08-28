@@ -24,9 +24,9 @@ namespace OctoAwesome
             typeRegister.Add(registrar, type);
         }
 
-        public void Register<T>(InstanceBehaviour instanceBehaviour) where T : class => Register(typeof(T), typeof(T), instanceBehaviour);
+        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(T), typeof(T), instanceBehaviour);
 
-        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
+        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
 
         public void Register(Type registrar, Type type, object singleton)
         {
@@ -63,7 +63,7 @@ namespace OctoAwesome
                 if (typeInformationRegister.TryGetValue(searchType, out typeInformation))
                     return typeInformation.Instance;
             }
-            return Activator.CreateInstance(type);
+            return CreateObject(type);
         }
 
         public T Get<T>() where T : class => (T)Get(typeof(T));
@@ -91,7 +91,7 @@ namespace OctoAwesome
                 if (next)
                     continue;
 
-                return constructor.Invoke(type, tmpList.ToArray());
+                return constructor.Invoke(tmpList.ToArray());
             }
             return null;
         }

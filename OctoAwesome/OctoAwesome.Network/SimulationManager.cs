@@ -2,17 +2,14 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
         public bool IsRunning { get; private set; }
+
         public IDefinitionManager DefinitionManager => definitionManager;
 
         public Simulation Simulation
@@ -32,6 +29,7 @@ namespace OctoAwesome.Network
         public GameTime GameTime { get; private set; }
 
         public ResourceManager ResourceManager { get; private set; }
+
         public GameService Service { get; }
 
         private Simulation simulation;
@@ -50,20 +48,23 @@ namespace OctoAwesome.Network
 
             this.settings = settings; //TODO: Where are the settings?
 
-            extensionLoader = new ExtensionLoader(settings);
-            extensionLoader.LoadExtensions();
-
-            TypeContainer.Register(extensionLoader);
-            TypeContainer.Register<IExtensionLoader, ExtensionLoader>(extensionLoader);
-            TypeContainer.Register<IExtensionResolver, ExtensionLoader>(extensionLoader);
+            TypeContainer.Register(settings);
+            TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<IExtensionResolver, ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<DefinitionManager>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IDefinitionManager, DefinitionManager>(InstanceBehaviour.Singleton);
-            
-            definitionManager = new DefinitionManager(extensionLoader);
+            TypeContainer.Register<DiskPersistenceManager>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<IPersistenceManager, DiskPersistenceManager>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<ResourceManager>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<IResourceManager, ResourceManager>(InstanceBehaviour.Singleton);
 
-            var persistenceManager = new DiskPersistenceManager(extensionLoader, settings);
+            extensionLoader = TypeContainer.Get<ExtensionLoader>();
+            extensionLoader.LoadExtensions();
 
-            ResourceManager = new ResourceManager(extensionLoader, definitionManager, settings, persistenceManager);
+            definitionManager = TypeContainer.Get<DefinitionManager>();
+
+            ResourceManager = TypeContainer.Get<ResourceManager>();
             ResourceManager.InsertUpdateHub(updateHub);
 
             chunkSubscription = updateHub.Subscribe(ResourceManager.GlobalChunkCache, DefaultChannels.Chunk);
