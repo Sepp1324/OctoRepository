@@ -1,21 +1,15 @@
-﻿using CommandManagementSystem;
-using Newtonsoft.Json;
-using NLog;
+﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
 using OctoAwesome.Network;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading;
 
 namespace OctoAwesome.GameServer
 {
     internal class Program
     {
-        public static ServerHandler ServerHandler { get; set; }
-
         private static ManualResetEvent manualResetEvent;
         private static Logger logger;
 
@@ -55,14 +49,14 @@ namespace OctoAwesome.GameServer
                 settings = new Settings(fileInfo);                
             }
 
-            ServerHandler = new ServerHandler(settings);
-            ServerHandler.Start();
+            TypeContainer.Register(settings);
+            TypeContainer.Register<ServerHandler>(InstanceBehaviour.Singleton);
+             TypeContainer.Get<ServerHandler>().Start();
 
             Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
             manualResetEvent.WaitOne();
             settings.Save();
+            TypeContainer.Get<ITypeContainer>().Dispose();
         }
-
-
     }
 }

@@ -33,22 +33,19 @@ namespace OctoAwesome.Network
         public GameService Service { get; }
 
         private Simulation simulation;
-        private ExtensionLoader extensionLoader;
-        private DefinitionManager definitionManager;
+        private readonly ExtensionLoader extensionLoader;
+        private readonly DefinitionManager definitionManager;
 
-        private ISettings settings;
+        private readonly ISettings settings;
 
-        private Thread backgroundThread;
-        private object mainLock;
+        private readonly Thread backgroundThread;
+        private readonly object mainLock;
         private IDisposable chunkSubscription;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
             mainLock = new object();
 
-            this.settings = settings; //TODO: Where are the settings?
-
-            TypeContainer.Register(settings);
             TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionResolver, ExtensionLoader>(InstanceBehaviour.Singleton);
