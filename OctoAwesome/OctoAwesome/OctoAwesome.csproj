@@ -61,12 +61,13 @@
     <Compile Include="Blocks.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="ChunkColumn.cs" />
+    <Compile Include="ClientType.cs" />
     <Compile Include="CollisionPlane.cs" />
     <Compile Include="Common\IGameService.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="ComponentList.cs" />
     <Compile Include="Coordinate.cs" />
-    <Compile Include="CustomAwaiter.cs" />
+    <Compile Include="EntityComponents\LocalChunkCacheComponent.cs" />
     <Compile Include="EntityComponents\RenderComponent.cs" />
     <Compile Include="EntityList.cs" />
     <Compile Include="EntityComponent.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="EntityComponents\ToolBarComponent.cs" />
     <Compile Include="EntityFilterAttribute.cs" />
     <Compile Include="Extension.cs" />
+    <Compile Include="FailEntityChunkArgs.cs" />
     <Compile Include="GlobalChunkCache.cs" />
     <Compile Include="IBlockDefinition.cs" />
     <Compile Include="IChunk.cs" />
@@ -105,6 +107,9 @@
     <Compile Include="IResourceManager.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="ITypeContainer.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Notifications\ChunkNotification.cs" />
     <Compile Include="Notifications\DefaultChannels.cs" />
     <Compile Include="Notifications\INotificationObservable.cs" />
@@ -113,6 +118,11 @@
     <Compile Include="Notifications\ObserverHashSet.cs" />
     <Compile Include="Notifications\PropertyChangedNotification.cs" />
     <Compile Include="Notifications\SerializableNotification.cs" />
+    <Compile Include="Pooling\IPool.cs" />
+    <Compile Include="Pooling\IPoolElement.cs" />
+    <Compile Include="Pooling\Pool.cs" />
+    <Compile Include="SemaphoreExtended.cs" />
+    <Compile Include="Startup.cs" />
     <Compile Include="RemoteEntity.cs" />
     <Compile Include="Serialization\ISerializable.cs" />
     <Compile Include="ISettings.cs" />
@@ -142,6 +152,14 @@
     <Compile Include="Wall.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="UpdateableEntity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="engenious">
+      <Version>0.2.0-alpha</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.6.6</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

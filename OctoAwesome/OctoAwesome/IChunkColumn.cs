@@ -18,7 +18,7 @@ namespace OctoAwesome
         /// <summary>
         /// Der Index des Planeten.
         /// </summary>
-        int Planet { get; }
+        IPlanet Planet { get; }
 
         /// <summary>
         /// Die Position der Säule.
@@ -113,7 +113,6 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         void SetBlockResources(int x, int y, int z, ushort[] resources);
-        void SetCache(IGlobalChunkCache globalChunkCache);
         void OnUpdate(Notifications.SerializableNotification notification);
         void Update(Notifications.SerializableNotification notification);
     }

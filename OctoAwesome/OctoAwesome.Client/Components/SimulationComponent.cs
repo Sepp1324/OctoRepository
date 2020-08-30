@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OctoAwesome.Runtime;
+using System;
 using engenious;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Common;
@@ -32,7 +33,7 @@ namespace OctoAwesome.Client.Components
             this.resourceManager = resourceManager;
         }
 
-        public Guid NewGame(string name, int? seed = null)
+        public Guid NewGame(string name, string seed)
         {
             if (Simulation != null)
             {

@@ -10,15 +10,14 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(MoveableComponent), typeof(PositionComponent))]
     public sealed class MoveComponent : SimulationComponent<MoveableComponent, PositionComponent>
     {
-
-
         protected override bool AddEntity(Entity entity)
         {
             var poscomp = entity.Components.GetComponent<PositionComponent>();
+            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
 
-            var planet = entity.Cache.LoadPlanet(poscomp.Position.Planet);
+            var planet = cache.Planet;
             poscomp.Position.NormalizeChunkIndexXY(planet.Size);
-            entity.Cache.SetCenter(planet, new Index2(poscomp.Position.ChunkIndex));
+            cache.SetCenter(new Index2(poscomp.Position.ChunkIndex));
             return true;
         }
 
@@ -26,25 +25,33 @@ namespace OctoAwesome.Basics.SimulationComponents
         {
         }
 
-        protected override void UpdateEntity(GameTime gameTime, Entity e, MoveableComponent movecomp, PositionComponent poscomp)
+        protected override void UpdateEntity(GameTime gameTime, Entity entity, MoveableComponent movecomp, PositionComponent poscomp)
         {
 
-            if (e.Id == 0)
+            if (entity.Id == 0)
                 return;
 
             //TODO:Sehr unschön
 
-            if (e.Components.ContainsComponent<BoxCollisionComponent>())
+            if (entity.Components.ContainsComponent<BoxCollisionComponent>())
             {
-                CheckBoxCollision(gameTime, e, movecomp, poscomp);
+                CheckBoxCollision(gameTime, entity, movecomp, poscomp);
             }
 
+            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
 
             var newposition = poscomp.Position + movecomp.PositionMove;
-            newposition.NormalizeChunkIndexXY(e.Cache.Planet.Size);
-            var result = e.Cache.SetCenter(e.Cache.Planet, new Index2(poscomp.Position.ChunkIndex));
-            if (result)
+            newposition.NormalizeChunkIndexXY(cache.Planet.Size);
+            if (poscomp.Position.ChunkIndex != newposition.ChunkIndex)
+            {
+                var result = cache.SetCenter(new Index2(poscomp.Position.ChunkIndex));
+                if (result)
+                    poscomp.Position = newposition;
+            }
+            else
+            {
                 poscomp.Position = newposition;
+            }
 
             //Direction
             if (movecomp.PositionMove.LengthSquared != 0)
@@ -54,12 +61,12 @@ namespace OctoAwesome.Basics.SimulationComponents
             }
         }
 
-        private void CheckBoxCollision(GameTime gameTime, Entity e, MoveableComponent movecomp, PositionComponent poscomp)
+        private void CheckBoxCollision(GameTime gameTime, Entity entity, MoveableComponent movecomp, PositionComponent poscomp)
         {
-            if (!e.Components.ContainsComponent<BodyComponent>())
+            if (!entity.Components.ContainsComponent<BodyComponent>())
                 return;
 
-            BodyComponent bc = e.Components.GetComponent<BodyComponent>();
+            BodyComponent bc = entity.Components.GetComponent<BodyComponent>();
 
 
             Coordinate position = poscomp.Position;
@@ -91,6 +98,8 @@ namespace OctoAwesome.Basics.SimulationComponents
 
             bool abort = false;
 
+            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
+
             for (int z = minz; z <= maxz && !abort; z++)
             {
                 for (int y = miny; y <= maxy && !abort; y++)
@@ -101,7 +110,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                         Index3 pos = new Index3(x, y, z);
                         Index3 blockPos = pos + position.GlobalBlockIndex;
-                        ushort block = e.Cache.GetBlock(blockPos);
+                        ushort block = cache.GetBlock(blockPos);
                         if (block == 0)
                             continue;
 

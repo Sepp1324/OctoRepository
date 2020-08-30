@@ -2,6 +2,7 @@
 {
     public enum InstanceBehaviour
     {
-        Instance, Singleton
+        Instance,
+        Singleton
     }
 }

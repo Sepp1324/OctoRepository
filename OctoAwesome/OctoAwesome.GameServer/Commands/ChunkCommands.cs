@@ -1,7 +1,11 @@
 ﻿using CommandManagementSystem.Attributes;
 using OctoAwesome.Network;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -21,8 +25,8 @@ namespace OctoAwesome.GameServer.Commands
                 planetId = reader.ReadInt32();
                 index2 = new Index2(reader.ReadInt32(), reader.ReadInt32());
             }
-
-            var column = TypeContainer.Get<SimulationManager>().LoadColumn(guid, planetId, index2);
+                      
+            var column = TypeContainer.Get<SimulationManager>().LoadColumn(planetId, index2);
 
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
@@ -35,7 +39,7 @@ namespace OctoAwesome.GameServer.Commands
         [Command((ushort)OfficialCommand.SaveColumn)]
         public static byte[] SaveColumn(CommandParameter parameter)
         {
-            var chunkColumn = new ChunkColumn();
+            var chunkColumn = new ChunkColumn(null);
 
             using (var memoryStream = new MemoryStream(parameter.Data))
             using (var reader = new BinaryReader(memoryStream))

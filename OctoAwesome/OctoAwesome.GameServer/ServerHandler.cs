@@ -1,5 +1,5 @@
 ﻿using CommandManagementSystem;
-using NLog;
+using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
@@ -17,20 +17,23 @@ namespace OctoAwesome.GameServer
         public SimulationManager SimulationManager { get; set; }
         public IUpdateHub UpdateHub { get; private set; }
 
-        private readonly Logger logger;
+        private readonly ILogger logger;
         private readonly Server server;
         private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
 
-        public ServerHandler(ISettings settings)
+        public ServerHandler()
         {
-            logger = LogManager.GetCurrentClassLogger();
+            logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(ServerHandler));
 
-            var updateHub = new UpdateHub();
-            UpdateHub = updateHub;
+            TypeContainer.Register<UpdateHub>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<IUpdateHub, UpdateHub>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<Server>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<SimulationManager>(InstanceBehaviour.Singleton);
 
-            server = new Server();
+            SimulationManager = TypeContainer.Get<SimulationManager>();
+            UpdateHub = TypeContainer.Get<IUpdateHub>();
+            server = TypeContainer.Get<Server>();
 
-            SimulationManager = new SimulationManager(settings, updateHub);
             defaultManager = new DefaultCommandManager<ushort, CommandParameter, byte[]>(typeof(ServerHandler).Namespace + ".Commands");
         }
 
@@ -64,15 +67,19 @@ namespace OctoAwesome.GameServer
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex, "Dispatch failed in Command " + value.Command);
+                    logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
                     return;
                 }
 
-                logger.Trace(value.Command);
+                logger.Trace(value.OfficialCommand);
 
                 if (value.Payload == null)
-                    return;
+                {
+                    logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
 
+                    return;
+                }
+                
                 value.BaseClient.SendPackage(value);
             });
         }

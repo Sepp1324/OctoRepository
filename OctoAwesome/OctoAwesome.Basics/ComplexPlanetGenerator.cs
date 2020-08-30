@@ -8,16 +8,8 @@ namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-        public IPlanet GeneratePlanet(Guid universe, int id, int seed)
-        {
-            Index3 size = new Index3(12, 12, 3);
-            //TODO: Ist es gewollt, das hier der Generator zwei mal reingegeben wird?
-            ComplexPlanet planet = new ComplexPlanet(id, universe, size, this, seed)
-            {
-                Generator = this
-            };
-            return planet;
-        }
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed) 
+            => new ComplexPlanet(id, universe, new Index3(12, 12, 3), this, seed);
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
@@ -50,7 +42,7 @@ namespace OctoAwesome.Basics
 
             IChunk[] chunks = new IChunk[planet.Size.Z];
             for (int i = 0; i < planet.Size.Z; i++)
-                chunks[i] = new Chunk(new Index3(index, i), planet.Id);
+                chunks[i] = new Chunk(new Index3(index, i), planet);
 
             int obersteSchicht;
             bool surfaceBlock;
@@ -138,7 +130,7 @@ namespace OctoAwesome.Basics
                 }
             }
 
-            ChunkColumn column = new ChunkColumn(chunks, planet.Id, index, definitionManager);
+            ChunkColumn column = new ChunkColumn(chunks, planet, index);
             column.CalculateHeights();
             return column;
         }
@@ -152,9 +144,9 @@ namespace OctoAwesome.Basics
             return planet;
         }
 
-        public IChunkColumn GenerateColumn(Stream stream, int planetId, Index2 index)
+        public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)
         {
-            IChunkColumn column = new ChunkColumn();
+            IChunkColumn column = new ChunkColumn(planet);
             using(var reader = new BinaryReader(stream))
                 column.Deserialize(reader);
             return column;

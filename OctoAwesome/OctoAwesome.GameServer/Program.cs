@@ -1,9 +1,11 @@
-﻿using NLog;
-using NLog.Config;
-using NLog.Targets;
+﻿using CommandManagementSystem;
+using Newtonsoft.Json;
+using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading;
 
 namespace OctoAwesome.GameServer
@@ -11,52 +13,54 @@ namespace OctoAwesome.GameServer
     internal class Program
     {
         private static ManualResetEvent manualResetEvent;
-        private static Logger logger;
+        private static ILogger logger;
 
         private static void Main(string[] args)
         {
-            var config = new LoggingConfiguration();
-
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new ColoredConsoleTarget("octoawesome.logconsole"));
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new FileTarget("octoawesome.logfile")
+            using (var typeContainer = TypeContainer.Get<ITypeContainer>())
             {
-                FileName = $"./logs/server-{DateTime.Now.ToString("ddMMyy_hhmmss")}.log"
-            });
+                Startup.Register(typeContainer);
+                Startup.ConfigureLogger(ClientType.GameServer);
 
-            LogManager.Configuration = config;
-            logger = LogManager.GetCurrentClassLogger();
+                Network.Startup.Register(typeContainer);
 
-            manualResetEvent = new ManualResetEvent(false);
+                logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(Program));
 
-            logger.Info("Server start");
+                manualResetEvent = new ManualResetEvent(false);
 
-            var fileInfo = new FileInfo(Path.Combine(".", "settings.json"));
-            Settings settings;
+                logger.Info("Server start");
+
+                var fileInfo = new FileInfo(Path.Combine(".", "settings.json"));
+                Settings settings;
 
 
-            if (!fileInfo.Exists)
-            {
-                logger.Debug("Create new Default Settings");
-                settings = new Settings()
+                if (!fileInfo.Exists)
                 {
-                    FileInfo = fileInfo
-                };
+                    logger.Debug("Create new Default Settings");
+                    settings = new Settings()
+                    {
+                        FileInfo = fileInfo
+                    };
+                    settings.Save();
+                }
+                else
+                {
+                    logger.Debug("Load Settings");
+                    settings = new Settings(fileInfo);
+                }
+                
+
+                typeContainer.Register(settings);
+                typeContainer.Register<ISettings, Settings>(settings);
+                typeContainer.Register<ServerHandler>(InstanceBehaviour.Singleton);
+                typeContainer.Get<ServerHandler>().Start();
+
+                Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
+                manualResetEvent.WaitOne();
                 settings.Save();
             }
-            else
-            {
-                logger.Debug("Load Settings");
-                settings = new Settings(fileInfo);                
-            }
-
-            TypeContainer.Register(settings);
-            TypeContainer.Register<ServerHandler>(InstanceBehaviour.Singleton);
-             TypeContainer.Get<ServerHandler>().Start();
-
-            Console.CancelKeyPress += (s, e) => manualResetEvent.Set();
-            manualResetEvent.WaitOne();
-            settings.Save();
-            TypeContainer.Get<ITypeContainer>().Dispose();
         }
+
+
     }
 }

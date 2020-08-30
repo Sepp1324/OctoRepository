@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OctoAwesome.Pooling;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -22,14 +23,15 @@ namespace OctoAwesome.Runtime
         private const string ColumnFilename = "column_{0}_{1}.dat";
 
         private DirectoryInfo root;
-        private ISettings Settings;
-
+        private readonly ISettings settings;
+        private readonly IPool<Awaiter> awaiterPool;
         private readonly IExtensionResolver extensionResolver;
 
         public DiskPersistenceManager(IExtensionResolver extensionResolver, ISettings Settings)
         {
             this.extensionResolver = extensionResolver;
-            this.Settings = Settings;
+            this.settings = Settings;
+            awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
         }
 
         private string GetRoot()
@@ -37,7 +39,7 @@ namespace OctoAwesome.Runtime
             if (root != null)
                 return root.FullName;
 
-            string appconfig = Settings.Get<string>("ChunkRoot");
+            string appconfig = settings.Get<string>("ChunkRoot");
             if (!string.IsNullOrEmpty(appconfig))
             {
                 root = new DirectoryInfo(appconfig);
@@ -118,7 +120,7 @@ namespace OctoAwesome.Runtime
             string path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
             Directory.CreateDirectory(path);
 
-            string file = path = Path.Combine(path, string.Format(ColumnFilename, column.Index.X, column.Index.Y));
+            string file = Path.Combine(path, string.Format(ColumnFilename, column.Index.X, column.Index.Y));
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
             using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
             using (BinaryWriter writer = new BinaryWriter(zip))
@@ -132,14 +134,17 @@ namespace OctoAwesome.Runtime
         public Awaiter Load(out SerializableCollection<IUniverse> universes)
         {
             string root = GetRoot();
-            var awaiter = new Awaiter();
+            var awaiter = awaiterPool.Get();
             universes = new SerializableCollection<IUniverse>();
             awaiter.Serializable = universes;
             foreach (var folder in Directory.GetDirectories(root))
             {
                 string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
                 if (Guid.TryParse(id, out Guid guid))
-                    universes.Add((IUniverse)Load(out var universe, guid).WaitOn());
+                {
+                    Load(out var universe, guid).WaitOnAndRelease();
+                    universes.Add(universe);
+                }
             }
             awaiter.SetResult(universes);
 
@@ -157,13 +162,12 @@ namespace OctoAwesome.Runtime
             universe = new Universe();
             if (!File.Exists(file))
                 return null;
-            var tcs = new CustomAwaiter();
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
             using (var reader = new BinaryReader(zip))
             {
-                var awaiter = new Awaiter();
+                var awaiter = awaiterPool.Get();
                 awaiter.Serializable = universe;
                 universe.Deserialize(reader);
                 awaiter.SetResult(universe);
@@ -204,9 +208,9 @@ namespace OctoAwesome.Runtime
             {
                 using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    var awaiter = new Awaiter();
-                    awaiter.Serializable = planet;
-                    awaiter.SetResult(generator.GeneratePlanet(zip));
+                    var awaiter = awaiterPool.Get();
+                    planet = generator.GeneratePlanet(zip);
+                    awaiter.SetResult(planet);
                     return awaiter;
                 }
             }
@@ -222,7 +226,7 @@ namespace OctoAwesome.Runtime
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
             string file = Path.Combine(GetRoot(), universeGuid.ToString(), planet.Id.ToString(), string.Format(ColumnFilename, columnIndex.X, columnIndex.Y));
-            column = new ChunkColumn();
+            column = new ChunkColumn(planet);
             if (!File.Exists(file))
                 return null;
 
@@ -232,9 +236,10 @@ namespace OctoAwesome.Runtime
                 {
                     using (GZipStream zip = new GZipStream(stream, CompressionMode.Decompress))
                     {
-                        var awaiter = new Awaiter();
+                        var awaiter = awaiterPool.Get();
                         awaiter.Serializable = column;
-                        awaiter.SetResult(planet.Generator.GenerateColumn(zip, planet.Id, columnIndex));
+                        column = planet.Generator.GenerateColumn(zip, planet, columnIndex);
+                        awaiter.SetResult(column);
                         return awaiter;
                     }
                 }
@@ -270,7 +275,7 @@ namespace OctoAwesome.Runtime
                 {
                     try
                     {
-                        var awaiter = new Awaiter();
+                        var awaiter = awaiterPool.Get();
                         awaiter.Serializable = player;
                         player.Deserialize(reader);
                         awaiter.SetResult(player);

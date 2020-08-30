@@ -19,15 +19,23 @@ namespace OctoAwesome.Client
         [STAThread]
         static void Main()
         {
-            using (game = new OctoGame())
-                game.Run(60,60);
+            using (var typeContainer = TypeContainer.Get<ITypeContainer>())
+            {
+                Startup.Register(typeContainer);
+                Startup.ConfigureLogger(ClientType.DesktopClient);
+
+                Network.Startup.Register(typeContainer);
+
+                using (game = new OctoGame())
+                    game.Run(60, 60);
+            }
         }
 
         public static void Restart()
         {
             game.Exit();
             using (game = new OctoGame())
-                game.Run(60,60);
+                game.Run(60, 60);
         }
     }
 #endif

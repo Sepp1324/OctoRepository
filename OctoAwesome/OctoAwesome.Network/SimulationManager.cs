@@ -2,15 +2,17 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
         public bool IsRunning { get; private set; }
-
-        public IDefinitionManager DefinitionManager => definitionManager;
 
         public Simulation Simulation
         {
@@ -29,22 +31,22 @@ namespace OctoAwesome.Network
         public GameTime GameTime { get; private set; }
 
         public ResourceManager ResourceManager { get; private set; }
-
         public GameService Service { get; }
 
         private Simulation simulation;
         private readonly ExtensionLoader extensionLoader;
-        private readonly DefinitionManager definitionManager;
 
         private readonly ISettings settings;
-
+        private readonly UpdateHub updateHub;
         private readonly Thread backgroundThread;
         private readonly object mainLock;
-        private IDisposable chunkSubscription;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
             mainLock = new object();
+            this.settings = settings;
+            this.updateHub = updateHub;
+
 
             TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
@@ -59,13 +61,9 @@ namespace OctoAwesome.Network
             extensionLoader = TypeContainer.Get<ExtensionLoader>();
             extensionLoader.LoadExtensions();
 
-            definitionManager = TypeContainer.Get<DefinitionManager>();
-
             ResourceManager = TypeContainer.Get<ResourceManager>();
             ResourceManager.InsertUpdateHub(updateHub);
-
-            chunkSubscription = updateHub.Subscribe(ResourceManager.GlobalChunkCache, DefaultChannels.Chunk);
-            ResourceManager.GlobalChunkCache.InsertUpdateHub(updateHub);
+            
             Service = new GameService(ResourceManager);
             simulation = new Simulation(ResourceManager, extensionLoader, Service)
             {
@@ -82,12 +80,12 @@ namespace OctoAwesome.Network
         {
             IsRunning = true;
             GameTime = new GameTime();
-            
+
             var universe = settings.Get<string>("LastUniverse");
 
-            if (string.IsNullOrWhiteSpace(universe) || true) //TODO: If the load mechanism is repaired remove true
+            if (string.IsNullOrWhiteSpace(universe))
             {
-                var guid = simulation.NewGame("melmack", new Random().Next());
+                var guid = simulation.NewGame("melmack", new Random().Next().ToString());
                 settings.Set("LastUniverse", guid.ToString());
             }
             else
@@ -105,17 +103,25 @@ namespace OctoAwesome.Network
             backgroundThread.Abort();
         }
 
-        public IUniverse GetUniverse() => ResourceManager.CurrentUniverse;
+        public IUniverse GetUniverse() 
+            => ResourceManager.CurrentUniverse;
 
         public IUniverse NewUniverse()
         {
             throw new NotImplementedException();
         }
 
-        public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
-
-        public IChunkColumn LoadColumn(Guid guid, int planetId, Index2 index2)
-            => ResourceManager.LoadChunkColumn(planetId, index2);
+        public IPlanet GetPlanet(int planetId)
+        {
+            var planet = ResourceManager.GetPlanet(planetId);
+            planet.UpdateHub = updateHub;
+            return planet;
+        }
+        
+        public IChunkColumn LoadColumn( IPlanet planet, Index2 index2)
+            => ResourceManager.LoadChunkColumn(planet, index2);
+        public IChunkColumn LoadColumn( int planetId, Index2 index2)
+            => LoadColumn(GetPlanet(planetId), index2);
 
         private void SimulationLoop()
         {
