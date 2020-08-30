@@ -1,9 +1,8 @@
-﻿using OctoAwesome.Network;
+﻿using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using System;
-using System.IO;
 
 namespace OctoAwesome.Network
 {
@@ -15,7 +14,7 @@ namespace OctoAwesome.Network
         private readonly IDisposable clientSubscription;
         private readonly IPool<EntityNotification> entityNotificationPool;
         private readonly IPool<ChunkNotification> chunkNotificationPool;
-        private readonly IPool<Package> packagePool;
+        private readonly PackagePool packagePool;
 
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
         {
@@ -24,7 +23,7 @@ namespace OctoAwesome.Network
 
             entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
             chunkNotificationPool = TypeContainer.Get<IPool<ChunkNotification>>();
-            packagePool = TypeContainer.Get<IPool<Package>>();
+            packagePool = TypeContainer.Get<PackagePool>();
 
             hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
             clientSubscription = client.Subscribe(this);

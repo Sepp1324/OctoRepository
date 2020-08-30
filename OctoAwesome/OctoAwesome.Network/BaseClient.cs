@@ -1,8 +1,8 @@
-﻿using OctoAwesome.Pooling;
+﻿using OctoAwesome.Network.Pooling;
+using OctoAwesome.Pooling;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,10 +14,8 @@ namespace OctoAwesome.Network
         private static uint NextId => ++nextId;
         private static uint nextId;
 
-        static BaseClient()
-        {
-            nextId = 0;
-        }
+        static BaseClient() => nextId = 0;
+
         public uint Id { get; }
 
         protected Socket Socket;
@@ -28,7 +26,7 @@ namespace OctoAwesome.Network
         private bool sending;
         private Package currentPackage;
         private readonly ConcurrentBag<IObserver<Package>> observers;
-        private readonly IPool<Package> packagePool;
+        private readonly PackagePool packagePool;
         private readonly SocketAsyncEventArgs sendArgs;
 
         private readonly (byte[] data, int len)[] sendQueue;
@@ -42,7 +40,7 @@ namespace OctoAwesome.Network
             ReceiveArgs = new SocketAsyncEventArgs();
             ReceiveArgs.Completed += OnReceived;
             ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(1024 * 1024), 0, 1024 * 1024);
-            packagePool = TypeContainer.Get<IPool<Package>>();
+            packagePool = TypeContainer.Get<PackagePool>();
 
             sendArgs = new SocketAsyncEventArgs();
             sendArgs.Completed += OnSent;
@@ -192,12 +190,7 @@ namespace OctoAwesome.Network
 
             if (currentPackage == null)
             {
-                //currentPackage = new Package(false)
-                //{
-                //    BaseClient = this
-                //};
-
-                currentPackage = packagePool.Get();
+                currentPackage = packagePool.GetBlank();
                 currentPackage.BaseClient = this;
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)

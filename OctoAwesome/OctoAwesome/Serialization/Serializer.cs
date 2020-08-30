@@ -45,9 +45,7 @@ namespace OctoAwesome.Serialization
         {
             using (var stream = new MemoryStream(data))
             using (var reader = new BinaryReader(stream))
-            {
                 instance.Deserialize(reader);
-            }
         }
     }
 }
