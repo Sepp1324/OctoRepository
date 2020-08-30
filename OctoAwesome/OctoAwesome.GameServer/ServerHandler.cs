@@ -3,18 +3,17 @@ using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
+using OctoAwesome.Threading;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
-    public class ServerHandler : IObserver<Package>
+    public class ServerHandler : IAsyncObserver<Package>
     {
         public SimulationManager SimulationManager { get; set; }
+
         public IUpdateHub UpdateHub { get; private set; }
 
         private readonly ILogger logger;
@@ -51,44 +50,41 @@ namespace OctoAwesome.GameServer
             e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.Network);
         }
 
-        public void OnNext(Package value)
+        public Task OnNext(Package value)
         {
-            Task.Run(() =>
+            if (value.Command == 0 && value.Payload.Length == 0)
             {
-                if (value.Command == 0 && value.Payload.Length == 0)
-                {
-                    logger.Debug("Received null package");
-                    return;
-                }
-                logger.Trace("Received a new Package with ID: " + value.UId);
-                try
-                {
-                    value.Payload = defaultManager.Dispatch(value.Command,new CommandParameter(value.BaseClient.Id, value.Payload));
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
-                    return;
-                }
+                logger.Debug("Received null package");
+                return Task.CompletedTask;
+            }
+            logger.Trace("Received a new Package with ID: " + value.UId);
+            try
+            {
+                value.Payload = defaultManager.Dispatch(value.Command, new CommandParameter(value.BaseClient.Id, value.Payload));
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
+                return Task.CompletedTask;
+            }
 
-                logger.Trace(value.OfficialCommand);
+            logger.Trace(value.OfficialCommand);
 
-                if (value.Payload == null)
-                {
-                    logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
-
-                    return;
-                }
-                
-                value.BaseClient.SendPackage(value);
-            });
+            if (value.Payload == null)
+            {
+                logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
+                return Task.CompletedTask;
+            }
+            value.BaseClient.SendPackage(value);
+            return Task.CompletedTask;
         }
 
-        public void OnError(Exception error)
-            => throw error;
-
-        public void OnCompleted()
+        public Task OnError(Exception error)
         {
+            logger.Error(error.Message, error);
+            return Task.CompletedTask;
         }
+
+        public Task OnCompleted() => Task.CompletedTask;
     }
 }
