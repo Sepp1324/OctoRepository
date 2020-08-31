@@ -1,5 +1,5 @@
 ﻿using OctoAwesome.Network.Pooling;
-using OctoAwesome.Pooling;
+using OctoAwesome.Threading;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
-    public abstract class BaseClient : IObservable<Package>
+    public abstract class BaseClient : IAsyncObservable<Package>
     {
         private static uint NextId => ++nextId;
         private static uint nextId;
@@ -25,7 +25,7 @@ namespace OctoAwesome.Network
         private byte nextSendQueueWriteIndex;
         private bool sending;
         private Package currentPackage;
-        private readonly ConcurrentBag<IObserver<Package>> observers;
+        private readonly ConcurrentBag<IAsyncObserver<Package>> observers;
         private readonly PackagePool packagePool;
         private readonly SocketAsyncEventArgs sendArgs;
 
@@ -45,7 +45,7 @@ namespace OctoAwesome.Network
             sendArgs = new SocketAsyncEventArgs();
             sendArgs.Completed += OnSent;
 
-            observers = new ConcurrentBag<IObserver<Package>>();
+            observers = new ConcurrentBag<IAsyncObserver<Package>>();
             cancellationTokenSource = new CancellationTokenSource();
 
             Id = NextId;
@@ -77,7 +77,7 @@ namespace OctoAwesome.Network
             cancellationTokenSource.Cancel();
         }
 
-        public void SendAsync(byte[] data, int len)
+        public Task SendAsync(byte[] data, int len)
         {
             lock (sendLock)
             {
@@ -106,10 +106,10 @@ namespace OctoAwesome.Network
             package.Release();
         }
 
-        public IDisposable Subscribe(IObserver<Package> observer)
+        public Task<IDisposable> Subscribe(IAsyncObserver<Package> observer)
         {
             observers.Add(observer);
-            return new Subscription<Package>(this, observer);
+            return Task.FromResult(new Subscription<Package>(this, observer) as IDisposable);
         }
 
         private void SendInternal(byte[] data, int len)

@@ -2,15 +2,17 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using OctoAwesome.Basics;
 using OctoAwesome.Logging;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Network
 {
-    public class NetworkPersistenceManager : IPersistenceManager, IObserver<Package>
+    public class NetworkPersistenceManager : IPersistenceManager, IAsyncObserver<Package>
     {
         private readonly Client client;
         private readonly IDisposable subscription;
@@ -63,7 +65,7 @@ namespace OctoAwesome.Network
 
         public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
-            var package = packagePool.Get(); 
+            var package = packagePool.Get();
             package.Command = (ushort)OfficialCommand.GetPlanet;
             planet = new ComplexPlanet();
             var awaiter = GetAwaiter(planet, package.UId);
@@ -147,7 +149,7 @@ namespace OctoAwesome.Network
             //client.SendPackage(package);
         }
 
-        public void OnNext(Package package)
+        public Task OnNext(Package package)
         {
             logger.Trace($"Package with id:{package.UId} for Command: {package.OfficialCommand}");
 
@@ -169,12 +171,21 @@ namespace OctoAwesome.Network
                     break;
                 default:
                     logger.Warn($"Cant handle Command: {package.OfficialCommand}");
-                    return;
+                    return Task.CompletedTask;
             }
+            return Task.CompletedTask;
         }
 
-        public void OnError(Exception error) => throw error;
+        public Task OnError(Exception error)
+        {
+            logger.Error(error.Message, error);
+            return Task.CompletedTask;
+        }
 
-        public void OnCompleted() => subscription.Dispose();
+        public Task OnCompleted()
+        {
+            subscription.Dispose();
+            return Task.CompletedTask;
+        }
     }
 }
