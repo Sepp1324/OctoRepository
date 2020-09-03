@@ -3,6 +3,7 @@ using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
@@ -46,7 +47,6 @@ namespace OctoAwesome.Network
                 default:
                     return;
             }
-
             BuildAndSendPackage(payload, command);
         }
 

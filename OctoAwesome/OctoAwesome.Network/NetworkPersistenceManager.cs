@@ -59,7 +59,6 @@ namespace OctoAwesome.Network
             var awaiter = GetAwaiter(column, package.UId);
 
             client.SendPackageAndRelase(package);
-
             return awaiter;
         }
 
@@ -70,7 +69,6 @@ namespace OctoAwesome.Network
             planet = new ComplexPlanet();
             var awaiter = GetAwaiter(planet, package.UId);
             client.SendPackageAndRelase(package);
-
             return awaiter;
         }
 

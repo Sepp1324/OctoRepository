@@ -50,12 +50,12 @@ namespace OctoAwesome.GameServer
             e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.Network);
         }
 
-        public Task OnNext(Package value)
+        public async Task OnNext(Package value)
         {
             if (value.Command == 0 && value.Payload.Length == 0)
             {
                 logger.Debug("Received null package");
-                return Task.CompletedTask;
+                return;
             }
             logger.Trace("Received a new Package with ID: " + value.UId);
             try
@@ -65,7 +65,7 @@ namespace OctoAwesome.GameServer
             catch (Exception ex)
             {
                 logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
-                return Task.CompletedTask;
+                return;
             }
 
             logger.Trace(value.OfficialCommand);
@@ -73,10 +73,9 @@ namespace OctoAwesome.GameServer
             if (value.Payload == null)
             {
                 logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
-                return Task.CompletedTask;
+                return;
             }
-            value.BaseClient.SendPackage(value);
-            return Task.CompletedTask;
+            await value.BaseClient.SendPackageAsync(value);
         }
 
         public Task OnError(Exception error)

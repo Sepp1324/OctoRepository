@@ -84,25 +84,30 @@ namespace OctoAwesome.Network
                 if (sending)
                 {
                     sendQueue[nextSendQueueWriteIndex++] = (data, len);
-                    return;
+                    return Task.CompletedTask;
                 }
-
                 sending = true;
             }
-
-            SendInternal(data, len);
+            return Task.Run(() => SendInternal(data, len));
         }
 
-        public void SendPackage(Package package)
+        public async Task SendPackageAsync(Package package)
         {
             byte[] bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
             package.SerializePackage(bytes, 0);
-            SendAsync(bytes, bytes.Length);
+            await SendAsync(bytes, bytes.Length);
+        }
+
+        public async Task SendPackageAndRelaseAsync(Package package)
+        {
+            await SendPackageAsync(package);
+            package.Release();
         }
 
         public void SendPackageAndRelase(Package package)
         {
-            SendPackage(package);
+            var task = Task.Run(async () => await SendPackageAsync(package));
+            task.Wait();
             package.Release();
         }
 
