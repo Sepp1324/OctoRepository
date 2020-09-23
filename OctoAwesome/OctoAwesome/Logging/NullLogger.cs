@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Logging
 {
@@ -10,10 +6,7 @@ namespace OctoAwesome.Logging
     {
         public static ILogger Default { get; }
 
-        static NullLogger()
-        {
-            Default = new NullLogger().As(nameof(Default));
-        }
+        static NullLogger() => Default = new NullLogger().As(nameof(Default));
 
         public string Name { get; private set; }
 
@@ -47,5 +40,7 @@ namespace OctoAwesome.Logging
         public void Warn(string message) { }
         public void Warn(string message, Exception exception) { }
         public void Warn<T>(T message) { }
+
+        public void Flush() { }
     }
 }

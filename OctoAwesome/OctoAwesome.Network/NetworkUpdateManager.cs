@@ -90,7 +90,10 @@ namespace OctoAwesome.Network
             return Task.CompletedTask;
         }
 
-        void INotificationObserver.OnCompleted() => hubSubscription.Dispose();
+        void INotificationObserver.OnCompleted()
+        {
+            //hubSubscription.Dispose();
+        }
 
         void INotificationObserver.OnError(Exception error) => logger.Error(error.Message, error);
     }
