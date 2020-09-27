@@ -1,12 +1,8 @@
 ﻿using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -15,12 +11,14 @@ namespace OctoAwesome
         public ISerializable Serializable { get; set; }
         public bool Timeouted { get; private set; }
         private readonly ManualResetEventSlim manualReset;
+        private readonly SemaphoreExtended semaphore;
         private bool alreadyDeserialized;
         private IPool pool;
 
         public Awaiter()
         {
             manualReset = new ManualResetEventSlim(false);
+            semaphore = new SemaphoreExtended(1, 1);
         }
 
         public ISerializable WaitOn()
@@ -44,15 +42,21 @@ namespace OctoAwesome
             alreadyDeserialized = true;
         }
 
-        public void SetResult(byte[] bytes)
+        public bool TrySetResult(byte[] bytes)
         {
+            if (Timeouted)
+                return false;
+
+            if (Serializable == null)
+                throw new ArgumentNullException(nameof(Serializable));
+
             using (var stream = new MemoryStream(bytes))
             using (var reader = new BinaryReader(stream))
             {
                 Serializable.Deserialize(reader);
             }
             manualReset.Set();
-            alreadyDeserialized = true;
+            return alreadyDeserialized = true;
         }
 
         public void Init(IPool pool)

@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.Threading;
 using OctoAwesome.Client.Components;
 using System.Drawing.Imaging;
-using System.Threading.Tasks;
-using OctoAwesome.Runtime;
 using engenious;
 using engenious.Graphics;
 using engenious.Helper;
+using System.Windows.Threading;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -89,9 +88,10 @@ namespace OctoAwesome.Client.Controls
         };
 
         private ScreenComponent Manager { get; set; }
-        private int _fillIncrement;
-        public SceneControl(ScreenComponent manager, string style = "") :
-            base(manager, style)
+
+        private readonly int _fillIncrement;
+
+        public SceneControl(ScreenComponent manager, string style = "") : base(manager, style)
         {
             Mask = (int)Math.Pow(2, VIEWRANGE) - 1;
             Span = (int)Math.Pow(2, VIEWRANGE);
@@ -102,7 +102,6 @@ namespace OctoAwesome.Client.Controls
             assets = manager.Game.Assets;
             entities = manager.Game.Entity;
             Manager = manager;
-
 
             simpleShader = manager.Game.Content.Load<Effect>("simple");
             sunTexture = assets.LoadTexture(typeof(ScreenComponent), "sun");
