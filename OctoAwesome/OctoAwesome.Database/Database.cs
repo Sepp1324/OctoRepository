@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome.Database
+﻿namespace OctoAwesome.Database
 {
     public class Database
     {
-        private readonly KeyStore
+        private readonly KeyStore keyStore;
+        private readonly ValueStore valueStore;
 
         public Database()
         {
-
+            keyStore = new KeyStore();
+            valueStore = new ValueStore();
         }
     }
 }
