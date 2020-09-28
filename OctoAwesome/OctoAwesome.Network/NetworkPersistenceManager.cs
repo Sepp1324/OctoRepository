@@ -160,7 +160,8 @@ namespace OctoAwesome.Network
                 case OfficialCommand.SaveColumn:
                     if (packages.TryRemove(package.UId, out var awaiter))
                     {
-                        awaiter.TrySetResult(package.Payload);
+                        if (awaiter.TrySetResult(package.Payload))
+                            logger.Warn($"Awaiter cannot set result package {package.UId}");
                     }
                     else
                     {

@@ -37,44 +37,52 @@ namespace OctoAwesome
 
         public void SetResult(ISerializable serializable)
         {
-            Serializable = serializable;
-            manualReset.Set();
-            alreadyDeserialized = true;
+            using (semaphore.Wait())
+            {
+                Serializable = serializable;
+                manualReset.Set();
+                alreadyDeserialized = true;
+            }
         }
 
         public bool TrySetResult(byte[] bytes)
         {
-            if (Timeouted)
-                return false;
-
-            if (Serializable == null)
-                throw new ArgumentNullException(nameof(Serializable));
-
-            using (var stream = new MemoryStream(bytes))
-            using (var reader = new BinaryReader(stream))
+            using (semaphore.Wait())
             {
-                Serializable.Deserialize(reader);
+                if (Timeouted)
+                    return false;
+
+                if (Serializable == null)
+                    throw new ArgumentNullException(nameof(Serializable));
+
+                using (var stream = new MemoryStream(bytes))
+                using (var reader = new BinaryReader(stream))
+                {
+                    Serializable.Deserialize(reader);
+                }
+                manualReset.Set();
+                return alreadyDeserialized = true;
             }
-            manualReset.Set();
-            return alreadyDeserialized = true;
         }
 
         public void Init(IPool pool)
         {
             this.pool = pool;
-            manualReset.Reset();            
+            manualReset.Reset();
         }
 
         public void Release()
         {
-            if (!manualReset.IsSet)
-                manualReset.Set();
+            using (semaphore.Wait())
+            {
+                if (!manualReset.IsSet)
+                    manualReset.Set();
 
-            alreadyDeserialized = false;
-            Timeouted = false;
-            Serializable = null;
-
-            pool.Push(this);
+                alreadyDeserialized = false;
+                Timeouted = false;
+                Serializable = null;
+                pool.Push(this);
+            }
         }
 
         public void Dispose()
