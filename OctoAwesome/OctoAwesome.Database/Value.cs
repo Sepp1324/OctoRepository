@@ -14,7 +14,7 @@ namespace OctoAwesome.Database
 
         public Key Key { get; set; }
 
-        public byte[] Hash { get; set; }
+       
 
         public byte[] Content { get; set; }
 

@@ -11,20 +11,18 @@ namespace OctoAwesome.Database
             this.fileStream = fileStream;
         }
 
-        public bool TryGetValue(Key key, out Value value)
+        public Value GetValue(Key key)
         {
-            var buffer = new byte[key.Length];
-            fileStream.Seek(key.Index, SeekOrigin.Begin);
-            fileStream.Read(buffer, 0, key.Length);
-            value = new Value(buffer, key);
-            return true;
+            fileStream.Seek(key.Index + Key.KEY_SIZE, SeekOrigin.Begin);
         }
 
-        public bool TryAddValue(Key key, Value value)
+        internal Key AddValue(int tag, Value value)
         {
-            fileStream.Seek(0, SeekOrigin.End);
-            fileStream.Write(value.ToArray(), 0, key.Length);
-            return true;
+            var key = new Key(tag, fileStream.Seek(0, SeekOrigin.End), value.Content.Length);
+            //TODO: HASH
+            fileStream.Write(key.GetBytes(), 0, Key.KEY_SIZE);
+            fileStream.Write(value.Content, 0, value.Content.Length);
+            return key;
         }
     }
 }

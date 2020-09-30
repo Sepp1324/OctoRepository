@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OctoAwesome.Database
@@ -17,6 +18,16 @@ namespace OctoAwesome.Database
             var buffer = new byte[fileStream.Length];
             fileStream.Seek(0, SeekOrigin.Begin);
             fileStream.Read(buffer, 0, buffer.Length);
+        }
+
+        internal bool Contains(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Add(object key)
+        {
+            throw new NotImplementedException();
         }
     }
 }
