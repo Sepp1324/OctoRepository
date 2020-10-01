@@ -5,11 +5,21 @@ namespace OctoAwesome.Database
 {
     public sealed class Reader
     {
-        internal object Read(long index, int length)
+        private readonly FileInfo fileInfo;
+
+        public Reader(FileInfo fileInfo)
+        {
+            this.fileInfo = fileInfo;
+        }
+
+        internal byte[] Read(long index, int length)
         {
             var array = new byte[length];
-            fileStream.Seek(index + Key.KEY_SIZE, SeekOrigin.Begin);
-            fileStream.Read(array, 0, length);
+            using (var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                fileStream.Seek(index, SeekOrigin.Begin);
+                fileStream.Read(array, 0, length);
+            }
             return array;
         }
     }
