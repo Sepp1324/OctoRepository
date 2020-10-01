@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace OctoAwesome.Database
 {
-    public class Database
+    public class Database<TTag> where TTag : ITagable
     {
-        private readonly KeyStore keyStore;
+        private readonly KeyStore<TTag> keyStore;
         private readonly ValueStore valueStore;
 
         public Database()
@@ -14,7 +12,13 @@ namespace OctoAwesome.Database
             
         }
 
-        public void Add(int tag, Value value)
+        public Value GetValue(TTag tag)
+        {
+            var key = keyStore.GetKey(tag);
+            return valueStore.GetValue(key);
+        }
+
+        public void Add(TTag tag, Value value)
         {
             if (keyStore.Contains(tag))
                 throw new ArgumentException($"{nameof(value)} already exists");
@@ -29,11 +33,6 @@ namespace OctoAwesome.Database
         }
 
         public void Remove()
-        {
-
-        }
-
-        public void Get()
         {
 
         }

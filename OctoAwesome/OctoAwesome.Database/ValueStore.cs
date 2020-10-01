@@ -17,12 +17,12 @@ namespace OctoAwesome.Database
             var byteArray = new byte[key.Length];
             fileStream.Seek(key.Index + Key.KEY_SIZE, SeekOrigin.Begin);
             fileStream.Read(byteArray, 0, key.Length);
-            return new Value(byteArray, key);
+            return new Value(byteArray);
         }
 
-        internal Key AddValue(int tag, Value value)
+        internal Key AddValue<TTag>(TTag tag, Value value) where TTag : ITagable
         {
-            var key = new Key(tag, fileStream.Seek(0, SeekOrigin.End), value.Content.Length);
+            var key = new Key(tag.Tag, fileStream.Seek(0, SeekOrigin.End), value.Content.Length);
             //TODO: HASH
             fileStream.Write(key.GetBytes(), 0, Key.KEY_SIZE);
             fileStream.Write(value.Content, 0, value.Content.Length);

@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Database
 {
-    class Key
+    public readonly struct Key
     {
         public const int KEY_SIZE = sizeof(long) + sizeof(int) + sizeof(int);
 
@@ -12,9 +12,9 @@ namespace OctoAwesome.Database
 
         public int Length { get; }
 
-        public Key(int target, long index, int length)
+        public Key(int tag, long index, int length)
         {
-            Tag = target;
+            Tag = tag;
             Index = index;
             Length = length;
         }

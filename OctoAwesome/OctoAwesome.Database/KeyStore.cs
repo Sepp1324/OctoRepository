@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OctoAwesome.Database
 {
-    internal class KeyStore
+    internal class KeyStore<TTag> where TTag : ITagable
     {
         private readonly Dictionary<int, Key> keys;
         private readonly FileStream fileStream;
@@ -15,6 +15,8 @@ namespace OctoAwesome.Database
             this.fileStream = fileStream;
         }
 
+        internal Key GetKey(TTag tag) => keys[tag.Tag];
+
         public void Load()
         {
             var buffer = new byte[fileStream.Length];
@@ -22,7 +24,7 @@ namespace OctoAwesome.Database
             fileStream.Read(buffer, 0, buffer.Length);
         }
 
-        internal bool Contains(int tag) => keys.ContainsKey(tag);
+        internal bool Contains(TTag tag) => keys.ContainsKey(tag.Tag);
 
         internal void Add(Key key)
         {

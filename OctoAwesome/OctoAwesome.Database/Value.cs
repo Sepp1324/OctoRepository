@@ -2,18 +2,13 @@
 
 namespace OctoAwesome.Database
 {
-    class Value
+    public class Value
     {
-        public Value(byte[] buffer, Key key)
+        public byte[] Content { get; }
+
+        public Value(byte[] buffer)
         {
             Content = buffer;
-            Key = key;
         }
-
-        public Key Key { get; set; }
-
-        public byte[] Content { get; set; }
-
-        internal byte[] ToArray() => throw new NotImplementedException();
     }
 }
