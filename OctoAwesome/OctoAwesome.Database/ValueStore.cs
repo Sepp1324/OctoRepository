@@ -5,18 +5,18 @@ namespace OctoAwesome.Database
 {
     internal class ValueStore
     {
-        private readonly FileStream fileStream;
+        private readonly Writer writer;
+        private readonly Reader reader;
 
-        public ValueStore(FileStream fileStream)
+        public ValueStore(Reader reader, Writer writer)
         {
-            this.fileStream = fileStream;
+            this.writer = writer;
+            this.reader = reader;
         }
 
         public Value GetValue(Key key)
         {
-            var byteArray = new byte[key.Length];
-            fileStream.Seek(key.Index + Key.KEY_SIZE, SeekOrigin.Begin);
-            fileStream.Read(byteArray, 0, key.Length);
+            var byteArray = reader.Read(key.Index + Key.KEY_SIZE, key.Length);
             return new Value(byteArray);
         }
 
@@ -24,8 +24,8 @@ namespace OctoAwesome.Database
         {
             var key = new Key(tag.Tag, fileStream.Seek(0, SeekOrigin.End), value.Content.Length);
             //TODO: HASH
-            fileStream.Write(key.GetBytes(), 0, Key.KEY_SIZE);
-            fileStream.Write(value.Content, 0, value.Content.Length);
+            writer.Write(key.GetBytes(), 0, Key.KEY_SIZE);
+            writer.Write(value.Content, 0, value.Content.Length);
             return key;
         }
     }

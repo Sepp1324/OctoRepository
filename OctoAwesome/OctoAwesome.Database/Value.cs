@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Database
 {
-    public class Value
+    public readonly struct Value
     {
         public byte[] Content { get; }
 
