@@ -6,28 +6,29 @@ namespace OctoAwesome.Database
 {
     internal class KeyStore
     {
-        private readonly Dictionary<object, Key> keys;
+        private readonly Dictionary<int, Key> keys;
+        private readonly FileStream fileStream;
 
-        public KeyStore()
+        public KeyStore(FileStream fileStream)
         {
-            keys = new Dictionary<object, Key>();
+            keys = new Dictionary<int, Key>();
+            this.fileStream = fileStream;
         }
 
-        public void Load(FileStream fileStream)
+        public void Load()
         {
             var buffer = new byte[fileStream.Length];
             fileStream.Seek(0, SeekOrigin.Begin);
             fileStream.Read(buffer, 0, buffer.Length);
         }
 
-        internal bool Contains(object key)
-        {
-            throw new NotImplementedException();
-        }
+        internal bool Contains(int tag) => keys.ContainsKey(tag);
 
-        internal void Add(object key)
+        internal void Add(Key key)
         {
-            throw new NotImplementedException();
+            keys.Add(key.Tag, key);
+            fileStream.Seek(0, SeekOrigin.End);
+            fileStream.Write(key.GetBytes(), 0, Key.KEY_SIZE);
         }
     }
 }

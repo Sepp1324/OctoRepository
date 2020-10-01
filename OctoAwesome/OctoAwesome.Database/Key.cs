@@ -6,15 +6,15 @@ namespace OctoAwesome.Database
     {
         public const int KEY_SIZE = sizeof(long) + sizeof(int) + sizeof(int);
 
-        public int Target { get; set; }
+        public int Tag { get; }
 
-        public long Index { get; set; }
+        public long Index { get; }
 
-        public int Length { get; set; }
+        public int Length { get; }
 
         public Key(int target, long index, int length)
         {
-            Target = target;
+            Tag = target;
             Index = index;
             Length = length;
         }
@@ -23,7 +23,7 @@ namespace OctoAwesome.Database
         {
             var byteArray = new byte[KEY_SIZE];
 
-            Buffer.BlockCopy(BitConverter.GetBytes(Target), 0, byteArray, 0, sizeof(int));
+            Buffer.BlockCopy(BitConverter.GetBytes(Tag), 0, byteArray, 0, sizeof(int));
             Buffer.BlockCopy(BitConverter.GetBytes(Index), 0, byteArray, sizeof(int), sizeof(long));
             Buffer.BlockCopy(BitConverter.GetBytes(Length), 0, byteArray, sizeof(int) + sizeof(long), sizeof(int));
             return byteArray;

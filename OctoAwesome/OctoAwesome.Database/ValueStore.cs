@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Buffers;
+using System.IO;
 
 namespace OctoAwesome.Database
 {
@@ -13,7 +14,10 @@ namespace OctoAwesome.Database
 
         public Value GetValue(Key key)
         {
+            var byteArray = new byte[key.Length];
             fileStream.Seek(key.Index + Key.KEY_SIZE, SeekOrigin.Begin);
+            fileStream.Read(byteArray, 0, key.Length);
+            return new Value(byteArray, key);
         }
 
         internal Key AddValue(int tag, Value value)

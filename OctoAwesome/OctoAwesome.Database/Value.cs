@@ -4,17 +4,13 @@ namespace OctoAwesome.Database
 {
     class Value
     {
-        private byte[] buffer;
-
         public Value(byte[] buffer, Key key)
         {
-            this.buffer = buffer;
+            Content = buffer;
             Key = key;
         }
 
         public Key Key { get; set; }
-
-       
 
         public byte[] Content { get; set; }
 
