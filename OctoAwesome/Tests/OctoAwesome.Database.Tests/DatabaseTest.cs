@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.IO;
 using System.Text;
+
 namespace OctoAwesome.Database.Tests
 {
     [TestOf(typeof(Database<>))]
@@ -16,7 +17,6 @@ namespace OctoAwesome.Database.Tests
 
             var database = new Database<TestTag>(keyFile, valueFile);
 
-
             try
             {
                 database.Open();
@@ -31,7 +31,7 @@ namespace OctoAwesome.Database.Tests
             {
                 database.Dispose();
                 keyFile.Delete();
-                valueFile.Delete(); //CONTINUE: https://youtu.be/l0X12-2TE9w?t=5548
+                valueFile.Delete();
             }
         }
 

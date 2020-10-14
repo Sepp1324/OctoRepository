@@ -5,47 +5,44 @@ namespace OctoAwesome.Database
 {
     internal class KeyStore<TTag> : IDisposable where TTag : ITagable
     {
-        private readonly Dictionary<int, Key> keys;
-        private readonly Writer writer;
-        private readonly Reader reader;
+        private readonly Dictionary<int, Key> _keys;
+        private readonly Writer _writer;
+        private readonly Reader _reader;
 
         public KeyStore(Writer writer, Reader reader)
         {
-            keys = new Dictionary<int, Key>();
+            _keys = new Dictionary<int, Key>();
 
-            this.writer = writer;
-            this.reader = reader;
+            _writer = writer;
+            _reader = reader;
         }
 
         public void Open()
         {
-            writer.Open();
-            var buffer = reader.Read(0, -1);
+            _writer.Open();
+            var buffer = _reader.Read(0, -1);
 
-            for (int i = 0; i < buffer.Length; i += Key.KEY_SIZE)
+            for (var i = 0; i < buffer.Length; i += Key.KEY_SIZE)
             {
                 var key = Key.FromBytes(buffer, i);
-                keys.Add(key.Tag, key);
+                _keys.Add(key.Tag, key);
             }
         }
 
-        internal Key GetKey(TTag tag) => keys[tag.Tag];
+        internal Key GetKey(TTag tag) => _keys[tag.Tag];
 
         internal bool Contains(TTag tag)
         {
-            return keys.ContainsKey(tag.Tag);
+            return _keys.ContainsKey(tag.Tag);
         }
 
         internal void Add(Key key)
         {
-            keys.Add(key.Tag, key);
-            writer.ToEnd();
-            writer.WriteAndFlush(key.GetBytes(), 0, Key.KEY_SIZE);
+            _keys.Add(key.Tag, key);
+            _writer.ToEnd();
+            _writer.WriteAndFlush(key.GetBytes(), 0, Key.KEY_SIZE);
         }
 
-        public void Dispose()
-        {
-            writer.Dispose();
-        }
+        public void Dispose() => _writer.Dispose();
     }
 }
