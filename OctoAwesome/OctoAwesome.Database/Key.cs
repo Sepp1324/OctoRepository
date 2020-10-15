@@ -4,6 +4,8 @@ namespace OctoAwesome.Database
 {
     public readonly struct Key
     {
+        public static readonly Key Empty = default;
+        
         public const int KEY_SIZE = sizeof(long) + sizeof(int) + sizeof(int);
 
         public int Tag { get; }

@@ -35,5 +35,11 @@ namespace OctoAwesome.Database
         internal void Open() => _writer.Open();
 
         public void Dispose() => _writer.Dispose();
+
+        public void Remove(in Key key)
+        {
+            _writer.Write(Key.Empty.GetBytes(), 0, Key.KEY_SIZE, key.Index);
+            _writer.WriteAndFlush(BitConverter.GetBytes(key.Length), 0, sizeof(int), key.Index + Key.KEY_SIZE);
+        }
     }
 }

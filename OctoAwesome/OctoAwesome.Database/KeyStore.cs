@@ -44,5 +44,13 @@ namespace OctoAwesome.Database
         }
 
         public void Dispose() => _writer.Dispose();
+
+        public void Remove(TTag tag, out Key key)
+        {
+            key = _keys[tag.Tag];
+            _keys.Remove(tag.Tag);
+            _writer.ToEnd();
+            _writer.WriteAndFlush(key.GetBytes(), 0, Key.KEY_SIZE); //CONTINUE: 
+        }
     }
 }
