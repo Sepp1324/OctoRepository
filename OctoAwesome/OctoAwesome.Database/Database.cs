@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OctoAwesome.Database
 {
-    public class Database<TTag> : IDisposable where TTag : ITagable
+    public class Database<TTag> : IDisposable where TTag : ITag, new()
     {
         private readonly KeyStore<TTag> _keyStore;
         private readonly ValueStore _valueStore;

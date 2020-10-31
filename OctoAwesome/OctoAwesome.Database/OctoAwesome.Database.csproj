@@ -44,7 +44,7 @@
     <Compile Include="Database.cs" />
     <Compile Include="DatabaseContext.cs" />
     <Compile Include="IdTag.cs" />
-    <Compile Include="ITagable.cs" />
+    <Compile Include="ITag.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="KeyStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,6 +1,6 @@
 ﻿namespace OctoAwesome.Database
 {
-    public abstract class DatabaseContext<Tag, TKey, TObject> where Tag : ITagable
+    public abstract class DatabaseContext<Tag, TKey, TObject> where Tag : ITag, new()
     {
         protected Database<Tag> Database { get; }
         

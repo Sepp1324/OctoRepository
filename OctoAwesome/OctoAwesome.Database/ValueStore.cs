@@ -13,29 +13,28 @@ namespace OctoAwesome.Database
             _reader = reader;
         }
 
-        public Value GetValue(Key key)
+        public Value GetValue<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
-            var byteArray = _reader.Read(key.Index + Key.KEY_SIZE, key.Length);
+            var byteArray = _reader.Read(key.Index + Key<TTag>.KEY_SIZE, key.Length);
             return new Value(byteArray);
         }
 
-        internal Key AddValue<TTag>(TTag tag, Value value) where TTag : ITagable
+        internal Key<TTag> AddValue<TTag>(TTag tag, Value value) where TTag : ITag, new()
         {
-            var key = new Key(tag.Tag, _writer.ToEnd(), value.Content.Length);
+            var key = new Key<TTag>(tag, _writer.ToEnd(), value.Content.Length);
             //TODO: Hash, Sync
-            _writer.Write(key.GetBytes(), 0, Key.KEY_SIZE);
+            _writer.Write(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
             _writer.WriteAndFlush(value.Content, 0, value.Content.Length);
             return key;
         }
 
         internal void Open() => _writer.Open();
 
-        public void Dispose() => _writer.Dispose();
-
-        public void Remove(in Key key)
+        public void Dispose() => _writer.Dispose(); 
+        public void Remove<TTag>(in Key<TTag> key) where TTag : ITag, new()
         {
-            _writer.Write(Key.Empty.GetBytes(), 0, Key.KEY_SIZE, key.Index);
-            _writer.WriteAndFlush(BitConverter.GetBytes(key.Length), 0, sizeof(int), key.Index + Key.KEY_SIZE);
+            _writer.Write(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Index);
+            _writer.WriteAndFlush(BitConverter.GetBytes(key.Length), 0, sizeof(int), key.Index + Key<TTag>.KEY_SIZE);
         }
     }
 }

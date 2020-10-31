@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace OctoAwesome.Database
 {
-    internal class KeyStore<TTag> : IDisposable where TTag : ITagable
+    internal class KeyStore<TTag> : IDisposable where TTag : ITag, new()
     {
-        private readonly Dictionary<int, Key> _keys;
+        private readonly Dictionary<TTag, Key<TTag>> _keys;
         private readonly Writer _writer;
         private readonly Reader _reader;
 
         public KeyStore(Writer writer, Reader reader)
         {
-            _keys = new Dictionary<int, Key>();
+            _keys = new Dictionary<TTag, Key<TTag>>();
 
             _writer = writer;
             _reader = reader;
@@ -22,35 +22,32 @@ namespace OctoAwesome.Database
             _writer.Open();
             var buffer = _reader.Read(0, -1);
 
-            for (var i = 0; i < buffer.Length; i += Key.KEY_SIZE)
+            for (var i = 0; i < buffer.Length; i += Key<TTag>.KEY_SIZE)
             {
-                var key = Key.FromBytes(buffer, i);
+                var key = Key<TTag>.FromBytes(buffer, i);
                 _keys.Add(key.Tag, key);
             }
         }
 
-        internal Key GetKey(TTag tag) => _keys[tag.Tag];
+        internal Key<TTag> GetKey(TTag tag) => _keys[tag];
 
-        internal bool Contains(TTag tag)
-        {
-            return _keys.ContainsKey(tag.Tag);
-        }
+        internal bool Contains(TTag tag) => _keys.ContainsKey(tag);
 
-        internal void Add(Key key)
+        internal void Add(Key<TTag> key)
         {
             _keys.Add(key.Tag, key);
             _writer.ToEnd();
-            _writer.WriteAndFlush(key.GetBytes(), 0, Key.KEY_SIZE);
+            _writer.WriteAndFlush(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
         }
 
         public void Dispose() => _writer.Dispose();
 
-        public void Remove(TTag tag, out Key key)
+        public void Remove(TTag tag, out Key<TTag> key)
         {
-            key = _keys[tag.Tag];
-            _keys.Remove(tag.Tag);
+            key = _keys[tag];
+            _keys.Remove(tag);
             _writer.ToEnd();
-            _writer.WriteAndFlush(key.GetBytes(), 0, Key.KEY_SIZE); //CONTINUE: 
+            _writer.WriteAndFlush(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
         }
     }
 }
