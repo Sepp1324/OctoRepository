@@ -34,6 +34,7 @@ namespace OctoAwesome.Database
             _keyStore.Add(_valueStore.AddValue(tag, value));
         }
 
+        public bool ContainsKey(TTag tag) => _keyStore.Contains(tag);
         public void Remove(TTag tag)
         {
             _keyStore.Remove(tag, out var key);
