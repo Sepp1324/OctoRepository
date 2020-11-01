@@ -17,6 +17,7 @@ namespace OctoAwesome
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
         public IEntityList Entities { get; private set; }
+
         public IDefinitionManager DefinitionManager { get; }
 
         public int ChangeCounter { get; set; }

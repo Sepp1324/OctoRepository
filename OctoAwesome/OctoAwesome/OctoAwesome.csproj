@@ -122,8 +122,12 @@
     <Compile Include="Pooling\IPoolElement.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="SemaphoreExtended.cs" />
+    <Compile Include="Serialization\IdDatabaseContext.cs" />
     <Compile Include="Serialization\IIdentification.cs" />
+    <Compile Include="Serialization\ChunkColumnDatabaseContext.cs" />
+    <Compile Include="Serialization\Index2Tag.cs" />
     <Compile Include="Serialization\SerializableDatabaseContext.cs" />
+    <Compile Include="Serialization\SerializableIdDatabaseContext.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="RemoteEntity.cs" />
     <Compile Include="Serialization\ISerializable.cs" />

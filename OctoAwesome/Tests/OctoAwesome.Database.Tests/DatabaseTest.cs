@@ -34,5 +34,5 @@ namespace OctoAwesome.Database.Tests
                 valueFile.Delete();
             }
         }
-    }
+    } 
 }

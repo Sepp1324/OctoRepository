@@ -2,17 +2,17 @@
 
 namespace OctoAwesome.Serialization
 {
-    public sealed class SerializableDatabaseContext<TObject> : DatabaseContext<IdTag, int, TObject> where TObject : ISerializable, IIdentification, new()
+    public abstract class SerializableDatabaseContext<TTag, TObject> : DatabaseContext<TTag, TObject> where TTag : ITag, new() where TObject : ISerializable, new()
     {
-        public SerializableDatabaseContext(Database<IdTag> database) : base(database)
+        public SerializableDatabaseContext(Database<TTag> database) : base(database)
         {
+
         }
 
-        public override TObject Get(int key) => Serializer.Deserialize<TObject>(Database.GetValue(new IdTag(key)).Content);
+        public override TObject Get(TTag key) => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
 
-        public override void AddOrUpdate(TObject value) => Database.AddOrUpdate(new IdTag(value.Id), new Value(Serializer.Serialize(value)));
-        
+        protected void InternalRemove(TTag tag) => Database.Remove(tag); 
 
-        public override void Remove(TObject value) => Database.Remove(new IdTag(value.Id));
+        protected void InternalAddOrUpdate(TTag tag, TObject value) => Database.AddOrUpdate(tag, new Value(Serializer.Serialize(value)));
     }
 }
