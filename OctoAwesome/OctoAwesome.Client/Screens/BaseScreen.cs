@@ -32,7 +32,10 @@ namespace OctoAwesome.Client.Screens
 
         }
 
-        protected void SetDefaultBackground() => Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
+        protected void SetDefaultBackground()
+        {
+            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
+        }
 
         protected override void OnKeyPress(KeyEventArgs args)
         {
@@ -41,6 +44,7 @@ namespace OctoAwesome.Client.Screens
                 args.Handled = true;
                 Manager.NavigateBack();
             }
+
             base.OnKeyPress(args);
         }
 

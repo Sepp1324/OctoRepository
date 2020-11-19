@@ -1,4 +1,5 @@
-﻿using OctoAwesome.EntityComponents;
+﻿using engenious;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
@@ -19,7 +20,7 @@ namespace OctoAwesome
         /// <summary>
         /// Id
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; internal set; }
 
         /// <summary>
         /// Reference to the active Simulation.

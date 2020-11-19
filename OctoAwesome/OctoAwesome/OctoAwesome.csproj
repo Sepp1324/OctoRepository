@@ -122,12 +122,13 @@
     <Compile Include="Pooling\IPoolElement.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="SemaphoreExtended.cs" />
-    <Compile Include="Serialization\IdDatabaseContext.cs" />
+    <Compile Include="Serialization\ChunkDiffDbContext.cs" />
+    <Compile Include="Serialization\ChunkDiffTag.cs" />
     <Compile Include="Serialization\IIdentification.cs" />
-    <Compile Include="Serialization\ChunkColumnDatabaseContext.cs" />
+    <Compile Include="Serialization\ChunkColumnDbContext.cs" />
     <Compile Include="Serialization\Index2Tag.cs" />
     <Compile Include="Serialization\SerializableDatabaseContext.cs" />
-    <Compile Include="Serialization\SerializableIdDatabaseContext.cs" />
+    <Compile Include="Serialization\IdDatabaseContext.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="RemoteEntity.cs" />
     <Compile Include="Serialization\ISerializable.cs" />
@@ -171,7 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Database\OctoAwesome.Database.csproj">
-      <Project>{d5cfb68f-b6de-4d74-a4d6-e07b969d0624}</Project>
+      <Project>{62D15DAB-1934-43CD-BB04-4E7D28B7F02E}</Project>
       <Name>OctoAwesome.Database</Name>
     </ProjectReference>
   </ItemGroup>

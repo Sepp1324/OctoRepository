@@ -1,8 +1,10 @@
 ﻿using OctoAwesome.Network.Pooling;
+using OctoAwesome.Pooling;
 using OctoAwesome.Threading;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,8 +16,10 @@ namespace OctoAwesome.Network
         private static uint NextId => ++nextId;
         private static uint nextId;
 
-        static BaseClient() => nextId = 0;
-
+        static BaseClient()
+        {
+            nextId = 0;
+        }
         public uint Id { get; }
 
         protected Socket Socket;
@@ -86,8 +90,10 @@ namespace OctoAwesome.Network
                     sendQueue[nextSendQueueWriteIndex++] = (data, len);
                     return Task.CompletedTask;
                 }
+
                 sending = true;
             }
+
             return Task.Run(() => SendInternal(data, len));
         }
 
@@ -114,7 +120,7 @@ namespace OctoAwesome.Network
         public Task<IDisposable> Subscribe(IAsyncObserver<Package> observer)
         {
             observers.Add(observer);
-            return Task.FromResult(new Subscription<Package>(this, observer) as IDisposable);
+            return Task.FromResult( new Subscription<Package>(this, observer) as IDisposable);
         }
 
         private void SendInternal(byte[] data, int len)

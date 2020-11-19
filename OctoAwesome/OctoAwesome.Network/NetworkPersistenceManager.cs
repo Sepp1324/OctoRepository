@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using OctoAwesome.Basics;
 using OctoAwesome.Logging;
@@ -59,16 +61,18 @@ namespace OctoAwesome.Network
             var awaiter = GetAwaiter(column, package.UId);
 
             client.SendPackageAndRelase(package);
+
             return awaiter;
         }
 
         public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
-            var package = packagePool.Get();
+            var package = packagePool.Get(); 
             package.Command = (ushort)OfficialCommand.GetPlanet;
             planet = new ComplexPlanet();
             var awaiter = GetAwaiter(planet, package.UId);
             client.SendPackageAndRelase(package);
+
             return awaiter;
         }
 
@@ -161,7 +165,7 @@ namespace OctoAwesome.Network
                     if (packages.TryRemove(package.UId, out var awaiter))
                     {
                         if (awaiter.TrySetResult(package.Payload))
-                            logger.Warn($"Awaiter cannot set result package {package.UId}");
+                            logger.Warn($"Awaiter can not set result package {package.UId}");
                     }
                     else
                     {
@@ -172,6 +176,7 @@ namespace OctoAwesome.Network
                     logger.Warn($"Cant handle Command: {package.OfficialCommand}");
                     return Task.CompletedTask;
             }
+
             return Task.CompletedTask;
         }
 

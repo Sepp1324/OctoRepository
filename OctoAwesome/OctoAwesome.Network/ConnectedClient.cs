@@ -1,8 +1,14 @@
 ﻿using OctoAwesome.Network.Pooling;
+using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
+using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using System;
+using System.Buffers;
+using System.IO;
 using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
@@ -10,12 +16,14 @@ namespace OctoAwesome.Network
     public sealed class ConnectedClient : BaseClient, INotificationObserver
     {
         public IDisposable NetworkChannelSubscription { get; set; }
-
         public IDisposable ServerSubscription { get; set; }
 
         private readonly PackagePool packagePool;
 
-        public ConnectedClient(Socket socket) : base(socket) => packagePool = TypeContainer.Get<PackagePool>();
+        public ConnectedClient(Socket socket) : base(socket)
+        {
+            packagePool = TypeContainer.Get<PackagePool>();
+        }
 
         public void OnCompleted()
         {
@@ -47,6 +55,7 @@ namespace OctoAwesome.Network
                 default:
                     return;
             }
+
             BuildAndSendPackage(payload, command);
         }
 

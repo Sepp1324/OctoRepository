@@ -1,7 +1,9 @@
 ﻿#region Using Statements
 using OctoAwesome.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 #endregion
 
 namespace OctoAwesome.Client
@@ -24,15 +26,18 @@ namespace OctoAwesome.Client
                 Startup.Register(typeContainer);
                 Startup.ConfigureLogger(ClientType.DesktopClient);
 
+                Network.Startup.Register(typeContainer);
+
                 var logger = (typeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As("OctoAwesome.Client");
                 AppDomain.CurrentDomain.UnhandledException += (s, e) =>
                 {
-                    File.WriteAllText(Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"), e.ExceptionObject.ToString());
+                    File.WriteAllText(
+                        Path.Combine(".", "logs", $"client-dump-{DateTime.Now.ToString("ddMMyy_hhmmss")}.txt"),
+                        e.ExceptionObject.ToString());
+
                     logger.Fatal($"Unhandled Exception: {e.ExceptionObject}", e.ExceptionObject as Exception);
                     logger.Flush();
                 };
-
-                Network.Startup.Register(typeContainer);
 
                 using (game = new OctoGame())
                     game.Run(60, 60);

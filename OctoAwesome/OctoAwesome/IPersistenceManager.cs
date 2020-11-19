@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -60,7 +61,7 @@ namespace OctoAwesome
         /// Speichert eine <see cref="IChunkColumn"/>.
         /// </summary>
         /// <param name="universeGuid">GUID des Universums.</param>
-        /// <param name="planet">Planet des Columns.</param>
+        /// <param name="planet">Planet der Column.</param>
         /// <param name="column">Zu serialisierende ChunkColumn.</param>
         void SaveColumn(Guid universeGuid, IPlanet planet, IChunkColumn column);
 

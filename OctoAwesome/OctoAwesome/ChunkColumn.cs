@@ -11,13 +11,12 @@ namespace OctoAwesome
     /// </summary>
     public class ChunkColumn : IChunkColumn
     {
-        private readonly IGlobalChunkCache _globalChunkCache;
+        private readonly IGlobalChunkCache globalChunkCache;
 
         /// <summary>
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
         public IEntityList Entities { get; private set; }
-
         public IDefinitionManager DefinitionManager { get; }
 
         public int ChangeCounter { get; set; }
@@ -33,7 +32,6 @@ namespace OctoAwesome
             Chunks = chunks;
             Index = columnIndex;
             Entities = new EntityList(this);
-
             foreach (IChunk chunk in chunks)
             {
                 chunk.Changed += OnChunkChanged;
@@ -50,7 +48,7 @@ namespace OctoAwesome
             Entities = new EntityList(this);
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
-            _globalChunkCache = planet.GlobalChunkCache;
+            globalChunkCache = planet.GlobalChunkCache;
         }
 
         private void OnChunkChanged(IChunk arg1, int arg2)
@@ -58,8 +56,6 @@ namespace OctoAwesome
             ChangeCounter++;
             Changed?.Invoke(this, arg1, arg2);
         }
-
-
 
         /// <summary>
         /// Errechnet die obersten Blöcke der Säule.
@@ -418,12 +414,19 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk, int> Changed;
 
-        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
+        public void OnUpdate(SerializableNotification notification)
+        {
+            globalChunkCache.OnUpdate(notification);
+        }
 
         public void Update(SerializableNotification notification)
         {
             if (notification is ChunkNotification chunkNotification)
-                Chunks.FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)?.Update(notification);
+            {
+                Chunks
+                    .FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)?
+                    .Update(notification);
+            }
         }
     }
 }

@@ -1,6 +1,11 @@
 ﻿using OctoAwesome.Pooling;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
@@ -19,9 +24,9 @@ namespace OctoAwesome.Serialization
         public static byte[] SerializeCompressed<T>(T obj) where T : ISerializable
         {
             using (var stream = new MemoryStream())
-            using (var zipStream = new GZipStream(stream, CompressionMode.Compress, true))
+            using (var zip = new GZipStream(stream, CompressionMode.Compress, true))
             {
-                using (var writer = new BinaryWriter(zipStream))
+                using (var writer = new BinaryWriter(zip))
                     obj.Serialize(writer);
 
                 return stream.ToArray();
@@ -60,15 +65,19 @@ namespace OctoAwesome.Serialization
         {
             using (var stream = new MemoryStream(data))
             using (var reader = new BinaryReader(stream))
+            {
                 instance.Deserialize(reader);
+            }
         }
 
         private static void InternalDeserializeCompressed<T>(ref T instance, byte[] data) where T : ISerializable
         {
             using (var stream = new MemoryStream(data))
-            using (var zipStream = new GZipStream(stream, CompressionMode.Decompress))
-            using (var reader = new BinaryReader(zipStream))
+            using (var zip = new GZipStream(stream, CompressionMode.Decompress))
+            using (var reader = new BinaryReader(zip))
+            {
                 instance.Deserialize(reader);
+            }
         }
     }
 }

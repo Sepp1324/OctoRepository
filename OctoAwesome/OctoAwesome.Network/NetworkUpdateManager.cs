@@ -1,10 +1,12 @@
 ﻿using OctoAwesome.Logging;
+using OctoAwesome.Network;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using OctoAwesome.Threading;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
@@ -32,6 +34,7 @@ namespace OctoAwesome.Network
 
             hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
             clientSubscription = client.Subscribe(this);
+            
         }
 
         public Task OnNext(Package package)
@@ -51,6 +54,7 @@ namespace OctoAwesome.Network
                 default:
                     break;
             }
+
             return Task.CompletedTask;
         }
 
@@ -58,7 +62,6 @@ namespace OctoAwesome.Network
         {
             ushort command;
             byte[] payload;
-
             switch (value)
             {
                 case EntityNotification entityNotification:
@@ -95,6 +98,9 @@ namespace OctoAwesome.Network
             //hubSubscription.Dispose();
         }
 
-        void INotificationObserver.OnError(Exception error) => logger.Error(error.Message, error);
+        void INotificationObserver.OnError(Exception error)
+        {
+            logger.Error(error.Message, error);
+        }
     }
 }

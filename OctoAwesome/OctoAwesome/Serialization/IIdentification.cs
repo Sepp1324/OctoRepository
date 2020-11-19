@@ -1,13 +1,13 @@
-﻿namespace OctoAwesome.Serialization
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OctoAwesome.Serialization
 {
-     /// <summary>
-     /// Interface for Identification
-     /// </summary>
-     public interface IIdentification
+    public interface IIdentification
     {
-        /// <summary>
-        /// ID for Identification
-        /// </summary>
-        int Id { get; set; }    
+        int Id { get;  }
     }
 }

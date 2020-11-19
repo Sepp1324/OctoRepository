@@ -1,6 +1,9 @@
 ﻿using OctoAwesome.Pooling;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network.Pooling
 {
@@ -26,11 +29,11 @@ namespace OctoAwesome.Network.Pooling
                 else
                     obj = new Package();
             }
+
             obj.Init(this);
             obj.UId = Package.NextUId;
             return obj;
         }
-
         public Package GetBlank()
         {
             Package obj;
@@ -42,6 +45,7 @@ namespace OctoAwesome.Network.Pooling
                 else
                     obj = new Package(false);
             }
+
             obj.Init(this);
             return obj;
         }
@@ -62,6 +66,6 @@ namespace OctoAwesome.Network.Pooling
             {
                 throw new InvalidCastException("Can not push object from type: " + obj.GetType());
             }
-        }
+        }       
     }
 }

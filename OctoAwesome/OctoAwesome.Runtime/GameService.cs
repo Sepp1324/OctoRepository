@@ -1,7 +1,8 @@
 ﻿using engenious;
 using OctoAwesome.Common;
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
 namespace OctoAwesome.Runtime
 {
     // sealed -> prevent abuse of third party´s
@@ -23,7 +24,10 @@ namespace OctoAwesome.Runtime
         /// Standart Konstruktor.
         /// </summary>
         /// <param name="resourceManager">ResourceManger</param>
-        public GameService(IResourceManager resourceManager) => manager = resourceManager;
+        public GameService(IResourceManager resourceManager)
+        {
+            manager = resourceManager;
+        }
         /// <summary>
         /// Gibt einen <see cref="ILocalChunkCache"/> zurück
         /// </summary>

@@ -5,7 +5,10 @@ using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using OctoAwesome.Threading;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
@@ -13,7 +16,6 @@ namespace OctoAwesome.GameServer
     public class ServerHandler : IAsyncObserver<Package>
     {
         public SimulationManager SimulationManager { get; set; }
-
         public IUpdateHub UpdateHub { get; private set; }
 
         private readonly ILogger logger;
@@ -75,7 +77,8 @@ namespace OctoAwesome.GameServer
                 logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
                 return;
             }
-            await value.BaseClient.SendPackageAsync(value);
+
+           await value.BaseClient.SendPackageAsync(value);
         }
 
         public Task OnError(Exception error)
@@ -84,6 +87,9 @@ namespace OctoAwesome.GameServer
             return Task.CompletedTask;
         }
 
-        public Task OnCompleted() => Task.CompletedTask;
+        public Task OnCompleted()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -57,10 +57,8 @@ namespace OctoAwesome.Client.Components
             this.definitionManager = definitionManager;
             this.graphicsDevice = graphicsDevice;
             this.textures = textures;
-
             semaphore = new SemaphoreExtended(1, 1);
             dispatcher = Dispatcher.CurrentDispatcher;
-
             simple = simpleShader;
             GenerateIndexBuffer();
         }
@@ -539,6 +537,7 @@ namespace OctoAwesome.Client.Components
             vertexCount = vertices.Count;
             indexCount = index.Count;
 
+
             if (vertexCount > 0)
             {
                 try
@@ -547,15 +546,16 @@ namespace OctoAwesome.Client.Components
                     {
                         if (vb == null || ib == null)
                         {
-
                             vb = new VertexBuffer(graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, vertexCount + 2);
-
                             //ib = new IndexBuffer(graphicsDevice, DrawElementsType.UnsignedInt, indexCount);
                         }
                         if (vertexCount + 2 > vb.VertexCount)
                             vb.Resize(vertexCount + 2);
+
                         //vb2 = new VertexBuffer(graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, vertexCount+2);//TODO: why do I need more vertices?
+
                         vb.SetData(vertices.ToArray());
+
                         //if (indexCount > ib.IndexCount)
                         //    ib.Resize(indexCount);
                         //ib.SetData<int>(index.ToArray());
@@ -567,6 +567,7 @@ namespace OctoAwesome.Client.Components
                 }
             }
 
+            
             lock (this)
             {
                 loaded = true;

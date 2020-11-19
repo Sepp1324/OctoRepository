@@ -89,7 +89,7 @@ namespace OctoAwesome.Network
         }
 
         public void Init(IPool pool)
-        {
+        {      
             Payload = Array.Empty<byte>();
             this.pool = pool;
         }
