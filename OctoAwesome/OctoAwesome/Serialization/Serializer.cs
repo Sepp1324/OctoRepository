@@ -19,10 +19,11 @@ namespace OctoAwesome.Serialization
         public static byte[] SerializeCompressed<T>(T obj) where T : ISerializable
         {
             using (var stream = new MemoryStream())
-            using (GZipStream zipStream = new GZipStream(stream, CompressionMode.Compress))
-            using (var writer = new BinaryWriter(zipStream))
+            using (var zipStream = new GZipStream(stream, CompressionMode.Compress, true))
             {
-                obj.Serialize(writer);
+                using (var writer = new BinaryWriter(zipStream))
+                    obj.Serialize(writer);
+
                 return stream.ToArray();
             }
         }

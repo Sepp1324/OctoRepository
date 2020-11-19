@@ -12,7 +12,7 @@ namespace OctoAwesome.Runtime
     /// <summary>
     /// Persistiert Chunks auf die Festplatte.
     /// </summary>
-    public class DiskPersistenceManager : IPersistenceManager
+    public class DiskPersistenceManager : IPersistenceManager, IDisposable
     {
         private const string UniverseFilename = "universe.info";
         private const string PlanetGeneratorInfo = "generator.info";
@@ -65,7 +65,9 @@ namespace OctoAwesome.Runtime
             string keyFile = Path.Combine(path, "index2.keys");
             string valueFile = Path.Combine(path, "index2.db");
 
-            return _index2Database = new Database<Index2Tag>(new FileInfo(keyFile), new FileInfo(valueFile));
+            _index2Database = new Database<Index2Tag>(new FileInfo(keyFile), new FileInfo(valueFile));
+            _index2Database.Open();
+            return _index2Database;
         }
 
         /// <summary>
@@ -232,9 +234,14 @@ namespace OctoAwesome.Runtime
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
             var chunkColumnDatabaseContext = new ChunkColumnDatabaseContext(GetDatabase(universeGuid, planet.Id), planet);
-            var awaiter = _awaiterPool.Get();
-
+            
             column = chunkColumnDatabaseContext.Get(columnIndex);
+
+            if (column == null)
+                return null;
+
+            var awaiter = _awaiterPool.Get();
+            
             awaiter.SetResult(column);
             return awaiter;
         }
@@ -292,5 +299,7 @@ namespace OctoAwesome.Runtime
             using (BinaryWriter writer = new BinaryWriter(stream))
                 player.Serialize(writer);
         }
+
+        public void Dispose() => _index2Database.Dispose();
     }
 }

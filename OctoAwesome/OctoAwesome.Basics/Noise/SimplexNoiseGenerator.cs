@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace OctoAwesome.Noise
 {
@@ -75,14 +72,14 @@ namespace OctoAwesome.Noise
 
         public SimplexNoiseGenerator(int seed,float frequencyX=1f,float frequencyY=1f,float frequencyZ=1f,float frequencyW=1f)
         {
-            this.Seed = seed;
-            this.Octaves = 5;
-            this.Persistance = 0.5f;
-            this.FrequencyX = frequencyX;
-            this.FrequencyY = frequencyY;
-            this.FrequencyZ = frequencyZ;
-            this.FrequencyW = frequencyW;
-            this.Factor = 1;
+            Seed = seed;
+            Octaves = 5;
+            Persistance = 0.5f;
+            FrequencyX = frequencyX;
+            FrequencyY = frequencyY;
+            FrequencyZ = frequencyZ;
+            FrequencyW = frequencyW;
+            Factor = 1;
             CreatePermutations();
 
         }
@@ -474,7 +471,6 @@ namespace OctoAwesome.Noise
                 frequencyX *= 2f;
                 frequencyY *= 2f;
                 frequencyZ *= 2f;
-
             }
             return noise * Factor / MaxValue;
         }
@@ -513,39 +509,28 @@ namespace OctoAwesome.Noise
 
         #region Noise Implementation
 
-        private static int[] grad3 = new int[] { 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1, 0, 1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, -1, 0, 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1 };
-        private static int[] grad4 = new int[] { 0, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, 1, 1, 0, 1, -1, 1, 0, -1, 1, 1, 0, -1, -1, -1, 0, 1, 1, -1, 0, 1, -1, -1, 0, -1, 1, -1, 0, -1, -1, 1, 1, 0, 1, 1, 1, 0, -1, 1, -1, 0, 1, 1, -1, 0, -1, -1, 1, 0, 1, -1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, -1, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 0 };
-        private static int[] grad5 = new int[] { 0, -1, -1, -1, -1, 0, -1, -1, -1, 1, 0, -1, -1, 1, -1, 0, -1, -1, 1, 1, 0, -1, 1, -1, -1, 0, -1, 1, -1, 1, 0, -1, 1, 1, -1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, 0, 1, -1, -1, 1, 0, 1, -1, 1, -1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, 0, 1, 1, 1, 1, -1, 0, -1, -1, -1, -1, 0, -1, -1, 1, -1, 0, -1, 1, -1, -1, 0, -1, 1, 1, -1, 0, 1, -1, -1, -1, 0, 1, -1, 1, -1, 0, 1, 1, -1, -1, 0, 1, 1, 1, 1, 0, -1, -1, -1, 1, 0, -1, -1, 1, 1, 0, -1, 1, -1, 1, 0, -1, 1, 1, 1, 0, 1, -1, -1, 1, 0, 1, -1, 1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, -1, 0, -1, -1, -1, -1, 0, -1, 1, -1, -1, 0, 1, -1, -1, -1, 0, 1, 1, -1, 1, 0, -1, -1, -1, 1, 0, -1, 1, -1, 1, 0, 1, -1, -1, 1, 0, 1, 1, 1, -1, 0, -1, -1, 1, -1, 0, -1, 1, 1, -1, 0, 1, -1, 1, -1, 0, 1, 1, 1, 1, 0, -1, -1, 1, 1, 0, -1, 1, 1, 1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, -1, 0, -1, -1, -1, -1, 0, 1, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, -1, 1, -1, 0, -1, -1, 1, -1, 0, 1, -1, 1, 1, 0, -1, -1, 1, 1, 0, 1, 1, -1, -1, 0, -1, 1, -1, -1, 0, 1, 1, -1, 1, 0, -1, 1, -1, 1, 0, 1, 1, 1, -1, 0, -1, 1, 1, -1, 0, 1, 1, 1, 1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, -1, 0, -1, -1, -1, 1, 0, -1, -1, 1, -1, 0, -1, -1, 1, 1, 0, -1, 1, -1, -1, 0, -1, 1, -1, 1, 0, -1, 1, 1, -1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, 0, 1, -1, -1, 1, 0, 1, -1, 1, -1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, 0, 1, 1, 1, 1, 0 };
+        private static readonly int[] _grad3 = new int[] { 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1, 0, 1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, -1, 0, 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1 };
+        private static readonly int[] _grad4 = new int[] { 0, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, 1, 1, 0, 1, -1, 1, 0, -1, 1, 1, 0, -1, -1, -1, 0, 1, 1, -1, 0, 1, -1, -1, 0, -1, 1, -1, 0, -1, -1, 1, 1, 0, 1, 1, 1, 0, -1, 1, -1, 0, 1, 1, -1, 0, -1, -1, 1, 0, 1, -1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, -1, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 0 };
+        private static readonly int[] _grad5 = new int[] { 0, -1, -1, -1, -1, 0, -1, -1, -1, 1, 0, -1, -1, 1, -1, 0, -1, -1, 1, 1, 0, -1, 1, -1, -1, 0, -1, 1, -1, 1, 0, -1, 1, 1, -1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, 0, 1, -1, -1, 1, 0, 1, -1, 1, -1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, 0, 1, 1, 1, 1, -1, 0, -1, -1, -1, -1, 0, -1, -1, 1, -1, 0, -1, 1, -1, -1, 0, -1, 1, 1, -1, 0, 1, -1, -1, -1, 0, 1, -1, 1, -1, 0, 1, 1, -1, -1, 0, 1, 1, 1, 1, 0, -1, -1, -1, 1, 0, -1, -1, 1, 1, 0, -1, 1, -1, 1, 0, -1, 1, 1, 1, 0, 1, -1, -1, 1, 0, 1, -1, 1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, -1, 0, -1, -1, -1, -1, 0, -1, 1, -1, -1, 0, 1, -1, -1, -1, 0, 1, 1, -1, 1, 0, -1, -1, -1, 1, 0, -1, 1, -1, 1, 0, 1, -1, -1, 1, 0, 1, 1, 1, -1, 0, -1, -1, 1, -1, 0, -1, 1, 1, -1, 0, 1, -1, 1, -1, 0, 1, 1, 1, 1, 0, -1, -1, 1, 1, 0, -1, 1, 1, 1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, -1, 0, -1, -1, -1, -1, 0, 1, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, -1, 1, -1, 0, -1, -1, 1, -1, 0, 1, -1, 1, 1, 0, -1, -1, 1, 1, 0, 1, 1, -1, -1, 0, -1, 1, -1, -1, 0, 1, 1, -1, 1, 0, -1, 1, -1, 1, 0, 1, 1, 1, -1, 0, -1, 1, 1, -1, 0, 1, 1, 1, 1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, -1, 0, -1, -1, -1, 1, 0, -1, -1, 1, -1, 0, -1, -1, 1, 1, 0, -1, 1, -1, -1, 0, -1, 1, -1, 1, 0, -1, 1, 1, -1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, 0, 1, -1, -1, 1, 0, 1, -1, 1, -1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, 0, 1, 1, 1, 1, 0 };
 
-        private static float dotproduct(int dIndex, float x, float y)
-        {
-            return grad3[dIndex] * x + grad3[dIndex + 1] * y;
-        }
-        private static float dotproduct(int dIndex, float x, float y, float z)
-        {
-            return grad3[dIndex] * x + grad3[dIndex + 1] * y + grad3[dIndex + 2] * z;
-        }
-        private static float dotproduct(int dIndex, float x, float y, float z, float w)
-        {
-            return grad4[dIndex] * x + grad4[dIndex + 1] * y + grad4[dIndex + 2] * z + grad4[dIndex + 3] * w;
-        }
-        private static float dotproduct(int dIndex, float x, float y, float z, float w, float v)
-        {
-            return grad5[dIndex] * x + grad5[dIndex + 1] * y + grad5[dIndex + 2] * z + grad5[dIndex + 3] * w + grad5[dIndex + 4] * v;
-        }
-        private static float F2 = (float)(0.5f * (Math.Sqrt(3.0f) - 1.0f));
-        private static float G2 = (float)(3.0f - Math.Sqrt(3.0f)) / 6.0f;
-        private static float F3 = 1.0f / 3.0f;
-        private static float G3 = 1.0f / 6.0f;
-        private static float F4 = (float)(Math.Sqrt(5.0) - 1.0) / 4.0f;
-        private static float G4 = (float)(5.0 - Math.Sqrt(5.0)) / 20.0f;
-        private static float F5 = (float)((Math.Sqrt(6.0) - 1) / 5.0);
-        private static float G5 = (float)((6.0 - Math.Sqrt(6.0)) / 30.0);
+        private static float dotproduct(int dIndex, float x, float y) => _grad3[dIndex] * x + _grad3[dIndex + 1] * y;
 
-        public static int fastfloor(float val)
-        {
-            return val > 0 ? (int)val : (int)val - 1;
-        }
+        private static float dotproduct(int dIndex, float x, float y, float z) => _grad3[dIndex] * x + _grad3[dIndex + 1] * y + _grad3[dIndex + 2] * z;
+
+        private static float dotproduct(int dIndex, float x, float y, float z, float w) => _grad4[dIndex] * x + _grad4[dIndex + 1] * y + _grad4[dIndex + 2] * z + _grad4[dIndex + 3] * w;
+
+        private static float dotproduct(int dIndex, float x, float y, float z, float w, float v) => _grad5[dIndex] * x + _grad5[dIndex + 1] * y + _grad5[dIndex + 2] * z + _grad5[dIndex + 3] * w + _grad5[dIndex + 4] * v;
+
+        private static readonly float F2 = (float)(0.5f * (Math.Sqrt(3.0f) - 1.0f));
+        private static readonly float G2 = (float)(3.0f - Math.Sqrt(3.0f)) / 6.0f;
+        private static readonly float F3 = 1.0f / 3.0f;
+        private static readonly float G3 = 1.0f / 6.0f;
+        private static readonly float F4 = (float)(Math.Sqrt(5.0) - 1.0) / 4.0f;
+        private static readonly float G4 = (float)(5.0 - Math.Sqrt(5.0)) / 20.0f;
+        private static readonly float F5 = (float)((Math.Sqrt(6.0) - 1) / 5.0);
+        private static readonly float G5 = (float)((6.0 - Math.Sqrt(6.0)) / 30.0);
+
+        public static int fastfloor(float val) => val > 0 ? (int)val : (int)val - 1;
 
         private float NoiseFunction(int x)
         {
@@ -558,24 +543,18 @@ namespace OctoAwesome.Noise
                 n *= n;
                 n += 1376312589;
                 n = n & 0x7fffffff;
-
                 return (float)(1.0 - n / 1073741824.0);
             }
         }
-        private float LinearInterpolation(float a, float b, float x)
-        {
-            return a + (b - a) * x;
-        }
+        private float LinearInterpolation(float a, float b, float x) => a + (b - a) * x;
+
         private float Noise(float x)
         {
-
             int integer_X = (int)x;
             float fractional_X = x - integer_X;
 
             float v1 = NoiseFunction(integer_X);
             float v2 = NoiseFunction(integer_X + 1);
-
-
             return LinearInterpolation(v1, v2, fractional_X);
         }
 
@@ -616,20 +595,25 @@ namespace OctoAwesome.Noise
             int gi2 = permutations[ii + 1 + permutations[jj + 1]] % 12;
 
             float t0 = 0.5f - x0 * x0 - y0 * y0;
+
             if (t0 <= 0) n0 = 0.0f;
             else
             {
                 t0 *= t0;
                 n0 = t0 * t0 * dotproduct(gi0 * 3, x0, y0);
             }
+
             float t1 = 0.5f - x1 * x1 - y1 * y1;
+
             if (t1 <= 0) n1 = 0.0f;
             else
             {
                 t1 *= t1;
                 n1 = t1 * t1 * dotproduct(gi1 * 3, x1, y1);
             }
+
             float t2 = 0.5f - x2 * x2 - y2 * y2;
+
             if (t2 <= 0) n2 = 0.0f;
             else
             {
@@ -656,6 +640,7 @@ namespace OctoAwesome.Noise
 
             int i1, j1, k1;
             int i2, j2, k2;
+
             if (x0 >= y0)
             {
                 if (y0 >= z0)
@@ -690,20 +675,25 @@ namespace OctoAwesome.Noise
             int gi3 = permutations[(ii + 1 + permutations[jj + 1 + permutations[kk + 1]])] % 12;
 
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0;
+
             if (t0 <= 0) n0 = 0.0f;
             else
             {
                 t0 *= t0;
                 n0 = t0 * t0 * dotproduct(gi0 * 3, x0, y0, z0);
             }
+
             float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1;
+
             if (t1 <= 0) n1 = 0.0f;
             else
             {
                 t1 *= t1;
                 n1 = t1 * t1 * dotproduct(gi1 * 3, x1, y1, z1);
             }
+
             float t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2;
+
             if (t2 <= 0) n2 = 0.0f;
             else
             {
@@ -711,21 +701,19 @@ namespace OctoAwesome.Noise
                 n2 = t2 * t2 * dotproduct(gi2 * 3, x2, y2, z2);
             }
             float t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3;
+
             if (t3 <= 0) n3 = 0.0f;
             else
             {
                 t3 *= t3;
                 n3 = t3 * t3 * dotproduct(gi3 * 3, x3, y3, z3);
             }
-
             return 32.0f * (n0 + n1 + n2 + n3);
         }
 
         private float Noise4D(float x, float y, float z, float w)
         {
-
             float n0, n1, n2, n3, n4;
-
             float s = (x + y + z + w) * F4;
             int i = fastfloor(x + s);
             int j = fastfloor(y + s);
@@ -798,48 +786,55 @@ namespace OctoAwesome.Noise
             int gi4 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1 + permutations[ll + 1]]]] % 32;
 
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
+
             if (t0 < 0) n0 = 0.0f;
             else
             {
                 t0 *= t0;
                 n0 = t0 * t0 * dotproduct(gi0 * 4, x0, y0, z0, w0);
             }
+
             float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1;
+
             if (t1 < 0) n1 = 0.0f;
             else
             {
                 t1 *= t1;
                 n1 = t1 * t1 * dotproduct(gi1 * 4, x1, y1, z1, w1);
             }
+
             float t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2;
+
             if (t2 < 0) n2 = 0.0f;
             else
             {
                 t2 *= t2;
                 n2 = t2 * t2 * dotproduct(gi2 * 4, x2, y2, z2, w2);
             }
+
             float t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3;
+
             if (t3 < 0) n3 = 0.0f;
             else
             {
                 t3 *= t3;
                 n3 = t3 * t3 * dotproduct(gi3 * 4, x3, y3, z3, w3);
             }
+
             float t4 = 0.6f - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4;
+
             if (t4 < 0) n4 = 0.0f;
             else
             {
                 t4 *= t4;
                 n4 = t4 * t4 * dotproduct(gi4 * 4, x4, y4, z4, w4);
             }
-
             return 27.0f * (n0 + n1 + n2 + n3 + n4);
         }
 
         private float Noise5D(float x, float y, float z, float w, float v)
         {
             float n0, n1, n2, n3, n4, n5;
-
             float s = (x + y + z + w + v) * F5;
             int i = fastfloor(x + s);
             int j = fastfloor(y + s);
@@ -947,41 +942,52 @@ namespace OctoAwesome.Noise
             int gi5 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1 + permutations[ll + 1 + permutations[mm + 1]]]]] % 80;
 
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
+
             if (t0 < 0) n0 = 0.0f;
             else
             {
                 t0 *= t0;
                 n0 = t0 * t0 * dotproduct(gi0 * 5, x0, y0, z0, w0, v0);
             }
+
             float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
+
             if (t1 < 0) n1 = 0.0f;
             else
             {
                 t1 *= t1;
                 n1 = t1 * t1 * dotproduct(gi1 * 5, x1, y1, z1, w1, v1);
             }
+
             float t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
+
             if (t2 < 0) n2 = 0.0f;
             else
             {
                 t2 *= t2;
                 n2 = t2 * t2 * dotproduct(gi2 * 5, x2, y2, z2, w2, v2);
             }
+
             float t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
+
             if (t3 < 0) n3 = 0.0f;
             else
             {
                 t3 *= t3;
                 n3 = t3 * t3 * dotproduct(gi3 * 5, x3, y3, z3, w3, v3);
             }
+
             float t4 = 0.6f - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
+
             if (t4 < 0) n4 = 0.0f;
             else
             {
                 t4 *= t4;
                 n4 = t4 * t4 * dotproduct(gi4 * 5, x4, y4, z4, w4, v4);
             }
+
             float t5 = 0.6f - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
+
             if (t5 < 0) n5 = 0.0f;
             else
             {
@@ -989,93 +995,7 @@ namespace OctoAwesome.Noise
                 n5 = t5 * t5 * dotproduct(gi5 * 5, x5, y5, z5, w5, v5);
             }
             return 18.0f * (n0 + n1 + n2 + n3 + n4 + n5);
-
         }
-
         #endregion
-
-        #region Sonstiges
-
-        //List<int[]> grads = new List<int[]>();
-        //    for (int i = 0; i < 5; i++)
-        //    {
-        //        for (int x = -1; x <= 1; x += 2)
-        //        {
-        //            for (int y = -1; y <= 1; y += 2)
-        //            {
-        //                for (int z = -1; z <= 1; z += 2)
-        //                {
-        //                    for (int w = -1; w <= 1; w += 2)
-        //                    {
-        //                        for (int v = -1; v <= 1; v += 2)
-        //                        {
-        //                            int[] grad = new int[] { x, y, z, w, v };
-        //                            grad[i] = 0;
-
-        //                            grads.Add(grad);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    grads = grads.Distinct(new comp()).ToList();
-
-        //    Debug.Write("{");
-        //    foreach (int[] grad in grads)
-        //        Debug.Write(String.Join(",", grad) + ",");
-
-        //class comp : EqualityComparer<int[]>
-        //{
-
-        //    public override bool Equals(int[] x, int[] y)
-        //    {
-        //        if (x == null || y == null)
-        //            return false;
-        //        if (x.Length != y.Length)
-        //            return false;
-        //        for (int i = 0; i < x.Length; i++)
-        //        {
-        //            if (x[i] != y[i])
-        //                return false;
-        //        }
-        //        return true;
-        //    }
-
-        //    public override int GetHashCode(int[] obj)
-        //    {
-        //        return obj[0];
-        //    }
-        //}
-
-        //float min = float.MaxValue, max = float.MinValue;
-        //    SimplexNoiseGenerator gen = new SimplexNoiseGenerator(0);
-
-        //    for (int x = -10; x <= 10; x ++)
-        //    {
-        //        for (int y = -10; y <= 10; y ++)
-        //        {
-        //            for (int z = -10; z <= 10; z ++)
-        //            {
-        //                for (int w = -10; w <= 10; w ++)
-        //                {
-        //                    for (int v = -10; v <= 10; v ++)
-        //                    {
-        //                        float val = gen.Noise5D(x, y, z, w);
-
-        //                        min = Math.Min(val, min);
-        //                        max = Math.Max(val, max);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    min = 1f / min;
-        //    max = 1f / max;
-
-        #endregion
-
-
     }
 }

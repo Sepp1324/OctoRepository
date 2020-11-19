@@ -28,7 +28,7 @@ namespace OctoAwesome.Runtime
 
         private Guid DEFAULT_UNIVERSE = Guid.Parse("{3C4B1C38-70DC-4B1D-B7BE-7ED9F4B1A66D}");
         private readonly bool _disablePersistence = false;
-        private IPersistenceManager _persistenceManager = null;
+        private readonly IPersistenceManager _persistenceManager = null;
         private readonly ILogger _logger;
         private readonly List<IMapPopulator> _populators = null;
         private Player _player;
@@ -219,6 +219,7 @@ namespace OctoAwesome.Runtime
             do
             {
                 awaiter = _persistenceManager.Load(out column11, CurrentUniverse.Id, planet, index);
+                
                 if (awaiter == null)
                 {
                     IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));

@@ -28,13 +28,24 @@ namespace OctoAwesome.Database
 
         public void AddOrUpdate(TTag tag, Value value)
         {
-            if (_keyStore.Contains(tag))
-                Remove(tag);
-            
-            _keyStore.Add(_valueStore.AddValue(tag, value));
+            var contains = _keyStore.Contains(tag);
+
+            if (contains)
+            {
+                var key = _keyStore.GetKey(tag);
+                _valueStore.Remove(key);
+            } 
+
+            var newKey = _valueStore.AddValue(tag, value);
+
+            if (contains)
+                _keyStore.Update(newKey);
+            else
+                _keyStore.Add(newKey);
         }
 
         public bool ContainsKey(TTag tag) => _keyStore.Contains(tag);
+
         public void Remove(TTag tag)
         {
             _keyStore.Remove(tag, out var key);

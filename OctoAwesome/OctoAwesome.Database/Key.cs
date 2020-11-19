@@ -23,12 +23,17 @@ namespace OctoAwesome.Database
 
         public int Length { get; }
 
-        public Key(TTag tag, long index, int length)
+        public long Position { get; }
+
+        public Key(TTag tag, long index, int length, long position)
         {
             Tag = tag;
             Index = index;
             Length = length;
+            Position = position;
         }
+
+        public Key(TTag tag, long index, int length) : this(tag, index, length, -1) { }
 
         internal byte[] GetBytes()
         {
@@ -46,7 +51,7 @@ namespace OctoAwesome.Database
             var length = BitConverter.ToInt32(array, index + sizeof(long));
             var tag = new TTag();
             tag.FromBytes(array, index + BASE_KEY_SIZE);
-            return new Key<TTag>(tag, localIndex, length);
+            return new Key<TTag>(tag, localIndex, length, index);
         }
     }
 }

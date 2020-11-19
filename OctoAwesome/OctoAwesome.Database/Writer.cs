@@ -42,7 +42,6 @@ namespace OctoAwesome.Database
         #region IDisposable Support
         private bool disposedValue = false;
 
-
         public void Dispose()
         {
             if (disposedValue)
