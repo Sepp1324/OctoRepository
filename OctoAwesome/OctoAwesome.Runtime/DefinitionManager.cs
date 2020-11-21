@@ -9,53 +9,41 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
-        private IDefinition[] definitions;
-
-        private IItemDefinition[] itemDefinitions;
-
-        private IBlockDefinition[] blockDefinitions;
-
-        private IExtensionResolver extensionResolver;
+        private IDefinition[] _definitions;
+        private IItemDefinition[] _itemDefinitions;
+        private IBlockDefinition[] _blockDefinitions;
+        private IExtensionResolver _extensionResolver;
 
         public DefinitionManager(IExtensionResolver extensionResolver)
         {
-            this.extensionResolver = extensionResolver;
+            _extensionResolver = extensionResolver;
 
-            definitions = extensionResolver.GetDefinitions<IDefinition>().ToArray();
+            _definitions = extensionResolver.GetDefinitions<IDefinition>().ToArray();
 
             // Items sammeln
-            itemDefinitions = definitions.OfType<IItemDefinition>().ToArray();
+            _itemDefinitions = _definitions.OfType<IItemDefinition>().ToArray();
             
             // Blöcke sammeln
-            blockDefinitions = definitions.OfType<IBlockDefinition>().ToArray();
+            _blockDefinitions = _definitions.OfType<IBlockDefinition>().ToArray();
         }
 
         /// <summary>
         /// Liefert eine Liste von Defintions.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IDefinition> GetDefinitions()
-        {
-            return definitions;
-        }
+        public IEnumerable<IDefinition> GetDefinitions() => _definitions;
 
         /// <summary>
         /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IItemDefinition> GetItemDefinitions()
-        {
-            return itemDefinitions;
-        }
-                
+        public IEnumerable<IItemDefinition> GetItemDefinitions() => _itemDefinitions;
+
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IBlockDefinition> GetBlockDefinitions()
-        {
-            return blockDefinitions;
-        }
+        public IEnumerable<IBlockDefinition> GetBlockDefinitions() => _blockDefinitions;
 
         /// <summary>
         /// Liefert die BlockDefinition zum angegebenen Index.
@@ -67,7 +55,7 @@ namespace OctoAwesome.Runtime
             if (index == 0)
                 return null;
 
-            return definitions[(index & Blocks.TypeMask) - 1];
+            return _definitions[(index & Blocks.TypeMask) - 1];
         }
 
         /// <summary>
@@ -77,7 +65,8 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex(IDefinition definition)
         {
-            return (ushort)(Array.IndexOf(definitions, definition) + 1);
+            ushort v = (ushort)(Array.IndexOf(_definitions, definition) + 1);
+            return v;
         }
 
         /// <summary>
@@ -87,7 +76,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex<T>() where T : IDefinition
         {
-            IDefinition definition = definitions.SingleOrDefault(d => d.GetType() == typeof(T));
+            IDefinition definition = _definitions.SingleOrDefault(d => d.GetType() == typeof(T));
             return GetDefinitionIndex(definition);
         }
 
@@ -96,10 +85,7 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Typ der Definition</typeparam>
         /// <returns>Auflistung von Instanzen</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition
-        {
-            // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary)
-            return extensionResolver.GetDefinitions<T>();
-        }
+        // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary)
+        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition => _extensionResolver.GetDefinitions<T>();
     }
 }

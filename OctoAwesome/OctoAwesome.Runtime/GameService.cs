@@ -14,20 +14,21 @@ namespace OctoAwesome.Runtime
         /// <summary>
         /// <see cref="IDefinitionManager"/> der lokalen Daten.
         /// </summary>
-        public IDefinitionManager DefinitionManager => manager.DefinitionManager;
+        public IDefinitionManager DefinitionManager => _manager.DefinitionManager;
+
         /// <summary>
         /// GAP.
         /// </summary>
         public const float GAP = 0.01f;
-        private IResourceManager manager;
+
+        private IResourceManager _manager;
+
         /// <summary>
         /// Standart Konstruktor.
         /// </summary>
         /// <param name="resourceManager">ResourceManger</param>
-        public GameService(IResourceManager resourceManager)
-        {
-            manager = resourceManager;
-        }
+        public GameService(IResourceManager resourceManager) => _manager = resourceManager;
+
         /// <summary>
         /// Gibt einen <see cref="ILocalChunkCache"/> zurück
         /// </summary>
@@ -35,11 +36,8 @@ namespace OctoAwesome.Runtime
         /// <param name="dimensions">Dimensionen des Caches</param>
         /// <param name="range">Ausdehnung des Caches</param>
         /// <returns></returns>
-        public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range)
-        {
-            //new LocalChunkCache(manager.GlobalChunkCache, false, 2, 1);
-            return null;
-        }
+        public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range) => null;
+
         /// <summary>
         /// Berechnet die Geschwindigkeit einer <see cref="Entity"/> nach der Kollision mit der Welt. (Original Lassi)
         /// </summary>

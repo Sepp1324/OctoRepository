@@ -1,35 +1,28 @@
 ﻿using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
     public class UpdateHub : IUpdateHub, IDisposable
     {
-        private readonly NotificationChannelCollection observers;
+        private readonly NotificationChannelCollection _observers;
 
-        public UpdateHub()
-            => observers = new NotificationChannelCollection();
+        public UpdateHub() => _observers = new NotificationChannelCollection();
 
         public IDisposable Subscribe(INotificationObserver observer, string channel = "none")
         {
-            observers.Add(channel, observer);
+            _observers.Add(channel, observer);
             return new NotificationSubscription(this, observer, channel);
         }
 
-        public void Unsubscribe(INotificationObserver observer)
-            => observers.Remove(observer);
+        public void Unsubscribe(INotificationObserver observer) => _observers.Remove(observer);
 
-        public void Unsubscribe(INotificationObserver observer, string channel)
-            => observers.Remove(channel, observer);
+        public void Unsubscribe(INotificationObserver observer, string channel) => _observers.Remove(channel, observer);
 
         public void Push(Notification notification)
         {
-            foreach (KeyValuePair<string, ObserverHashSet> observerSet in observers)
+            foreach (KeyValuePair<string, ObserverHashSet> observerSet in _observers)
             {
                 using (observerSet.Value.Wait())
                 {
@@ -38,10 +31,10 @@ namespace OctoAwesome.Runtime
                 }
             }
         }
+
         public void Push(Notification notification, string channel)
         {
-
-            if (observers.TryGetValue(channel, out ObserverHashSet observerSet))
+            if (_observers.TryGetValue(channel, out ObserverHashSet observerSet))
             {
                 using (observerSet.Wait())
                 {
@@ -54,8 +47,7 @@ namespace OctoAwesome.Runtime
 
         public void Dispose()
         {
-
-            foreach (KeyValuePair<string, ObserverHashSet> observerSet in observers)
+            foreach (KeyValuePair<string, ObserverHashSet> observerSet in _observers)
             {
                 using (observerSet.Value.Wait())
                 {
@@ -63,8 +55,7 @@ namespace OctoAwesome.Runtime
                         observer.OnCompleted();
                 }
             }
-            observers.Clear();
+            _observers.Clear();
         }
-
     }
 }
