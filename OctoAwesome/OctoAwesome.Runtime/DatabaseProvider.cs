@@ -1,11 +1,12 @@
 ﻿using OctoAwesome.Database;
+using OctoAwesome.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace OctoAwesome.Runtime
 {
-    public sealed class DatabaseProvider : IDisposable
+    public sealed class DatabaseProvider : IDisposable, IDatabaseProvider
     {
         private readonly Dictionary<(Type Type, Guid Universe, int PlanetId), Database.Database> _planetDatabaseRegister;
         private readonly Dictionary<(Type Type, Guid Universe), Database.Database> _universeDatabaseRegister;
