@@ -42,19 +42,15 @@ namespace OctoAwesome
             this.onRemover = onRemover;
         }
 
-        public IEnumerator<T> GetEnumerator()
-            => components.Values.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => components.Values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-            => components.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => components.Values.GetEnumerator();
 
         /// <summary>
         /// Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
-        public void AddComponent<V>(V component) where V : T 
-            => AddComponent(component, false);
-
+        public void AddComponent<V>(V component) where V : T  => AddComponent(component, false);
 
         public void AddComponent<V>(V component, bool replace) where V : T
         {
@@ -82,8 +78,7 @@ namespace OctoAwesome
         /// </summary>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
-        public bool ContainsComponent<V>() 
-            => components.ContainsKey(typeof(V));
+        public bool ContainsComponent<V>() => components.ContainsKey(typeof(V));
 
         /// <summary>
         /// Returns the Component of the given Type or null
@@ -114,7 +109,6 @@ namespace OctoAwesome
                 onRemover?.Invoke(component);
                 return true;
             }
-
             return false;
         }
 
@@ -125,11 +119,11 @@ namespace OctoAwesome
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(components.Count);
+
             foreach (var componente in components)
             {
                 writer.Write(componente.Key.AssemblyQualifiedName);
                 componente.Value.Serialize(writer);
-
             }
         }
 
@@ -140,10 +134,10 @@ namespace OctoAwesome
         public virtual void Deserialize(BinaryReader reader)
         {
             var count = reader.ReadInt32();
+
             for (int i = 0; i < count; i++)
             {
                 var name = reader.ReadString();
-
                 var type = Type.GetType(name);
 
                 T component;
@@ -151,10 +145,8 @@ namespace OctoAwesome
                 if (!components.TryGetValue(type, out component))
                 {
                     component = (T)TypeContainer.GetUnregistered(type);
-                    //components.Add(type, component);
                     AddComponent(component);
                 }
-
                 component.Deserialize(reader);
             }
         }

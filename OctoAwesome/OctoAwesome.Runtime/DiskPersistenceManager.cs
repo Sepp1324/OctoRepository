@@ -100,6 +100,7 @@ namespace OctoAwesome.Runtime
         {
             string path = Path.Combine(GetRoot(), universe.Id.ToString());
             Directory.CreateDirectory(path);
+            _currentUniverse = universe;
 
             string file = Path.Combine(path, UniverseFilename);
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
@@ -178,7 +179,6 @@ namespace OctoAwesome.Runtime
                 }
             }
             awaiter.SetResult(universes);
-
             return awaiter;
         }
 
@@ -204,8 +204,6 @@ namespace OctoAwesome.Runtime
                 awaiter.SetResult(universe);
                 return awaiter;
             }
-
-
         }
 
         /// <summary>
@@ -219,6 +217,7 @@ namespace OctoAwesome.Runtime
             string file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
             string generatorInfo = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
             planet = new Planet();
+
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
@@ -234,7 +233,6 @@ namespace OctoAwesome.Runtime
 
             if (generator == null)
                 throw new Exception("Unknown Generator");
-
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
@@ -283,6 +281,7 @@ namespace OctoAwesome.Runtime
             //TODO: Später durch Playername ersetzen
             string file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
             player = new Player();
+
             if (!File.Exists(file))
                 return null;
 
@@ -304,7 +303,6 @@ namespace OctoAwesome.Runtime
                     }
                 }
             }
-
             return null;
         }
 
@@ -333,6 +331,8 @@ namespace OctoAwesome.Runtime
         {
             foreach (var database in _index2Databases.Values)
                 database.Dispose();
+
+            _chunkSubscription.Dispose();
         }
 
         public void OnCompleted() { }
@@ -364,7 +364,6 @@ namespace OctoAwesome.Runtime
                 column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.Block;
                 column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.Meta;
             }
-
         }
     }
 }

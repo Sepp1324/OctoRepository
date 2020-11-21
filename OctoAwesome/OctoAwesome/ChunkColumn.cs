@@ -17,6 +17,7 @@ namespace OctoAwesome
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
         public IEntityList Entities { get; private set; }
+
         public IDefinitionManager DefinitionManager { get; }
 
         public int ChangeCounter { get; set; }
@@ -276,6 +277,7 @@ namespace OctoAwesome
             for (var c = 0; c < Chunks.Length; c++)
             {
                 IChunk chunk = Chunks[c];
+
                 for (var i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] == 0)
@@ -305,6 +307,7 @@ namespace OctoAwesome
 
             //Entities schreiben
             writer.Write(Entities.Count);
+
             foreach (Entity entity in Entities)
             {
                 writer.Write(entity.GetType().AssemblyQualifiedName);
@@ -338,11 +341,6 @@ namespace OctoAwesome
                 for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     Heights[x, y] = reader.ReadUInt16();
 
-            var counter = new int[Chunks.Length];
-
-            for (var i = 0; i < Chunks.Length; i++) // ChangeCounter
-                counter[i] = reader.ReadInt32();
-
             // Phase 2 (Block Definitionen)
             var types = new List<IDefinition>();
             var map = new Dictionary<ushort, ushort>();
@@ -370,6 +368,7 @@ namespace OctoAwesome
                 {
                     var typeIndex = longIndex ? reader.ReadUInt16() : reader.ReadByte();
                     chunk.MetaData[i] = 0;
+
                     if (typeIndex > 0)
                     {
                         chunk.Blocks[i] = map[typeIndex];
@@ -384,6 +383,7 @@ namespace OctoAwesome
 
             //Entities lesen
             var count = reader.ReadInt32();
+
             for (var i = 0; i < count; i++)
             {
                 var name = reader.ReadString();

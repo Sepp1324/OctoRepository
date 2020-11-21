@@ -1,5 +1,4 @@
-﻿using engenious;
-using OctoAwesome.EntityComponents;
+﻿using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
@@ -31,11 +30,7 @@ namespace OctoAwesome
         /// <summary>
         /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
-        public Entity()
-        {
-            Components = new ComponentList<EntityComponent>(
-                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
-        }
+        public Entity() => Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
 
         private void OnRemoveComponent(EntityComponent component)
         {
@@ -73,10 +68,7 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager mananger)
-        {
-            OnInitialize(mananger);
-        }
+        public void Initialize(IResourceManager mananger) => OnInitialize(mananger);
 
         protected virtual void OnInitialize(IResourceManager manager)
         {
@@ -89,7 +81,6 @@ namespace OctoAwesome
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(Id);
-
             Components.Serialize(writer);
         }
 
@@ -108,8 +99,7 @@ namespace OctoAwesome
 
         }
 
-        public override int GetHashCode()
-            => Id;
+        public override int GetHashCode() => Id;
 
         public override bool Equals(object obj)
         {
@@ -129,6 +119,5 @@ namespace OctoAwesome
             foreach (var component in Components)
                 component?.OnUpdate(notification);
         }
-
     }
 }

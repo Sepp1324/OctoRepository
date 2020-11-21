@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using engenious;
-using System.Collections.Generic;
+﻿using engenious;
 
 namespace OctoAwesome
 {
