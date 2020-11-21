@@ -307,8 +307,13 @@ namespace OctoAwesome
 
         public void Update(SerializableNotification notification)
         {
-            if (notification is ChunkNotification chunkNotification && cache.TryGetValue( new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
+            if (notification is ChunkNotification chunkNotification &&
+                cache.TryGetValue(
+                    new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet),
+                    out var cacheItem))
+            {
                 cacheItem.ChunkColumn.Update(notification);
+            }
         }
 
         public void InsertUpdateHub(IUpdateHub updateHub) => this.updateHub = updateHub;

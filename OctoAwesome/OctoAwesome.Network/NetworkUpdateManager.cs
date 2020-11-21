@@ -14,7 +14,7 @@ namespace OctoAwesome.Network
         private readonly Client _client;
         private readonly IUpdateHub _updateHub;
         private readonly ILogger _logger;
-        private readonly IDisposable _networkSubscription;
+        private readonly IDisposable _hubSubscription;
         private readonly IDisposable _clientSubscription;
         private readonly IPool<EntityNotification> _entityNotificationPool;
         private readonly IPool<ChunkNotification> _chunkNotificationPool;
@@ -30,7 +30,7 @@ namespace OctoAwesome.Network
             _chunkNotificationPool = TypeContainer.Get<IPool<ChunkNotification>>();
             _packagePool = TypeContainer.Get<PackagePool>();
 
-            _networkSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
+            _hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
             _clientSubscription = client.Subscribe(this);
             
         }
