@@ -1,19 +1,14 @@
 ﻿using OctoAwesome.Database;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
-    public sealed class ChunkColumnDbContext : DatabaseContext<Index2Tag, IChunkColumn>
+    public sealed class ChunkColumnDatabaseContext : DatabaseContext<Index2Tag, IChunkColumn>
     {
         private readonly IPlanet currentPlanet;
 
-        public ChunkColumnDbContext(Database<Index2Tag> database, IPlanet planet) : base(database)
+        public ChunkColumnDatabaseContext(Database<Index2Tag> database, IPlanet planet) : base(database)
         {
             currentPlanet = planet;
         }

@@ -22,29 +22,32 @@ namespace OctoAwesome.Runtime
 
         private DirectoryInfo _root;
         private IUniverse _currentUniverse;
-        private readonly Dictionary<int, Database<Index2Tag>> _index2Databases;
-        private readonly Dictionary<int, Database<ChunkDiffTag>> _diffDatabases;
         private readonly ISettings _settings;
         private readonly IPool<Awaiter> _awaiterPool;
         private readonly IDisposable _chunkSubscription;
         private readonly IExtensionResolver _extensionResolver;
+        private readonly DatabaseProvider _databaseProvider;
 
         public DiskPersistenceManager(IExtensionResolver extensionResolver, ISettings Settings, IUpdateHub updateHub)
         {
             _extensionResolver = extensionResolver;
-            _index2Databases = new Dictionary<int, Database<Index2Tag>>();
-            _diffDatabases = new Dictionary<int, Database<ChunkDiffTag>>();
+            _databaseProvider = new DatabaseProvider(GetRoot());
             _settings = Settings;
             _awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
             _chunkSubscription = updateHub.Subscribe(this, DefaultChannels.Chunk);
         }
 
+        /// <summary>
+        /// Liefert den Root-Folder
+        /// </summary>
+        /// <returns></returns>
         private string GetRoot()
         {
             if (_root != null)
                 return _root.FullName;
 
             string appconfig = _settings.Get<string>("ChunkRoot");
+
             if (!string.IsNullOrEmpty(appconfig))
             {
                 _root = new DirectoryInfo(appconfig);
@@ -58,38 +61,6 @@ namespace OctoAwesome.Runtime
                 if (!_root.Exists) _root.Create();
                 return _root.FullName;
             }
-        }
-
-        private Database<Index2Tag> GetDatabase(Guid universeGuid, int planetId)
-        {
-            if (_index2Databases.TryGetValue(planetId, out var database))
-                return database;
-
-            string path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
-            Directory.CreateDirectory(path);
-
-            string keyFile = Path.Combine(path, "index2.keys");
-            string valueFile = Path.Combine(path, "index2.db");
-            var index2Database = new Database<Index2Tag>(new FileInfo(keyFile), new FileInfo(valueFile));
-            index2Database.Open();
-            _index2Databases.Add(planetId, index2Database);
-            return index2Database;
-        }
-
-        private Database<ChunkDiffTag> GetDiffDatabase(Guid universeGuid, int planetId)
-        {
-            if (_diffDatabases.TryGetValue(planetId, out var database))
-                return database;
-
-            string path = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString());
-            Directory.CreateDirectory(path);
-
-            string keyFile = Path.Combine(path, "ChunkDiff.keys");
-            string valueFile = Path.Combine(path, "ChunkDiff.db");
-            var diffDatabase = new Database<ChunkDiffTag>(new FileInfo(keyFile), new FileInfo(valueFile));
-            diffDatabase.Open();
-            _diffDatabases.Add(planetId, diffDatabase);
-            return diffDatabase;
         }
 
         /// <summary>
@@ -155,7 +126,7 @@ namespace OctoAwesome.Runtime
         /// <param name="column">Zu serialisierende ChunkColumn.</param>
         public void SaveColumn(Guid universeGuid, IPlanet planet, IChunkColumn column)
         {
-            var chunkColumContext = new ChunkColumnDbContext(GetDatabase(universeGuid, planet.Id), planet);
+            var chunkColumContext = new ChunkColumnDatabaseContext(_databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id), planet);
             chunkColumContext.AddOrUpdate(column);
         }
 
@@ -169,6 +140,7 @@ namespace OctoAwesome.Runtime
             var awaiter = _awaiterPool.Get();
             universes = new SerializableCollection<IUniverse>();
             awaiter.Serializable = universes;
+
             foreach (var folder in Directory.GetDirectories(root))
             {
                 string id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
@@ -192,6 +164,7 @@ namespace OctoAwesome.Runtime
             string file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
             universe = new Universe();
             _currentUniverse = universe;
+
             if (!File.Exists(file))
                 return null;
 
@@ -255,7 +228,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Die neu geladene ChunkColumn.</returns>
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var chunkColumContext = new ChunkColumnDbContext(GetDatabase(universeGuid, planet.Id), planet);
+            var chunkColumContext = new ChunkColumnDatabaseContext(_databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id), planet);
 
             column = chunkColumContext.Get(columnIndex);
 
@@ -269,6 +242,17 @@ namespace OctoAwesome.Runtime
             return awaiter;
         }
 
+        /// <summary>
+        /// Lädt ein Entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="universeGuid"></param>
+        /// <param name="planet"></param>
+        /// <returns></returns>
+        public Awaiter Load(out Entity entity, Guid universeGuid, IPlanet planet)
+        {
+
+        }
 
         /// <summary>
         /// Lädt einen Player.
@@ -329,9 +313,7 @@ namespace OctoAwesome.Runtime
 
         public void Dispose()
         {
-            foreach (var database in _index2Databases.Values)
-                database.Dispose();
-
+            _databaseProvider.Dispose();
             _chunkSubscription.Dispose();
         }
 
@@ -347,13 +329,13 @@ namespace OctoAwesome.Runtime
 
         private void SaveChunk(ChunkNotification chunkNotification)
         {
-            var databaseContext = new ChunkDiffDbContext(GetDiffDatabase(_currentUniverse.Id, chunkNotification.Planet));
+            var databaseContext = new ChunkDiffDatabaseContext(_databaseProvider.GetDatabase<ChunkDiffTag>(_currentUniverse.Id, chunkNotification.Planet));
             databaseContext.AddOrUpdate(chunkNotification);
         }
 
         private void ApplyChunkDiff(IChunkColumn column, Guid universeGuid, IPlanet planet)
         {
-            var databaseContext = new ChunkDiffDbContext(GetDiffDatabase(universeGuid, planet.Id));
+            var databaseContext = new ChunkDiffDatabaseContext(_databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id));
             var keys = databaseContext
                 .GetAllKeys()
                 .Where(t => t.ChunkPositon.X == column.Index.X && t.ChunkPositon.Y == column.Index.Y);

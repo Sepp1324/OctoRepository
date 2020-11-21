@@ -5,7 +5,7 @@ using System.IO;
 
 namespace OctoAwesome.Runtime
 {
-    public sealed class DatabaseProvider
+    public sealed class DatabaseProvider : IDisposable
     {
         private readonly Dictionary<(Type Type, Guid Universe, int PlanetId), Database.Database> _planetDatabaseRegister;
         private readonly Dictionary<(Type Type, Guid Universe), Database.Database> _universeDatabaseRegister;
@@ -77,6 +77,22 @@ namespace OctoAwesome.Runtime
             var keyFile = Path.Combine(path, $"{name}.keys");
             var valueFile = Path.Combine(path, $"{name}.db");
             return new Database<T>(new FileInfo(keyFile), new FileInfo(valueFile));
+        }
+
+        public void Dispose()
+        {
+            foreach (var database in _planetDatabaseRegister)
+                database.Value.Dispose();
+
+            foreach (var database in _universeDatabaseRegister)
+                database.Value.Dispose();
+
+            foreach (var database in _globalDatabaseRegister)
+                database.Value.Dispose();
+
+            _planetDatabaseRegister.Clear();
+            _universeDatabaseRegister.Clear();
+            _globalDatabaseRegister.Clear();
         }
     }
 }

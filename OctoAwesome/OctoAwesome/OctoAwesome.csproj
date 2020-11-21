@@ -122,10 +122,11 @@
     <Compile Include="Pooling\IPoolElement.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="SemaphoreExtended.cs" />
-    <Compile Include="Serialization\ChunkDiffDbContext.cs" />
+    <Compile Include="Serialization\ChunkDiffDatabaseContext.cs" />
     <Compile Include="Serialization\ChunkDiffTag.cs" />
+    <Compile Include="Serialization\EntityDatabaseContext.cs" />
     <Compile Include="Serialization\IIdentification.cs" />
-    <Compile Include="Serialization\ChunkColumnDbContext.cs" />
+    <Compile Include="Serialization\ChunkColumnDatabaseContext.cs" />
     <Compile Include="Serialization\Index2Tag.cs" />
     <Compile Include="Serialization\SerializableDatabaseContext.cs" />
     <Compile Include="Serialization\IdDatabaseContext.cs" />

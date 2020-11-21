@@ -1,16 +1,12 @@
 ﻿using OctoAwesome.Database;
 using OctoAwesome.Notifications;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
-    public sealed class ChunkDiffDbContext : SerializableDatabaseContext<ChunkDiffTag, ChunkNotification>
+    public sealed class ChunkDiffDatabaseContext : SerializableDatabaseContext<ChunkDiffTag, ChunkNotification>
     {
-        public ChunkDiffDbContext(Database<ChunkDiffTag> database) : base(database)
+        public ChunkDiffDatabaseContext(Database<ChunkDiffTag> database) : base(database)
         {
         }
 
