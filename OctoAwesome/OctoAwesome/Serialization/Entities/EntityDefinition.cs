@@ -37,8 +37,8 @@ namespace OctoAwesome.Serialization.Entities
         {
             Type = entity.GetType();
             Id = entity.Id;
-            var tmpComponents = entity.Components.Where(c => c is ISerializable);
-            ComponentsCount = tmpComponents.Count();
+            var tmpComponents = entity.Components.ToList();
+            ComponentsCount = tmpComponents.Count;
             Components = tmpComponents.Select(c => c.GetType());
         }
 
@@ -66,18 +66,18 @@ namespace OctoAwesome.Serialization.Entities
             Components = list;
         }
 
-        public sealed class EntityDefinitionContext : SerializableDatabaseContext<IdTag, EntityDefinition>
+        public sealed class EntityDefinitionContext : SerializableDatabaseContext<IdTag<EntityDefinition>, EntityDefinition>
         {
-            public EntityDefinitionContext(Database<IdTag> database) : base(database)
+            public EntityDefinitionContext(Database<IdTag<EntityDefinition>> database) : base(database)
             {
 
             }
 
-            public IEnumerable<IdTag> GetAllKeys() => Database.Keys;
+            public IEnumerable<IdTag<EntityDefinition>> GetAllKeys() => Database.Keys;
 
-            public override void AddOrUpdate(EntityDefinition value) => InternalAddOrUpdate(new IdTag(value.Id), value);
+            public override void AddOrUpdate(EntityDefinition value) => InternalAddOrUpdate(new IdTag<EntityDefinition>(value.Id), value);
 
-            public override void Remove(EntityDefinition value) => InternalRemove(new IdTag(value.Id));
+            public override void Remove(EntityDefinition value) => InternalRemove(new IdTag<EntityDefinition>(value.Id));
         }
     }
 }
