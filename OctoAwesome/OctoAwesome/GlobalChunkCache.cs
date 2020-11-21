@@ -3,10 +3,7 @@ using OctoAwesome.Notifications;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +38,6 @@ namespace OctoAwesome
         private readonly Task cleanupTask;
         private readonly ILogger logger;
         private IUpdateHub updateHub;
-
 
         /// <summary>
         /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
@@ -287,8 +283,7 @@ namespace OctoAwesome
 
         public void OnCompleted() { }
 
-        public void OnError(Exception error)
-            => throw error;
+        public void OnError(Exception error) => throw error;
 
         public void OnNext(Notification value)
         {
@@ -312,17 +307,11 @@ namespace OctoAwesome
 
         public void Update(SerializableNotification notification)
         {
-            if (notification is ChunkNotification chunkNotification
-                && cache.TryGetValue(
-                        new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet),
-                        out var cacheItem))
-            {
+            if (notification is ChunkNotification chunkNotification && cache.TryGetValue( new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
                 cacheItem.ChunkColumn.Update(notification);
-            }
         }
 
-        public void InsertUpdateHub(IUpdateHub updateHub)
-            => this.updateHub = updateHub;
+        public void InsertUpdateHub(IUpdateHub updateHub) => this.updateHub = updateHub;
 
         /// <summary>
         /// Element für den Cache
