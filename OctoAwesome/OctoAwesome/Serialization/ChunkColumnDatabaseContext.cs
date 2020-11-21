@@ -8,16 +8,12 @@ namespace OctoAwesome.Serialization
     {
         private readonly IPlanet currentPlanet;
 
-        public ChunkColumnDatabaseContext(Database<Index2Tag> database, IPlanet planet) : base(database)
-        {
-            currentPlanet = planet;
-        }
+        public ChunkColumnDatabaseContext(Database<Index2Tag> database, IPlanet planet) : base(database) => currentPlanet = planet;
 
-        public override void AddOrUpdate(IChunkColumn value)
-            => Database.AddOrUpdate(new Index2Tag(value.Index), new Value(Serializer.SerializeCompressed(value)));
+        public override void AddOrUpdate(IChunkColumn value) => Database.AddOrUpdate(new Index2Tag(value.Index), new Value(Serializer.SerializeCompressed(value)));
 
-        public IChunkColumn Get(Index2 key)
-            => Get(new Index2Tag(key));
+        public IChunkColumn Get(Index2 key) => Get(new Index2Tag(key));
+
         public override IChunkColumn Get(Index2Tag key)
         {
             if (!Database.ContainsKey(key))
@@ -33,8 +29,6 @@ namespace OctoAwesome.Serialization
             }
         }
 
-        public override void Remove(IChunkColumn value)
-           => Database.Remove(new Index2Tag(value.Index));
-        
+        public override void Remove(IChunkColumn value) => Database.Remove(new Index2Tag(value.Index));
     }
 }
