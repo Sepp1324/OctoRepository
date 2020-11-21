@@ -266,7 +266,5 @@ namespace OctoAwesome
 
             return rx || ry || rz;
         }
-
-       
     }
 }

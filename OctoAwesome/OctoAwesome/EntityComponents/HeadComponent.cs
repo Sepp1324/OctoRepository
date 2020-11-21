@@ -1,9 +1,4 @@
 ﻿using engenious;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace OctoAwesome.EntityComponents
@@ -32,7 +27,6 @@ namespace OctoAwesome.EntityComponents
         {
 
         }
-
 
         public override void Serialize(BinaryWriter writer)
         {
