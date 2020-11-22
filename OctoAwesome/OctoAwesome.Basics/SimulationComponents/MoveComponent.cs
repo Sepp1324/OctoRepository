@@ -31,7 +31,7 @@ namespace OctoAwesome.Basics.SimulationComponents
             if (entity.Id == 0)
                 return;
 
-            //TODO:Sehr unschön
+            //TODO: Sehr unschön
 
             if (entity.Components.ContainsComponent<BoxCollisionComponent>())
                 CheckBoxCollision(gameTime, entity, movecomp, poscomp);

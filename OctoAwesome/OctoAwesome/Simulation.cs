@@ -185,7 +185,7 @@ namespace OctoAwesome
             if (!(State == SimulationState.Running || State == SimulationState.Paused))
                 throw new NotSupportedException("Adding Entities only allowed in running or paused state");
 
-            if (entity.Simulation != null)
+            if (entity.Simulation != null && entity.Simulation != this)
                 throw new NotSupportedException("Entity can't be part of more than one simulation");
 
             if (_entities.Contains(entity))
@@ -241,8 +241,8 @@ namespace OctoAwesome
 
             ResourceManager.SaveEntity(entity);
         }
-        public void RemoveEntity(int entityId)
-            => RemoveEntity(_entities.First(e => e.Id == entityId));
+
+        public void RemoveEntity(int entityId) => RemoveEntity(_entities.First(e => e.Id == entityId));
 
         public void OnNext(Notification value)
         {
@@ -266,10 +266,7 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error)
-        {
-            throw error;
-        }
+        public void OnError(Exception error) => throw error;
 
         public void OnCompleted()
         {

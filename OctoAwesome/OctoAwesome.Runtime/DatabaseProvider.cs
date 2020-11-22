@@ -3,6 +3,7 @@ using OctoAwesome.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace OctoAwesome.Runtime
 {
@@ -77,7 +78,25 @@ namespace OctoAwesome.Runtime
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var name = typeof(T).Name.Substring(0, typeof(T).Name.Length - 3);
+            var type = typeof(T);
+            string name;
+            var typeName = type.Name;
+
+            foreach (var c in Path.GetInvalidFileNameChars())
+                typeName.Replace(c, '\0');
+
+            if (type.IsGenericType)
+            {
+                var firstType = type.GenericTypeArguments.FirstOrDefault();
+                
+                if (firstType != default)
+                    name = $"{typeName}_{firstType.Name}";
+                else
+                    name = typeName;
+            }
+            else
+                name = typeName;
+
             var keyFile = Path.Combine(path, $"{name}.keys");
             var valueFile = Path.Combine(path, $"{name}.db");
             return new Database<T>(new FileInfo(keyFile), new FileInfo(valueFile));

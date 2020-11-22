@@ -145,9 +145,7 @@ namespace OctoAwesome
                 return;
             }
 
-            foreach (var chunkColumnIndex in requiredChunkColumns
-                                                .OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size))
-                                                .LengthSquared()))
+            foreach (var chunkColumnIndex in requiredChunkColumns.OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size)).LengthSquared()))
             {
                 int localX = chunkColumnIndex.X & _mask;
                 int localY = chunkColumnIndex.Y & _mask;
