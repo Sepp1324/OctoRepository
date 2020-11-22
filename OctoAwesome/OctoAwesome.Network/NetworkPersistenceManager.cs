@@ -110,7 +110,23 @@ namespace OctoAwesome.Network
 
         public IEnumerable<Entity> LoadEntitiesWithComponents<T>(Guid universeGuid) where T : EntityComponent => Array.Empty<Entity>();
 
-        //CONTINUE: 
+        /// <summary>
+        /// Liefert die Ids der Komponenten zurück
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="universeGuid"></param>
+        /// <returns></returns>
+        public IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => Array.Empty<int>();
+
+        /// <summary>
+        /// Liefert die Entity-Komponenten zurück
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="universeGuid"></param>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<int> entityIds) where T : EntityComponent, new() => Array.Empty<(int, T)>();
+
         private Awaiter GetAwaiter(ISerializable serializable, uint packageUId)
         {
             var awaiter = _awaiterPool.Get();

@@ -19,7 +19,7 @@ namespace OctoAwesome.Serialization.Entities
 
             _entityDefinitionContext = new EntityDefinition.EntityDefinitionContext(database);
             _componentsDatabaseContext = new EntityComponentsDatabaseContext(databaseProvider, universeGuid);
-            _getComponentMethod = typeof(EntityComponentsDatabaseContext).GetMethod(nameof(EntityComponentsDatabaseContext.Get));
+            _getComponentMethod = typeof(EntityComponentsDatabaseContext).GetMethod(nameof(EntityComponentsDatabaseContext.Get), new[] { typeof(Entity) });
             _removeComponentMethod = typeof(EntityComponentsDatabaseContext).GetMethod(nameof(EntityComponentsDatabaseContext.Remove));
         }
 
@@ -54,6 +54,8 @@ namespace OctoAwesome.Serialization.Entities
             foreach (var entityId in entities)
                 yield return Get(entityId);
         }
+
+        public IEnumerable<IdTag<Entity>> GetEntityIdsFromComponent<T>() where T : EntityComponent => _componentsDatabaseContext.GetAllKeys<T>().Select(t => new IdTag<Entity>(t.Tag));
 
         public IEnumerable<IdTag<Entity>> GetAllKeys() => _entityDefinitionContext.GetAllKeys().Select(e => new IdTag<Entity>(e.Tag));
 

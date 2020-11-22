@@ -229,6 +229,7 @@ namespace OctoAwesome.Runtime
             do
             {
                 awaiter = _persistenceManager.Load(out column11, CurrentUniverse.Id, planet, index);
+                
                 if (awaiter == null)
                 {
                     IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
@@ -323,5 +324,9 @@ namespace OctoAwesome.Runtime
         }
 
         public IEnumerable<Entity> LoadEntitiesWithComponents<T>() where T : EntityComponent => _persistenceManager.LoadEntitiesWithComponents<T>(CurrentUniverse.Id);
+
+        public IEnumerable<int> GetEntityIdsFromComponent<T>() where T : EntityComponent => _persistenceManager.GetEntityIdsFromComponent<T>(CurrentUniverse.Id);
+
+        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(IEnumerable<int> entityIds) where T : EntityComponent, new() => _persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds);
     }
 }

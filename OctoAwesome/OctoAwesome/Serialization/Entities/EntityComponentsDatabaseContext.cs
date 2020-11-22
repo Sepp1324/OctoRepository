@@ -34,16 +34,22 @@ namespace OctoAwesome.Serialization.Entities
         /// Liefert eine Komponente zurück
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="universeGuid"></param>
-        /// <param name="planetId"></param>
+        /// <param name="entityId"></param>
         /// <returns></returns>
-        public EntityComponent Get<T>(Entity entity) where T : EntityComponent, new()
+        public T Get<T>(int entityId) where T : EntityComponent, new()
         {
             var database = _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid);
-            var tag = new IdTag<T>(entity.Id);
+            var tag = new IdTag<T>(entityId);
             return Serializer.Deserialize<T>(database.GetValue(tag).Content);
         }
+
+        /// <summary>
+        /// Liefert eine Komponente zurück
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public T Get<T>(Entity entity) where T : EntityComponent, new() => Get<T>(entity.Id);
 
         public IEnumerable<IdTag<T>> GetAllKeys<T>() where T : EntityComponent => _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid).Keys;
 

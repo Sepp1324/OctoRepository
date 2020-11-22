@@ -15,11 +15,11 @@ namespace OctoAwesome.Client
     public class ContainerResourceManager : IResourceManager, IDisposable
     {
         public IDefinitionManager DefinitionManager => _resourceManager.DefinitionManager;
-       
+
         public IUniverse CurrentUniverse => _resourceManager.CurrentUniverse;
-        
+
         public bool IsMultiplayer { get; private set; }
-       
+
         public Player CurrentPlayer => _resourceManager.CurrentPlayer;
 
         public IUpdateHub UpdateHub { get; }
@@ -60,15 +60,17 @@ namespace OctoAwesome.Client
                 string host;
                 IPAddress iPAddress;
                 int port = -1;
+
                 if (rawIpAddress[0] == '[' || !IPAddress.TryParse(rawIpAddress, out iPAddress)) //IPV4 || IPV6 without port
                 {
                     string stringIpAddress;
+
                     if (rawIpAddress[0] == '[') // IPV6 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
                         stringIpAddress = rawIpAddress.Substring(1, rawIpAddress.IndexOf(']') - 1);
                     }
-                    else if (rawIpAddress.Contains(':') && 
+                    else if (rawIpAddress.Contains(':') &&
                         IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
@@ -103,20 +105,7 @@ namespace OctoAwesome.Client
             _resourceManager = new ResourceManager(_extensionResolver, _definitionManager, _settings, persistenceManager);
             _resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
 
-            
-
             IsMultiplayer = multiplayer;
-
-            //if (multiplayer)
-            //{
-            //    resourceManager.GlobalChunkCache.ChunkColumnChanged += (s, c) =>
-            //    {
-            //        var networkPersistence = (NetworkPersistenceManager)persistenceManager;
-            //        networkPersistence.SendChangedChunkColumn(c);
-            //    };
-            //}
-
-
         }
 
         public void DeleteUniverse(Guid id) => _resourceManager.DeleteUniverse(id);
@@ -143,9 +132,9 @@ namespace OctoAwesome.Client
         public void SavePlayer(Player player) => _resourceManager.SavePlayer(player);
 
         public void UnloadUniverse() => _resourceManager.UnloadUniverse();
-       
+
         public void SaveChunkColumn(IChunkColumn chunkColumn) => _resourceManager.SaveChunkColumn(chunkColumn);
-        
+
         public IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index) => _resourceManager.LoadChunkColumn(planet, index);
 
         public void Dispose()
@@ -157,5 +146,9 @@ namespace OctoAwesome.Client
         public Entity LoadEntity(int entityId) => _resourceManager.LoadEntity(entityId);
 
         public IEnumerable<Entity> LoadEntitiesWithComponents<T>() where T : EntityComponent => _resourceManager.LoadEntitiesWithComponents<T>();
+
+        public IEnumerable<int> GetEntityIdsFromComponent<T>() where T : EntityComponent => _resourceManager.GetEntityIdsFromComponent<T>();
+
+        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(IEnumerable<int> entityIds) where T : EntityComponent, new() => _resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

@@ -34,14 +34,13 @@ namespace OctoAwesome.Basics.SimulationComponents
             //TODO:Sehr unschön
 
             if (entity.Components.ContainsComponent<BoxCollisionComponent>())
-            {
                 CheckBoxCollision(gameTime, entity, movecomp, poscomp);
-            }
 
             var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
 
             var newposition = poscomp.Position + movecomp.PositionMove;
             newposition.NormalizeChunkIndexXY(cache.Planet.Size);
+
             if (poscomp.Position.ChunkIndex != newposition.ChunkIndex)
             {
                 var result = cache.SetCenter(new Index2(poscomp.Position.ChunkIndex));

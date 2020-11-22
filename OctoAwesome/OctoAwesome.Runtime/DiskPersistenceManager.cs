@@ -32,8 +32,8 @@ namespace OctoAwesome.Runtime
         public DiskPersistenceManager(IExtensionResolver extensionResolver, ISettings Settings, IUpdateHub updateHub)
         {
             _extensionResolver = extensionResolver;
-            _databaseProvider = new DatabaseProvider(GetRoot());
             _settings = Settings;
+            _databaseProvider = new DatabaseProvider(GetRoot());
             _awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
             _chunkSubscription = updateHub.Subscribe(this, DefaultChannels.Chunk);
         }
@@ -52,14 +52,18 @@ namespace OctoAwesome.Runtime
             if (!string.IsNullOrEmpty(appconfig))
             {
                 _root = new DirectoryInfo(appconfig);
-                if (!_root.Exists) _root.Create();
+
+                if (!_root.Exists)
+                    _root.Create();
                 return _root.FullName;
             }
             else
             {
                 var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 _root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
-                if (!_root.Exists) _root.Create();
+
+                if (!_root.Exists)
+                    _root.Create();
                 return _root.FullName;
             }
         }
@@ -307,7 +311,34 @@ namespace OctoAwesome.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Lädt die Entities mit Komponenten
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="universeGuid"></param>
+        /// <returns></returns>
         public IEnumerable<Entity> LoadEntitiesWithComponents<T>(Guid universeGuid) where T : EntityComponent => new EntityDatabaseContext(_databaseProvider, universeGuid).GetEntitiesWithComponents<T>();
+
+        /// <summary>
+        /// Liefert die Ids der Komponenten zurück
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="universeGuid"></param>
+        /// <returns></returns>
+        public IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => new EntityDatabaseContext(_databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
+
+        /// <summary>
+        /// Liefert die Entity-Komponenten zurück
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="universeGuid"></param>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<int> entityIds) where T : EntityComponent, new()
+        {
+            foreach (var entityId in entityIds)
+                yield return (entityId, new EntityComponentsDatabaseContext(_databaseProvider, universeGuid).Get<T>(entityId));
+        }
 
         /// <summary>
         /// Speichert einen Player
