@@ -1,7 +1,6 @@
 ﻿using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
-using System.IO;
 
 namespace OctoAwesome
 {
@@ -46,6 +45,7 @@ namespace OctoAwesome
         IMapGenerator Generator { get; set; }
 
         IGlobalChunkCache GlobalChunkCache { get; set; }
+
         IUpdateHub UpdateHub { get; set; }
     }
 }

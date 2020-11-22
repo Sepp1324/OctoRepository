@@ -46,19 +46,20 @@ namespace OctoAwesome
         public IMapGenerator Generator { get; set; }
 
         public IGlobalChunkCache GlobalChunkCache { get; set; }
+
         public IUpdateHub UpdateHub
         {
-            get => updateHub; set
+            get => _updateHub; set
             {
 
-                chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
+                _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
                 GlobalChunkCache.InsertUpdateHub(value);
-                updateHub = value;
+                _updateHub = value;
             }
         }
 
-        private IUpdateHub updateHub;
-        private IDisposable chunkSubscription;
+        private IUpdateHub _updateHub;
+        private IDisposable _chunkSubscription;
 
         /// <summary>
         /// Initialisierung des Planeten.
@@ -72,20 +73,14 @@ namespace OctoAwesome
 
             Id = id;
             Universe = universe;
-            Size = new Index3(
-                (int)Math.Pow(2, size.X),
-                (int)Math.Pow(2, size.Y),
-                (int)Math.Pow(2, size.Z));
+            Size = new Index3((int)Math.Pow(2, size.X), (int)Math.Pow(2, size.Y), (int)Math.Pow(2, size.Z));
             Seed = seed;
         }
 
         /// <summary>
         /// Erzeugt eine neue Instanz eines Planeten.
         /// </summary>
-        public Planet()
-        {
-            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
-        }
+        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
 
         /// <summary>
         /// Serialisiert den Planeten in den angegebenen Stream.
@@ -118,9 +113,8 @@ namespace OctoAwesome
 
         public void Dispose()
         {
-            chunkSubscription.Dispose();
-
-            chunkSubscription = null;
+            _chunkSubscription.Dispose();
+            _chunkSubscription = null;
         }
     }
 }

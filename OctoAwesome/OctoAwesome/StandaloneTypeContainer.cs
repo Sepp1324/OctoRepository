@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -26,10 +24,11 @@ namespace OctoAwesome
 
             typeRegister.Add(registrar, type);
         }
-        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
-            => Register(typeof(T), typeof(T), instanceBehaviour);
-        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
-            => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
+
+        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(T), typeof(T), instanceBehaviour);
+
+        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
+
         public void Register(Type registrar, Type type, object singelton)
         {
             if (!typeInformationRegister.ContainsKey(type))
@@ -37,16 +36,16 @@ namespace OctoAwesome
 
             typeRegister.Add(registrar, type);
         }
-        public void Register<T>(T singelton) where T : class
-            => Register(typeof(T), typeof(T), singelton);
-        public void Register<TRegistrar, T>(object singelton) where T : class
-            => Register(typeof(TRegistrar), typeof(T), singelton);
+        public void Register<T>(T singelton) where T : class => Register(typeof(T), typeof(T), singelton);
+
+        public void Register<TRegistrar, T>(object singelton) where T : class => Register(typeof(TRegistrar), typeof(T), singelton);
 
         public bool TryResolve(Type type, out object instance)
         {
             instance = GetOrNull(type);
             return instance != null;
         }
+
         public bool TryResolve<T>(out T instance) where T : class
         {
             var result = TryResolve(typeof(T), out var obj);
@@ -54,11 +53,9 @@ namespace OctoAwesome
             return result;
         }
 
-        public object Get(Type type)
-            => GetOrNull(type) ?? throw new KeyNotFoundException($"Type {type} was not found in Container");
+        public object Get(Type type) => GetOrNull(type) ?? throw new KeyNotFoundException($"Type {type} was not found in Container");
 
-        public T Get<T>() where T : class
-            => (T)Get(typeof(T));
+        public T Get<T>() where T : class => (T)Get(typeof(T));
 
         public object GetOrNull(Type type)
         {
@@ -69,16 +66,14 @@ namespace OctoAwesome
             }
             return null;
         }
-        public T GetOrNull<T>() where T : class
-            => (T)GetOrNull(typeof(T));
+        public T GetOrNull<T>() where T : class => (T)GetOrNull(typeof(T));
 
         public object GetUnregistered(Type type)
             => GetOrNull(type)
                 ?? CreateObject(type)
                 ?? throw new InvalidOperationException($"Can not create unregistered type of {type}");
 
-        public T GetUnregistered<T>() where T : class
-            => (T)GetUnregistered(typeof(T));
+        public T GetUnregistered<T>() where T : class => (T)GetUnregistered(typeof(T));
 
         public object CreateObject(Type type)
         {
