@@ -207,9 +207,9 @@ namespace OctoAwesome
         /// </summary>
         /// <returns></returns>
         public override string ToString() => $@"({ Planet }/
-                    {(_block.X + _position.X).ToString("0.00")}/
-                    {(_block.Y + _position.Y).ToString("0.00")}/
-                    {(_block.Z + _position.Z).ToString("0.00")})";
+                    {_block.X + _position.X:0.00}/
+                    {_block.Y + _position.Y:0.00}/
+                    {_block.Z + _position.Z:0.00})";
 
         /// <summary>
         /// Compare this object with an other object

@@ -1,11 +1,9 @@
-﻿using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 
-namespace OctoAwesome
+namespace OctoAwesome.Serialization
 {
-    public class SerializableCollection<T> : List<T>, ISerializable where T : ISerializable
+    public class SerializableCollection<T> : Collection<T>, ISerializableEnumerator<T>, ISerializable where T : ISerializable
     {
         public void Deserialize(BinaryReader reader)
         {

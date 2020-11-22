@@ -1,5 +1,6 @@
 ﻿using OctoAwesome.Database;
 using System;
+using System.Collections.Generic;
 
 namespace OctoAwesome.Serialization.Entities
 {
@@ -43,6 +44,8 @@ namespace OctoAwesome.Serialization.Entities
             var tag = new IdTag<T>(entity.Id);
             return Serializer.Deserialize<T>(database.GetValue(tag).Content);
         }
+
+        public IEnumerable<IdTag<T>> GetAllKeys<T>() where T : EntityComponent => _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid).Keys;
 
         /// <summary>
         /// Entfernt eine Komponente

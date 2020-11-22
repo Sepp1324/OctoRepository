@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,23 +15,23 @@ namespace OctoAwesome.Network
 {
     public class NetworkPersistenceManager : IPersistenceManager, IAsyncObserver<Package>
     {
-        private readonly Client client;
-        private readonly IDisposable subscription;
+        private readonly Client _client;
+        private readonly IDisposable _subscription;
 
-        private readonly ConcurrentDictionary<uint, Awaiter> packages;
-        private readonly ILogger logger;
-        private readonly IPool<Awaiter> awaiterPool;
-        private readonly PackagePool packagePool;
+        private readonly ConcurrentDictionary<uint, Awaiter> _packages;
+        private readonly ILogger _logger;
+        private readonly IPool<Awaiter> _awaiterPool;
+        private readonly PackagePool _packagePool;
 
         public NetworkPersistenceManager(Client client)
         {
-            this.client = client;
-            subscription = client.Subscribe(this);
+            _client = client;
+            _subscription = client.Subscribe(this);
 
-            packages = new ConcurrentDictionary<uint, Awaiter>();
-            logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkPersistenceManager));
-            awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
-            packagePool = TypeContainer.Get<PackagePool>();
+            _packages = new ConcurrentDictionary<uint, Awaiter>();
+            _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkPersistenceManager));
+            _awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
+            _packagePool = TypeContainer.Get<PackagePool>();
         }
 
         public void DeleteUniverse(Guid universeGuid)
@@ -42,7 +43,7 @@ namespace OctoAwesome.Network
 
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var package = packagePool.Get();
+            var package = _packagePool.Get();
             package.Command = (ushort)OfficialCommand.LoadColumn;
 
             using (var memoryStream = new MemoryStream())
@@ -58,18 +59,18 @@ namespace OctoAwesome.Network
             column = new ChunkColumn(planet);
             var awaiter = GetAwaiter(column, package.UId);
 
-            client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelase(package);
 
             return awaiter;
         }
 
         public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
-            var package = packagePool.Get(); 
+            var package = _packagePool.Get(); 
             package.Command = (ushort)OfficialCommand.GetPlanet;
             planet = new ComplexPlanet();
             var awaiter = GetAwaiter(planet, package.UId);
-            client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelase(package);
 
             return awaiter;
         }
@@ -78,39 +79,44 @@ namespace OctoAwesome.Network
         {
             var playernameBytes = Encoding.UTF8.GetBytes(playername);
 
-            var package = packagePool.Get();
+            var package = _packagePool.Get();
             package.Command = (ushort)OfficialCommand.Whoami;
             package.Payload = playernameBytes;
 
             player = new Player();
             var awaiter = GetAwaiter(player, package.UId);
-            client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelase(package);
 
             return awaiter;
         }
 
         public Awaiter Load(out IUniverse universe, Guid universeGuid)
         {
-            var package = packagePool.Get();
+            var package = _packagePool.Get();
             package.Command = (ushort)OfficialCommand.GetUniverse;
 
             universe = new Universe();
             var awaiter = GetAwaiter(universe, package.UId);
-            client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelase(package);
 
             return awaiter;
         }
 
+        public Awaiter Load(out Entity entity, Guid universeGuid, int entityId)
+        {
+            entity = null;
+            return null;
+        }
+
+        public IEnumerable<Entity> LoadEntitiesWithComponents<T>(Guid universeGuid) where T : EntityComponent => Array.Empty<Entity>();
+
         private Awaiter GetAwaiter(ISerializable serializable, uint packageUId)
         {
-            var awaiter = awaiterPool.Get();
+            var awaiter = _awaiterPool.Get();
             awaiter.Serializable = serializable;
 
-            if (!packages.TryAdd(packageUId, awaiter))
-            {
-                logger.Error($"Awaiter for package {packageUId} could not be added");
-            }
-
+            if (!_packages.TryAdd(packageUId, awaiter))
+                _logger.Error($"Awaiter for package {packageUId} could not be added");
             return awaiter;
         }
 
@@ -134,6 +140,11 @@ namespace OctoAwesome.Network
             //throw new NotImplementedException();
         }
 
+        public void SaveEntity(Entity entity, Guid universeGuid)
+        {
+            //throw new NotImplementedException();
+        }
+
         public void SendChangedChunkColumn(IChunkColumn chunkColumn)
         {
             //var package = new Package((ushort)OfficialCommand.SaveColumn, 0);
@@ -151,7 +162,7 @@ namespace OctoAwesome.Network
 
         public Task OnNext(Package package)
         {
-            logger.Trace($"Package with id:{package.UId} for Command: {package.OfficialCommand}");
+            _logger.Trace($"Package with id:{package.UId} for Command: {package.OfficialCommand}");
 
             switch (package.OfficialCommand)
             {
@@ -160,18 +171,18 @@ namespace OctoAwesome.Network
                 case OfficialCommand.GetPlanet:
                 case OfficialCommand.LoadColumn:
                 case OfficialCommand.SaveColumn:
-                    if (packages.TryRemove(package.UId, out var awaiter))
+                    if (_packages.TryRemove(package.UId, out var awaiter))
                     {
                         if (awaiter.TrySetResult(package.Payload))
-                            logger.Warn($"Awaiter can not set result package {package.UId}");
+                            _logger.Warn($"Awaiter can not set result package {package.UId}");
                     }
                     else
                     {
-                        logger.Error($"No Awaiter found for Package: {package.UId}[{package.OfficialCommand}]");
+                        _logger.Error($"No Awaiter found for Package: {package.UId}[{package.OfficialCommand}]");
                     }
                     break;
                 default:
-                    logger.Warn($"Cant handle Command: {package.OfficialCommand}");
+                    _logger.Warn($"Cant handle Command: {package.OfficialCommand}");
                     return Task.CompletedTask;
             }
 
@@ -180,14 +191,14 @@ namespace OctoAwesome.Network
 
         public Task OnError(Exception error)
         {
-            logger.Error(error.Message, error);
+            _logger.Error(error.Message, error);
             return Task.CompletedTask;
         }
 
         public Task OnCompleted()
         {
-            subscription.Dispose();
+            _subscription.Dispose();
             return Task.CompletedTask;
-        }
+        } 
     }
 }

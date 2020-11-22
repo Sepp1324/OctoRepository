@@ -2,6 +2,7 @@
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
+using OctoAwesome.Serialization.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,6 +65,16 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
+        /// Löscht ein Universum.
+        /// </summary>
+        /// <param name="universeGuid">Die Guid des Universums.</param>
+        public void DeleteUniverse(Guid universeGuid)
+        {
+            string path = Path.Combine(GetRoot(), universeGuid.ToString());
+            Directory.Delete(path, true);
+        }
+
+        /// <summary>
         /// Speichert das Universum.
         /// </summary>
         /// <param name="universe">Das zu speichernde Universum</param>
@@ -80,16 +91,6 @@ namespace OctoAwesome.Runtime
             {
                 universe.Serialize(writer);
             }
-        }
-
-        /// <summary>
-        /// Löscht ein Universum.
-        /// </summary>
-        /// <param name="universeGuid">Die Guid des Universums.</param>
-        public void DeleteUniverse(Guid universeGuid)
-        {
-            string path = Path.Combine(GetRoot(), universeGuid.ToString());
-            Directory.Delete(path, true);
         }
 
         /// <summary>
@@ -116,6 +117,17 @@ namespace OctoAwesome.Runtime
             using (GZipStream zip = new GZipStream(stream, CompressionMode.Compress))
             using (BinaryWriter writer = new BinaryWriter(zip))
                 planet.Serialize(writer);
+        }
+
+        /// <summary>
+        /// Speichert ein Entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="universeGuid"></param>
+        public void SaveEntity(Entity entity, Guid universeGuid)
+        {
+            var context = new EntityDatabaseContext(_databaseProvider, universeGuid);
+            context.AddOrUpdate(entity);
         }
 
         /// <summary>
@@ -247,11 +259,16 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="universeGuid"></param>
-        /// <param name="planet"></param>
+        /// <param name="entityId"></param>
         /// <returns></returns>
-        public Awaiter Load(out Entity entity, Guid universeGuid, IPlanet planet)
+        public Awaiter Load(out Entity entity, Guid universeGuid, int entityId)
         {
+            var entityContext = new EntityDatabaseContext(_databaseProvider, universeGuid);
+            entity = entityContext.Get(new IdTag<Entity>(entityId));
 
+            var awaiter = _awaiterPool.Get();
+            awaiter.SetResult(entity);
+            return awaiter;
         }
 
         /// <summary>
@@ -289,6 +306,8 @@ namespace OctoAwesome.Runtime
             }
             return null;
         }
+
+        public IEnumerable<Entity> LoadEntitiesWithComponents<T>(Guid universeGuid) where T : EntityComponent => new EntityDatabaseContext(_databaseProvider, universeGuid).GetEntitiesWithComponents<T>();
 
         /// <summary>
         /// Speichert einen Player

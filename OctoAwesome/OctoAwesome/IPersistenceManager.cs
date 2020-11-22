@@ -1,5 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using OctoAwesome.Serialization;
+using System;
+using System.Collections.Generic;
 
 namespace OctoAwesome
 {
@@ -79,5 +80,8 @@ namespace OctoAwesome
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <param name="player">Der Player.</param>
         void SavePlayer(Guid universeGuid, Player player);
+        IEnumerable<Entity> LoadEntitiesWithComponents<T>(Guid universeGuid) where T : EntityComponent;
+        void SaveEntity(Entity entity, Guid universeGuid);
+        Awaiter Load(out Entity entity, Guid universeGuid, int entityId);
     }
 }

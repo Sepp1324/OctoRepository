@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Runtime
 {
@@ -288,9 +289,9 @@ namespace OctoAwesome.Runtime
                     populator.Populate(this, planet, column01, column11, column02, column12);
                 column01.Populated = true;
             }
-
             return column11;
         }
+
         public void SaveChunkColumn(IChunkColumn chunkColumn)
         {
             if (_disablePersistence)
@@ -299,10 +300,28 @@ namespace OctoAwesome.Runtime
             _persistenceManager.SaveColumn(CurrentUniverse.Id, chunkColumn.Planet, chunkColumn);
         }
 
+        public Entity LoadEntity(int entityId)
+        {
+            var awaiter = _persistenceManager.Load(out Entity entity, CurrentUniverse.Id, entityId);
+
+            if (awaiter == null)
+                return null;
+            else
+                awaiter.WaitOnAndRelease();
+            return entity;
+        }
+
         public void SaveEntity(Entity entity)
         {
+            if (CurrentUniverse == null)
+                throw new Exception("No Universe loaded");
+
             if (entity is Player player)
                 SavePlayer(player);
+            else
+                _persistenceManager.SaveEntity(entity, CurrentUniverse.Id);
         }
+
+        public IEnumerable<Entity> LoadEntitiesWithComponents<T>() where T : EntityComponent => _persistenceManager.LoadEntitiesWithComponents<T>(CurrentUniverse.Id);
     }
 }

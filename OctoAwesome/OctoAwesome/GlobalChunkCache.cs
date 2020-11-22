@@ -14,7 +14,6 @@ namespace OctoAwesome
     /// </summary>
     public sealed class GlobalChunkCache : IGlobalChunkCache
     {
-
         public event EventHandler<IChunkColumn> ChunkColumnChanged;
 
         private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
@@ -68,7 +67,7 @@ namespace OctoAwesome
         public GlobalChunkCache(IPlanet planet, IResourceManager resourceManager)
         {
             Planet = planet ?? throw new ArgumentNullException(nameof(planet));
-            this._resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
+            _resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
 
             _cache = new Dictionary<Index3, CacheItem>();
             _newChunks = new Queue<CacheItem>();
@@ -115,7 +114,6 @@ namespace OctoAwesome
                     _logger.Warn($"Add Reference to:{cacheItem.Index}, now at:{cacheItem.References}");
             }
 
-
             if (cacheItem.ChunkColumn == null)
             {
                 using (cacheItem.Wait())
@@ -124,15 +122,12 @@ namespace OctoAwesome
 
                     using (_updateSemaphore.Wait())
                         _newChunks.Enqueue(cacheItem);
-
                 }
             }
-
             return cacheItem.ChunkColumn;
         }
 
-        public bool IsChunkLoaded(Index2 position)
-            => _cache.ContainsKey(new Index3(position, Planet.Id));
+        public bool IsChunkLoaded(Index2 position) => _cache.ContainsKey(new Index3(position, Planet.Id));
 
         private void ItemChanged(CacheItem obj, IChunkColumn chunkColumn)
         {
@@ -239,11 +234,12 @@ namespace OctoAwesome
                 //Alte Chunks aus der Siumaltion entfernen
                 while (_oldChunks.Count > 0)
                 {
-                    var chunk = _oldChunks.Dequeue();
+                    using (var chunk = _oldChunks.Dequeue())
+                    {
 
-                    foreach (var entity in chunk.ChunkColumn.Entities)
-                        simulation.RemoveEntity(entity);
-                    chunk.Dispose();
+                        foreach (var entity in chunk.ChunkColumn.Entities)
+                            simulation.RemoveEntity(entity);
+                    }
                 }
             }
         }
