@@ -16,10 +16,8 @@ namespace OctoAwesome.Network
         private static uint NextId => ++nextId;
         private static uint nextId;
 
-        static BaseClient()
-        {
-            nextId = 0;
-        }
+        static BaseClient() => nextId = 0;
+
         public uint Id { get; }
 
         protected Socket Socket;
