@@ -124,9 +124,8 @@ namespace OctoAwesome.Runtime
             _persistenceManager.SaveUniverse(CurrentUniverse);
 
             foreach (var planet in Planets)
-            {
                 _persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-            }
+            
             Planets.Clear();
 
             CurrentUniverse = null;
@@ -176,7 +175,6 @@ namespace OctoAwesome.Runtime
                     int index = rand.Next(generators.Length - 1);
                     IMapGenerator generator = generators[index];
                     planet = generator.GeneratePlanet(CurrentUniverse.Id, id, CurrentUniverse.Seed + id);
-                    // persistenceManager.SavePlanet(universe.Id, planet);
                 }
                 else
                 {

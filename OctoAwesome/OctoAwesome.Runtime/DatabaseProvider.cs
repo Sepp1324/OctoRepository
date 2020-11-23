@@ -73,14 +73,17 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        private Database<T> CreateDatabase<T>(string path) where T : ITag, new()
+        private Database<T> CreateDatabase<T>(string path, string typeName = null) where T : ITag, new()
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             var type = typeof(T);
+
+            if (typeName == null)
+                typeName = type.Name;
+
             string name;
-            var typeName = type.Name;
 
             foreach (var c in Path.GetInvalidFileNameChars())
                 typeName.Replace(c, '\0');
@@ -88,14 +91,16 @@ namespace OctoAwesome.Runtime
             if (type.IsGenericType)
             {
                 var firstType = type.GenericTypeArguments.FirstOrDefault();
-                
+
                 if (firstType != default)
                     name = $"{typeName}_{firstType.Name}";
                 else
                     name = typeName;
             }
             else
+            {
                 name = typeName;
+            }
 
             var keyFile = Path.Combine(path, $"{name}.keys");
             var valueFile = Path.Combine(path, $"{name}.db");

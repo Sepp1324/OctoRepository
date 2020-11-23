@@ -1,8 +1,5 @@
 ﻿using OctoAwesome.Noise;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
@@ -14,8 +11,7 @@ namespace OctoAwesome.Basics.Biomes
             private set;
         }
 
-        public SurfaceBiomeGenerator(IPlanet planet, int seaLevel)
-            : base(planet, 0f, 1f)
+        public SurfaceBiomeGenerator(IPlanet planet, int seaLevel) : base(planet, 0f, 1f)
         {
 
             SeaLevel = seaLevel;
@@ -29,10 +25,7 @@ namespace OctoAwesome.Basics.Biomes
             SortSubBiomes();
         }
 
-        protected override float CurveFunction(float inputValue)
-        {
-            return CurveFunction(inputValue, -0.08f, 200);
-        }
+        protected override float CurveFunction(float inputValue) => CurveFunction(inputValue, -0.08f, 200);
 
         private float CurveFunction(float inputValue, float brightness, int contrast)
         {

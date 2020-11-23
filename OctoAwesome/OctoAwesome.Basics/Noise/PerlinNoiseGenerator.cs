@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Noise
 {
@@ -9,40 +6,34 @@ namespace OctoAwesome.Noise
     {
         #region Interface
 
-        public float[] GetNoiseMap(int startX, int width)
-        {
-            return PerlinNoise(startX, width);
-        }
+        public float[] GetNoiseMap(int startX, int width) => PerlinNoise(startX, width);
 
-        public float[,] GetNoiseMap2D(int startX, int startY, int width, int heigth)
-        {
-            return PerlinNoise2(startX, startY, width, heigth);
-        }
+        public float[,] GetNoiseMap2D(int startX, int startY, int width, int heigth) => PerlinNoise2(startX, startY, width, heigth);
 
-        public float[, ,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int heigth, int depth)
-        {
-            return PerlinNoise3(startX, startY, startZ, width, heigth, depth);
-        }
+        public float[,,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int heigth, int depth) => PerlinNoise3(startX, startY, startZ, width, heigth, depth);
 
         #endregion
 
         #region NoiseCode
 
-
         public float Smoothfactor { get; set; }
+
         public float Persistance { get; set; }
+
         public int Octaves { get; set; }
+
         public int Sizefactor { get; set; }
+
         public int Seed { get; private set; }
 
 
         public PerlinNoiseGenerator(int seed, float smoothfactor = 0, float persistance = 0.25f, int octaves = 3, int sizefactor = 64)
         {
-            this.Seed = seed;
-            this.Smoothfactor = smoothfactor;
-            this.Persistance = persistance;
-            this.Octaves = octaves;
-            this.Sizefactor = sizefactor;
+            Seed = seed;
+            Smoothfactor = smoothfactor;
+            Persistance = persistance;
+            Octaves = octaves;
+            Sizefactor = sizefactor;
         }
 
 
@@ -100,10 +91,7 @@ namespace OctoAwesome.Noise
 
         #region LinearInterpolation
 
-        private float LinearInterpolation(float a, float b, float x)
-        {
-            return (a * (1 - x)) + (b * x);
-        }
+        private float LinearInterpolation(float a, float b, float x) => (a * (1 - x)) + (b * x);
 
         private float LinearInterpolation2(float a, float b, float c, float d, float x, float y)
         {
@@ -132,7 +120,6 @@ namespace OctoAwesome.Noise
             float v1 = Noise(integer_X);
             float v2 = Noise(integer_X + 1);
 
-
             return LinearInterpolation(v1, v2, fractional_X);
         }
 
@@ -149,7 +136,6 @@ namespace OctoAwesome.Noise
             float v2 = Noise2(integer_X + 1, integer_Y);
             float v3 = Noise2(integer_X, integer_Y + 1);
             float v4 = Noise2(integer_X + 1, integer_Y + 1);
-
 
             return LinearInterpolation2(v1, v2, v3, v4, fractional_X, fractional_Y);
         }
@@ -223,7 +209,6 @@ namespace OctoAwesome.Noise
             float center = Noise3(x, y, z) / (3 * Smoothfactor);
 
             return center + directSides + indirectSides + corners;
-
         }
 
         #endregion
@@ -239,7 +224,6 @@ namespace OctoAwesome.Noise
 
             float v1 = SmoothedNoise(integer_X);
             float v2 = SmoothedNoise(integer_X + 1);
-
 
             return LinearInterpolation(v1, v2, fractional_X);
         }
@@ -260,7 +244,6 @@ namespace OctoAwesome.Noise
             float v2 = SmoothedNoise2(integer_X + 1, integer_Y);
             float v3 = SmoothedNoise2(integer_X, integer_Y + 1);
             float v4 = SmoothedNoise2(integer_X + 1, integer_Y + 1);
-
 
             return LinearInterpolation2(v1, v2, v3, v4, fractional_X, fractional_Y);
         }
@@ -326,7 +309,6 @@ namespace OctoAwesome.Noise
                     finishLayer[x] += noiseLayers[i, x];
                 }
             }
-
             return finishLayer;
         }
 
@@ -479,58 +461,25 @@ namespace OctoAwesome.Noise
         #endregion
 
 
-        public float[, , ,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
-        {
-            throw new NotImplementedException();
-        }
+        public float[,,,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth) => throw new NotImplementedException();
 
-        public float[,] GetTileableNoiseMap2D(int startX, int startY, int width, int height, int tileSizeX, int tileSizeY)
-        {
-            throw new NotImplementedException();
-        }
+        public float[,] GetTileableNoiseMap2D(int startX, int startY, int width, int height, int tileSizeX, int tileSizeY) => throw new NotImplementedException();
 
-        public float[, ,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
-        {
-            throw new NotImplementedException();
-        }
+        public float[,,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY) => throw new NotImplementedException();
 
-        public float GetNoise(int x)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetNoise(int x) => throw new NotImplementedException();
 
-        public float GetNoise2D(int x, int y)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetNoise2D(int x, int y) => throw new NotImplementedException();
 
-        public float GetTileableNoise2D(int x, int y, int tileSizeX, int tileSizeY)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetTileableNoise2D(int x, int y, int tileSizeX, int tileSizeY) => throw new NotImplementedException();
 
-        public float GetNoise3D(int x, int y, int z)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetNoise3D(int x, int y, int z) => throw new NotImplementedException();
 
-        public float GetTileableNoise3D(int x, int y, int z, int tileSizeX, int tileSizeY, int tileSizeZ)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetTileableNoise3D(int x, int y, int z, int tileSizeX, int tileSizeY, int tileSizeZ) => throw new NotImplementedException();
 
-        public float GetNoise4D(int x, int y, int z, int w)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetNoise4D(int x, int y, int z, int w) => throw new NotImplementedException();
 
 
-        public float GetTileableNoise3D(int x, int y, int z, int tileSizeX, int tileSizeY)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
+        public float GetTileableNoise3D(int x, int y, int z, int tileSizeX, int tileSizeY) => throw new NotImplementedException();
     }
 }

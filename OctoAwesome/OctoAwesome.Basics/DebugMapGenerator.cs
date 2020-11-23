@@ -1,8 +1,5 @@
-﻿using OctoAwesome.Basics;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.IO;
 using OctoAwesome.Basics.Definitions.Blocks;
 
@@ -37,11 +34,12 @@ namespace OctoAwesome.Basics
             for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
             {
                 float heightY = (float)Math.Sin((float)(y * Math.PI) / 15f);
+
                 for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                 {
                     float heightX = (float)Math.Sin((float)(x * Math.PI) / 18f);
-
                     float height = ((heightX + heightY + 2) / 4) * (2 * part);
+
                     for (int z = 0; z < planet.Size.Z * Chunk.CHUNKSIZE_Z; z++)
                     {
                         if (z < (int)(height + part))
@@ -53,7 +51,6 @@ namespace OctoAwesome.Basics
                     }
                 }
             }
-
             column.CalculateHeights();
             return column;
         }
@@ -61,8 +58,10 @@ namespace OctoAwesome.Basics
         public IPlanet GeneratePlanet(Stream stream)
         {
             IPlanet planet = new Planet();
+
             using (var reader = new BinaryReader(stream))
                 planet.Deserialize(reader);
+
             return planet;
         }
 
@@ -71,8 +70,10 @@ namespace OctoAwesome.Basics
         public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)
         {
             IChunkColumn column = new ChunkColumn(planet);
+
             using (var reader = new BinaryReader(stream))
                 column.Deserialize(reader);
+
             return column;
         }
     }

@@ -1,16 +1,10 @@
 ﻿using OctoAwesome.Noise;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
     public class LandBiomeGenerator : LargeBiomeBase
     {
-        public LandBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange)
-            : base(planet, valueRangeOffset, valueRange)
+        public LandBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange) : base(planet, valueRangeOffset, valueRange)
         {
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 1) { FrequencyX = 1f / 1000, FrequencyY = 1f / 1000, Persistance = 0.25f, Octaves = 5, Factor = 1f };
 
