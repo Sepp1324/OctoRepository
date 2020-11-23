@@ -224,6 +224,7 @@ namespace OctoAwesome.Runtime
             // Load from disk
             Awaiter awaiter;
             IChunkColumn column11;
+
             do
             {
                 awaiter = _persistenceManager.Load(out column11, CurrentUniverse.Id, planet, index);

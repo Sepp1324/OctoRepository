@@ -126,7 +126,7 @@ namespace OctoAwesome
                     cacheItem.ChunkColumn = _resourceManager.LoadChunkColumn(Planet, position);
 
                     var chunkIndex = new Index3(position, Planet.Id);
-                    var loadedEntities = _positionComponents.Where(x => x.Component.Planet == Planet && x.Component.Position.ChunkIndex == chunkIndex).Select(x => _resourceManager.LoadEntity(x.Id));
+                    var loadedEntities = _positionComponents.Where(x => x.Component.Planet == Planet && x.Component.Position.ChunkIndex.X == chunkIndex.X && x.Component.Position.ChunkIndex.Y == chunkIndex.Y).Select(x => _resourceManager.LoadEntity(x.Id));
 
                     foreach (var entity in loadedEntities)
                         cacheItem.ChunkColumn.Entities.Add(entity);

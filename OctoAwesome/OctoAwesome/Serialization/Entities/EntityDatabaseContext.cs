@@ -27,7 +27,7 @@ namespace OctoAwesome.Serialization.Entities
         {
             _entityDefinitionContext.AddOrUpdate(new EntityDefinition(entity));
 
-            foreach (var component in entity.Components)
+            foreach (dynamic component in entity.Components)
                 _componentsDatabaseContext.AddOrUpdate(component, entity);
         }
 
