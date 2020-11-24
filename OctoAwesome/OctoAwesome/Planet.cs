@@ -51,7 +51,6 @@ namespace OctoAwesome
         {
             get => _updateHub; set
             {
-
                 _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
                 GlobalChunkCache.InsertUpdateHub(value);
                 _updateHub = value;
