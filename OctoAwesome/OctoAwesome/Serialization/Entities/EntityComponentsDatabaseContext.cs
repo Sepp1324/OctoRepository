@@ -25,8 +25,8 @@ namespace OctoAwesome.Serialization.Entities
         /// <param name="planetId"></param>
         public void AddOrUpdate<T>(T value, Entity entity) where T : EntityComponent
         {
-            var database = _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid);
-            var tag = new IdTag<T>(entity.Id);
+            var database = _databaseProvider.GetDatabase<GuidTag<T>>(_universeGuid);
+            var tag = new GuidTag<T>(entity.Id);
             database.AddOrUpdate(tag, new Value(Serializer.Serialize(value)));
         }
 
@@ -36,10 +36,10 @@ namespace OctoAwesome.Serialization.Entities
         /// <typeparam name="T"></typeparam>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public T Get<T>(int entityId) where T : EntityComponent, new()
+        public T Get<T>(Guid entityId) where T : EntityComponent, new()
         {
-            var database = _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid);
-            var tag = new IdTag<T>(entityId);
+            var database = _databaseProvider.GetDatabase<GuidTag<T>>(_universeGuid);
+            var tag = new GuidTag<T>(entityId);
             return Serializer.Deserialize<T>(database.GetValue(tag).Content);
         }
 
@@ -51,7 +51,7 @@ namespace OctoAwesome.Serialization.Entities
         /// <returns></returns>
         public T Get<T>(Entity entity) where T : EntityComponent, new() => Get<T>(entity.Id);
 
-        public IEnumerable<IdTag<T>> GetAllKeys<T>() where T : EntityComponent => _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid).Keys;
+        public IEnumerable<GuidTag<T>> GetAllKeys<T>() where T : EntityComponent => _databaseProvider.GetDatabase<GuidTag<T>>(_universeGuid).Keys;
 
         /// <summary>
         /// Entfernt eine Komponente
@@ -61,8 +61,8 @@ namespace OctoAwesome.Serialization.Entities
         /// <param name="universeGuid"></param>
         public void Remove<T>(Entity entity) where T : EntityComponent
         {
-            var database = _databaseProvider.GetDatabase<IdTag<T>>(_universeGuid);
-            var tag = new IdTag<T>(entity.Id);
+            var database = _databaseProvider.GetDatabase<GuidTag<T>>(_universeGuid);
+            var tag = new GuidTag<T>(entity.Id);
             database.Remove(tag);
         }
     }

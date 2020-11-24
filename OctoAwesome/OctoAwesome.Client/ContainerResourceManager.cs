@@ -143,14 +143,14 @@ namespace OctoAwesome.Client
                 disposable.Dispose();
         }
 
-        public Entity LoadEntity(int entityId) => _resourceManager.LoadEntity(entityId);
+        public Entity LoadEntity(Guid entityId) => _resourceManager.LoadEntity(entityId);
 
         public IEnumerable<Entity> LoadEntitiesWithComponents<T>() where T : EntityComponent => _resourceManager.LoadEntitiesWithComponents<T>();
 
-        public IEnumerable<int> GetEntityIdsFromComponent<T>() where T : EntityComponent => _resourceManager.GetEntityIdsFromComponent<T>();
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent => _resourceManager.GetEntityIdsFromComponent<T>();
 
-        public IEnumerable<int> GetEntityIds() => _resourceManager.GetEntityIds();
+        public IEnumerable<Guid> GetEntityIds() => _resourceManager.GetEntityIds();
 
-        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(IEnumerable<int> entityIds) where T : EntityComponent, new() => _resourceManager.GetEntityComponents<T>(entityIds);
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new() => _resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

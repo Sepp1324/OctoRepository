@@ -49,8 +49,6 @@ namespace OctoAwesome
         private readonly IDisposable _simulationSubscription;
         private readonly IPool<EntityNotification> _entityNotificationPool;
         
-        private IdManager _entityIdManager;
-
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Simulation.
         /// </summary>
@@ -129,7 +127,6 @@ namespace OctoAwesome
             if (State != SimulationState.Ready)
                 throw new Exception();
 
-            _entityIdManager = new IdManager(ResourceManager.GetEntityIds());
             State = SimulationState.Running;
         }
 
@@ -195,10 +192,8 @@ namespace OctoAwesome
             entity.Initialize(ResourceManager);
             entity.Simulation = this;
 
-            if (entity.Id == -1)
-                entity.Id = _entityIdManager.GetId();
-            else
-                _entityIdManager.ReserveId(entity.Id);
+            if (entity.Id == Guid.Empty)
+                entity.Id = Guid.NewGuid();
 
             _entities.Add(entity);
 
@@ -215,7 +210,7 @@ namespace OctoAwesome
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            if (entity.Id == 0)
+            if (entity.Id == Guid.Empty)
                 return;
 
             if (entity.Simulation != this)
@@ -235,12 +230,11 @@ namespace OctoAwesome
                 component.Remove(entity);
 
             _entities.Remove(entity);
-            _entityIdManager.ReleaseId(entity.Id);
-            entity.Id = -1;
+            entity.Id = Guid.Empty;
             entity.Simulation = null;
         }
 
-        public void RemoveEntity(int entityId) => RemoveEntity(_entities.First(e => e.Id == entityId));
+        public void RemoveEntity(Guid entityId) => RemoveEntity(_entities.First(e => e.Id == entityId));
 
         public void OnNext(Notification value)
         {

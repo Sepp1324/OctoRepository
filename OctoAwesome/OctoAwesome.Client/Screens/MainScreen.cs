@@ -1,21 +1,20 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Runtime;
 using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class MainScreen : BaseScreen
     {
-        private AssetComponent assets;
+        private AssetComponent _assets;
 
         public MainScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            _assets = manager.Game.Assets;
 
-            Padding = new Border(0,0,0,0);
+            Padding = new Border(0, 0, 0, 0);
 
-            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
+            Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);
@@ -25,8 +24,7 @@ namespace OctoAwesome.Client.Screens
             startButton.Margin = new Border(0, 0, 0, 10);
             startButton.LeftMouseClick += (s, e) =>
             {
-                ((ContainerResourceManager)manager.Game.ResourceManager)
-                .CreateManager(false);
+                ((ContainerResourceManager)manager.Game.ResourceManager).CreateManager(false);
                 manager.NavigateToScreen(new LoadScreen(manager));
             };
             stack.Controls.Add(startButton);
@@ -59,13 +57,13 @@ namespace OctoAwesome.Client.Screens
             };
             stack.Controls.Add(creditsButton);
 
-            Button webButton = Button.TextButton(manager, "Octoawesome.net");
+            Button webButton = Button.TextButton(manager, "OctoAwesome");
             webButton.VerticalAlignment = VerticalAlignment.Bottom;
             webButton.HorizontalAlignment = HorizontalAlignment.Right;
             webButton.Margin = new Border(10, 10, 10, 10);
             webButton.LeftMouseClick += (s, e) =>
             {
-                Process.Start("http://octoawesome.net/");
+                Process.Start("www.pornhub.com");
             };
             Controls.Add(webButton);
 

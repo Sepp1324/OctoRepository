@@ -86,14 +86,14 @@ namespace OctoAwesome
        
         IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index);
        
-        Entity LoadEntity(int entityId);
+        Entity LoadEntity(Guid entityId);
         
         IEnumerable<Entity> LoadEntitiesWithComponents<T>() where T : EntityComponent;
        
-        IEnumerable<int> GetEntityIdsFromComponent<T>() where T : EntityComponent;
+        IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent;
 
-        IEnumerable<int> GetEntityIds();
+        IEnumerable<Guid> GetEntityIds();
 
-        IEnumerable<(int Id, T Component)> GetEntityComponents<T>(IEnumerable<int> entityIds) where T : EntityComponent, new();
+        IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new();
     }
 }

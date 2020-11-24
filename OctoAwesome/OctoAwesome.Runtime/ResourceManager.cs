@@ -303,7 +303,7 @@ namespace OctoAwesome.Runtime
             _persistenceManager.SaveColumn(CurrentUniverse.Id, chunkColumn.Planet, chunkColumn);
         }
 
-        public Entity LoadEntity(int entityId)
+        public Entity LoadEntity(Guid entityId)
         {
             var awaiter = _persistenceManager.Load(out Entity entity, CurrentUniverse.Id, entityId);
 
@@ -327,10 +327,10 @@ namespace OctoAwesome.Runtime
 
         public IEnumerable<Entity> LoadEntitiesWithComponents<T>() where T : EntityComponent => _persistenceManager.LoadEntitiesWithComponents<T>(CurrentUniverse.Id);
 
-        public IEnumerable<int> GetEntityIdsFromComponent<T>() where T : EntityComponent => _persistenceManager.GetEntityIdsFromComponent<T>(CurrentUniverse.Id);
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent => _persistenceManager.GetEntityIdsFromComponent<T>(CurrentUniverse.Id);
 
-        public IEnumerable<int> GetEntityIds() =>  _persistenceManager.GetEntityIds(CurrentUniverse.Id);
+        public IEnumerable<Guid> GetEntityIds() =>  _persistenceManager.GetEntityIds(CurrentUniverse.Id);
 
-        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(IEnumerable<int> entityIds) where T : EntityComponent, new() => _persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds);
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new() => _persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds);
     }
 }

@@ -39,7 +39,7 @@ namespace OctoAwesome
         // TODO: Früher oder später nach draußen auslagern
         private readonly Task _cleanupTask;
         private readonly ILogger _logger;
-        private readonly IEnumerable<(int Id, PositionComponent Component)> _positionComponents;
+        private readonly IEnumerable<(Guid Id, PositionComponent Component)> _positionComponents;
         private IUpdateHub _updateHub;
 
         /// <summary>
@@ -82,7 +82,6 @@ namespace OctoAwesome
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(GlobalChunkCache));
 
             var ids = _resourceManager.GetEntityIdsFromComponent<PositionComponent>();
-            // CONTINUE: https://youtu.be/BffYE4iCs-E?t=2169
             _positionComponents = _resourceManager.GetEntityComponents<PositionComponent>(ids);
         }
 

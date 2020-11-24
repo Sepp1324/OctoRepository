@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace OctoAwesome.Serialization.Entities
 {
-    public sealed class EntityDatabaseContext : IDatabaseContext<IdTag<Entity>, Entity>
+    public sealed class EntityDatabaseContext : IDatabaseContext<GuidTag<Entity>, Entity>
     {
         private readonly EntityDefinition.EntityDefinitionContext _entityDefinitionContext;
         private readonly EntityComponentsDatabaseContext _componentsDatabaseContext;
@@ -15,7 +15,7 @@ namespace OctoAwesome.Serialization.Entities
 
         public EntityDatabaseContext(IDatabaseProvider databaseProvider, Guid universeGuid)
         {
-            var database = databaseProvider.GetDatabase<IdTag<EntityDefinition>>(universeGuid);
+            var database = databaseProvider.GetDatabase<GuidTag<EntityDefinition>>(universeGuid);
 
             _entityDefinitionContext = new EntityDefinition.EntityDefinitionContext(database);
             _componentsDatabaseContext = new EntityComponentsDatabaseContext(databaseProvider, universeGuid);
@@ -31,9 +31,9 @@ namespace OctoAwesome.Serialization.Entities
                 _componentsDatabaseContext.AddOrUpdate(component, entity);
         }
 
-        public Entity Get(IdTag<Entity> key)
+        public Entity Get(GuidTag<Entity> key)
         {
-            var definition = _entityDefinitionContext.Get(new IdTag<EntityDefinition>(key.Tag));
+            var definition = _entityDefinitionContext.Get(new GuidTag<EntityDefinition>(key.Tag));
             var entity = (Entity)Activator.CreateInstance(definition.Type);
 
             entity.Id = definition.Id;
@@ -49,19 +49,19 @@ namespace OctoAwesome.Serialization.Entities
 
         public IEnumerable<Entity> GetEntitiesWithComponents<T>() where T : EntityComponent
         {
-            var entities = _componentsDatabaseContext.GetAllKeys<T>().Select(t => new IdTag<Entity>(t.Tag));
+            var entities = _componentsDatabaseContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
 
             foreach (var entityId in entities)
                 yield return Get(entityId);
         }
 
-        public IEnumerable<IdTag<Entity>> GetEntityIdsFromComponent<T>() where T : EntityComponent => _componentsDatabaseContext.GetAllKeys<T>().Select(t => new IdTag<Entity>(t.Tag));
+        public IEnumerable<GuidTag<Entity>> GetEntityIdsFromComponent<T>() where T : EntityComponent => _componentsDatabaseContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
 
-        public IEnumerable<IdTag<Entity>> GetAllKeys() => _entityDefinitionContext.GetAllKeys().Select(e => new IdTag<Entity>(e.Tag));
+        public IEnumerable<GuidTag<Entity>> GetAllKeys() => _entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<Entity>(e.Tag));
 
         public void Remove(Entity entity)
         {
-            var definition = _entityDefinitionContext.Get(new IdTag<EntityDefinition>(entity.Id));
+            var definition = _entityDefinitionContext.Get(new GuidTag<EntityDefinition>(entity.Id));
 
             _entityDefinitionContext.Remove(definition);
 

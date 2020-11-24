@@ -85,11 +85,12 @@ namespace OctoAwesome
        
         void SaveEntity(Entity entity, Guid universeGuid);
        
-        Awaiter Load(out Entity entity, Guid universeGuid, int entityId);
+        Awaiter Load(out Entity entity, Guid universeGuid, Guid entityId);
 
-        IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent;
+        IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent;
        
-        IEnumerable<(int Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<int> entityIds) where T : EntityComponent, new();
-        IEnumerable<int> GetEntityIds(Guid universeGuid);
+        IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<Guid> entityIds) where T : EntityComponent, new();
+        
+        IEnumerable<Guid> GetEntityIds(Guid universeGuid);
     }
 }

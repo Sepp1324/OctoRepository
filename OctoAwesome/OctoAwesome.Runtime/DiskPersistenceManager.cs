@@ -265,10 +265,10 @@ namespace OctoAwesome.Runtime
         /// <param name="universeGuid"></param>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public Awaiter Load(out Entity entity, Guid universeGuid, int entityId)
+        public Awaiter Load(out Entity entity, Guid universeGuid, Guid entityId)
         {
             var entityContext = new EntityDatabaseContext(_databaseProvider, universeGuid);
-            entity = entityContext.Get(new IdTag<Entity>(entityId));
+            entity = entityContext.Get(new GuidTag<Entity>(entityId));
 
             var awaiter = _awaiterPool.Get();
             awaiter.SetResult(entity);
@@ -325,9 +325,9 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T"></typeparam>
         /// <param name="universeGuid"></param>
         /// <returns></returns>
-        public IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => new EntityDatabaseContext(_databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => new EntityDatabaseContext(_databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
 
-        public IEnumerable<int> GetEntityIds(Guid universeGuid) => new EntityDatabaseContext(_databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
+        public IEnumerable<Guid> GetEntityIds(Guid universeGuid) => new EntityDatabaseContext(_databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
         
         /// <summary>
         /// Liefert die Entity-Komponenten zurück
@@ -336,7 +336,7 @@ namespace OctoAwesome.Runtime
         /// <param name="universeGuid"></param>
         /// <param name="entityIds"></param>
         /// <returns></returns>
-        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<int> entityIds) where T : EntityComponent, new()
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<Guid> entityIds) where T : EntityComponent, new()
         {
             foreach (var entityId in entityIds)
                 yield return (entityId, new EntityComponentsDatabaseContext(_databaseProvider, universeGuid).Get<T>(entityId));

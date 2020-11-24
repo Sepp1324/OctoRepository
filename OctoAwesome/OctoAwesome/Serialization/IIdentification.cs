@@ -1,7 +1,9 @@
-﻿namespace OctoAwesome.Serialization
+﻿using System;
+
+namespace OctoAwesome.Serialization
 {
     public interface IIdentification
     {
-        int Id { get;  }
+        Guid Id { get;  }
     }
 }

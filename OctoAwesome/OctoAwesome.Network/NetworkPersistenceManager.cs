@@ -102,7 +102,7 @@ namespace OctoAwesome.Network
             return awaiter;
         }
 
-        public Awaiter Load(out Entity entity, Guid universeGuid, int entityId)
+        public Awaiter Load(out Entity entity, Guid universeGuid, Guid entityId)
         {
             entity = null;
             return null;
@@ -116,9 +116,9 @@ namespace OctoAwesome.Network
         /// <typeparam name="T"></typeparam>
         /// <param name="universeGuid"></param>
         /// <returns></returns>
-        public IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => Array.Empty<int>();
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => Array.Empty<Guid>();
 
-        public IEnumerable<int> GetEntityIds(Guid universeGuid) => Array.Empty<int>();
+        public IEnumerable<Guid> GetEntityIds(Guid universeGuid) => Array.Empty<Guid>();
         
         /// <summary>
         /// Liefert die Entity-Komponenten zurück
@@ -127,7 +127,7 @@ namespace OctoAwesome.Network
         /// <param name="universeGuid"></param>
         /// <param name="entityIds"></param>
         /// <returns></returns>
-        public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<int> entityIds) where T : EntityComponent, new() => Array.Empty<(int, T)>();
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<Guid> entityIds) where T : EntityComponent, new() => Array.Empty<(Guid, T)>();
 
         private Awaiter GetAwaiter(ISerializable serializable, uint packageUId)
         {
