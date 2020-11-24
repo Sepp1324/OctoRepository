@@ -149,6 +149,8 @@ namespace OctoAwesome.Client
 
         public IEnumerable<int> GetEntityIdsFromComponent<T>() where T : EntityComponent => _resourceManager.GetEntityIdsFromComponent<T>();
 
+        public IEnumerable<int> GetEntityIds() => _resourceManager.GetEntityIds();
+
         public IEnumerable<(int Id, T Component)> GetEntityComponents<T>(IEnumerable<int> entityIds) where T : EntityComponent, new() => _resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

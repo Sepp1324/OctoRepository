@@ -6,6 +6,7 @@ using OctoAwesome.Pooling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OctoAwesome.Database;
 
 namespace OctoAwesome
 {
@@ -43,12 +44,12 @@ namespace OctoAwesome
         /// </summary>
         public List<Entity> Entities => _entities.ToList();
 
-        private int _nextId = 1;
-
         private readonly IExtensionResolver _extensionResolver;
         private readonly HashSet<Entity> _entities = new HashSet<Entity>();
         private readonly IDisposable _simulationSubscription;
         private readonly IPool<EntityNotification> _entityNotificationPool;
+        
+        private IdManager _entityIdManager;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Simulation.
@@ -59,7 +60,6 @@ namespace OctoAwesome
             _simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
             _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
-
             _extensionResolver = extensionResolver;
             State = SimulationState.Ready;
             UniverseId = Guid.Empty;
@@ -69,7 +69,6 @@ namespace OctoAwesome
                 ValidateAddComponent, ValidateRemoveComponent, null, null);
 
             extensionResolver.ExtendSimulation(this);
-
         }
 
         private void ValidateAddComponent(SimulationComponent component)
@@ -130,6 +129,7 @@ namespace OctoAwesome
             if (State != SimulationState.Ready)
                 throw new Exception();
 
+            _entityIdManager = new IdManager(ResourceManager.GetEntityIds());
             State = SimulationState.Running;
         }
 
@@ -195,13 +195,10 @@ namespace OctoAwesome
             entity.Initialize(ResourceManager);
             entity.Simulation = this;
 
-            if (entity.Id > _nextId)
-                _nextId = entity.Id;
-
-            if (entity.Id == 0)
-                entity.Id = _nextId++;
-            else if(entity.Id == _nextId)
-                _nextId++;
+            if (entity.Id == -1)
+                entity.Id = _entityIdManager.GetId();
+            else
+                _entityIdManager.ReserveId(entity.Id);
 
             _entities.Add(entity);
 
@@ -238,7 +235,8 @@ namespace OctoAwesome
                 component.Remove(entity);
 
             _entities.Remove(entity);
-            entity.Id = 0;
+            _entityIdManager.ReleaseId(entity.Id);
+            entity.Id = -1;
             entity.Simulation = null;
         }
 

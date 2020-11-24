@@ -327,6 +327,8 @@ namespace OctoAwesome.Runtime
         /// <returns></returns>
         public IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => new EntityDatabaseContext(_databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
 
+        public IEnumerable<int> GetEntityIds(Guid universeGuid) => new EntityDatabaseContext(_databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
+        
         /// <summary>
         /// Liefert die Entity-Komponenten zurück
         /// </summary>

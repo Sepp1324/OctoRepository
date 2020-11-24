@@ -118,6 +118,8 @@ namespace OctoAwesome.Network
         /// <returns></returns>
         public IEnumerable<int> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => Array.Empty<int>();
 
+        public IEnumerable<int> GetEntityIds(Guid universeGuid) => Array.Empty<int>();
+        
         /// <summary>
         /// Liefert die Entity-Komponenten zurück
         /// </summary>

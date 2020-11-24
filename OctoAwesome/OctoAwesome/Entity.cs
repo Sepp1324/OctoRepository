@@ -30,7 +30,11 @@ namespace OctoAwesome
         /// <summary>
         /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
-        public Entity() => Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+        public Entity()
+        {
+            Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+            Id = -1;
+        }
 
         private void OnRemoveComponent(EntityComponent component)
         {
@@ -112,7 +116,6 @@ namespace OctoAwesome
         public virtual void OnUpdate(SerializableNotification notification)
         {
         }
-
 
         public virtual void Update(SerializableNotification notification)
         {

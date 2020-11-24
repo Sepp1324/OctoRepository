@@ -7,6 +7,7 @@ namespace OctoAwesome.Database
     public sealed class IdManager
     {
         private readonly Queue<int> _freeIds;
+        private readonly HashSet<int> _reservedIds;
         private int _nextId;
 
         public IdManager() : this(Array.Empty<int>())
@@ -17,10 +18,11 @@ namespace OctoAwesome.Database
         {
             if (alreadyUsedIds == null)
                 alreadyUsedIds = Array.Empty<int>();
-            
-            _freeIds = new Queue<int>();
 
-            var ids = alreadyUsedIds.OrderBy(i => i).ToArray();
+            _freeIds = new Queue<int>();
+            _reservedIds = new HashSet<int>();
+
+            var ids = alreadyUsedIds.Distinct().OrderBy(i => i).ToArray();
 
             if (ids.Length <= 0)
             {
@@ -45,12 +47,21 @@ namespace OctoAwesome.Database
 
         public int GetId()
         {
-            if (_freeIds.Count > 0)
-                return _freeIds.Dequeue();
+            int id;
 
-            return _nextId++;
+            do
+            {
+                id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _nextId++;
+            } while (_reservedIds.Contains(id));
+            return id;
         }
 
-        public void ReleaseId(int id) => _freeIds.Enqueue(id);
+        public void ReleaseId(int id)
+        {
+            _freeIds.Enqueue(id);
+            _reservedIds.Remove(id);
+        }
+
+        public void ReserveId(int id) => _reservedIds.Add(id);
     }
 }
