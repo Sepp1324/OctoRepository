@@ -230,7 +230,9 @@ namespace OctoAwesome
             }
 
             if (!(State == SimulationState.Running || State == SimulationState.Paused))
-                throw new NotSupportedException("Adding Entities only allowed in running or paused state");
+                throw new NotSupportedException("Removing Entities only allowed in running or paused state");
+
+            ResourceManager.SaveEntity(entity);
 
             foreach (var component in Components)
                 component.Remove(entity);
@@ -238,8 +240,6 @@ namespace OctoAwesome
             _entities.Remove(entity);
             entity.Id = 0;
             entity.Simulation = null;
-
-            ResourceManager.SaveEntity(entity);
         }
 
         public void RemoveEntity(int entityId) => RemoveEntity(_entities.First(e => e.Id == entityId));

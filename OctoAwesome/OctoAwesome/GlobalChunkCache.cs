@@ -13,7 +13,7 @@ namespace OctoAwesome
     /// <summary>
     /// Globaler Cache für Chunks
     /// </summary>
-    public sealed class GlobalChunkCache : IGlobalChunkCache
+    public sealed class GlobalChunkCache : IGlobalChunkCache, IDisposable
     {
         public event EventHandler<IChunkColumn> ChunkColumnChanged;
 
@@ -82,7 +82,7 @@ namespace OctoAwesome
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(GlobalChunkCache));
 
             var ids = _resourceManager.GetEntityIdsFromComponent<PositionComponent>();
-
+            // CONTINUE: https://youtu.be/BffYE4iCs-E?t=2169
             _positionComponents = _resourceManager.GetEntityComponents<PositionComponent>(ids);
         }
 
@@ -101,7 +101,6 @@ namespace OctoAwesome
 
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
                 {
-
                     cacheItem = new CacheItem()
                     {
                         Planet = Planet,
@@ -326,6 +325,29 @@ namespace OctoAwesome
 
         public void InsertUpdateHub(IUpdateHub updateHub) => this._updateHub = updateHub;
 
+        public void Dispose()
+        {
+            foreach (var item in _unreferencedItems.ToArray())
+                item.Dispose();
+
+            foreach (var cacheItem in _cache.ToArray())
+                cacheItem.Value.Dispose();
+
+            foreach (var chunkItem in _newChunks.ToArray())
+                chunkItem.Dispose();
+
+            foreach (var chunkItem in _oldChunks.ToArray())
+                chunkItem.Dispose();
+
+            _cache.Clear();
+            _newChunks.Clear();
+            _oldChunks.Clear();
+
+            _semaphore.Dispose();
+            _updateSemaphore.Dispose();
+            _autoResetEvent.Dispose();
+        }
+
         /// <summary>
         /// Element für den Cache
         /// </summary>
@@ -342,7 +364,6 @@ namespace OctoAwesome
             /// Die Zahl der Subscriber, die das Item Abboniert hat.
             /// </summary>
             public int References { get; set; }
-
 
             /// <summary>
             /// Der Chunk, auf den das <see cref="CacheItem"/> referenziert
@@ -364,11 +385,26 @@ namespace OctoAwesome
 
             public event Action<CacheItem, IChunkColumn> Changed;
 
+            private bool _disposed;
+
             public CacheItem() => internalSemaphore = new SemaphoreExtended(1, 1);
 
             public SemaphoreExtended.SemaphoreLock Wait() => internalSemaphore.Wait();
 
-            public void Dispose() => internalSemaphore.Dispose();
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+                _disposed = true;
+
+                internalSemaphore.Dispose();
+
+                if (_chunkColumn is IDisposable disposable)
+                    disposable.Dispose();
+
+                _chunkColumn = null;
+                Planet = null;
+            }
 
             private void OnChanged(IChunkColumn chunkColumn, IChunk chunk) => Changed?.Invoke(this, chunkColumn);
         }

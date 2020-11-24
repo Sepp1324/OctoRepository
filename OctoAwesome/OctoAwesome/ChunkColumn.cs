@@ -11,7 +11,7 @@ namespace OctoAwesome
     /// </summary>
     public class ChunkColumn : IChunkColumn
     {
-        private readonly IGlobalChunkCache globalChunkCache;
+        private readonly IGlobalChunkCache _globalChunkCache;
 
         /// <summary>
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
@@ -50,7 +50,7 @@ namespace OctoAwesome
             Entities = new EntityList(this);
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
-            globalChunkCache = planet.GlobalChunkCache;
+            _globalChunkCache = planet.GlobalChunkCache;
         }
 
         private void OnChunkChanged(IChunk arg1)
@@ -380,7 +380,7 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification) => globalChunkCache.OnUpdate(notification);
+        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
 
         public void Update(SerializableNotification notification)
         {

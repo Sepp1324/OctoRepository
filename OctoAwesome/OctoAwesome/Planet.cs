@@ -61,6 +61,8 @@ namespace OctoAwesome
         private IUpdateHub _updateHub;
         private IDisposable _chunkSubscription;
 
+        private bool _disposed;
+
         /// <summary>
         /// Initialisierung des Planeten.
         /// </summary>
@@ -108,13 +110,22 @@ namespace OctoAwesome
             Gravity = reader.ReadSingle();
             Size = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Universe = new Guid(reader.ReadBytes(16));
-            //var name = reader.ReadString();
         }
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+
             _chunkSubscription.Dispose();
+
+            if (GlobalChunkCache is IDisposable disposable)
+                disposable.Dispose();
+            
             _chunkSubscription = null;
+            GlobalChunkCache = null;
         }
     }
 }

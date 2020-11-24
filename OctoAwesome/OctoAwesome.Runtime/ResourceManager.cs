@@ -109,7 +109,7 @@ namespace OctoAwesome.Runtime
             // Neuen Daten loaden/generieren
 
             _persistenceManager.Load(out IUniverse universe, universeId).WaitOnAndRelease();
-         
+
             CurrentUniverse = universe;
 
             if (CurrentUniverse == null)
@@ -124,8 +124,11 @@ namespace OctoAwesome.Runtime
             _persistenceManager.SaveUniverse(CurrentUniverse);
 
             foreach (var planet in Planets)
+            {
                 _persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-            
+                planet.Value.Dispose();
+            }
+
             Planets.Clear();
 
             CurrentUniverse = null;
@@ -228,7 +231,7 @@ namespace OctoAwesome.Runtime
             do
             {
                 awaiter = _persistenceManager.Load(out column11, CurrentUniverse.Id, planet, index);
-                
+
                 if (awaiter == null)
                 {
                     IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
