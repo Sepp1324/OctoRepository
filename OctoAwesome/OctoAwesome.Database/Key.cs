@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
     public readonly struct Key<TTag> : IEquatable<Key<TTag>> where TTag : ITag, new()
     {
         public const int BASE_KEY_SIZE = sizeof(long) + sizeof(int);
+
         public static int KEY_SIZE { get; }
+
         public static Key<TTag> Empty { get; }
 
         static Key()
@@ -20,8 +20,12 @@ namespace OctoAwesome.Database
 
         public TTag Tag { get; }
         public long Index { get; }
+
         public int Length { get; }
+
         public long Position { get; }
+
+        public bool IsEmpty => Tag == null && Length == 0;
 
         public Key(TTag tag, long index, int length, long position)
         {
@@ -57,12 +61,9 @@ namespace OctoAwesome.Database
             return new Key<TTag>(tag, localIndex, length, index);
         }
 
-        public override bool Equals(object obj) 
-            => obj is Key<TTag> key 
-            && Equals(key);
-        public bool Equals(Key<TTag> other) 
-            => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag) 
-               && Length == other.Length;
+        public override bool Equals(object obj) => obj is Key<TTag> key && Equals(key);
+
+        public bool Equals(Key<TTag> other) => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag) && Length == other.Length;
 
         public override int GetHashCode()
         {
@@ -74,6 +75,7 @@ namespace OctoAwesome.Database
 
         public static bool operator ==(Key<TTag> left, Key<TTag> right) 
             => left.Equals(right);
+
         public static bool operator !=(Key<TTag> left, Key<TTag> right) 
             => !(left == right);
     }
