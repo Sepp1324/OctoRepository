@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
-    public interface ISerializableEnumerator<T> : IEnumerable<T>, ISerializable where T : ISerializable
+    public interface ISerializableEnumerable<T> : IEnumerable<T>, ISerializable where T : ISerializable
     {
     }
 }

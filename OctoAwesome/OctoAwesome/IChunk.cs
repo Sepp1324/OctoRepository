@@ -102,9 +102,7 @@ namespace OctoAwesome
         void SetBlockResources(int x, int y, int z, ushort[] resources);
 
         void SetColumn(IChunkColumn chunkColumn);
-
         void Update(Notifications.SerializableNotification notification);
-
         void OnUpdate(Notifications.SerializableNotification notification);
 
         event Action<IChunk> Changed;

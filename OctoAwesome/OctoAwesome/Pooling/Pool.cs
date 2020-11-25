@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Pooling
 {
     public sealed class Pool<T> : IPool<T> where T : IPoolElement, new()
     {
-        private readonly Stack<T> _internalStack;
-        private readonly SemaphoreExtended _semaphoreExtended;
+        private readonly Stack<T> internalStack;
+        private readonly SemaphoreExtended semaphoreExtended;
 
         public Pool()
         {
-            _internalStack = new Stack<T>();
-            _semaphoreExtended = new SemaphoreExtended(1, 1);
+            internalStack = new Stack<T>();
+            semaphoreExtended = new SemaphoreExtended(1, 1);
         }
 
         public T Get()
         {
             T obj;
 
-            using (_semaphoreExtended.Wait())
+            using (semaphoreExtended.Wait())
             {
-                if (_internalStack.Count > 0)
-                    obj = _internalStack.Pop();
+                if (internalStack.Count > 0)
+                    obj = internalStack.Pop();
                 else
                     obj = new T();
             }
@@ -32,8 +35,8 @@ namespace OctoAwesome.Pooling
 
         public void Push(T obj)
         {
-            using (_semaphoreExtended.Wait())
-                _internalStack.Push(obj);
+            using (semaphoreExtended.Wait())
+                internalStack.Push(obj);
         }
 
         public void Push(IPoolElement obj)

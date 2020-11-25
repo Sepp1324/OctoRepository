@@ -1,7 +1,12 @@
 ﻿using engenious;
+using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
@@ -13,35 +18,34 @@ namespace OctoAwesome.Network
         {
             get
             {
-                lock (_mainLock)
-                    return _simulation;
+                lock (mainLock)
+                    return simulation;
             }
             set
             {
-                lock (_mainLock)
-                    _simulation = value;
+                lock (mainLock)
+                    simulation = value;
             }
         }
 
         public GameTime GameTime { get; private set; }
 
         public ResourceManager ResourceManager { get; private set; }
-
         public GameService Service { get; }
 
-        private Simulation _simulation;
-        private readonly ExtensionLoader _extensionLoader;
+        private Simulation simulation;
+        private readonly ExtensionLoader extensionLoader;
 
-        private readonly ISettings _settings;
-        private readonly UpdateHub _updateHub;
-        private readonly Thread _backgroundThread;
-        private readonly object _mainLock;
+        private readonly ISettings settings;
+        private readonly UpdateHub updateHub;
+        private readonly Thread backgroundThread;
+        private readonly object mainLock;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
-            _mainLock = new object();
-            _settings = settings;
-            _updateHub = updateHub;
+            mainLock = new object();
+            this.settings = settings;
+            this.updateHub = updateHub;
 
 
             TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
@@ -54,18 +58,18 @@ namespace OctoAwesome.Network
             TypeContainer.Register<ResourceManager>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IResourceManager, ResourceManager>(InstanceBehaviour.Singleton);
 
-            _extensionLoader = TypeContainer.Get<ExtensionLoader>();
-            _extensionLoader.LoadExtensions();
+            extensionLoader = TypeContainer.Get<ExtensionLoader>();
+            extensionLoader.LoadExtensions();
 
             ResourceManager = TypeContainer.Get<ResourceManager>();
             ResourceManager.InsertUpdateHub(updateHub);
 
             Service = new GameService(ResourceManager);
-            _simulation = new Simulation(ResourceManager, _extensionLoader, Service)
+            simulation = new Simulation(ResourceManager, extensionLoader, Service)
             {
                 IsServerSide = true
             };
-            _backgroundThread = new Thread(SimulationLoop)
+            backgroundThread = new Thread(SimulationLoop)
             {
                 Name = "Simulation Loop",
                 IsBackground = true
@@ -77,26 +81,31 @@ namespace OctoAwesome.Network
             IsRunning = true;
             GameTime = new GameTime();
 
-            var universe = _settings.Get<string>("LastUniverse");
+            //TODO: Load and Save logic for Server (Multiple games etc.....)
+            var universe = settings.Get<string>("LastUniverse");
 
             if (string.IsNullOrWhiteSpace(universe))
             {
-                var guid = _simulation.NewGame("melmack", new Random().Next().ToString());
-                _settings.Set("LastUniverse", guid.ToString());
+                var guid = simulation.NewGame("melmack", new Random().Next().ToString());
+                settings.Set("LastUniverse", guid.ToString());
             }
             else
             {
-                _simulation.LoadGame(new Guid(universe));
+                if (!simulation.TryLoadGame(new Guid(universe)))
+                {
+                    var guid = simulation.NewGame("melmack", new Random().Next().ToString());
+                    settings.Set("LastUniverse", guid.ToString());
+                }
             }
 
-            _backgroundThread.Start();
+            backgroundThread.Start();
         }
 
         public void Stop()
         {
             IsRunning = false;
-            _simulation.ExitGame();
-            _backgroundThread.Abort();
+            simulation.ExitGame();
+            backgroundThread.Abort();
         }
 
         public IUniverse GetUniverse()
@@ -110,18 +119,21 @@ namespace OctoAwesome.Network
         public IPlanet GetPlanet(int planetId)
         {
             var planet = ResourceManager.GetPlanet(planetId);
-            planet.UpdateHub = _updateHub;
+            planet.UpdateHub = updateHub;
             return planet;
         }
 
-        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2) => ResourceManager.LoadChunkColumn(planet, index2);
-
-        public IChunkColumn LoadColumn(int planetId, Index2 index2) => LoadColumn(GetPlanet(planetId), index2);
+        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2)
+            => ResourceManager.LoadChunkColumn(planet, index2);
+        public IChunkColumn LoadColumn(int planetId, Index2 index2)
+            => LoadColumn(GetPlanet(planetId), index2);
 
         private void SimulationLoop()
         {
             while (IsRunning)
+            {
                 Simulation.Update(GameTime);
+            }
         }
     }
 }

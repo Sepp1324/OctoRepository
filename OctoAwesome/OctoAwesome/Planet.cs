@@ -46,21 +46,21 @@ namespace OctoAwesome
         public IMapGenerator Generator { get; set; }
 
         public IGlobalChunkCache GlobalChunkCache { get; set; }
-
         public IUpdateHub UpdateHub
         {
-            get => _updateHub; set
+            get => updateHub; set
             {
-                _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
+
+                chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
                 GlobalChunkCache.InsertUpdateHub(value);
-                _updateHub = value;
+                updateHub = value;
             }
         }
 
-        private IUpdateHub _updateHub;
-        private IDisposable _chunkSubscription;
+        private IUpdateHub updateHub;
+        private IDisposable chunkSubscription;
 
-        private bool _disposed;
+        private bool disposed;
 
         /// <summary>
         /// Initialisierung des Planeten.
@@ -74,14 +74,20 @@ namespace OctoAwesome
 
             Id = id;
             Universe = universe;
-            Size = new Index3((int)Math.Pow(2, size.X), (int)Math.Pow(2, size.Y), (int)Math.Pow(2, size.Z));
+            Size = new Index3(
+                (int)Math.Pow(2, size.X),
+                (int)Math.Pow(2, size.Y),
+                (int)Math.Pow(2, size.Z));
             Seed = seed;
         }
 
         /// <summary>
         /// Erzeugt eine neue Instanz eines Planeten.
         /// </summary>
-        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
+        public Planet()
+        {
+            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
+        }
 
         /// <summary>
         /// Serialisiert den Planeten in den angegebenen Stream.
@@ -109,21 +115,22 @@ namespace OctoAwesome
             Gravity = reader.ReadSingle();
             Size = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Universe = new Guid(reader.ReadBytes(16));
+            //var name = reader.ReadString();
         }
 
         public void Dispose()
         {
-            if (_disposed)
+            if (disposed)
                 return;
 
-            _disposed = true;
+            disposed = true;
 
-            _chunkSubscription.Dispose();
+            chunkSubscription.Dispose();
 
             if (GlobalChunkCache is IDisposable disposable)
                 disposable.Dispose();
-            
-            _chunkSubscription = null;
+
+            chunkSubscription = null;
             GlobalChunkCache = null;
         }
     }

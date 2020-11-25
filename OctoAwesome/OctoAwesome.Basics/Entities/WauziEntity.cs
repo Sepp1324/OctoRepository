@@ -1,4 +1,9 @@
-﻿using engenious;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using engenious;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.EntityComponents;
 
@@ -34,7 +39,9 @@ namespace OctoAwesome.Basics.Entities
             }
 
             if (controller.JumpActive)
+            {
                 controller.JumpInput = false;
+            }
         }
 
         public override void RegisterDefault()

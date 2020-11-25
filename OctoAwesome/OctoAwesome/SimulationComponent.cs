@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -42,7 +44,9 @@ namespace OctoAwesome
         public void Add(Entity entity)
         {
             if (Match(entity) && AddEntity(entity))
+            {
                 entities.Add(entity);
+            }
         }
 
         /// <summary>
@@ -105,7 +109,8 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>();
+        protected override bool Match(Entity entity) 
+            => entity.Components.ContainsComponent<C1>();
 
         /// <summary>
         /// Updatemethode der Entity
@@ -139,7 +144,9 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity)  => entity.Components.ContainsComponent<C1>() && entity.Components.ContainsComponent<C2>();
+        protected override bool Match(Entity entity) 
+            => entity.Components.ContainsComponent<C1>()
+                && entity.Components.ContainsComponent<C2>();
 
         /// <summary>
         /// Updatemethode der Entity

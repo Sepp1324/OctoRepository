@@ -1,4 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -10,7 +15,10 @@ namespace OctoAwesome.EntityComponents
 
         public float BaseZRotation { get; set; }
 
-        public RenderComponent() => Sendable = true;
+        public RenderComponent()
+        {
+            Sendable = true;
+        }
 
         public override void Serialize(BinaryWriter writer)
         {

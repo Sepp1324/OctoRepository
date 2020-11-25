@@ -50,13 +50,10 @@ namespace OctoAwesome
         void Clear();
 
         void BeforeSimulationUpdate(Simulation simulation);
-
         void AfterSimulationUpdate(Simulation simulation);
 
         void OnUpdate(SerializableNotification notification);
-
         void Update(SerializableNotification notification);
-
         void InsertUpdateHub(IUpdateHub updateHub);
     }
 }

@@ -1,89 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
-    /// <summary>
-    /// IDManager für Entities
-    /// </summary>
     public sealed class IdManager
     {
-        private readonly Queue<int> _freeIds;
-        private readonly HashSet<int> _reservedIds;
-        private int _nextId;
+        private readonly Queue<int> freeIds;
+        private readonly HashSet<int> reservedIds;
+        private int nextId;
 
-        /// <summary>
-        /// Konstruktor für IDManager
-        /// </summary>
         public IdManager() : this(Array.Empty<int>())
         {
         }
-
-        /// <summary>
-        /// Konstruktor für IDManager
-        /// </summary>
-        /// <param name="alreadyUsedIds"></param>
         public IdManager(IEnumerable<int> alreadyUsedIds)
         {
             if (alreadyUsedIds == null)
                 alreadyUsedIds = Array.Empty<int>();
 
-            _freeIds = new Queue<int>();
-            _reservedIds = new HashSet<int>();
+            freeIds = new Queue<int>();
+            reservedIds = new HashSet<int>();
 
             var ids = alreadyUsedIds.Distinct().OrderBy(i => i).ToArray();
-
             if (ids.Length <= 0)
             {
-                _nextId = 0;
+                nextId = 0;
                 return;
             }
+            nextId = ids.Max();
 
-            _nextId = ids.Max();
-
-            var ids2 = new List<int>(_nextId);
+            var ids2 = new List<int>(nextId);
             ids2.AddRange(ids);
 
-            for (int i = 0; i < _nextId; i++)
+            for (var i = 0; i < nextId; i++)
             {
-                if (i >= ids2.Count && ids2[i] == i)
+                if (i >= ids2.Count || ids2[i] == i)
                     continue;
 
                 ids2.Insert(i, i);
-                _freeIds.Enqueue(i);
+                freeIds.Enqueue(i);
             }
         }
 
-        /// <summary>
-        /// Liefert eine ID zurück
-        /// </summary>
-        /// <returns></returns>
         public int GetId()
         {
             int id;
 
             do
             {
-                id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _nextId++;
-            } while (_reservedIds.Contains(id));
+                id = freeIds.Count > 0 ? freeIds.Dequeue() : nextId++;
+            } while (reservedIds.Contains(id));
+
             return id;
         }
 
-        /// <summary>
-        /// Gibt eine ID wieder frei
-        /// </summary>
-        /// <param name="id"></param>
         public void ReleaseId(int id)
         {
-            _freeIds.Enqueue(id);
-            _reservedIds.Remove(id);
+            freeIds.Enqueue(id);
+            reservedIds.Remove(id);
         }
 
-        /// <summary>
-        /// Reserviert eine ID
-        /// </summary>
-        /// <param name="id"></param>
-        public void ReserveId(int id) => _reservedIds.Add(id);
+        public void ReserveId(int id) 
+            => reservedIds.Add(id);
     }
 }

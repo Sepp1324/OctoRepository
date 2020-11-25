@@ -1,20 +1,21 @@
 ﻿using MonoGameUi;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Runtime;
 using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class MainScreen : BaseScreen
     {
-        private AssetComponent _assets;
+        private AssetComponent assets;
 
         public MainScreen(ScreenComponent manager) : base(manager)
         {
-            _assets = manager.Game.Assets;
+            assets = manager.Game.Assets;
 
-            Padding = new Border(0, 0, 0, 0);
+            Padding = new Border(0,0,0,0);
 
-            Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
+            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);
@@ -57,13 +58,13 @@ namespace OctoAwesome.Client.Screens
             };
             stack.Controls.Add(creditsButton);
 
-            Button webButton = Button.TextButton(manager, "OctoAwesome");
+            Button webButton = Button.TextButton(manager, "Octoawesome.net");
             webButton.VerticalAlignment = VerticalAlignment.Bottom;
             webButton.HorizontalAlignment = HorizontalAlignment.Right;
             webButton.Margin = new Border(10, 10, 10, 10);
             webButton.LeftMouseClick += (s, e) =>
             {
-                Process.Start("www.pornhub.com");
+                Process.Start("http://octoawesome.net/");
             };
             Controls.Add(webButton);
 

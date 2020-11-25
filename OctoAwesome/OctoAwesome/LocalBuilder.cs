@@ -5,9 +5,9 @@
     /// </summary>
     public class LocalBuilder
     {
-        private int _originX, _originY, _originZ;
+        private int originX, originY, originZ;
 
-        private IChunkColumn _column00, _column01, _column10, _column11;
+        private IChunkColumn column00, column01, column10, column11;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse LocalBuilder
@@ -21,14 +21,14 @@
         /// <param name="column11"></param>
         public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
-            _originX = originX;
-            _originY = originY;
-            _originZ = originZ;
+            this.originX = originX;
+            this.originY = originY;
+            this.originZ = originZ;
 
-            _column00 = column00;
-            _column01 = column01;
-            _column10 = column10;
-            _column11 = column11;
+            this.column00 = column00;
+            this.column01 = column01;
+            this.column10 = column10;
+            this.column11 = column11;
         }
 
         /// <summary>
@@ -83,10 +83,10 @@
         /// <param name="meta"></param>
         public void SetBlock(int x, int y, int z, ushort block, int meta = 0)
         {
-            x += _originX;
-            y += _originY;
-            z += _originZ;
-            IChunkColumn column = GetColumn(_column00, _column10, _column01, _column11, x, y);
+            x += originX;
+            y += originY;
+            z += originZ;
+            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             column.SetBlock(x, y, z, block, meta);
@@ -125,10 +125,10 @@
         /// <returns></returns>
         public ushort GetBlock(int x, int y, int z)
         {
-            x += _originX;
-            y += _originY;
-            z += _originZ;
-            IChunkColumn column = GetColumn(_column00, _column10, _column01, _column11, x, y);
+            x += originX;
+            y += originY;
+            z += originZ;
+            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             return column.GetBlock(x, y, z);

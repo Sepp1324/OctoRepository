@@ -8,31 +8,15 @@ namespace OctoAwesome.Serialization.Entities
 {
     public sealed class EntityDefinition : ISerializable
     {
-        /// <summary>
-        /// Type des Entities
-        /// </summary>
-        public Type Type { get; set; }
-
-        /// <summary>
-        /// Id des Entities
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Anzahl der Komponenten
-        /// </summary>
-        public int ComponentsCount { get; set; }
-
-        /// <summary>
-        /// Liste von Komponenten
-        /// </summary>
-        public IEnumerable<Type> Components { get; set; }
+        public Type Type { get;  set; }
+        public Guid Id { get;  set; }
+        public int ComponentsCount { get;  set; }
+        public IEnumerable<Type> Components { get;  set; }
 
         public EntityDefinition()
         {
 
         }
-
         public EntityDefinition(Entity entity)
         {
             Type = entity.GetType();
@@ -57,7 +41,6 @@ namespace OctoAwesome.Serialization.Entities
             Type = Type.GetType(reader.ReadString());
             Id = new Guid(reader.ReadBytes(16));
             ComponentsCount = reader.ReadInt32();
-
             var list = new List<Type>();
 
             for (int i = 0; i < ComponentsCount; i++)
@@ -70,14 +53,15 @@ namespace OctoAwesome.Serialization.Entities
         {
             public EntityDefinitionContext(Database<GuidTag<EntityDefinition>> database) : base(database)
             {
-
             }
+
+            public override void AddOrUpdate(EntityDefinition value)
+                => InternalAddOrUpdate(new GuidTag<EntityDefinition>(value.Id), value);
 
             public IEnumerable<GuidTag<EntityDefinition>> GetAllKeys() => Database.Keys;
 
-            public override void AddOrUpdate(EntityDefinition value) => InternalAddOrUpdate(new GuidTag<EntityDefinition>(value.Id), value);
-
-            public override void Remove(EntityDefinition value) => InternalRemove(new GuidTag<EntityDefinition>(value.Id));
+            public override void Remove(EntityDefinition value)
+                => InternalRemove(new GuidTag<EntityDefinition>(value.Id));
         }
     }
 }

@@ -1,39 +1,39 @@
 ﻿using OctoAwesome.Database;
-using OctoAwesome.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
     public sealed class DatabaseProvider : IDisposable, IDatabaseProvider
     {
-        private readonly Dictionary<(Type Type, Guid Universe, int PlanetId), Database.Database> _planetDatabaseRegister;
-        private readonly Dictionary<(Type Type, Guid Universe), Database.Database> _universeDatabaseRegister;
-        private readonly Dictionary<Type, Database.Database> _globalDatabaseRegister;
-        private readonly string _rootPath;
+        private readonly string rootPath;
+        private readonly Dictionary<(Type Type, Guid Universe, int PlanetId), Database.Database> planetDatabaseRegister;
+        private readonly Dictionary<(Type Type, Guid Universe), Database.Database> universeDatabaseRegister;
+        private readonly Dictionary<Type, Database.Database> globalDatabaseRegister;
 
         public DatabaseProvider(string rootPath)
         {
-            _rootPath = rootPath;
-            _planetDatabaseRegister = new Dictionary<(Type Type, Guid Universe, int PlanetId), Database.Database>();
-            _universeDatabaseRegister = new Dictionary<(Type Type, Guid Universe), Database.Database>();
-            _globalDatabaseRegister = new Dictionary<Type, Database.Database>();
+            this.rootPath = rootPath;
+            planetDatabaseRegister = new Dictionary<(Type Type, Guid Universe, int PlanetId), Database.Database>();
+            universeDatabaseRegister = new Dictionary<(Type Type, Guid Universe), Database.Database>();
+            globalDatabaseRegister = new Dictionary<Type, Database.Database>();
         }
 
         public Database<T> GetDatabase<T>() where T : ITag, new()
         {
             var key = typeof(T);
-
-            if (_globalDatabaseRegister.TryGetValue(key, out var database))
+            if (globalDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
             }
             else
             {
-                Database<T> tmpDatabase = CreateDatabase<T>(_rootPath);
-                _globalDatabaseRegister.Add(key, tmpDatabase);
+                Database<T> tmpDatabase = CreateDatabase<T>(rootPath);
+                globalDatabaseRegister.Add(key, tmpDatabase);
                 tmpDatabase.Open();
                 return tmpDatabase;
             }
@@ -42,15 +42,14 @@ namespace OctoAwesome.Runtime
         public Database<T> GetDatabase<T>(Guid universeGuid) where T : ITag, new()
         {
             var key = (typeof(T), universeGuid);
-
-            if (_universeDatabaseRegister.TryGetValue(key, out var database))
+            if (universeDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
             }
             else
             {
-                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(_rootPath, universeGuid.ToString()));
-                _universeDatabaseRegister.Add(key, tmpDatabase);
+                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString()));
+                universeDatabaseRegister.Add(key, tmpDatabase);
                 tmpDatabase.Open();
                 return tmpDatabase;
             }
@@ -59,34 +58,50 @@ namespace OctoAwesome.Runtime
         public Database<T> GetDatabase<T>(Guid universeGuid, int planetId) where T : ITag, new()
         {
             var key = (typeof(T), universeGuid, planetId);
-
-            if (_planetDatabaseRegister.TryGetValue(key, out var database))
+            if (planetDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
             }
             else
             {
-                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(_rootPath, universeGuid.ToString(), planetId.ToString()));
-                _planetDatabaseRegister.Add(key, tmpDatabase);
+                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString(), planetId.ToString()));
+                planetDatabaseRegister.Add(key, tmpDatabase);
                 tmpDatabase.Open();
                 return tmpDatabase;
             }
+        }
+
+        public void Dispose()
+        {
+            foreach (var database in planetDatabaseRegister)
+                database.Value.Dispose();
+
+            foreach (var database in universeDatabaseRegister)
+                database.Value.Dispose();
+
+            foreach (var database in globalDatabaseRegister)
+                database.Value.Dispose();
+
+            planetDatabaseRegister.Clear();
+            universeDatabaseRegister.Clear();
+            globalDatabaseRegister.Clear();
         }
 
         private Database<T> CreateDatabase<T>(string path, string typeName = null) where T : ITag, new()
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-
+            
             var type = typeof(T);
-
             if (typeName == null)
                 typeName = type.Name;
 
             string name;
 
             foreach (var c in Path.GetInvalidFileNameChars())
-                typeName.Replace(c, '\0');
+            {
+                typeName = typeName.Replace(c, '\0');
+            }
 
             if (type.IsGenericType)
             {
@@ -102,25 +117,9 @@ namespace OctoAwesome.Runtime
                 name = typeName;
             }
 
-            var keyFile = Path.Combine(path, $"{name}.keys");
-            var valueFile = Path.Combine(path, $"{name}.db");
+            string keyFile = Path.Combine(path, $"{name}.keys");
+            string valueFile = Path.Combine(path, $"{name}.db");
             return new Database<T>(new FileInfo(keyFile), new FileInfo(valueFile));
-        }
-
-        public void Dispose()
-        {
-            foreach (var database in _planetDatabaseRegister)
-                database.Value.Dispose();
-
-            foreach (var database in _universeDatabaseRegister)
-                database.Value.Dispose();
-
-            foreach (var database in _globalDatabaseRegister)
-                database.Value.Dispose();
-
-            _planetDatabaseRegister.Clear();
-            _universeDatabaseRegister.Clear();
-            _globalDatabaseRegister.Clear();
         }
     }
 }

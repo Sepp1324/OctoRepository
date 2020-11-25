@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Basics.Entities;
 using OctoAwesome.EntityComponents;
@@ -22,7 +26,7 @@ namespace OctoAwesome.Basics
 
         public void Populate(IResourceManager resourcemanager, IPlanet planet, IChunkColumn column00, IChunkColumn column01, IChunkColumn column10, IChunkColumn column11)
         {
-            //HACK: Deactivate Wauzi
+            //HACK: Activate Wauzi
             //return;
 
             if (ispop-- <= 0)

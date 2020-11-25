@@ -1,5 +1,9 @@
 ﻿using OctoAwesome.Noise;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Biomes
 {
@@ -44,6 +48,7 @@ namespace OctoAwesome.Basics.Biomes
                     values[x, y] = (heights[x, y] / 2 + 0.5f) * ValueRange + ValueRangeOffset;
                 }
             }
+
             return values;
         }
     }

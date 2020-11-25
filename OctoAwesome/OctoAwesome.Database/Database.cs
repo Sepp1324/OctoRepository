@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -8,69 +10,80 @@ namespace OctoAwesome.Database
     {
         public Type TagType { get; }
 
-        protected Database(Type tagType) => TagType = tagType;
+        protected Database(Type tagType)
+        {
+            TagType = tagType;
+        }
 
         public abstract void Open();
-
         public abstract void Dispose();
     }
 
     public sealed class Database<TTag> : Database where TTag : ITag, new()
     {
-        public IEnumerable<TTag> Keys => _keyStore.Tags;
+        public bool ValueUpdateable { get; }
+        public IEnumerable<TTag> Keys => keyStore.Tags;
 
-        private readonly KeyStore<TTag> _keyStore;
-        private readonly ValueStore _valueStore;
+        private readonly KeyStore<TTag> keyStore;
+        private readonly ValueStore valueStore;
 
-        public Database(FileInfo keyFile, FileInfo valueFile) : base(typeof(TTag))
+        public Database(FileInfo keyFile, FileInfo valueFile, bool valueUpdateable) : base(typeof(TTag))
         {
-            _keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
-            _valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile));
+            keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
+            valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), valueUpdateable);
+            ValueUpdateable = valueUpdateable;
+        }
+        public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
+        {
+
         }
 
         public override void Open()
         {
-            _keyStore.Open();
-            _valueStore.Open();
+            keyStore.Open();
+            valueStore.Open();
         }
 
 
         public Value GetValue(TTag tag)
         {
-            var key = _keyStore.GetKey(tag);
-            return _valueStore.GetValue(key);
+            var key = keyStore.GetKey(tag);
+            return valueStore.GetValue(key);
         }
 
         public void AddOrUpdate(TTag tag, Value value)
         {
-            var contains = _keyStore.Contains(tag);
-
+            var contains = keyStore.Contains(tag);
             if (contains)
             {
-                var key = _keyStore.GetKey(tag);
-                _valueStore.Remove(key);
+                var key = keyStore.GetKey(tag);
+                valueStore.Remove(key);
             }
 
-            var newKey = _valueStore.AddValue(tag, value);
+            var newKey = valueStore.AddValue(tag, value);
 
             if (contains)
-                _keyStore.Update(newKey);
+                keyStore.Update(newKey);
             else
-                _keyStore.Add(newKey);
+                keyStore.Add(newKey);
         }
 
-        public bool ContainsKey(TTag tag) => _keyStore.Contains(tag);
+
+        public bool ContainsKey(TTag tag)
+            => keyStore.Contains(tag);
+
 
         public void Remove(TTag tag)
         {
-            _keyStore.Remove(tag, out var key);
-            _valueStore.Remove(key);
+            keyStore.Remove(tag, out var key);
+            valueStore.Remove(key);
         }
+
 
         public override void Dispose()
         {
-            _keyStore.Dispose();
-            _valueStore.Dispose();
+            keyStore.Dispose();
+            valueStore.Dispose();
         }
     }
 }

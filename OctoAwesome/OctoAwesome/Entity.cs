@@ -1,4 +1,5 @@
-﻿using OctoAwesome.EntityComponents;
+﻿using engenious;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
@@ -32,7 +33,8 @@ namespace OctoAwesome
         /// </summary>
         public Entity()
         {
-            Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+            Components = new ComponentList<EntityComponent>(
+                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
             Id = Guid.Empty;
         }
 
@@ -72,7 +74,10 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager mananger) => OnInitialize(mananger);
+        public void Initialize(IResourceManager mananger)
+        {
+            OnInitialize(mananger);
+        }
 
         protected virtual void OnInitialize(IResourceManager manager)
         {
@@ -85,6 +90,7 @@ namespace OctoAwesome
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(Id.ToByteArray());
+
             Components.Serialize(writer);
         }
 
@@ -94,7 +100,7 @@ namespace OctoAwesome
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
         public virtual void Deserialize(BinaryReader reader)
         {
-            Id = new Guid(reader.ReadBytes(16)); //TODO: GUID immer 16 Bytes?
+            Id = new Guid(reader.ReadBytes(16));
             Components.Deserialize(reader);
         }
 
@@ -103,7 +109,8 @@ namespace OctoAwesome
 
         }
 
-        public override int GetHashCode() => Id.GetHashCode();
+        public override int GetHashCode()
+            => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -117,10 +124,12 @@ namespace OctoAwesome
         {
         }
 
+
         public virtual void Update(SerializableNotification notification)
         {
             foreach (var component in Components)
                 component?.OnUpdate(notification);
         }
+
     }
 }

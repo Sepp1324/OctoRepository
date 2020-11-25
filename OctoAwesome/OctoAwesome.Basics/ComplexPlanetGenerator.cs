@@ -1,5 +1,6 @@
 ﻿using OctoAwesome.Basics.Definitions.Blocks;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -7,7 +8,8 @@ namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-        public IPlanet GeneratePlanet(Guid universe, int id, int seed) => new ComplexPlanet(id, universe, new Index3(12, 12, 3), this, seed);
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed) 
+            => new ComplexPlanet(id, universe, new Index3(12, 12, 3), this, seed);
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
@@ -39,7 +41,6 @@ namespace OctoAwesome.Basics
             float[,] localHeightmap = localPlanet.BiomeGenerator.GetHeightmap(index);
 
             IChunk[] chunks = new IChunk[planet.Size.Z];
-
             for (int i = 0; i < planet.Size.Z; i++)
                 chunks[i] = new Chunk(new Index3(index, i), planet);
 
@@ -119,9 +120,11 @@ namespace OctoAwesome.Basics
                             }
                             else if ((z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel)
                             {
+
                                 chunks[i].SetBlock(x, y, z, waterIndex);
                                 ozeanSurface = true;
                             }
+
                         }
                     }
                 }
@@ -135,10 +138,8 @@ namespace OctoAwesome.Basics
         public IPlanet GeneratePlanet(Stream stream)
         {
             IPlanet planet = new ComplexPlanet();
-
             using(var reader = new BinaryReader(stream))
                 planet.Deserialize(reader);
-
             planet.Generator = this;
             return planet;
         }
@@ -146,10 +147,8 @@ namespace OctoAwesome.Basics
         public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)
         {
             IChunkColumn column = new ChunkColumn(planet);
-
             using(var reader = new BinaryReader(stream))
                 column.Deserialize(reader);
-
             return column;
         }
     }
