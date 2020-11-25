@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
@@ -23,48 +21,51 @@ namespace OctoAwesome.Runtime
             globalDatabaseRegister = new Dictionary<Type, Database.Database>();
         }
 
-        public Database<T> GetDatabase<T>() where T : ITag, new()
+        public Database<T> GetDatabase<T>(bool fixedValueSize) where T : ITag, new()
         {
             var key = typeof(T);
+
             if (globalDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
             }
             else
             {
-                Database<T> tmpDatabase = CreateDatabase<T>(rootPath);
+                Database<T> tmpDatabase = CreateDatabase<T>(rootPath, fixedValueSize);
                 globalDatabaseRegister.Add(key, tmpDatabase);
                 tmpDatabase.Open();
                 return tmpDatabase;
             }
         }
 
-        public Database<T> GetDatabase<T>(Guid universeGuid) where T : ITag, new()
+        public Database<T> GetDatabase<T>(Guid universeGuid, bool fixedValueSize) where T : ITag, new()
         {
             var key = (typeof(T), universeGuid);
+
             if (universeDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
             }
             else
             {
-                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString()));
+                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString()), fixedValueSize);
                 universeDatabaseRegister.Add(key, tmpDatabase);
                 tmpDatabase.Open();
                 return tmpDatabase;
             }
         }
 
-        public Database<T> GetDatabase<T>(Guid universeGuid, int planetId) where T : ITag, new()
+        public Database<T> GetDatabase<T>(Guid universeGuid, int planetId, bool fixedValueSize) where T : ITag, new()
         {
             var key = (typeof(T), universeGuid, planetId);
+
             if (planetDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
             }
             else
             {
-                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString(), planetId.ToString()));
+                Database<T> tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString(), planetId.ToString()), fixedValueSize);
                 planetDatabaseRegister.Add(key, tmpDatabase);
                 tmpDatabase.Open();
                 return tmpDatabase;
@@ -87,21 +88,20 @@ namespace OctoAwesome.Runtime
             globalDatabaseRegister.Clear();
         }
 
-        private Database<T> CreateDatabase<T>(string path, string typeName = null) where T : ITag, new()
+        private Database<T> CreateDatabase<T>(string path, bool fixedValueSize, string typeName = null) where T : ITag, new()
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             
             var type = typeof(T);
+
             if (typeName == null)
                 typeName = type.Name;
 
             string name;
 
             foreach (var c in Path.GetInvalidFileNameChars())
-            {
                 typeName = typeName.Replace(c, '\0');
-            }
 
             if (type.IsGenericType)
             {
@@ -119,7 +119,7 @@ namespace OctoAwesome.Runtime
 
             string keyFile = Path.Combine(path, $"{name}.keys");
             string valueFile = Path.Combine(path, $"{name}.db");
-            return new Database<T>(new FileInfo(keyFile), new FileInfo(valueFile));
+            return new Database<T>(new FileInfo(keyFile), new FileInfo(valueFile), fixedValueSize);
         }
     }
 }

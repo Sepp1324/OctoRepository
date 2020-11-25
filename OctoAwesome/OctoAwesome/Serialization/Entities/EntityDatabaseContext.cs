@@ -3,30 +3,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization.Entities
 {
-    public sealed class EntityDbContext : IDatabaseContext<GuidTag<Entity>, Entity>
+    public sealed class EntityDatabaseContext : IDatabaseContext<GuidTag<Entity>, Entity>
     {
         private readonly EntityDefinition.EntityDefinitionContext entityDefinitionContext;
-        private readonly EntityComponentsDbContext componentsDbContext;
+        private readonly EntityComponentsDatabaseContext componentsDbContext;
         private readonly MethodInfo getComponentMethod;
         private readonly MethodInfo removeComponentMethod;
 
-        public EntityDbContext(IDatabaseProvider databaseProvider, Guid universe)
+        public EntityDatabaseContext(IDatabaseProvider databaseProvider, Guid universe)
         {
-            var database = databaseProvider.GetDatabase<GuidTag<EntityDefinition>>(universe);
-            entityDefinitionContext = new EntityDefinition.EntityDefinitionContext(database);
-            componentsDbContext = new EntityComponentsDbContext(databaseProvider, universe);
-            getComponentMethod = typeof(EntityComponentsDbContext).GetMethod(nameof(EntityComponentsDbContext.Get),new[] { typeof(Entity) });
-            removeComponentMethod = typeof(EntityComponentsDbContext).GetMethod(nameof(EntityComponentsDbContext.Remove));
+            var database = databaseProvider.GetDatabase<GuidTag<EntityDefinition>>(universeGuid: universe, fixedValueSize: false);
+            entityDefinitionContext = new EntityDefinition.EntityDefinitionContext(database: database);
+            componentsDbContext = new EntityComponentsDatabaseContext(databaseProvider: databaseProvider, universe: universe);
+            getComponentMethod = typeof(EntityComponentsDatabaseContext).GetMethod(nameof(EntityComponentsDatabaseContext.Get), new[] { typeof(Entity) });
+            removeComponentMethod = typeof(EntityComponentsDatabaseContext).GetMethod(nameof(EntityComponentsDatabaseContext.Remove));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public void AddOrUpdate(Entity value)
         {
-            entityDefinitionContext.AddOrUpdate(new EntityDefinition(value));
+            entityDefinitionContext.AddOrUpdate(value: new EntityDefinition(value));
 
             foreach (dynamic component in value.Components) //dynamic so tyepof<T> in get database returns correct type 
                 componentsDbContext.AddOrUpdate(component, value);
@@ -43,7 +45,6 @@ namespace OctoAwesome.Serialization.Entities
                 var genericMethod = getComponentMethod.MakeGenericMethod(component);
                 entity.Components.AddComponent((EntityComponent)genericMethod.Invoke(componentsDbContext, new object[] { entity }));
             }
-
             return entity;
         }
 
@@ -55,11 +56,9 @@ namespace OctoAwesome.Serialization.Entities
                 yield return Get(entityId);
         }
 
-        public IEnumerable<GuidTag<Entity>> GetEntityIdsFromComponent<T>() where T : EntityComponent
-            => componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
+        public IEnumerable<GuidTag<Entity>> GetEntityIdsFromComponent<T>() where T : EntityComponent => componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
 
-        public IEnumerable<GuidTag<Entity>> GetAllKeys()
-            => entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<Entity>(e.Tag));
+        public IEnumerable<GuidTag<Entity>> GetAllKeys() => entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<Entity>(e.Tag));
 
         public void Remove(Entity value)
         {
