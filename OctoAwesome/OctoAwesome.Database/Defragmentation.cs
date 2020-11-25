@@ -19,9 +19,29 @@ namespace OctoAwesome.Database
         {
             var newValueStoreFile = new FileInfo(Path.GetTempFileName());
             var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
-            var keyList = new List<Key<TTag>>();
 
-            using (var newValueStoreStream = newValueStoreFile.Open(FileMode.Open, FileAccess.Write, FileShare.None))
+            var keys = DefragmentValues(newValueStoreFile, keyBuffer);
+
+            keyStoreFile.Delete();
+
+            WriteKeyFile(keys);
+
+            valueStoreFile.Delete();
+            newValueStoreFile.MoveTo(valueStoreFile.FullName);
+        }
+
+        private void WriteKeyFile(IEnumerable<Key<TTag>> keyList)
+        {
+            using (var newKeyStoreFile = keyStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            {
+                foreach (var key in keyList)
+                    newKeyStoreFile.Write(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
+            }
+        }
+
+        private IEnumerable<Key<TTag>> DefragmentValues(FileInfo newValueStoreFile, byte[] keyBuffer)
+        {
+            using (var newValueStoreStream = newValueStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             using (var currentValueStoreStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 do
@@ -42,12 +62,12 @@ namespace OctoAwesome.Database
                     }
                     else
                     {
-                        var buffer = new byte[key.Length];
+                        var buffer = new byte[key.ValueLength];
 
                         currentValueStoreStream.Read(buffer, 0, buffer.Length);
                         newValueStoreStream.Write(keyBuffer, 0, keyBuffer.Length);
                         newValueStoreStream.Write(buffer, 0, buffer.Length);
-                        keyList.Add(key);
+                        yield return key;
                     }
                 } while (currentValueStoreStream.Position != currentValueStoreStream.Length);
             }
