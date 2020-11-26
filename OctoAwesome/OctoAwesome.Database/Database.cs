@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using OctoAwesome.Database.Checks;
 
 namespace OctoAwesome.Database
 {
@@ -23,11 +24,15 @@ namespace OctoAwesome.Database
 
         private readonly KeyStore<TTag> keyStore;
         private readonly ValueStore valueStore;
+        private readonly Defragmentation<TTag> defragmentation;
+        private readonly ValueFileCheck<TTag> fileyCheck;
 
         public Database(FileInfo keyFile, FileInfo valueFile, bool fixedValueLength) : base(typeof(TTag))
         {
             keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
             valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
+            defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
+            fileyCheck = new ValueFileCheck<TTag>(valueFile);
         }
         public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
         {
@@ -36,6 +41,26 @@ namespace OctoAwesome.Database
 
         public override void Open()
         {
+            try
+            {
+                keyStore.Open();
+            }
+            catch (KeyInvalidException)
+            {
+                keyStore.Close();
+                defragmentation.RecreateKeyFile();
+                keyStore.Open();
+            }
+            valueStore.Open();
+        }
+
+        public void Validate()
+        {
+            keyStore.Close();
+            valueStore.Close();
+
+            fileyCheck.Check();
+
             keyStore.Open();
             valueStore.Open();
         }

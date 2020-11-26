@@ -15,7 +15,7 @@ namespace OctoAwesome.Database
             this.valueStoreFile = valueStoreFile;
         }
 
-        public void Start()
+        public void StartDefragmentation()
         {
             var newValueStoreFile = new FileInfo(Path.GetTempFileName());
             var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
@@ -28,6 +28,17 @@ namespace OctoAwesome.Database
 
             valueStoreFile.Delete();
             newValueStoreFile.MoveTo(valueStoreFile.FullName);
+        }
+
+        public void RecreateKeyFile()
+        {
+            var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
+
+            var keys = GetKeys(keyBuffer);
+
+            keyStoreFile.Delete();
+
+            WriteKeyFile(keys);
         }
 
         private void WriteKeyFile(IEnumerable<Key<TTag>> keyList)
@@ -70,6 +81,35 @@ namespace OctoAwesome.Database
                         yield return key;
                     }
                 } while (currentValueStoreStream.Position != currentValueStoreStream.Length);
+            }
+        }
+
+        private IEnumerable<Key<TTag>> GetKeys(byte[] keyBuffer)
+        {
+            using (var fileStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                do
+                {
+                    fileStream.Read(keyBuffer, 0, keyBuffer.Length);
+
+                    var key = Key<TTag>.FromBytes(keyBuffer, 0);
+                    long length;
+
+                    if (key.IsEmpty)
+                    {
+                        var intBuffer = new byte[sizeof(int)];
+
+                        fileStream.Read(intBuffer, 0, sizeof(int));
+                        length = BitConverter.ToInt32(intBuffer, 0) - sizeof(int);
+                    }
+                    else
+                    {
+                        length = key.ValueLength;
+                    }
+
+                    fileStream.Seek(length, SeekOrigin.Current);
+                    yield return key;
+                } while (fileStream.Position != fileStream.Length);
             }
         }
     }

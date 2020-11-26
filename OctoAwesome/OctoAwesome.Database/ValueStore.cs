@@ -80,6 +80,8 @@ namespace OctoAwesome.Database
         /// </summary>
         internal void Open() => writer.Open();
 
+        internal void Close() => writer.Close();
+
         /// <summary>
         /// Disposes the Values
         /// </summary>

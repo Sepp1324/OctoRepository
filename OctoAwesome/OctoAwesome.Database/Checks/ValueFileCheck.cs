@@ -3,13 +3,13 @@ using System.IO;
 
 namespace OctoAwesome.Database.Checks
 {
-    public sealed class ValueFileCheck<TTag> where TTag : ITag, new()
+    public sealed class ValueFileCheck<TTag> : ICheckable<TTag> where TTag : ITag, new()
     {
         private readonly FileInfo fileInfo;
 
         public ValueFileCheck(FileInfo fileInfo) => this.fileInfo = fileInfo;
 
-        public bool Check()
+        public void Check()
         {
             using (var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
@@ -22,10 +22,10 @@ namespace OctoAwesome.Database.Checks
                     var key = Key<TTag>.FromBytes(keyBuffer, 0);
 
                     if (!key.Validate())
-                        throw new CheckFailedException($"Key is not valid", fileStream.Position);
+                        throw new KeyInvalidException($"Key is not valid", fileStream.Position);
 
                     if (key.Index != fileStream.Position - Key<TTag>.KEY_SIZE)
-                        return false;
+                        throw new KeyInvalidException($"Key is on the wrong Position", fileStream.Position);
 
                     int length;
 
@@ -45,7 +45,6 @@ namespace OctoAwesome.Database.Checks
 
                 } while (fileStream.Position != fileStream.Length);
             }
-            return true;
         }
     }
 }

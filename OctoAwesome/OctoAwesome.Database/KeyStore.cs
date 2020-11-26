@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using OctoAwesome.Database.Checks;
 
 namespace OctoAwesome.Database
 {
     internal class KeyStore<TTag> : IDisposable where TTag : ITag, new()
     {
+        public int EmptyKeys { get; private set; }
+
         public IEnumerable<TTag> Tags => keys.Keys;
 
         public IEnumerable<Key<TTag>> Keys => keys.Values;
@@ -23,14 +26,32 @@ namespace OctoAwesome.Database
 
         public void Open()
         {
+            keys.Clear();
+            EmptyKeys = 0;
+
             writer.Open();
             var buffer = reader.Read(0, -1);
 
             for (var i = 0; i < buffer.Length; i += Key<TTag>.KEY_SIZE)
             {
                 var key = Key<TTag>.FromBytes(buffer, i);
+
+                if (key.Validate())
+                    throw new KeyInvalidException("Key is not valid", i);
+
+                if (key.IsEmpty)
+                {
+                    EmptyKeys++;
+                    continue;
+                }
+
                 keys.Add(key.Tag, key);
             }
+        }
+
+        public void Close()
+        {
+            writer.Close();
         }
 
         internal Key<TTag> GetKey(TTag tag) => keys[tag];
@@ -47,7 +68,7 @@ namespace OctoAwesome.Database
         internal void Add(Key<TTag> key)
         {
             key = new Key<TTag>(key.Tag, key.Index, key.ValueLength, writer.ToEnd());
-            keys.Add(key.Tag,  key);
+            keys.Add(key.Tag, key);
             writer.WriteAndFlush(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
         }
 
@@ -58,6 +79,10 @@ namespace OctoAwesome.Database
             writer.WriteAndFlush(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Position);
         }
 
-        public void Dispose() => writer.Dispose();
+        public void Dispose()
+        {
+            keys.Clear();
+            writer.Dispose();
+        }
     }
 }

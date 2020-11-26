@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -19,13 +17,16 @@ namespace OctoAwesome.Database
 
         }
 
-        public void Open()
+        public void Open() => fileStream = fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+
+        public void Close()
         {
-           fileStream =  fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            fileStream.Dispose();
+            fileStream = null;
         }
 
-        public void Write(byte[] data, int offset, int length)
-            => fileStream.Write(data, offset, length);
+        public void Write(byte[] data, int offset, int length) => fileStream.Write(data, offset, length);
+
         public void Write(byte[] data, int offset, int length, long position)
         {
             fileStream.Seek(position, SeekOrigin.Begin);
@@ -43,12 +44,10 @@ namespace OctoAwesome.Database
             fileStream.Flush();
         }
 
-        internal long ToEnd()
-            => fileStream.Seek(0, SeekOrigin.End);
+        internal long ToEnd() => fileStream.Seek(0, SeekOrigin.End);
 
         #region IDisposable Support
-        private bool disposedValue = false;
-               
+        private bool disposedValue;
 
         public void Dispose()
         {
@@ -60,6 +59,5 @@ namespace OctoAwesome.Database
             disposedValue = true;
         }
         #endregion
-
     }
 }
