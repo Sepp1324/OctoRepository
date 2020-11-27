@@ -8,10 +8,9 @@ namespace OctoAwesome.Database
         private readonly FileInfo fileInfo;
         private FileStream fileStream;
 
-        public Writer(FileInfo fileInfo)
-        {
-            this.fileInfo = fileInfo;
-        }
+        public Writer(FileInfo fileInfo) => this.fileInfo = fileInfo;
+
+
         public Writer(string path) : this(new FileInfo(path))
         {
 
@@ -38,6 +37,7 @@ namespace OctoAwesome.Database
             Write(data, offset, length);
             fileStream.Flush();
         }
+
         public void WriteAndFlush(byte[] data, int offset, int length, long position)
         {
             Write(data, offset, length, position);

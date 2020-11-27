@@ -15,5 +15,11 @@ namespace OctoAwesome.Serialization
         public IEnumerable<ChunkDiffTag> GetAllKeys() => Database.Keys;
 
         public override void Remove(ChunkNotification value) => InternalRemove(new ChunkDiffTag(value.ChunkPos, value.FlatIndex));
+
+        public void Remove(params ChunkDiffTag[] tags)
+        {
+            foreach (var tag in tags)
+                InternalRemove(tag);
+        }
     }
 }
