@@ -205,11 +205,9 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate</param>
         /// <param name="z">Z-Anteil der Koordinate</param>
         /// <returns>Index innerhalb des flachen Arrays</returns>
-        public static int GetFlatIndex(int x, int y, int z)
-        {
-            return ((z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
-                   | ((y & (CHUNKSIZE_Y - 1)) << LimitX)
-                   | ((x & (CHUNKSIZE_X - 1)));
-        }
+        public static int GetFlatIndex(int x, int y, int z) =>
+            ((z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
+            | ((y & (CHUNKSIZE_Y - 1)) << LimitX)
+            | ((x & (CHUNKSIZE_X - 1)));
     }
 }

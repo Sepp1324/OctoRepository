@@ -35,7 +35,7 @@ namespace OctoAwesome.Basics
                 throw new ArgumentException("planet is not a Type of ComplexPlanet");
 
             var localPlanet = (ComplexPlanet)planet;
-            var localHeightmap = localPlanet.BiomeGenerator.GetHeightmap(index);
+            var localHeigthmap = localPlanet.BiomeGenerator.GetHeightmap(index);
             var chunks = new IChunk[planet.Size.Z];
 
             for (var i = 0; i < planet.Size.Z; i++)
@@ -60,7 +60,7 @@ namespace OctoAwesome.Basics
                             var flatIndex = Chunk.GetFlatIndex(x, y, z);
                             var absoluteZ = (z + (i * Chunk.CHUNKSIZE_Z));
 
-                            if (absoluteZ <= localHeightmap[x, y] * localPlanet.Size.Z * Chunk.CHUNKSIZE_Z)
+                            if (absoluteZ <= localHeigthmap[x, y] * localPlanet.Size.Z * Chunk.CHUNKSIZE_Z)
                             {
                                 if (topLayer > 0)
                                 {
