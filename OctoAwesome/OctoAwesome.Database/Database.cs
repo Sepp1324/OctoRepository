@@ -1,7 +1,9 @@
-﻿using System;
+﻿using OctoAwesome.Database.Checks;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using OctoAwesome.Database.Checks;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -9,52 +11,52 @@ namespace OctoAwesome.Database
     {
         public Type TagType { get; }
 
-        protected Database(Type tagType) => TagType = tagType;
+        protected Database(Type tagType)
+        {
+            TagType = tagType;
+        }
 
         public abstract void Open();
-
         public abstract void Close();
-
         public abstract void Dispose();
     }
 
     public sealed class Database<TTag> : Database where TTag : ITag, new()
     {
         public bool FixedValueLength => valueStore.FixedValueLength;
-
         public IEnumerable<TTag> Keys => keyStore.Tags;
 
         public bool IsOpen { get; private set; }
 
         /// <summary>
-        /// This Threshold handles the auto defragmentation. If the Database has more Empty-Values then this Threshold, the <see cref="Defragmentation"/> is executed
-        ///Use -1 to deactivate the defragmentation for this Database
+        /// This Threshold handels the auto defragmenation. 
+        /// If the Database have more Empty Values than this Threshold the <see cref="Defragmentation"/> is executed.
+        /// Use -1 to deactivate the deframentation for this Database.
+        /// Default Value is 1000.
         /// </summary>
         public int Threshold { get; set; }
 
         private readonly KeyStore<TTag> keyStore;
         private readonly ValueStore valueStore;
         private readonly Defragmentation<TTag> defragmentation;
-        private readonly ValueFileCheck<TTag> fileyCheck;
+        private readonly ValueFileCheck<TTag> fileCheck;
 
         public Database(FileInfo keyFile, FileInfo valueFile, bool fixedValueLength) : base(typeof(TTag))
         {
             keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
             valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
             defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
-            fileyCheck = new ValueFileCheck<TTag>(valueFile);
+            fileCheck = new ValueFileCheck<TTag>(valueFile);
             Threshold = 1000;
         }
-
         public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
         {
-            
+
         }
 
         public override void Open()
         {
             IsOpen = true;
-
             try
             {
                 keyStore.Open();
@@ -65,7 +67,6 @@ namespace OctoAwesome.Database
                 defragmentation.RecreateKeyFile();
                 keyStore.Open();
             }
-
             valueStore.Open();
 
             if (Threshold >= 0 && keyStore.EmptyKeys >= Threshold)
@@ -79,9 +80,11 @@ namespace OctoAwesome.Database
             valueStore.Close();
         }
 
-        public void Validate() => ExecuteOperationOnKeyValueStore(fileyCheck.Check);
+        public void Validate()
+            => ExecuteOperationOnKeyValueStore(fileCheck.Check);
 
-        public void Defragmentation() => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
+        public void Defragmentation()
+            => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
 
         public Value GetValue(TTag tag)
         {
@@ -92,7 +95,6 @@ namespace OctoAwesome.Database
         public void AddOrUpdate(TTag tag, Value value)
         {
             var contains = keyStore.Contains(tag);
-
             if (contains)
             {
                 var key = keyStore.GetKey(tag);
@@ -115,7 +117,8 @@ namespace OctoAwesome.Database
                 keyStore.Add(newKey);
         }
 
-        public bool ContainsKey(TTag tag) => keyStore.Contains(tag);
+        public bool ContainsKey(TTag tag)
+            => keyStore.Contains(tag);
 
         public void Remove(TTag tag)
         {
