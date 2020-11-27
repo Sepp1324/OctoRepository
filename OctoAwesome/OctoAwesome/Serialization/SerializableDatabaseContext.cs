@@ -1,9 +1,4 @@
 ﻿using OctoAwesome.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
@@ -15,13 +10,10 @@ namespace OctoAwesome.Serialization
         {
         }
         
-        public override TObject Get(TTag key)
-            => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
+        public override TObject Get(TTag key) => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
         
-        protected void InternalRemove(TTag tag)
-            => Database.Remove(tag);
+        protected void InternalRemove(TTag tag) => Database.Remove(tag);
 
-        protected void InternalAddOrUpdate(TTag tag, TObject value)
-            => Database.AddOrUpdate(tag, new Value(Serializer.Serialize(value)));
+        protected void InternalAddOrUpdate(TTag tag, TObject value) => Database.AddOrUpdate(tag, new Value(Serializer.Serialize(value)));
     }
 }

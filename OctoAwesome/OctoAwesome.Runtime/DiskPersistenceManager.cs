@@ -124,7 +124,7 @@ namespace OctoAwesome.Runtime
         /// <param name="column">Zu serialisierende ChunkColumn.</param>
         public void SaveColumn(Guid universeGuid, IPlanet planet, IChunkColumn column)
         {
-            var chunkColumContext = new ChunkColumnDbContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
+            var chunkColumContext = new ChunkColumnDatabaseContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
             chunkColumContext.AddOrUpdate(column);
         }
 
@@ -253,7 +253,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Die neu geladene ChunkColumn.</returns>
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var chunkColumContext = new ChunkColumnDbContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
+            var chunkColumContext = new ChunkColumnDatabaseContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
 
             column = chunkColumContext.Get(columnIndex);
 

@@ -1,7 +1,5 @@
 ﻿using OctoAwesome.Database;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OctoAwesome.Serialization
 {
@@ -12,13 +10,10 @@ namespace OctoAwesome.Serialization
         {
         }
 
-        public override void AddOrUpdate(TObject value) 
-            => InternalAddOrUpdate(new GuidTag<int>(value.Id), value);
+        public override void AddOrUpdate(TObject value) => InternalAddOrUpdate(new GuidTag<int>(value.Id), value);
 
-        public TObject Get(Guid key) 
-            => Get(new GuidTag<int>(key));
+        public TObject Get(Guid key) => Get(new GuidTag<int>(key));
 
-        public override void Remove(TObject value) 
-           => InternalRemove(new GuidTag<int>(value.Id));
+        public override void Remove(TObject value) => InternalRemove(new GuidTag<int>(value.Id));
     }
 }

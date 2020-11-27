@@ -129,7 +129,7 @@
     <Compile Include="Serialization\Entities\EntityDefinition.cs" />
     <Compile Include="Serialization\IDatabaseProvider.cs" />
     <Compile Include="Serialization\IIdentification.cs" />
-    <Compile Include="Serialization\ChunkColumnDbContext.cs" />
+    <Compile Include="Serialization\ChunkColumnDatabaseContext.cs" />
     <Compile Include="Serialization\Index2Tag.cs" />
     <Compile Include="Serialization\ISerializableEnumerable.cs" />
     <Compile Include="Serialization\SerializableDatabaseContext.cs" />
