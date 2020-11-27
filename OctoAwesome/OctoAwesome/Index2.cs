@@ -233,8 +233,8 @@ namespace OctoAwesome
             origin = NormalizeAxis(origin, size);
             destination = NormalizeAxis(destination, size);
 
-            int half = size / 2;
-            int distance = destination - origin;
+            var half = size / 2;
+            var distance = destination - origin;
 
             if (distance > half)
                 distance -= size;

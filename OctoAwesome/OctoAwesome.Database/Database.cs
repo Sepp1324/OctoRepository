@@ -43,7 +43,7 @@ namespace OctoAwesome.Database
             valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
             defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
             fileyCheck = new ValueFileCheck<TTag>(valueFile);
-            Threshold = 100;
+            Threshold = 1000;
         }
 
         public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
@@ -68,7 +68,7 @@ namespace OctoAwesome.Database
 
             valueStore.Open();
 
-            if (Threshold >= 0 && keyStore.EmptyKeys <= Threshold)
+            if (Threshold >= 0 && keyStore.EmptyKeys >= Threshold)
                 Defragmentation();
         }
 
