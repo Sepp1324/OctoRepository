@@ -30,8 +30,8 @@ namespace OctoAwesome.Client.Components
             NavigateFromTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 0f);
             NavigateToTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 1f);
 
-            //NavigateToScreen(new MainScreen(this));
-            NavigateToScreen(new LoadingScreen(this));
+            NavigateToScreen(new MainScreen(this));
+            //NavigateToScreen(new LoadingScreen(this));
         }
 
         public void Exit() => Game.Exit();

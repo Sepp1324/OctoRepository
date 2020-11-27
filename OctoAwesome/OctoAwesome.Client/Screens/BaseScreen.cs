@@ -29,13 +29,9 @@ namespace OctoAwesome.Client.Screens
                 BackButton.Margin = new Border(10, 10, 10, 10);
                 Controls.Add(BackButton);
             }
-
         }
 
-        protected void SetDefaultBackground()
-        {
-            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
-        }
+        protected void SetDefaultBackground() => Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
 
         protected override void OnKeyPress(KeyEventArgs args)
         {
@@ -56,5 +52,11 @@ namespace OctoAwesome.Client.Screens
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 10 });
         }
 
+        protected Button GetButton(string title)
+        {
+            var button = Button.TextButton(Manager, title);
+            button.HorizontalAlignment = HorizontalAlignment.Stretch;
+            return button;
+        }
     }
 }

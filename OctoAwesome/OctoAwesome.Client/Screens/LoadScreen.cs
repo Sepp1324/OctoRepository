@@ -89,7 +89,7 @@ namespace OctoAwesome.Client.Screens
             sidebar.Controls.Add(_seedLabel);
 
             //Buttons
-            StackPanel buttonStack = new StackPanel(manager)
+            var buttonStack = new StackPanel(manager)
             {
                 VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Stretch
             };
@@ -152,18 +152,12 @@ namespace OctoAwesome.Client.Screens
             
             if (Guid.TryParse(_settings.Get<string>("LastUniverse"), out lastUniverseId))
             {
-                var lastlevel = _levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
-                if (lastlevel != null)
-                    _levelList.SelectedItem = lastlevel;
+                var lastLevel = _levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
+               
+                if (lastLevel != null)
+                    _levelList.SelectedItem = lastLevel;
 
             }
-        }
-
-        private Button GetButton(string title)
-        {
-            var button = Button.TextButton(Manager, title);
-            button.HorizontalAlignment = HorizontalAlignment.Stretch;
-            return button;
         }
 
         protected override void OnKeyDown(KeyEventArgs args)
