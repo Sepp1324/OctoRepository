@@ -9,7 +9,7 @@ namespace OctoAwesome.Client.Components
     {
         public new OctoGame Game { get; private set; }
 
-        public PlayerComponent Player { get { return Game.Player; } }
+        public PlayerComponent Player => Game.Player;
 
         public CameraComponent Camera => Game.Camera;
 
@@ -30,15 +30,11 @@ namespace OctoAwesome.Client.Components
             NavigateFromTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 0f);
             NavigateToTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 1f);
 
-            NavigateToScreen(new MainScreen(this));
-
-            
+            //NavigateToScreen(new MainScreen(this));
+            NavigateToScreen(new LoadingScreen(this));
         }
 
-        public void Exit()
-        {
-            Game.Exit();
-        }
+        public void Exit() => Game.Exit();
 
         public void UnloadAssets()
         {
