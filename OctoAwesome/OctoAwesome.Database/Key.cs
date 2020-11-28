@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
     public readonly struct Key<TTag> : IEquatable<Key<TTag>> where TTag : ITag, new()
     {
-        private const int BASE_KEY_SIZE = sizeof(long) + sizeof(int);
-
+        public const int BASE_KEY_SIZE = sizeof(long) + sizeof(int);
         public static int KEY_SIZE { get; }
-
         public static Key<TTag> Empty { get; }
 
         static Key()
@@ -18,31 +18,37 @@ namespace OctoAwesome.Database
             Empty = new Key<TTag>();
         }
 
-        public TTag Tag { get; }
-
         /// <summary>
-        /// Current Position of the referenced Value in the ValueFile
+        /// The uniqe identification object for this key
+        /// </summary>
+        public TTag Tag { get; }
+        /// <summary>
+        /// The current position of this Key and the referenced <see cref="Value"/> in the value file
         /// </summary>
         public long Index { get; }
-
-        public int ValueLength { get; }
-
         /// <summary>
-        /// Current Position of the Key in the KeyStore File
+        /// The length of the referenced <see cref="Value"/> in the value file
+        /// </summary>
+        public int ValueLength { get; }
+        /// <summary>
+        /// The current position of the key in the <see cref="KeyStore{TTag}"/> file
         /// </summary>
         public long Position { get; }
 
+        /// <summary>
+        /// Returns true if the Key is not valid. Comparing with default should have the same result
+        /// </summary>
         public bool IsEmpty => Tag == null && ValueLength == 0;
 
-        public Key(TTag tag, long index, int valueLength, long position)
+        public Key(TTag tag, long index, int length, long position)
         {
             Tag = tag;
             Index = index;
-            ValueLength = valueLength;
+            ValueLength = length;
             Position = position;
         }
 
-        public Key(TTag tag, long index, int valueLength) : this(tag, index, valueLength, -1)
+        public Key(TTag tag, long index, int length) : this(tag, index, length, -1)
         {
         }
 
@@ -68,9 +74,12 @@ namespace OctoAwesome.Database
             return new Key<TTag>(tag, localIndex, length, index);
         }
 
-        public override bool Equals(object obj) => obj is Key<TTag> key && Equals(key);
-
-        public bool Equals(Key<TTag> other) => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag) && ValueLength == other.ValueLength;
+        public override bool Equals(object obj)
+            => obj is Key<TTag> key
+            && Equals(key);
+        public bool Equals(Key<TTag> other)
+            => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag)
+               && ValueLength == other.ValueLength;
 
         public override int GetHashCode()
         {
@@ -80,10 +89,15 @@ namespace OctoAwesome.Database
             return hashCode;
         }
 
-        public bool Validate() => ValueLength >= 0 && Position >= 0 && Index >= 0 && KEY_SIZE > BASE_KEY_SIZE;
+        public bool Validate()
+            => ValueLength >= 0
+               && Position >= 0
+               && Index >= 0
+               && KEY_SIZE > BASE_KEY_SIZE;
 
-        public static bool operator ==(Key<TTag> left, Key<TTag> right) => left.Equals(right);
-
-        public static bool operator !=(Key<TTag> left, Key<TTag> right) => !(left == right);
+        public static bool operator ==(Key<TTag> left, Key<TTag> right)
+            => left.Equals(right);
+        public static bool operator !=(Key<TTag> left, Key<TTag> right)
+            => !(left == right);
     }
 }

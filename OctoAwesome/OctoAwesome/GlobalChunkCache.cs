@@ -43,7 +43,7 @@ namespace OctoAwesome
         private readonly ILogger logger;
         private readonly IEnumerable<(Guid Id, PositionComponent Component)> positionComponents;
         private IUpdateHub updateHub;
-
+      
         /// <summary>
         /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
         /// </summary>
@@ -131,7 +131,7 @@ namespace OctoAwesome
                     var chunkIndex = new Index3(position, Planet.Id);
                     var loadedEntities = positionComponents
                         .Where(x => x.Component.Planet == Planet && x.Component.Position.ChunkIndex.X == chunkIndex.X && x.Component.Position.ChunkIndex.Y == chunkIndex.Y)
-                        .Select(x => resourceManager.LoadEntity(x.Id));
+                        .Select(x=> resourceManager.LoadEntity(x.Id));
 
                     foreach (var entity in loadedEntities)
                         cacheItem.ChunkColumn.Entities.Add(entity);

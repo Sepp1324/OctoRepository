@@ -1,12 +1,21 @@
 ﻿using engenious;
-using MonoGameUi;
+using engenious.Input;
+using engenious.UI;
+using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class LoadingScreen : BaseScreen
     {
-        private readonly GameScreen _gameScreen;
+        private readonly GameScreen gameScreen;
 
         public LoadingScreen(ScreenComponent manager) : base(manager)
         {
@@ -53,13 +62,16 @@ namespace OctoAwesome.Client.Screens
 
             var text = new Label(manager)
             {
-                Text = "Konfuzius sagt: Das mag ich nicht!",
+                Text = "Konfuzius sagt: Das hier lädt!",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Padding = Border.All(10)
+                Padding = Border.All(10),
             };
+
             mainGrid.AddControl(text, 1, 1);
 
+
+            //Buttons
             var buttonStack = new StackPanel(manager)
             {
                 VerticalAlignment = VerticalAlignment.Center,
@@ -68,25 +80,27 @@ namespace OctoAwesome.Client.Screens
             };
             mainGrid.AddControl(buttonStack, 1, 2);
 
-            var cancelButton = GetButton(Languages.OctoClient.Cancel);
-
+            Button cancelButton = GetButton(Languages.OctoClient.Cancel);
             buttonStack.Controls.Add(cancelButton);
-
             cancelButton.LeftMouseClick += (s, e) =>
             {
                 manager.NavigateBack();
             };
 
-            _gameScreen = new GameScreen(manager);
-            _gameScreen.Update(new GameTime());
+            Debug.WriteLine("Create GameScreen");
 
-            _gameScreen.OnCenterChanged += SwitchToGame;
+            gameScreen = new GameScreen(manager);
+            gameScreen.Update(new GameTime());
+            gameScreen.OnCenterChanged += SwitchToGame;
         }
 
         private void SwitchToGame(object sender, System.EventArgs args)
         {
-            Manager.NavigateToScreen(_gameScreen);
-            _gameScreen.OnCenterChanged -= SwitchToGame;
+            Manager.Invoke(() =>
+            {
+                Manager.NavigateToScreen(gameScreen);
+                gameScreen.OnCenterChanged -= SwitchToGame;
+            });
         }
     }
 }

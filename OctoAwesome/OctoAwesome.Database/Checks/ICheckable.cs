@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Database.Checks
 {
-    public interface ICheckable<TTag> where TTag : ITag, new()
+    public interface ICheckable
     {
         void Check();
     }

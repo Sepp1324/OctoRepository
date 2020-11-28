@@ -124,7 +124,7 @@ namespace OctoAwesome.Runtime
         /// <param name="column">Zu serialisierende ChunkColumn.</param>
         public void SaveColumn(Guid universeGuid, IPlanet planet, IChunkColumn column)
         {
-            var chunkColumContext = new ChunkColumnDatabaseContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
+            var chunkColumContext = new ChunkColumnDbContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
             chunkColumContext.AddOrUpdate(column);
         }
 
@@ -151,7 +151,7 @@ namespace OctoAwesome.Runtime
 
         public void SaveEntity(Entity entity, Guid universe)
         {
-            var context = new EntityDatabaseContext(databaseProvider, universe);
+            var context = new EntityDbContext(databaseProvider, universe);
             context.AddOrUpdate(entity);
         }
 
@@ -253,7 +253,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Die neu geladene ChunkColumn.</returns>
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var chunkColumContext = new ChunkColumnDatabaseContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
+            var chunkColumContext = new ChunkColumnDbContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
 
             column = chunkColumContext.Get(columnIndex);
 
@@ -269,7 +269,7 @@ namespace OctoAwesome.Runtime
 
         public Awaiter Load(out Entity entity, Guid universeGuid, Guid entityId)
         {
-            var entityContext = new EntityDatabaseContext(databaseProvider, universeGuid);
+            var entityContext = new EntityDbContext(databaseProvider, universeGuid);
             entity = entityContext.Get(new GuidTag<Entity>(entityId));
 
             var awaiter = awaiterPool.Get();
@@ -315,17 +315,17 @@ namespace OctoAwesome.Runtime
         }
 
         public IEnumerable<Entity> LoadEntitiesWithComponent<T>(Guid universeGuid) where T : EntityComponent
-            => new EntityDatabaseContext(databaseProvider, universeGuid).GetEntitiesWithComponent<T>();
+            => new EntityDbContext(databaseProvider, universeGuid).GetEntitiesWithComponent<T>();
 
         public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent
-            => new EntityDatabaseContext(databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
+            => new EntityDbContext(databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
         public IEnumerable<Guid> GetEntityIds(Guid universeGuid)
-            => new EntityDatabaseContext(databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
+            => new EntityDbContext(databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
 
         public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<Guid> entityIds) where T : EntityComponent, new()
         {
             foreach (var entityId in entityIds)
-                yield return (entityId, new EntityComponentsDatabaseContext(databaseProvider, universeGuid).Get<T>(entityId));
+                yield return (entityId, new EntityComponentsDbContext(databaseProvider, universeGuid).Get<T>(entityId));
         }
 
         public void Dispose()
@@ -347,13 +347,13 @@ namespace OctoAwesome.Runtime
 
         private void SaveChunk(ChunkNotification chunkNotification)
         {
-            var databaseContext = new ChunkDiffDatabaseContext(databaseProvider.GetDatabase<ChunkDiffTag>(currentUniverse.Id, chunkNotification.Planet, true));
+            var databaseContext = new ChunkDiffDbContext(databaseProvider.GetDatabase<ChunkDiffTag>(currentUniverse.Id, chunkNotification.Planet, true));
             databaseContext.AddOrUpdate(chunkNotification);
         }
 
         private void ApplyChunkDiff(IChunkColumn column, Guid universeGuid, IPlanet planet)
         {
-            var databaseContext = new ChunkDiffDatabaseContext(databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id, true));
+            var databaseContext = new ChunkDiffDbContext(databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id, true));
             var keys = databaseContext
                 .GetAllKeys()
                 .Where(t => t.ChunkPositon.X == column.Index.X && t.ChunkPositon.Y == column.Index.Y)

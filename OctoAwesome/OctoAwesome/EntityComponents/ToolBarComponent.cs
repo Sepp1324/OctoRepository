@@ -1,4 +1,11 @@
-﻿namespace OctoAwesome.EntityComponents
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OctoAwesome.EntityComponents
 {
     /// <summary>
     /// EntityComponent, die eine Werkzeug-Toolbar für den Apieler bereitstellt.
@@ -23,7 +30,10 @@
         /// <summary>
         /// Erzeugte eine neue ToolBarComponent
         /// </summary>
-        public ToolBarComponent() => Tools = new InventorySlot[TOOLCOUNT];
+        public ToolBarComponent()
+        {
+            Tools = new InventorySlot[TOOLCOUNT];
+        }
 
         /// <summary>
         /// Entfernt einen InventorySlot aus der Toolbar

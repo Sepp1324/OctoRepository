@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
@@ -24,7 +26,6 @@ namespace OctoAwesome.Runtime
         public Database<T> GetDatabase<T>(bool fixedValueSize) where T : ITag, new()
         {
             var key = typeof(T);
-
             if (globalDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
@@ -41,7 +42,6 @@ namespace OctoAwesome.Runtime
         public Database<T> GetDatabase<T>(Guid universeGuid, bool fixedValueSize) where T : ITag, new()
         {
             var key = (typeof(T), universeGuid);
-
             if (universeDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
@@ -58,7 +58,6 @@ namespace OctoAwesome.Runtime
         public Database<T> GetDatabase<T>(Guid universeGuid, int planetId, bool fixedValueSize) where T : ITag, new()
         {
             var key = (typeof(T), universeGuid, planetId);
-
             if (planetDatabaseRegister.TryGetValue(key, out var database))
             {
                 return database as Database<T>;
@@ -94,14 +93,15 @@ namespace OctoAwesome.Runtime
                 Directory.CreateDirectory(path);
             
             var type = typeof(T);
-
             if (typeName == null)
                 typeName = type.Name;
 
             string name;
 
             foreach (var c in Path.GetInvalidFileNameChars())
+            {
                 typeName = typeName.Replace(c, '\0');
+            }
 
             if (type.IsGenericType)
             {

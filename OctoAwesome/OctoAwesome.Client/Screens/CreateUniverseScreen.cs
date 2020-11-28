@@ -1,5 +1,6 @@
 ﻿using engenious;
-using MonoGameUi;
+using engenious.UI;
+using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using System;
 
@@ -55,7 +56,7 @@ namespace OctoAwesome.Client.Screens
             seedInput = GetTextbox();
             AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Seed), seedInput);
 
-            createButton = Button.TextButton(manager, Languages.OctoClient.Create);
+            createButton = new TextButton(manager, Languages.OctoClient.Create);
             createButton.HorizontalAlignment = HorizontalAlignment.Right;
             createButton.VerticalAlignment = VerticalAlignment.Bottom;
             createButton.Visible = false;
@@ -72,7 +73,7 @@ namespace OctoAwesome.Client.Screens
                 Player player = manager.Game.Simulation.LoginPlayer("");
                 manager.Game.Player.SetEntity(player);
 
-                manager.NavigateToScreen(new GameScreen(manager));
+                manager.NavigateToScreen(new LoadingScreen(manager));
             };
             panel.Controls.Add(createButton);
 

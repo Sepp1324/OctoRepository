@@ -1,7 +1,12 @@
-﻿using OctoAwesome.Pooling;
+﻿using NLog.Internal;
+using OctoAwesome.Pooling;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
@@ -19,19 +24,18 @@ namespace OctoAwesome.Serialization
 
         public static byte[] SerializeCompressed<T>(T obj) where T : ISerializable
         {
-            using (var memoryStream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
-                using (var binaryWriter = new BinaryWriter(memoryStream, Encoding.Default, true))
-                    obj.Serialize(binaryWriter);
+                using (var writer = new BinaryWriter(stream, Encoding.Default, true))
+                    obj.Serialize(writer);
 
-                using (var stream = new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
-                    memoryStream.Position = 0;
+                    stream.Position = 0;
+                    using (var zip = new GZipStream(ms, CompressionMode.Compress, true))
+                        stream.CopyTo(zip);
 
-                    using (var zipStream = new GZipStream(stream, CompressionMode.Compress, true))
-                        memoryStream.CopyTo(zipStream);
-
-                    return stream.ToArray();
+                    return ms.ToArray();
                 }
             }
         }
@@ -75,11 +79,11 @@ namespace OctoAwesome.Serialization
 
         private static void InternalDeserializeCompressed<T>(ref T instance, byte[] data) where T : ISerializable
         {
-            using (var memoryStream = new MemoryStream(data))
-            using (var zipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-            using (var binaryReader = new BinaryReader(zipStream))
+            using (var stream = new MemoryStream(data))
+            using (var zip = new GZipStream(stream, CompressionMode.Decompress))
+            using (var reader = new BinaryReader(zip))
             {
-                instance.Deserialize(binaryReader);
+                instance.Deserialize(reader);
             }
         }
     }

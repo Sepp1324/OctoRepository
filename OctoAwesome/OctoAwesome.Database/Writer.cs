@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -8,15 +10,19 @@ namespace OctoAwesome.Database
         private readonly FileInfo fileInfo;
         private FileStream fileStream;
 
-        public Writer(FileInfo fileInfo) => this.fileInfo = fileInfo;
-
-
+        public Writer(FileInfo fileInfo)
+        {
+            this.fileInfo = fileInfo;
+        }
         public Writer(string path) : this(new FileInfo(path))
         {
 
         }
 
-        public void Open() => fileStream = fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+        public void Open()
+        {
+           fileStream =  fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+        }
 
         public void Close()
         {
@@ -24,8 +30,8 @@ namespace OctoAwesome.Database
             fileStream = null;
         }
 
-        public void Write(byte[] data, int offset, int length) => fileStream.Write(data, offset, length);
-
+        public void Write(byte[] data, int offset, int length)
+            => fileStream.Write(data, offset, length);
         public void Write(byte[] data, int offset, int length, long position)
         {
             fileStream.Seek(position, SeekOrigin.Begin);
@@ -37,17 +43,19 @@ namespace OctoAwesome.Database
             Write(data, offset, length);
             fileStream.Flush();
         }
-
         public void WriteAndFlush(byte[] data, int offset, int length, long position)
         {
             Write(data, offset, length, position);
             fileStream.Flush();
         }
 
-        internal long ToEnd() => fileStream.Seek(0, SeekOrigin.End);
+        internal long ToEnd()
+            => fileStream.Seek(0, SeekOrigin.End);
 
         #region IDisposable Support
-        private bool disposedValue;
+        private bool disposedValue = false;
+
+        
 
         public void Dispose()
         {
@@ -59,5 +67,6 @@ namespace OctoAwesome.Database
             disposedValue = true;
         }
         #endregion
+
     }
 }

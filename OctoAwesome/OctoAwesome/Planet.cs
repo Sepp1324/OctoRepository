@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using OctoAwesome.Notifications;
 
 namespace OctoAwesome
@@ -83,7 +84,10 @@ namespace OctoAwesome
         /// <summary>
         /// Erzeugt eine neue Instanz eines Planeten.
         /// </summary>
-        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
+        public Planet()
+        {
+            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
+        }
 
         /// <summary>
         /// Serialisiert den Planeten in den angegebenen Stream.

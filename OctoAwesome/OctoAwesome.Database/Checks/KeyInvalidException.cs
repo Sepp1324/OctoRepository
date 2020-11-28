@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
+using System.Text;
 
 namespace OctoAwesome.Database.Checks
 {
     [Serializable]
-    public sealed class KeyInvalidException : Exception
+    public class KeyInvalidException : Exception
     {
-        private long Position { get; set; }
+        public long Position { get;  }
 
         public KeyInvalidException(string message, long position) : base($"{message} on Position {position}")
         {
@@ -14,9 +15,8 @@ namespace OctoAwesome.Database.Checks
             Data.Add(nameof(Position), position);
         }
 
-        private KeyInvalidException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-
-        }
+        protected KeyInvalidException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }
