@@ -6,7 +6,7 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class LoadingScreen : BaseScreen
     {
-
+        private readonly GameScreen _gameScreen;
 
         public LoadingScreen(ScreenComponent manager) : base(manager)
         {
@@ -35,25 +35,58 @@ namespace OctoAwesome.Client.Screens
             };
             mainStack.AddControl(backgroundStack, 0, 0, 1, 1);
 
+            var mainGrid = new Grid(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
+            };
+
+            mainGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            mainGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 3 });
+            mainGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 4 });
+            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 4 });
+
+            backgroundStack.Controls.Add(mainGrid);
+
             var text = new Label(manager)
             {
                 Text = "Konfuzius sagt: Das mag ich nicht!",
-                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
                 Padding = Border.All(10)
             };
-            backgroundStack.Controls.Add(text);
+            mainGrid.AddControl(text, 1, 1);
 
             var buttonStack = new StackPanel(manager)
             {
-                VerticalAlignment = VerticalAlignment.Center, 
+                VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Orientation = Orientation.Horizontal
             };
-            backgroundStack.Controls.Add(buttonStack);
+            mainGrid.AddControl(buttonStack, 1, 2);
 
             var cancelButton = GetButton(Languages.OctoClient.Cancel);
 
             buttonStack.Controls.Add(cancelButton);
+
+            cancelButton.LeftMouseClick += (s, e) =>
+            {
+                manager.NavigateBack();
+            };
+
+            _gameScreen = new GameScreen(manager);
+            _gameScreen.Update(new GameTime());
+
+            _gameScreen.OnCenterChanged += SwitchToGame;
+        }
+
+        private void SwitchToGame(object sender, System.EventArgs args)
+        {
+            Manager.NavigateToScreen(_gameScreen);
+            _gameScreen.OnCenterChanged -= SwitchToGame;
         }
     }
 }

@@ -31,11 +31,10 @@ namespace OctoAwesome.Client.Components
             NavigateToTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 1f);
 
             NavigateToScreen(new MainScreen(this));
-            //NavigateToScreen(new LoadingScreen(this));
         }
 
         public void Exit() => Game.Exit();
-
+        
         public void UnloadAssets()
         {
             Skin.Current.ButtonBrush = null;

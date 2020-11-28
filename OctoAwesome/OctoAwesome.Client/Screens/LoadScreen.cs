@@ -183,7 +183,7 @@ namespace OctoAwesome.Client.Screens
             var player = Manager.Game.Simulation.LoginPlayer("");
             Manager.Game.Player.SetEntity(player);
             
-            Manager.NavigateToScreen(new GameScreen(Manager));
+            Manager.NavigateToScreen(new LoadingScreen(Manager));
         }
     }
 }
