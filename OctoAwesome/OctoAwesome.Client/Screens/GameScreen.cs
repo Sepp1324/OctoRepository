@@ -12,21 +12,21 @@ namespace OctoAwesome.Client.Screens
     {
         public event EventHandler OnCenterChanged
         {
-            add => scene.OnCenterChanged += value;
-            remove => scene.OnCenterChanged -= value;
+            add => _scene.OnCenterChanged += value;
+            remove => _scene.OnCenterChanged -= value;
         }
 
         private const float mouseSpeed = 0.2f;
 
         private new ScreenComponent Manager { get; set; }
 
-        private readonly DebugControl debug;
-        private readonly SceneControl scene;
-        private readonly CompassControl compass;
-        private readonly ToolbarControl toolbar;
-        private readonly MinimapControl minimap;
-        private readonly CrosshairControl crosshair;
-        private readonly HealthBarControl healthbar;
+        private readonly DebugControl _debug;
+        private readonly SceneControl _scene;
+        private readonly CompassControl _compass;
+        private readonly ToolbarControl _toolbar;
+        private readonly MinimapControl _minimap;
+        private readonly CrosshairControl _crosshair;
+        private readonly HealthBarControl _healthbar;
 
         public GameScreen(ScreenComponent manager) : base(manager)
         {
@@ -35,55 +35,69 @@ namespace OctoAwesome.Client.Screens
             Manager = manager;
             Padding = Border.All(0);
 
-            scene = new SceneControl(manager);
-            scene.HorizontalAlignment = HorizontalAlignment.Stretch;
-            scene.VerticalAlignment = VerticalAlignment.Stretch;            
-            Controls.Add(scene);
+            _scene = new SceneControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch
+            };
 
-            debug = new DebugControl(manager);
-            debug.HorizontalAlignment = HorizontalAlignment.Stretch;
-            debug.VerticalAlignment = VerticalAlignment.Stretch;
-            debug.Visible = false;
-            Controls.Add(debug);
+            Controls.Add(_scene);
 
-            compass = new CompassControl(manager);
-            compass.HorizontalAlignment = HorizontalAlignment.Center;
-            compass.VerticalAlignment = VerticalAlignment.Top;
-            compass.Margin = Border.All(10);
-            compass.Width = 300;
-            compass.Height = 50;
-            Controls.Add(compass);
+            _debug = new DebugControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Visible = false
+            };
+            Controls.Add(_debug);
 
-            toolbar = new ToolbarControl(manager);
-            toolbar.HorizontalAlignment = HorizontalAlignment.Stretch;
-            toolbar.VerticalAlignment = VerticalAlignment.Bottom;
-            toolbar.Height = 100;
-            Controls.Add(toolbar);
+            _compass = new CompassControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = Border.All(10),
+                Width = 300,
+                Height = 50
+            };
+            Controls.Add(_compass);
 
-            minimap = new MinimapControl(manager, scene);
-            minimap.HorizontalAlignment = HorizontalAlignment.Right;
-            minimap.VerticalAlignment = VerticalAlignment.Bottom;
-            minimap.Width = 128;
-            minimap.Height = 128;
-            minimap.Margin = Border.All(5);
-            Controls.Add(minimap);
+            _toolbar = new ToolbarControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Height = 100
+            };
+            Controls.Add(_toolbar);
 
-            healthbar = new HealthBarControl(manager);
-            healthbar.HorizontalAlignment = HorizontalAlignment.Left;
-            healthbar.VerticalAlignment = VerticalAlignment.Bottom;
-            healthbar.Width = 240;
-            healthbar.Height = 78;
-            healthbar.Maximum = 100;
-            healthbar.Value = 40;
-            healthbar.Margin = Border.All(20, 30);
-            Controls.Add(healthbar);
+            _minimap = new MinimapControl(manager, _scene)
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Width = 128,
+                Height = 128,
+                Margin = Border.All(5)
+            };
+            Controls.Add(_minimap);
 
-            crosshair = new CrosshairControl(manager);
-            crosshair.HorizontalAlignment = HorizontalAlignment.Center;
-            crosshair.VerticalAlignment = VerticalAlignment.Center;
-            crosshair.Width = 8;
-            crosshair.Height = 8;
-            Controls.Add(crosshair);
+            _healthbar = new HealthBarControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Width = 240,
+                Height = 78,
+                Maximum = 100,
+                Value = 40,
+                Margin = Border.All(20, 30)
+            };
+            Controls.Add(_healthbar);
+
+            _crosshair = new CrosshairControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Width = 8,
+                Height = 8
+            };
+            Controls.Add(_crosshair);
 
             Title = Languages.OctoClient.Game;
 
@@ -244,7 +258,7 @@ namespace OctoAwesome.Client.Screens
             Manager.Game.KeyMapper.AddAction("octoawesome:debug.control", type =>
             {
                 if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
-                debug.Visible = !debug.Visible;
+                _debug.Visible = !_debug.Visible;
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:inventory", type =>
             {
@@ -254,11 +268,11 @@ namespace OctoAwesome.Client.Screens
             Manager.Game.KeyMapper.AddAction("octoawesome:hidecontrols", type =>
             {
                 if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
-                compass.Visible = !compass.Visible;
-                toolbar.Visible = !toolbar.Visible;
-                minimap.Visible = !minimap.Visible;
-                crosshair.Visible = !crosshair.Visible;
-                debug.Visible = !debug.Visible;
+                _compass.Visible = !_compass.Visible;
+                _toolbar.Visible = !_toolbar.Visible;
+                _minimap.Visible = !_minimap.Visible;
+                _crosshair.Visible = !_crosshair.Visible;
+                _debug.Visible = !_debug.Visible;
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:exit", type =>
             {

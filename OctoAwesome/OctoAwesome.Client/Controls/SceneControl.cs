@@ -5,13 +5,9 @@ using System.Collections.Generic;
 using System.Threading;
 using OctoAwesome.Client.Components;
 using System.Drawing.Imaging;
-using System.Threading.Tasks;
-using OctoAwesome.Runtime;
 using engenious;
 using engenious.Graphics;
 using engenious.Helper;
-using System.Windows.Threading;
-using System.Diagnostics;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -23,40 +19,40 @@ namespace OctoAwesome.Client.Controls
         public static int Span;
         public static int SpanOver2;
 
-        private PlayerComponent player;
-        private CameraComponent camera;
-        private AssetComponent assets;
-        private Components.EntityComponent entities;
+        private readonly PlayerComponent _player;
+        private readonly CameraComponent _camera;
+        private readonly AssetComponent _assets;
+        private readonly Components.EntityComponent _entities;
 
-        private ChunkRenderer[,] chunkRenderer;
-        private List<ChunkRenderer> orderedChunkRenderer;
+        private readonly ChunkRenderer[,] _chunkRenderer;
+        private readonly List<ChunkRenderer> _orderedChunkRenderer;
 
-        private IPlanet planet;
+        private readonly IPlanet _planet;
 
         // private List<Index3> distances = new List<Index3>();
 
-        private BasicEffect sunEffect;
-        private BasicEffect selectionEffect;
-        private Matrix miniMapProjectionMatrix;
+        private readonly BasicEffect _sunEffect;
+        private readonly BasicEffect _selectionEffect;
+        private readonly Matrix _miniMapProjectionMatrix;
 
         //private Texture2D blockTextures;
-        private Texture2DArray blockTextures;
-        private Texture2D sunTexture;
+        private readonly Texture2DArray _blockTextures;
+        private readonly Texture2D _sunTexture;
 
-        private IndexBuffer selectionIndexBuffer;
-        private VertexBuffer selectionLines;
-        private VertexBuffer billboardVertexbuffer;
+        private readonly IndexBuffer _selectionIndexBuffer;
+        private readonly VertexBuffer _selectionLines;
+        private readonly VertexBuffer _billboardVertexbuffer;
         //private VertexPositionColor[] selectionLines;
         //private VertexPositionTexture[] billboardVertices;
 
-        private Index2 currentChunk = new Index2(-1, -1);
+        private Index2 _currentChunk = new Index2(-1, -1);
 
-        private Thread backgroundThread;
-        private Thread backgroundThread2;
-        private ILocalChunkCache localChunkCache;
-        private Effect simpleShader;
+        private readonly Thread _backgroundThread;
+        private readonly Thread _backgroundThread2;
+        private readonly ILocalChunkCache _localChunkCache;
+        private readonly Effect _simpleShader;
 
-        private Thread[] _additionalRegenerationThreads;
+        private readonly Thread[] _additionalRegenerationThreads;
 
         public RenderTarget2D MiniMapTexture { get; set; }
         public RenderTarget2D ControlTexture { get; set; }
@@ -76,6 +72,7 @@ namespace OctoAwesome.Client.Controls
                 new VertexPositionColor(new Vector3(-0.001f, -0.001f, -0.001f), Color.Black * 0.5f),
                 new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Color.Black * 0.5f),
         };
+
         private readonly VertexPositionTexture[] billboardVertices =
         {
                 new VertexPositionTexture(new Vector3(-0.5f, 0.5f, 0), new Vector2(0, 0)),
@@ -85,6 +82,7 @@ namespace OctoAwesome.Client.Controls
                 new VertexPositionTexture(new Vector3(0.5f, -0.5f, 0), new Vector2(1, 1)),
                 new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
         };
+
         private readonly ushort[] selectionIndices =
         {
                 0, 1, 0, 2, 1, 3, 2, 3,
@@ -93,6 +91,7 @@ namespace OctoAwesome.Client.Controls
         };
 
         private ScreenComponent Manager { get; set; }
+
 
         private int _fillIncrement;
 
@@ -103,25 +102,28 @@ namespace OctoAwesome.Client.Controls
             Span = (int)Math.Pow(2, VIEWRANGE);
             SpanOver2 = Span >> 1;
 
-            player = manager.Player;
-            camera = manager.Camera;
-            assets = manager.Game.Assets;
-            entities = manager.Game.Entity;
+            _player = manager.Player;
+            _camera = manager.Camera;
+            _assets = manager.Game.Assets;
+            _entities = manager.Game.Entity;
             Manager = manager;
 
-            simpleShader = manager.Game.Content.Load<Effect>("simple");
-            sunTexture = assets.LoadTexture(typeof(ScreenComponent), "sun");
+            _simpleShader = manager.Game.Content.Load<Effect>("simple");
+            _sunTexture = _assets.LoadTexture(typeof(ScreenComponent), "sun");
 
             //List<Bitmap> bitmaps = new List<Bitmap>();
             var definitions = Manager.Game.DefinitionManager.GetBlockDefinitions();
-            int textureCount = 0;
+            var textureCount = 0;
+
             foreach (var definition in definitions)
-            {
                 textureCount += definition.Textures.Length;
-            }
-            int bitmapSize = 128;
-            blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
-            int layer = 0;
+
+            var bitmapSize = 128;
+
+            _blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
+
+            var layer = 0;
+
             foreach (var definition in definitions)
             {
                 foreach (var bitmap in definition.Textures)
@@ -132,53 +134,54 @@ namespace OctoAwesome.Client.Controls
                     int[] data = new int[scaled.Width * scaled.Height];
                     var bitmapData = scaled.LockBits(new System.Drawing.Rectangle(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
-                    blockTextures.SetData(data, layer);
+                    _blockTextures.SetData(data, layer);
                     scaled.UnlockBits(bitmapData);
                     layer++;
                 }
             }
 
-            planet = Manager.Game.ResourceManager.GetPlanet(player.Position.Position.Planet);
+            _planet = Manager.Game.ResourceManager.GetPlanet(_player.Position.Position.Planet);
 
             // TODO: evtl. Cache-Size (Dimensions) VIEWRANGE + 1
 
-            int range = ((int)Math.Pow(2, VIEWRANGE) - 2) / 2;
-            localChunkCache = new LocalChunkCache(planet.GlobalChunkCache, VIEWRANGE, range);
+            var range = ((int)Math.Pow(2, VIEWRANGE) - 2) / 2;
 
-            chunkRenderer = new ChunkRenderer[
+            _localChunkCache = new LocalChunkCache(_planet.GlobalChunkCache, VIEWRANGE, range);
+
+            _chunkRenderer = new ChunkRenderer[
                 (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE),
-                planet.Size.Z];
-            orderedChunkRenderer = new List<ChunkRenderer>(
-                (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE) * planet.Size.Z);
+                _planet.Size.Z];
+            _orderedChunkRenderer = new List<ChunkRenderer>(
+                (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE) * _planet.Size.Z);
 
-            for (int i = 0; i < chunkRenderer.GetLength(0); i++)
+            for (int i = 0; i < _chunkRenderer.GetLength(0); i++)
             {
-                for (int j = 0; j < chunkRenderer.GetLength(1); j++)
+                for (int j = 0; j < _chunkRenderer.GetLength(1); j++)
                 {
-                    ChunkRenderer renderer = new ChunkRenderer(this, Manager.Game.DefinitionManager, simpleShader, manager.GraphicsDevice, camera.Projection, blockTextures);
-                    chunkRenderer[i, j] = renderer;
-                    orderedChunkRenderer.Add(renderer);
+                    ChunkRenderer renderer = new ChunkRenderer(this, Manager.Game.DefinitionManager, _simpleShader, manager.GraphicsDevice, _camera.Projection, _blockTextures);
+                    _chunkRenderer[i, j] = renderer;
+                    _orderedChunkRenderer.Add(renderer);
                 }
             }
 
-            backgroundThread = new Thread(BackgroundLoop)
+            _backgroundThread = new Thread(BackgroundLoop)
             {
                 Priority = ThreadPriority.Lowest,
                 IsBackground = true
             };
-            backgroundThread.Start();
+            _backgroundThread.Start();
 
-            backgroundThread2 = new Thread(ForceUpdateBackgroundLoop)
+            _backgroundThread2 = new Thread(ForceUpdateBackgroundLoop)
             {
                 Priority = ThreadPriority.Lowest,
                 IsBackground = true
             };
-            backgroundThread2.Start();
+            _backgroundThread2.Start();
 
             var additional = Environment.ProcessorCount / 3;
             additional = additional == 0 ? 1 : additional;
             _fillIncrement = additional + 1;
-            additionalFillResetEvents = new AutoResetEvent[additional];
+            _additionalFillResetEvents = new AutoResetEvent[additional];
             _additionalRegenerationThreads = new Thread[additional];
             for (int i = 0; i < additional; i++)
             {
@@ -189,12 +192,10 @@ namespace OctoAwesome.Client.Controls
                 };
                 var are = new AutoResetEvent(false);
                 t.Start(new object[] { are, i });
-                additionalFillResetEvents[i] = are;
+                _additionalFillResetEvents[i] = are;
                 _additionalRegenerationThreads[i] = t;
 
             }
-
-
 
             var selectionVertices = new[]
             {
@@ -225,28 +226,28 @@ namespace OctoAwesome.Client.Controls
                 0, 4, 1, 5, 2, 6, 3, 7
             };
 
-            selectionLines = new VertexBuffer(manager.GraphicsDevice, VertexPositionColor.VertexDeclaration, selectionVertices.Length);
-            selectionLines.SetData(selectionVertices);
+            _selectionLines = new VertexBuffer(manager.GraphicsDevice, VertexPositionColor.VertexDeclaration, selectionVertices.Length);
+            _selectionLines.SetData(selectionVertices);
 
-            selectionIndexBuffer = new IndexBuffer(manager.GraphicsDevice, DrawElementsType.UnsignedShort, selectionIndices.Length);
-            selectionIndexBuffer.SetData(selectionIndices);
+            _selectionIndexBuffer = new IndexBuffer(manager.GraphicsDevice, DrawElementsType.UnsignedShort, selectionIndices.Length);
+            _selectionIndexBuffer.SetData(selectionIndices);
 
-            billboardVertexbuffer = new VertexBuffer(manager.GraphicsDevice, VertexPositionTexture.VertexDeclaration, billboardVertices.Length);
-            billboardVertexbuffer.SetData(billboardVertices);
+            _billboardVertexbuffer = new VertexBuffer(manager.GraphicsDevice, VertexPositionTexture.VertexDeclaration, billboardVertices.Length);
+            _billboardVertexbuffer.SetData(billboardVertices);
 
 
-            sunEffect = new BasicEffect(manager.GraphicsDevice)
+            _sunEffect = new BasicEffect(manager.GraphicsDevice)
             {
                 TextureEnabled = true
             };
 
-            selectionEffect = new BasicEffect(manager.GraphicsDevice)
+            _selectionEffect = new BasicEffect(manager.GraphicsDevice)
             {
                 VertexColorEnabled = true
             };
 
             MiniMapTexture = new RenderTarget2D(manager.GraphicsDevice, 128, 128, PixelInternalFormat.Rgb8); // , false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 0, RenderTargetUsage.PreserveContents);
-            miniMapProjectionMatrix = Matrix.CreateOrthographic(128, 128, 1, 10000);
+            _miniMapProjectionMatrix = Matrix.CreateOrthographic(128, 128, 1, 10000);
         }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
@@ -270,41 +271,41 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (player.CurrentEntity == null)
+            if (_player.CurrentEntity == null)
                 return;
 
             sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
 
-            Index3 centerblock = player.Position.Position.GlobalBlockIndex;
-            Index3 renderOffset = player.Position.Position.ChunkIndex * Chunk.CHUNKSIZE;
+            var centerBlock = _player.Position.Position.GlobalBlockIndex;
+            var renderOffset = _player.Position.Position.ChunkIndex * Chunk.CHUNKSIZE;
 
             Index3? selected = null;
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
-            for (int z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
+            for (var z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
             {
-                for (int y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
+                for (var y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
                 {
-                    for (int x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
+                    for (var x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
                     {
-                        Index3 range = new Index3(x, y, z);
-                        Index3 pos = range + centerblock;
-                        ushort block = localChunkCache.GetBlock(pos);
+                        var range = new Index3(x, y, z);
+                        var pos = range + centerBlock;
+                        var block = _localChunkCache.GetBlock(pos);
                         if (block == 0)
                             continue;
 
-                        IBlockDefinition blockDefinition = (IBlockDefinition)Manager.Game.DefinitionManager.GetDefinitionByIndex(block);
+                        var blockDefinition = (IBlockDefinition)Manager.Game.DefinitionManager.GetDefinitionByIndex(block);
 
-                        float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out Axis? collisionAxis);
+                        var distance = Block.Intersect(blockDefinition.GetCollisionBoxes(_localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, _camera.PickRay, out Axis? collisionAxis);
 
                         if (distance.HasValue && distance.Value < bestDistance)
                         {
-                            pos.NormalizeXY(planet.Size * Chunk.CHUNKSIZE);
+                            pos.NormalizeXY(_planet.Size * Chunk.CHUNKSIZE);
                             selected = pos;
                             selectedAxis = collisionAxis;
                             bestDistance = distance.Value;
-                            selectionPoint = (camera.PickRay.Position + (camera.PickRay.Direction * distance)) - (selected - renderOffset);
+                            selectionPoint = (_camera.PickRay.Position + (_camera.PickRay.Direction * distance)) - (selected - renderOffset);
                         }
                     }
                 }
@@ -312,128 +313,130 @@ namespace OctoAwesome.Client.Controls
 
             if (selected.HasValue)
             {
-                player.SelectedBox = selected;
+                _player.SelectedBox = selected;
+
                 switch (selectedAxis)
                 {
-                    case Axis.X: player.SelectedSide = (camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast); break;
-                    case Axis.Y: player.SelectedSide = (camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth); break;
-                    case Axis.Z: player.SelectedSide = (camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop); break;
+                    case Axis.X: _player.SelectedSide = (_camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast); break;
+                    case Axis.Y: _player.SelectedSide = (_camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth); break;
+                    case Axis.Z: _player.SelectedSide = (_camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop); break;
                 }
 
-                player.SelectedPoint = new Vector2();
-                switch (player.SelectedSide)
+                _player.SelectedPoint = new Vector2();
+
+                switch (_player.SelectedSide)
                 {
                     case OrientationFlags.SideWest:
-                        player.SelectedPoint = new Vector2(1f - selectionPoint.Value.Y, 1f - selectionPoint.Value.Z);
-                        player.SelectedCorner = FindCorner(player.SelectedPoint.Value, OrientationFlags.Corner011, OrientationFlags.Corner001, OrientationFlags.Corner010, OrientationFlags.Corner000);
-                        player.SelectedEdge = FindEdge(player.SelectedPoint.Value, OrientationFlags.EdgeWestTop, OrientationFlags.EdgeWestBottom, OrientationFlags.EdgeNorthWest, OrientationFlags.EdgeSouthWest);
+                        _player.SelectedPoint = new Vector2(1f - selectionPoint.Value.Y, 1f - selectionPoint.Value.Z);
+                        _player.SelectedCorner = FindCorner(_player.SelectedPoint.Value, OrientationFlags.Corner011, OrientationFlags.Corner001, OrientationFlags.Corner010, OrientationFlags.Corner000);
+                        _player.SelectedEdge = FindEdge(_player.SelectedPoint.Value, OrientationFlags.EdgeWestTop, OrientationFlags.EdgeWestBottom, OrientationFlags.EdgeNorthWest, OrientationFlags.EdgeSouthWest);
                         break;
                     case OrientationFlags.SideEast:
-                        player.SelectedPoint = new Vector2(selectionPoint.Value.Y, 1f - selectionPoint.Value.Z);
-                        player.SelectedCorner = FindCorner(player.SelectedPoint.Value, OrientationFlags.Corner101, OrientationFlags.Corner111, OrientationFlags.Corner100, OrientationFlags.Corner110);
-                        player.SelectedEdge = FindEdge(player.SelectedPoint.Value, OrientationFlags.EdgeEastTop, OrientationFlags.EdgeEastBottom, OrientationFlags.EdgeSouthEast, OrientationFlags.EdgeNorthEast);
+                        _player.SelectedPoint = new Vector2(selectionPoint.Value.Y, 1f - selectionPoint.Value.Z);
+                        _player.SelectedCorner = FindCorner(_player.SelectedPoint.Value, OrientationFlags.Corner101, OrientationFlags.Corner111, OrientationFlags.Corner100, OrientationFlags.Corner110);
+                        _player.SelectedEdge = FindEdge(_player.SelectedPoint.Value, OrientationFlags.EdgeEastTop, OrientationFlags.EdgeEastBottom, OrientationFlags.EdgeSouthEast, OrientationFlags.EdgeNorthEast);
                         break;
                     case OrientationFlags.SideTop:
-                        player.SelectedPoint = new Vector2(selectionPoint.Value.X, 1f - selectionPoint.Value.Y);
-                        player.SelectedCorner = FindCorner(player.SelectedPoint.Value, OrientationFlags.Corner011, OrientationFlags.Corner111, OrientationFlags.Corner001, OrientationFlags.Corner101);
-                        player.SelectedEdge = FindEdge(player.SelectedPoint.Value, OrientationFlags.EdgeNorthTop, OrientationFlags.EdgeSouthTop, OrientationFlags.EdgeWestTop, OrientationFlags.EdgeEastTop);
+                        _player.SelectedPoint = new Vector2(selectionPoint.Value.X, 1f - selectionPoint.Value.Y);
+                        _player.SelectedCorner = FindCorner(_player.SelectedPoint.Value, OrientationFlags.Corner011, OrientationFlags.Corner111, OrientationFlags.Corner001, OrientationFlags.Corner101);
+                        _player.SelectedEdge = FindEdge(_player.SelectedPoint.Value, OrientationFlags.EdgeNorthTop, OrientationFlags.EdgeSouthTop, OrientationFlags.EdgeWestTop, OrientationFlags.EdgeEastTop);
                         break;
                     case OrientationFlags.SideBottom:
-                        player.SelectedPoint = new Vector2(selectionPoint.Value.X, selectionPoint.Value.Y);
-                        player.SelectedCorner = FindCorner(player.SelectedPoint.Value, OrientationFlags.Corner000, OrientationFlags.Corner100, OrientationFlags.Corner010, OrientationFlags.Corner110);
-                        player.SelectedEdge = FindEdge(player.SelectedPoint.Value, OrientationFlags.EdgeSouthBottom, OrientationFlags.EdgeNorthBottom, OrientationFlags.EdgeWestBottom, OrientationFlags.EdgeEastBottom);
+                        _player.SelectedPoint = new Vector2(selectionPoint.Value.X, selectionPoint.Value.Y);
+                        _player.SelectedCorner = FindCorner(_player.SelectedPoint.Value, OrientationFlags.Corner000, OrientationFlags.Corner100, OrientationFlags.Corner010, OrientationFlags.Corner110);
+                        _player.SelectedEdge = FindEdge(_player.SelectedPoint.Value, OrientationFlags.EdgeSouthBottom, OrientationFlags.EdgeNorthBottom, OrientationFlags.EdgeWestBottom, OrientationFlags.EdgeEastBottom);
                         break;
                     case OrientationFlags.SideNorth:
-                        player.SelectedPoint = new Vector2(1f - selectionPoint.Value.X, 1f - selectionPoint.Value.Z);
-                        player.SelectedCorner = FindCorner(player.SelectedPoint.Value, OrientationFlags.Corner111, OrientationFlags.Corner011, OrientationFlags.Corner110, OrientationFlags.Corner010);
-                        player.SelectedEdge = FindEdge(player.SelectedPoint.Value, OrientationFlags.EdgeNorthTop, OrientationFlags.EdgeNorthBottom, OrientationFlags.EdgeNorthEast, OrientationFlags.EdgeNorthWest);
+                        _player.SelectedPoint = new Vector2(1f - selectionPoint.Value.X, 1f - selectionPoint.Value.Z);
+                        _player.SelectedCorner = FindCorner(_player.SelectedPoint.Value, OrientationFlags.Corner111, OrientationFlags.Corner011, OrientationFlags.Corner110, OrientationFlags.Corner010);
+                        _player.SelectedEdge = FindEdge(_player.SelectedPoint.Value, OrientationFlags.EdgeNorthTop, OrientationFlags.EdgeNorthBottom, OrientationFlags.EdgeNorthEast, OrientationFlags.EdgeNorthWest);
                         break;
                     case OrientationFlags.SideSouth:
-                        player.SelectedPoint = new Vector2(selectionPoint.Value.X, 1f - selectionPoint.Value.Z);
-                        player.SelectedCorner = FindCorner(player.SelectedPoint.Value, OrientationFlags.Corner001, OrientationFlags.Corner101, OrientationFlags.Corner000, OrientationFlags.Corner100);
-                        player.SelectedEdge = FindEdge(player.SelectedPoint.Value, OrientationFlags.EdgeSouthTop, OrientationFlags.EdgeSouthBottom, OrientationFlags.EdgeSouthWest, OrientationFlags.EdgeSouthEast);
+                        _player.SelectedPoint = new Vector2(selectionPoint.Value.X, 1f - selectionPoint.Value.Z);
+                        _player.SelectedCorner = FindCorner(_player.SelectedPoint.Value, OrientationFlags.Corner001, OrientationFlags.Corner101, OrientationFlags.Corner000, OrientationFlags.Corner100);
+                        _player.SelectedEdge = FindEdge(_player.SelectedPoint.Value, OrientationFlags.EdgeSouthTop, OrientationFlags.EdgeSouthBottom, OrientationFlags.EdgeSouthWest, OrientationFlags.EdgeSouthEast);
                         break;
                 }
 
-                player.SelectedPoint = new Vector2(
-                    Math.Min(1f, Math.Max(0f, player.SelectedPoint.Value.X)),
-                    Math.Min(1f, Math.Max(0f, player.SelectedPoint.Value.Y)));
+                _player.SelectedPoint = new Vector2(
+                    Math.Min(1f, Math.Max(0f, _player.SelectedPoint.Value.X)),
+                    Math.Min(1f, Math.Max(0f, _player.SelectedPoint.Value.Y)));
             }
             else
             {
-                player.SelectedBox = null;
-                player.SelectedPoint = null;
-                player.SelectedSide = OrientationFlags.None;
-                player.SelectedEdge = OrientationFlags.None;
-                player.SelectedCorner = OrientationFlags.None;
+                _player.SelectedBox = null;
+                _player.SelectedPoint = null;
+                _player.SelectedSide = OrientationFlags.None;
+                _player.SelectedEdge = OrientationFlags.None;
+                _player.SelectedCorner = OrientationFlags.None;
             }
 
-            Index2 destinationChunk = new Index2(player.Position.Position.ChunkIndex);
+            Index2 destinationChunk = new Index2(_player.Position.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
-            if (destinationChunk != currentChunk)
+            if (destinationChunk != _currentChunk)
             {
-                fillResetEvent.Set();
+                _fillResetEvent.Set();
             }
 
             base.OnUpdate(gameTime);
         }
 
-        private AutoResetEvent fillResetEvent = new AutoResetEvent(false);
-        private AutoResetEvent[] additionalFillResetEvents;
-        private AutoResetEvent forceResetEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _fillResetEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent[] _additionalFillResetEvents;
+        private readonly AutoResetEvent _forceResetEvent = new AutoResetEvent(false);
 
         protected override void OnPreDraw(GameTime gameTime)
         {
-            if (player.CurrentEntity == null)
+            if (_player.CurrentEntity == null)
                 return;
 
             if (ControlTexture == null)
                 ControlTexture = new RenderTarget2D(Manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
 
 
-            float octoDaysPerEarthDay = 360f;
-            float inclinationVariance = MathHelper.Pi / 3f;
+            var octoDaysPerEarthDay = 360f;
+            var inclinationVariance = MathHelper.Pi / 3f;
 
-            float playerPosX = player.Position.Position.GlobalPosition.X / (planet.Size.X * Chunk.CHUNKSIZE_X) * MathHelper.TwoPi;
-            float playerPosY = player.Position.Position.GlobalPosition.Y / (planet.Size.Y * Chunk.CHUNKSIZE_Y) * MathHelper.TwoPi;
+            var playerPosX = _player.Position.Position.GlobalPosition.X / (_planet.Size.X * Chunk.CHUNKSIZE_X) * MathHelper.TwoPi;
+            var playerPosY = _player.Position.Position.GlobalPosition.Y / (_planet.Size.Y * Chunk.CHUNKSIZE_Y) * MathHelper.TwoPi;
 
-            TimeSpan diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
+            var diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
 
-            float inclination = ((float)Math.Sin(playerPosY) * inclinationVariance) + MathHelper.Pi / 6f;
+            var inclination = ((float)Math.Sin(playerPosY) * inclinationVariance) + MathHelper.Pi / 6f;
             //Console.WriteLine("Stand: " + (MathHelper.Pi + playerPosX) + " Neigung: " + inclination);
-            Matrix sunMovement =
+            var sunMovement =
                 Matrix.CreateRotationX(inclination) *
                 //Matrix.CreateRotationY((((float)gameTime.TotalGameTime.TotalMinutes * MathHelper.TwoPi) + playerPosX) * -1); 
                 Matrix.CreateRotationY((float)(MathHelper.TwoPi - ((diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi) % MathHelper.TwoPi)));
 
-            Vector3 sunDirection = Vector3.Transform(new Vector3(0, 0, 1), sunMovement);
+            var sunDirection = Vector3.Transform(new Vector3(0, 0, 1), sunMovement);
 
-            simpleShader.Parameters["DiffuseColor"].SetValue(new Color(190, 190, 190));
-            simpleShader.Parameters["DiffuseIntensity"].SetValue(0.6f);
-            simpleShader.Parameters["DiffuseDirection"].SetValue(sunDirection);
+            _simpleShader.Parameters["DiffuseColor"].SetValue(new Color(190, 190, 190));
+            _simpleShader.Parameters["DiffuseIntensity"].SetValue(0.6f);
+            _simpleShader.Parameters["DiffuseDirection"].SetValue(sunDirection);
 
             // Console.WriteLine(sunDirection);
 
             // Index3 chunkOffset = player.ActorHost.Position.ChunkIndex;
-            Index3 chunkOffset = camera.CameraChunk;
-            Color background = new Color(181, 224, 255);
+            var chunkOffset = _camera.CameraChunk;
+            var background = new Color(181, 224, 255);
 
             Manager.GraphicsDevice.SetRenderTarget(MiniMapTexture);
             Manager.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             Manager.GraphicsDevice.Clear(background);
 
-            foreach (var renderer in chunkRenderer)
+            foreach (var renderer in _chunkRenderer)
             {
                 if (!renderer.ChunkPosition.HasValue)
                     continue;
 
-                Index3 shift = chunkOffset.ShortestDistanceXY(
+                var shift = chunkOffset.ShortestDistanceXY(
                     renderer.ChunkPosition.Value, new Index2(
-                        planet.Size.X,
-                        planet.Size.Y));
+                        _planet.Size.X,
+                        _planet.Size.Y));
 
-                BoundingBox chunkBox = new BoundingBox(
+                var chunkBox = new BoundingBox(
                 new Vector3(
                     shift.X * Chunk.CHUNKSIZE_X,
                     shift.Y * Chunk.CHUNKSIZE_Y,
@@ -443,10 +446,11 @@ namespace OctoAwesome.Client.Controls
                     (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
                     (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
 
-                int range = 3;
+                var range = 3;
+
                 if (shift.X >= -range && shift.X <= range &&
                     shift.Y >= -range && shift.Y <= range)
-                    renderer.Draw(camera.MinimapView, miniMapProjectionMatrix, shift);
+                    renderer.Draw(_camera.MinimapView, _miniMapProjectionMatrix, shift);
             }
 
             Manager.GraphicsDevice.SetRenderTarget(ControlTexture);
@@ -458,32 +462,32 @@ namespace OctoAwesome.Client.Controls
             // Draw Sun
             // GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-            if (camera.View == new Matrix())
+            if (_camera.View == new Matrix())
                 return;
 
-            sunEffect.Texture = sunTexture;
-            Matrix billboard = Matrix.Invert(camera.View);
-            billboard.Translation = player.Position.Position.LocalPosition + (sunDirection * -10);
-            sunEffect.World = billboard;
-            sunEffect.View = camera.View;
-            sunEffect.Projection = camera.Projection;
-            sunEffect.CurrentTechnique.Passes[0].Apply();
-            Manager.GraphicsDevice.VertexBuffer = billboardVertexbuffer;
+            _sunEffect.Texture = _sunTexture;
+            var billboard = Matrix.Invert(_camera.View);
+            billboard.Translation = _player.Position.Position.LocalPosition + (sunDirection * -10);
+            _sunEffect.World = billboard;
+            _sunEffect.View = _camera.View;
+            _sunEffect.Projection = _camera.Projection;
+            _sunEffect.CurrentTechnique.Passes[0].Apply();
+            Manager.GraphicsDevice.VertexBuffer = _billboardVertexbuffer;
             Manager.GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, 2);
 
             Manager.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            foreach (var renderer in chunkRenderer)
+            foreach (var renderer in _chunkRenderer)
             {
                 if (!renderer.ChunkPosition.HasValue)
                     continue;
 
-                Index3 shift = chunkOffset.ShortestDistanceXY(
+                var shift = chunkOffset.ShortestDistanceXY(
                     renderer.ChunkPosition.Value, new Index2(
-                        planet.Size.X,
-                        planet.Size.Y));
+                        _planet.Size.X,
+                        _planet.Size.Y));
 
-                BoundingBox chunkBox = new BoundingBox(
+                var chunkBox = new BoundingBox(
                 new Vector3(
                     shift.X * Chunk.CHUNKSIZE_X,
                     shift.Y * Chunk.CHUNKSIZE_Y,
@@ -493,35 +497,33 @@ namespace OctoAwesome.Client.Controls
                     (shift.Y + 1) * Chunk.CHUNKSIZE_Y,
                     (shift.Z + 1) * Chunk.CHUNKSIZE_Z));
 
-                if (camera.Frustum.Intersects(chunkBox))
-                    renderer.Draw(camera.View, camera.Projection, shift);
+                if (_camera.Frustum.Intersects(chunkBox))
+                    renderer.Draw(_camera.View, _camera.Projection, shift);
             }
 
+            _entities.Draw(_camera.View, _camera.Projection, chunkOffset, new Index2(_planet.Size.X, _planet.Size.Z));
 
-
-            entities.Draw(camera.View, camera.Projection, chunkOffset, new Index2(planet.Size.X, planet.Size.Z));
-
-            if (player.SelectedBox.HasValue)
+            if (_player.SelectedBox.HasValue)
             {
                 // Index3 offset = player.ActorHost.Position.ChunkIndex * Chunk.CHUNKSIZE;
-                Index3 offset = camera.CameraChunk * Chunk.CHUNKSIZE;
-                Index3 planetSize = planet.Size * Chunk.CHUNKSIZE;
-                Index3 relativePosition = new Index3(
-                    Index2.ShortestDistanceOnAxis(offset.X, player.SelectedBox.Value.X, planetSize.X),
-                    Index2.ShortestDistanceOnAxis(offset.Y, player.SelectedBox.Value.Y, planetSize.Y),
-                    player.SelectedBox.Value.Z - offset.Z);
+                var offset = _camera.CameraChunk * Chunk.CHUNKSIZE;
+                var planetSize = _planet.Size * Chunk.CHUNKSIZE;
+                var relativePosition = new Index3(
+                    Index2.ShortestDistanceOnAxis(offset.X, _player.SelectedBox.Value.X, planetSize.X),
+                    Index2.ShortestDistanceOnAxis(offset.Y, _player.SelectedBox.Value.Y, planetSize.Y),
+                    _player.SelectedBox.Value.Z - offset.Z);
 
-                Vector3 selectedBoxPosition = new Vector3(
-                    player.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
-                    player.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
-                    player.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
+                var selectedBoxPosition = new Vector3(
+                    _player.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
+                    _player.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
+                    _player.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
                 // selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
-                selectionEffect.World = Matrix.CreateTranslation(relativePosition);
-                selectionEffect.View = camera.View;
-                selectionEffect.Projection = camera.Projection;
-                Manager.GraphicsDevice.VertexBuffer = selectionLines;
-                Manager.GraphicsDevice.IndexBuffer = selectionIndexBuffer;
-                foreach (var pass in selectionEffect.CurrentTechnique.Passes)
+                _selectionEffect.World = Matrix.CreateTranslation(relativePosition);
+                _selectionEffect.View = _camera.View;
+                _selectionEffect.Projection = _camera.Projection;
+                Manager.GraphicsDevice.VertexBuffer = _selectionLines;
+                Manager.GraphicsDevice.IndexBuffer = _selectionIndexBuffer;
+                foreach (var pass in _selectionEffect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                     Manager.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.Lines, 0, 0, 8, 0, 12);
@@ -535,60 +537,58 @@ namespace OctoAwesome.Client.Controls
 
         private void FillChunkRenderer()
         {
-            if (player.CurrentEntity == null)
+            if (_player.CurrentEntity == null)
                 return;
 
-            Index2 destinationChunk = new Index2(player.Position.Position.ChunkIndex);
+            var destinationChunk = new Index2(_player.Position.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
-            if (destinationChunk != currentChunk)
+            if (destinationChunk != _currentChunk)
             {
-                localChunkCache.SetCenter(
-                    new Index2(player.Position.Position.ChunkIndex),
+                _localChunkCache.SetCenter(
+                    new Index2(_player.Position.Position.ChunkIndex),
                     b =>
                     {
                         if (b)
                         {
-                            fillResetEvent.Set();
+                            _fillResetEvent.Set();
                             OnCenterChanged?.Invoke(this, System.EventArgs.Empty);
                         }
                     });
 
-                for (int x = 0; x < Span; x++)
+                for (var x = 0; x < Span; x++)
                 {
-                    for (int y = 0; y < Span; y++)
+                    for (var y = 0; y < Span; y++)
                     {
-                        Index2 local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
-                        local.NormalizeXY(planet.Size);
+                        var local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
+                        local.NormalizeXY(_planet.Size);
 
-                        int virtualX = local.X & Mask;
-                        int virtualY = local.Y & Mask;
+                        var virtualX = local.X & Mask;
+                        var virtualY = local.Y & Mask;
 
-                        int rendererIndex = virtualX +
-                            (virtualY << VIEWRANGE);
+                        var rendererIndex = virtualX +
+                                            (virtualY << VIEWRANGE);
 
-                        for (int z = 0; z < planet.Size.Z; z++)
-                        {
-                            chunkRenderer[rendererIndex, z].SetChunk(localChunkCache, local.X, local.Y, z);
-                        }
+                        for (var z = 0; z < _planet.Size.Z; z++)
+                            _chunkRenderer[rendererIndex, z].SetChunk(_localChunkCache, local.X, local.Y, z);
                     }
                 }
 
-                Index3 comparationIndex = player.Position.Position.ChunkIndex;
-                orderedChunkRenderer.Sort((x, y) =>
+                var comparationIndex = _player.Position.Position.ChunkIndex;
+                _orderedChunkRenderer.Sort((x, y) =>
                 {
                     if (!x.ChunkPosition.HasValue) return 1;
                     if (!y.ChunkPosition.HasValue) return -1;
 
-                    Index3 distX = comparationIndex.ShortestDistanceXYZ(x.ChunkPosition.Value, planet.Size);
-                    Index3 distY = comparationIndex.ShortestDistanceXYZ(y.ChunkPosition.Value, planet.Size);
+                    var distX = comparationIndex.ShortestDistanceXYZ(x.ChunkPosition.Value, _planet.Size);
+                    var distY = comparationIndex.ShortestDistanceXYZ(y.ChunkPosition.Value, _planet.Size);
                     return distX.LengthSquared().CompareTo(distY.LengthSquared());
                 });
 
-                currentChunk = destinationChunk;
+                _currentChunk = destinationChunk;
             }
 
-            foreach (var e in additionalFillResetEvents)
+            foreach (var e in _additionalFillResetEvents)
                 e.Set();
 
             RegenerateAll(0);
@@ -596,13 +596,12 @@ namespace OctoAwesome.Client.Controls
 
         private void RegenerateAll(int start)
         {
-            for (var index = start; index < orderedChunkRenderer.Count; index += _fillIncrement)
+            for (var index = start; index < _orderedChunkRenderer.Count; index += _fillIncrement)
             {
-                var renderer = orderedChunkRenderer[index];
+                var renderer = _orderedChunkRenderer[index];
+
                 if (renderer.NeedsUpdate)
-                {
                     renderer.RegenerateVertexBuffer();
-                }
             }
         }
 
@@ -610,7 +609,7 @@ namespace OctoAwesome.Client.Controls
         {
             while (true)
             {
-                fillResetEvent.WaitOne();
+                _fillResetEvent.WaitOne();
                 FillChunkRenderer();
             }
         }
@@ -620,6 +619,7 @@ namespace OctoAwesome.Client.Controls
             var arr = (object[])oArr;
             var are = (AutoResetEvent)arr[0];
             var n = (int)arr[1];
+
             while (true)
             {
                 are.WaitOne();
@@ -631,7 +631,7 @@ namespace OctoAwesome.Client.Controls
         {
             while (true)
             {
-                forceResetEvent.WaitOne();
+                _forceResetEvent.WaitOne();
 
                 while (!forcedRenders.IsEmpty)
                 {
@@ -680,7 +680,7 @@ namespace OctoAwesome.Client.Controls
         public void Enqueue(ChunkRenderer chunkRenderer1)
         {
             forcedRenders.Enqueue(chunkRenderer1);
-            forceResetEvent.Set();
+            _forceResetEvent.Set();
         }
     }
 }

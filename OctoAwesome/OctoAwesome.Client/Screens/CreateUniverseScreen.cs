@@ -2,23 +2,22 @@
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using System;
 
 namespace OctoAwesome.Client.Screens
 {
     class CreateUniverseScreen : BaseScreen
     {
-        new readonly ScreenComponent Manager;
-        private readonly Textbox nameInput;
-        private readonly Textbox seedInput;
-        readonly Button createButton;
+        private new readonly ScreenComponent Manager;
+        private readonly Textbox _nameInput;
+        private readonly Textbox _seedInput;
+        private readonly Button _createButton;
 
-        private readonly ISettings settings;
+        private readonly ISettings _settings;
 
         public CreateUniverseScreen(ScreenComponent manager) : base(manager)
         {
             Manager = manager;
-            settings = manager.Game.Settings;
+            _settings = manager.Game.Settings;
 
             Padding = new Border(0, 0, 0, 0);
 
@@ -46,36 +45,38 @@ namespace OctoAwesome.Client.Screens
             grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
             grid.Columns.Add(new ColumnDefinition() { Width = 1, ResizeMode = ResizeMode.Parts });
 
-            nameInput = GetTextbox();
-            nameInput.TextChanged += (s, e) =>
+            _nameInput = GetTextbox();
+            _nameInput.TextChanged += (s, e) =>
             {
-                createButton.Visible = !string.IsNullOrEmpty(e.NewValue);
+                _createButton.Visible = !string.IsNullOrEmpty(e.NewValue);
             };
-            AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Name), nameInput);
+            AddLabeledControl(grid, $"{Languages.OctoClient.Name}: ", _nameInput);
 
-            seedInput = GetTextbox();
-            AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Seed), seedInput);
+            _seedInput = GetTextbox();
+            AddLabeledControl(grid, $"{Languages.OctoClient.Seed}: ", _seedInput);
 
-            createButton = new TextButton(manager, Languages.OctoClient.Create);
-            createButton.HorizontalAlignment = HorizontalAlignment.Right;
-            createButton.VerticalAlignment = VerticalAlignment.Bottom;
-            createButton.Visible = false;
-            createButton.LeftMouseClick += (s, e) =>
+            _createButton = new TextButton(manager, Languages.OctoClient.Create)
             {
-                if (string.IsNullOrEmpty(nameInput.Text))
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Visible = false
+            };
+            _createButton.LeftMouseClick += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(_nameInput.Text))
                     return;
                 
                 manager.Player.SetEntity(null);
 
-                Guid guid = Manager.Game.Simulation.NewGame(nameInput.Text, seedInput.Text);
-                settings.Set("LastUniverse", guid.ToString());
+                var guid = Manager.Game.Simulation.NewGame(_nameInput.Text, _seedInput.Text);
+                _settings.Set("LastUniverse", guid.ToString());
 
-                Player player = manager.Game.Simulation.LoginPlayer("");
+                var player = manager.Game.Simulation.LoginPlayer("");
                 manager.Game.Player.SetEntity(player);
 
                 manager.NavigateToScreen(new LoadingScreen(manager));
             };
-            panel.Controls.Add(createButton);
+            panel.Controls.Add(_createButton);
 
         }
 

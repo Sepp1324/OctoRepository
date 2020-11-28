@@ -1,21 +1,14 @@
 ﻿using engenious;
-using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class LoadingScreen : BaseScreen
     {
-        private readonly GameScreen gameScreen;
+        private readonly GameScreen _gameScreen;
 
         public LoadingScreen(ScreenComponent manager) : base(manager)
         {
@@ -89,17 +82,17 @@ namespace OctoAwesome.Client.Screens
 
             Debug.WriteLine("Create GameScreen");
 
-            gameScreen = new GameScreen(manager);
-            gameScreen.Update(new GameTime());
-            gameScreen.OnCenterChanged += SwitchToGame;
+            _gameScreen = new GameScreen(manager);
+            _gameScreen.Update(new GameTime());
+            _gameScreen.OnCenterChanged += SwitchToGame;
         }
 
         private void SwitchToGame(object sender, System.EventArgs args)
         {
             Manager.Invoke(() =>
             {
-                Manager.NavigateToScreen(gameScreen);
-                gameScreen.OnCenterChanged -= SwitchToGame;
+                Manager.NavigateToScreen(_gameScreen);
+                _gameScreen.OnCenterChanged -= SwitchToGame;
             });
         }
     }
