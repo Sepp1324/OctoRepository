@@ -271,7 +271,7 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (_player.CurrentEntity == null)
+            if (_disposed || _player.CurrentEntity == null)
                 return;
 
             sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
@@ -371,13 +371,11 @@ namespace OctoAwesome.Client.Controls
                 _player.SelectedCorner = OrientationFlags.None;
             }
 
-            Index2 destinationChunk = new Index2(_player.Position.Position.ChunkIndex);
+            var destinationChunk = new Index2(_player.Position.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
             if (destinationChunk != _currentChunk)
-            {
                 _fillResetEvent.Set();
-            }
 
             base.OnUpdate(gameTime);
         }
@@ -530,10 +528,8 @@ namespace OctoAwesome.Client.Controls
                     //Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.Lines, selectionLines, 0, 8, selectionIndeces, 0, 12);
                 }
             }
-
             Manager.GraphicsDevice.SetRenderTarget(null);
         }
-
 
         private void FillChunkRenderer()
         {
@@ -676,6 +672,7 @@ namespace OctoAwesome.Client.Controls
         #endregion
 
         private ConcurrentQueue<ChunkRenderer> _forcedRenders = new ConcurrentQueue<ChunkRenderer>();
+        private bool _disposed;
 
         public void Enqueue(ChunkRenderer chunkRenderer1)
         {
@@ -685,6 +682,11 @@ namespace OctoAwesome.Client.Controls
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+
             _backgroundThread.Abort();
             _backgroundThread2.Abort();
 

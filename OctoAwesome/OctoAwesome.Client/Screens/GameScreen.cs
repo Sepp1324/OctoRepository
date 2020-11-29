@@ -16,7 +16,7 @@ namespace OctoAwesome.Client.Screens
             remove => _scene.OnCenterChanged -= value;
         }
 
-        private const float mouseSpeed = 0.2f;
+        private const float MOUSE_SPEED = 0.2f;
 
         private new ScreenComponent Manager { get; set; }
 
@@ -126,7 +126,8 @@ namespace OctoAwesome.Client.Screens
 
         protected override void OnLeftMouseDown(MouseEventArgs args)
         {
-            if (!IsActiveScreen) return;
+            if (!IsActiveScreen) 
+                return;
 
             Manager.Player.ApplyInput = true;
             args.Handled = true;
@@ -142,11 +143,12 @@ namespace OctoAwesome.Client.Screens
 
         protected override void OnMouseMove(MouseEventArgs args)
         {
-            if (!IsActiveScreen) return;
+            if (!IsActiveScreen)
+                return;
 
             if (args.MouseMode == MouseMode.Captured && IsActiveScreen)
             {
-                Manager.Player.HeadInput = args.GlobalPosition.ToVector2() * mouseSpeed * new Vector2(1f, -1f);
+                Manager.Player.HeadInput = args.GlobalPosition.ToVector2() * MOUSE_SPEED * new Vector2(1f, -1f);
                 args.Handled = true;
             }
         }
