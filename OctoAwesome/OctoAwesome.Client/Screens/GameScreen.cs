@@ -120,6 +120,8 @@ namespace OctoAwesome.Client.Screens
             base.OnUpdate(gameTime);
         }
 
+        public void Unload() => _scene.Dispose();
+
         #region Mouse Input
 
         protected override void OnLeftMouseDown(MouseEventArgs args)

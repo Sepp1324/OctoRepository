@@ -1,4 +1,5 @@
-﻿using engenious.Input;
+﻿using System.Linq;
+using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
@@ -56,6 +57,10 @@ namespace OctoAwesome.Client.Screens
             {
                 manager.Player.SetEntity(null);
                 manager.Game.Simulation.ExitGame();
+
+                foreach (var gameScreen in manager.History.OfType<GameScreen>())
+                    gameScreen.Unload();
+
                 manager.NavigateHome();
             };
             stack.Controls.Add(mainMenuButton);

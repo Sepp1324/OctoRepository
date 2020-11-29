@@ -2,7 +2,6 @@
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -63,7 +62,6 @@ namespace OctoAwesome.Client.Screens
 
             mainGrid.AddControl(text, 1, 1);
 
-
             //Buttons
             var buttonStack = new StackPanel(manager)
             {
@@ -73,18 +71,21 @@ namespace OctoAwesome.Client.Screens
             };
             mainGrid.AddControl(buttonStack, 1, 2);
 
-            Button cancelButton = GetButton(Languages.OctoClient.Cancel);
+            var cancelButton = GetButton(Languages.OctoClient.Cancel);
             buttonStack.Controls.Add(cancelButton);
-            cancelButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateBack();
-            };
-
-            Debug.WriteLine("Create GameScreen");
 
             _gameScreen = new GameScreen(manager);
             _gameScreen.Update(new GameTime());
             _gameScreen.OnCenterChanged += SwitchToGame;
+
+            cancelButton.LeftMouseClick += (s, e) =>
+            {
+                manager.Player.SetEntity(null);
+                manager.Game.Simulation.ExitGame();
+
+                _gameScreen.Unload();
+                manager.NavigateBack();
+            };
         }
 
         private void SwitchToGame(object sender, System.EventArgs args)
@@ -92,6 +93,7 @@ namespace OctoAwesome.Client.Screens
             Manager.Invoke(() =>
             {
                 Manager.NavigateToScreen(_gameScreen);
+
                 _gameScreen.OnCenterChanged -= SwitchToGame;
             });
         }

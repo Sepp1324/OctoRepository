@@ -34,10 +34,7 @@ namespace OctoAwesome.Client.Components
 
         }
 
-        public void Exit()
-        {
-            Game.Exit();
-        }
+        public void Exit() => Game.Exit();
 
         public void UnloadAssets()
         {

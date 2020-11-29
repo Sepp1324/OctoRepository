@@ -19,7 +19,8 @@ namespace OctoAwesome.Client.Screens
             {
                 BackButton = new TextButton(Manager, Languages.OctoClient.Back)
                 {
-                    VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Left
+                    VerticalAlignment = VerticalAlignment.Top,
+                    HorizontalAlignment = HorizontalAlignment.Left
                 };
                 BackButton.LeftMouseClick += (s, e) =>
                 {
@@ -31,10 +32,7 @@ namespace OctoAwesome.Client.Screens
 
         }
 
-        protected void SetDefaultBackground()
-        {
-            Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
-        }
+        protected void SetDefaultBackground() => Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
 
         protected override void OnKeyPress(KeyEventArgs args)
         {
@@ -57,8 +55,10 @@ namespace OctoAwesome.Client.Screens
 
         protected Button GetButton(string title)
         {
-            Button button = new TextButton(Manager, title);
-            button.HorizontalAlignment = HorizontalAlignment.Stretch;
+            Button button = new TextButton(Manager, title)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
             return button;
         }
     }

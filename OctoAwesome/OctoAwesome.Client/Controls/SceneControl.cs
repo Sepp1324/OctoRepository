@@ -11,7 +11,7 @@ using engenious.Helper;
 
 namespace OctoAwesome.Client.Controls
 {
-    internal sealed class SceneControl : Control
+    internal sealed class SceneControl : Control, IDisposable
     {
         public static int VIEWRANGE = 4; // Anzahl Chunks als Potenz (Volle Sichtweite)
         public const int TEXTURESIZE = 64;
@@ -19,19 +19,19 @@ namespace OctoAwesome.Client.Controls
         public static int Span;
         public static int SpanOver2;
 
-        private readonly PlayerComponent _player;
-        private readonly CameraComponent _camera;
-        private readonly AssetComponent _assets;
-        private readonly Components.EntityComponent _entities;
+        private PlayerComponent _player;
+        private CameraComponent _camera;
+        private AssetComponent _assets;
+        private Components.EntityComponent _entities;
 
-        private readonly ChunkRenderer[,] _chunkRenderer;
-        private readonly List<ChunkRenderer> _orderedChunkRenderer;
+        private ChunkRenderer[,] _chunkRenderer;
+        private List<ChunkRenderer> _orderedChunkRenderer;
 
-        private readonly IPlanet _planet;
+        private IPlanet _planet;
 
         // private List<Index3> distances = new List<Index3>();
 
-        private readonly BasicEffect _sunEffect;
+        private BasicEffect _sunEffect;
         private readonly BasicEffect _selectionEffect;
         private readonly Matrix _miniMapProjectionMatrix;
 
@@ -49,7 +49,7 @@ namespace OctoAwesome.Client.Controls
 
         private readonly Thread _backgroundThread;
         private readonly Thread _backgroundThread2;
-        private readonly ILocalChunkCache _localChunkCache;
+        private ILocalChunkCache _localChunkCache;
         private readonly Effect _simpleShader;
 
         private readonly Thread[] _additionalRegenerationThreads;
@@ -633,9 +633,9 @@ namespace OctoAwesome.Client.Controls
             {
                 _forceResetEvent.WaitOne();
 
-                while (!forcedRenders.IsEmpty)
+                while (!_forcedRenders.IsEmpty)
                 {
-                    while (forcedRenders.TryDequeue(out ChunkRenderer r))
+                    while (_forcedRenders.TryDequeue(out ChunkRenderer r))
                     {
                         r.RegenerateVertexBuffer();
                     }
@@ -675,12 +675,46 @@ namespace OctoAwesome.Client.Controls
 
         #endregion
 
-        private ConcurrentQueue<ChunkRenderer> forcedRenders = new ConcurrentQueue<ChunkRenderer>();
+        private ConcurrentQueue<ChunkRenderer> _forcedRenders = new ConcurrentQueue<ChunkRenderer>();
 
         public void Enqueue(ChunkRenderer chunkRenderer1)
         {
-            forcedRenders.Enqueue(chunkRenderer1);
+            _forcedRenders.Enqueue(chunkRenderer1);
             _forceResetEvent.Set();
+        }
+
+        public void Dispose()
+        {
+            _backgroundThread.Abort();
+            _backgroundThread2.Abort();
+
+            foreach (var thread in _additionalRegenerationThreads)
+                thread.Abort();
+
+            foreach (var chunkRenderer in _chunkRenderer)
+                chunkRenderer.Dispose();
+
+            foreach (var orderedChunkRenderer in _orderedChunkRenderer)
+                orderedChunkRenderer.Dispose();
+
+            _chunkRenderer = null;
+            _orderedChunkRenderer.Clear();
+            _localChunkCache = null;
+
+            _selectionIndexBuffer.Dispose();
+            _selectionLines.Dispose();
+            _billboardVertexbuffer.Dispose();
+
+            _player = null;
+            _camera = null;
+            _assets = null;
+            _entities = null;
+            _planet = null;
+
+            _sunEffect.Dispose();
+            _selectionEffect.Dispose();
+            _blockTextures.Dispose();
+            _sunTexture.Dispose();
         }
     }
 }
