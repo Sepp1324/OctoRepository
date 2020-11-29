@@ -231,12 +231,11 @@ namespace OctoAwesome.Client
             });
         }
 
-        protected override void OnExiting(object sender, EventArgs args)
+        protected override void OnExiting(EventArgs args)
         {
             Player.SetEntity(null);
             Simulation.ExitGame();
         }
-
 
         public override void Dispose()
         {

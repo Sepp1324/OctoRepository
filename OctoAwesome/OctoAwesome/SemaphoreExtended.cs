@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,35 +9,50 @@ namespace OctoAwesome
 {
     public sealed class SemaphoreExtended : IDisposable
     {
-        private readonly SemaphoreSlim _semaphoreSlim;
+        private readonly SemaphoreSlim semaphoreSlim;
 
-        public SemaphoreExtended(int initialCount, int maxCount) => _semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
+        public SemaphoreExtended(int initialCount, int maxCount)
+        {
+            semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
+        }
 
         public SemaphoreLock Wait()
         {
-            _semaphoreSlim.Wait();
+            semaphoreSlim.Wait();
             return new SemaphoreLock(this);
         }
 
         public async Task<SemaphoreLock> WaitAsync(CancellationToken token)
         {
-            await _semaphoreSlim.WaitAsync(token);
+            await semaphoreSlim.WaitAsync(token);
             return new SemaphoreLock(this);
         }
               
-        public void Dispose() => _semaphoreSlim.Dispose();
+        public void Dispose()
+        {
+            semaphoreSlim.Dispose();
+        }
 
-        private void Release() => _semaphoreSlim.Release();
+        private void Release()
+        {
+            semaphoreSlim.Release();
+        }
 
         public struct SemaphoreLock : IDisposable
         {
             public static SemaphoreLock Empty => new SemaphoreLock(null);
 
-            private readonly SemaphoreExtended _internalSemaphore;
+            private readonly SemaphoreExtended internalSemaphore;
 
-            public SemaphoreLock(SemaphoreExtended semaphoreExtended) => _internalSemaphore = semaphoreExtended;
+            public SemaphoreLock(SemaphoreExtended semaphoreExtended)
+            {
+                internalSemaphore = semaphoreExtended;
+            }
 
-            public void Dispose() => _internalSemaphore?.Release();
+            public void Dispose()
+            {
+                internalSemaphore?.Release();
+            }
         }
     }
 }

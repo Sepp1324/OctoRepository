@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using engenious.Input;
+﻿using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using System.Linq;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -59,7 +59,9 @@ namespace OctoAwesome.Client.Screens
                 manager.Game.Simulation.ExitGame();
 
                 foreach (var gameScreen in manager.History.OfType<GameScreen>())
+                {
                     gameScreen.Unload();
+                }
 
                 manager.NavigateHome();
             };
@@ -70,7 +72,7 @@ namespace OctoAwesome.Client.Screens
         {
             if (Manager.CanGoBack && args.Key == Keys.Escape)
             {
-                args.Handled = true;
+                args.Handled = true;                
                 Manager.NavigateBack();
             }
 
