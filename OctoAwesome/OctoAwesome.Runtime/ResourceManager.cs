@@ -46,7 +46,7 @@ namespace OctoAwesome.Runtime
 
         private readonly IExtensionResolver _extensionResolver;
 
-        private CancellationToken _tokenSource;
+        private CancellationTokenSource _tokenSource;
         private CancellationToken _currentToken;
 
         /// <summary>
@@ -115,8 +115,11 @@ namespace OctoAwesome.Runtime
                 UnloadUniverse();
 
             // Neuen Daten loaden/generieren
+            _tokenSource.Dispose();
+            _tokenSource = new CancellationTokenSource();
+            _currentToken = _tokenSource.Token;
 
-            var awaiter = _persistenceManager.Load(out IUniverse universe, universeId);
+            var awaiter = _persistenceManager.Load(out var universe, universeId);
 
             if (awaiter == null)
                 return false;
@@ -124,6 +127,7 @@ namespace OctoAwesome.Runtime
                 awaiter.WaitOnAndRelease();
 
             CurrentUniverse = universe;
+
             if (CurrentUniverse == null)
                 throw new NullReferenceException();
 
@@ -135,6 +139,7 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void UnloadUniverse()
         {
+            _tokenSource.Cancel();
             _persistenceManager.SaveUniverse(CurrentUniverse);
 
             foreach (var planet in Planets)
