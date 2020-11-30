@@ -46,6 +46,9 @@ namespace OctoAwesome.Runtime
 
         private readonly IExtensionResolver _extensionResolver;
 
+        private CancellationToken _tokenSource;
+        private CancellationToken _currentToken;
+
         /// <summary>
         /// Konstruktor
         /// </summary>
@@ -68,10 +71,7 @@ namespace OctoAwesome.Runtime
             bool.TryParse(settings.Get<string>("DisablePersistence"), out _disablePersistence);
         }
 
-        public void InsertUpdateHub(UpdateHub updateHub)
-        {
-            UpdateHub = updateHub;
-        }
+        public void InsertUpdateHub(UpdateHub updateHub) => UpdateHub = updateHub;
 
         /// <summary>
         /// Erzuegt ein neues Universum.
@@ -81,7 +81,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Die Guid des neuen Universums.</returns>
         public Guid NewUniverse(string name, int seed)
         {
-            Guid guid = Guid.NewGuid();
+            var guid = Guid.NewGuid();
             CurrentUniverse = new Universe(guid, name, seed);
             _persistenceManager.SaveUniverse(CurrentUniverse);
             return guid;
@@ -209,14 +209,14 @@ namespace OctoAwesome.Runtime
         /// <summary>
         /// Lädt einen Player.
         /// </summary>
-        /// <param name="playername">Der Name des Players.</param>
+        /// <param name="playerName">Der Name des Players.</param>
         /// <returns></returns>
-        public Player LoadPlayer(string playername)
+        public Player LoadPlayer(string playerName)
         {
             if (CurrentUniverse == null)
                 throw new Exception("No Universe loaded");
 
-            var awaiter = _persistenceManager.Load(out Player player, CurrentUniverse.Id, playername);
+            var awaiter = _persistenceManager.Load(out var player, CurrentUniverse.Id, playerName);
 
             if (awaiter == null)
                 player = new Player();
@@ -247,9 +247,10 @@ namespace OctoAwesome.Runtime
             do
             {
                 awaiter = _persistenceManager.Load(out column11, CurrentUniverse.Id, planet, index);
+               
                 if (awaiter == null)
                 {
-                    IChunkColumn column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
+                    var column = planet.Generator.GenerateColumn(DefinitionManager, planet, new Index2(index.X, index.Y));
                     column11 = column;
                     SaveChunkColumn(column);
                 }
@@ -347,6 +348,7 @@ namespace OctoAwesome.Runtime
         public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : EntityComponent => _persistenceManager.LoadEntitiesWithComponent<T>(CurrentUniverse.Id);
 
         public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent => _persistenceManager.GetEntityIdsFromComponent<T>(CurrentUniverse.Id);
+       
         public IEnumerable<Guid> GetEntityIds() => _persistenceManager.GetEntityIds(CurrentUniverse.Id);
 
         public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new() => _persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds);

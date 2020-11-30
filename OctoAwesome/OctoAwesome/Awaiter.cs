@@ -1,12 +1,8 @@
 ﻿using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -14,21 +10,22 @@ namespace OctoAwesome
     {
         public ISerializable Serializable { get; set; }
         public bool Timeouted { get; private set; }
-        private readonly ManualResetEventSlim manualReset;
-        private readonly SemaphoreExtended semaphore;
-        private bool alreadyDeserialized;
-        private IPool pool;
+
+        private readonly ManualResetEventSlim _manualReset;
+        private readonly SemaphoreExtended _semaphore;
+        private bool _alreadyDeserialized;
+        private IPool _pool;
 
         public Awaiter()
         {
-            manualReset = new ManualResetEventSlim(false);
-            semaphore = new SemaphoreExtended(1, 1);
+            _manualReset = new ManualResetEventSlim(false);
+            _semaphore = new SemaphoreExtended(1, 1);
         }
 
         public ISerializable WaitOn()
         {
-            if (!alreadyDeserialized)
-                Timeouted = !manualReset.Wait(3000);
+            if (!_alreadyDeserialized)
+                Timeouted = !_manualReset.Wait(3000);
 
             return Serializable;
         }
@@ -41,17 +38,17 @@ namespace OctoAwesome
 
         public void SetResult(ISerializable serializable)
         {
-            using (semaphore.Wait())
+            using (_semaphore.Wait())
             {
                 Serializable = serializable;
-                manualReset.Set();
-                alreadyDeserialized = true;
+                _manualReset.Set();
+                _alreadyDeserialized = true;
             }
         }
 
         public bool TrySetResult(byte[] bytes)
         {
-            using (semaphore.Wait())
+            using (_semaphore.Wait())
             {
                 if (Timeouted)
                     return false;
@@ -64,35 +61,32 @@ namespace OctoAwesome
                 {
                     Serializable.Deserialize(reader);
                 }
-                manualReset.Set();
-                return alreadyDeserialized = true;
+                _manualReset.Set();
+                return _alreadyDeserialized = true;
             }
         }
 
         public void Init(IPool pool)
         {
-            this.pool = pool;
-            manualReset.Reset();
+            _pool = pool;
+            _manualReset.Reset();
         }
 
         public void Release()
         {
-            using (semaphore.Wait())
+            using (_semaphore.Wait())
             {
-                if (!manualReset.IsSet)
-                    manualReset.Set();
+                if (!_manualReset.IsSet)
+                    _manualReset.Set();
 
-                alreadyDeserialized = false;
+                _alreadyDeserialized = false;
                 Timeouted = false;
                 Serializable = null;
 
-                pool.Push(this);
+                _pool.Push(this);
             }
         }
 
-        public void Dispose()
-        {
-            manualReset.Dispose();
-        }
+        public void Dispose() => _manualReset.Dispose();
     }
 }

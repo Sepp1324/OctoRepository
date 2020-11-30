@@ -27,7 +27,7 @@ namespace OctoAwesome.Network.Tests
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
             var testClient = new TcpClient("localhost", 44444);
 
-            for (int i = 0; i < 201; i++)
+            for (var i = 0; i < 201; i++)
             {
                 Thread.Sleep(10);
 
@@ -44,6 +44,7 @@ namespace OctoAwesome.Network.Tests
             var resetEvent = new ManualResetEvent(false);
             var wait = new ManualResetEvent(false);
             var server = new Server();
+
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
             server.OnClientConnected += (s, e) =>
             {
