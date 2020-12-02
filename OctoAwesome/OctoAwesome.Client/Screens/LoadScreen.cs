@@ -1,10 +1,7 @@
 ﻿using engenious.UI;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using engenious;
 using engenious.Input;
 using engenious.UI.Controls;
@@ -14,19 +11,18 @@ namespace OctoAwesome.Client.Screens
     internal class LoadScreen : BaseScreen
     {
         private new readonly ScreenComponent Manager;
-        private readonly Button deleteButton;
-        private readonly Button createButton;
-        private readonly Button playButton;
-        private readonly Grid mainStack;
-        private readonly Listbox<IUniverse> levelList;
-        private readonly Label seedLabel;
-
-        private readonly ISettings settings;
+        private readonly Button _deleteButton;
+        private readonly Button _createButton;
+        private readonly Button _playButton;
+        private readonly Grid _mainStack;
+        private readonly Listbox<IUniverse> _levelList;
+        private readonly Label _seedLabel;
+        private readonly ISettings _settings;
 
         public LoadScreen(ScreenComponent manager) : base(manager)
         {
             Manager = manager;
-            settings = manager.Game.Settings;
+            _settings = manager.Game.Settings;
 
             Padding = new Border(0, 0, 0, 0);
 
@@ -35,18 +31,18 @@ namespace OctoAwesome.Client.Screens
             SetDefaultBackground();
 
             //Main Panel
-            mainStack = new Grid(manager);
-            mainStack.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 3 });
-            mainStack.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            mainStack.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
-            mainStack.Margin = Border.All(50);
-            mainStack.HorizontalAlignment = HorizontalAlignment.Stretch;
-            mainStack.VerticalAlignment = VerticalAlignment.Stretch;
+            _mainStack = new Grid(manager);
+            _mainStack.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 3 });
+            _mainStack.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            _mainStack.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            _mainStack.Margin = Border.All(50);
+            _mainStack.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _mainStack.VerticalAlignment = VerticalAlignment.Stretch;
 
-            Controls.Add(mainStack);
+            Controls.Add(_mainStack);
 
             //Level Stack
-            levelList = new Listbox<IUniverse>(manager)
+            _levelList = new Listbox<IUniverse>(manager)
             {
                 Background = new BorderBrush(Color.White * 0.5f),
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -54,7 +50,7 @@ namespace OctoAwesome.Client.Screens
                 Margin = Border.All(10),
                 SelectedItemBrush = new BorderBrush(Color.SaddleBrown * 0.7f)
             };
-            levelList.TemplateGenerator += (x) =>
+            _levelList.TemplateGenerator += (x) =>
             {
                 var li = new Label(manager)
                 {
@@ -65,46 +61,49 @@ namespace OctoAwesome.Client.Screens
                 li.LeftMouseDoubleClick += (s, e) => Play();
                 return li;
             };
-            levelList.SelectedItemChanged += (s, e) =>
+            _levelList.SelectedItemChanged += (s, e) =>
             {
-                seedLabel.Text = "";
-                if (levelList.SelectedItem != null)
-                    seedLabel.Text = "Seed: " + levelList.SelectedItem.Seed;
+                _seedLabel.Text = "";
+                if (_levelList.SelectedItem != null)
+                    _seedLabel.Text = "Seed: " + _levelList.SelectedItem.Seed;
             };
-            mainStack.AddControl(levelList, 0, 0);
+            _mainStack.AddControl(_levelList, 0, 0);
 
             //Sidebar
-            Panel sidebar = new Panel(manager);
-            sidebar.Padding = Border.All(20);
-            sidebar.VerticalAlignment = VerticalAlignment.Stretch;
-            sidebar.HorizontalAlignment = HorizontalAlignment.Stretch;
-            sidebar.Background = new BorderBrush(Color.White * 0.5f);
-            sidebar.Margin = Border.All(10);
-            mainStack.AddControl(sidebar, 1, 0);
+            var sidebar = new Panel(manager)
+            {
+                Padding = Border.All(20),
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Background = new BorderBrush(Color.White * 0.5f),
+                Margin = Border.All(10)
+            };
+            _mainStack.AddControl(sidebar, 1, 0);
 
             //Universe Info
-            seedLabel = new Label(manager);
-            seedLabel.Text = "";
-            seedLabel.VerticalAlignment = VerticalAlignment.Top;
-            seedLabel.HorizontalAlignment = HorizontalAlignment.Left;
-            sidebar.Controls.Add(seedLabel);
+            _seedLabel = new Label(manager)
+            {
+                Text = "", VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Left
+            };
+            sidebar.Controls.Add(_seedLabel);
 
             //Buttons
-            StackPanel buttonStack = new StackPanel(manager);
-            buttonStack.VerticalAlignment = VerticalAlignment.Bottom;
-            buttonStack.HorizontalAlignment = HorizontalAlignment.Stretch;
+            var buttonStack = new StackPanel(manager)
+            {
+                VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Stretch
+            };
             sidebar.Controls.Add(buttonStack);
 
             //renameButton = getButton("Rename");
             //buttonStack.Controls.Add(renameButton);
 
-            deleteButton = GetButton(Languages.OctoClient.Delete);
-            buttonStack.Controls.Add(deleteButton);
-            deleteButton.LeftMouseClick += (s, e) =>
+            _deleteButton = GetButton(Languages.OctoClient.Delete);
+            buttonStack.Controls.Add(_deleteButton);
+            _deleteButton.LeftMouseClick += (s, e) =>
             {
-                if (levelList.SelectedItem == null)
+                if (_levelList.SelectedItem == null)
                 {
-                    MessageScreen msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
+                    var msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
                     manager.NavigateToScreen(msg);
 
                     return;
@@ -112,24 +111,24 @@ namespace OctoAwesome.Client.Screens
 
                 // Sicherstellen, dass universe nicht geladen ist
                 if (Manager.Game.ResourceManager.CurrentUniverse != null &&
-                    Manager.Game.ResourceManager.CurrentUniverse.Id == levelList.SelectedItem.Id)
+                    Manager.Game.ResourceManager.CurrentUniverse.Id == _levelList.SelectedItem.Id)
                     return;
 
-                Manager.Game.ResourceManager.DeleteUniverse(levelList.SelectedItem.Id);
-                levelList.Items.Remove(levelList.SelectedItem);
-                levelList.SelectedItem = null;
-                levelList.InvalidateDimensions();
-                settings.Set("LastUniverse", "");
+                Manager.Game.ResourceManager.DeleteUniverse(_levelList.SelectedItem.Id);
+                _levelList.Items.Remove(_levelList.SelectedItem);
+                _levelList.SelectedItem = null;
+                _levelList.InvalidateDimensions();
+                _settings.Set("LastUniverse", "");
             };
 
-            createButton = GetButton(Languages.OctoClient.Create);
-            createButton.LeftMouseClick += (s, e) => manager.NavigateToScreen(new CreateUniverseScreen(manager));
-            buttonStack.Controls.Add(createButton);
+            _createButton = GetButton(Languages.OctoClient.Create);
+            _createButton.LeftMouseClick += (s, e) => manager.NavigateToScreen(new CreateUniverseScreen(manager));
+            buttonStack.Controls.Add(_createButton);
 
-            playButton = GetButton(Languages.OctoClient.Play);
-            playButton.LeftMouseClick += (s, e) =>
+            _playButton = GetButton(Languages.OctoClient.Play);
+            _playButton.LeftMouseClick += (s, e) =>
             {
-                if (levelList.SelectedItem == null)
+                if (_levelList.SelectedItem == null)
                 {
                     MessageScreen msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
                     manager.NavigateToScreen(msg);
@@ -139,31 +138,29 @@ namespace OctoAwesome.Client.Screens
 
                 Play();
             };
-            buttonStack.Controls.Add(playButton);
+            buttonStack.Controls.Add(_playButton);
 
             foreach (var universe in Manager.Game.ResourceManager.ListUniverses())
-                levelList.Items.Add(universe);
+                _levelList.Items.Add(universe);
 
             // Erstes Element auswählen, oder falls vorhanden das letzte gespielte Universum
-            if (levelList.Items.Count >= 1)
-                levelList.SelectedItem = levelList.Items[0];
+            if (_levelList.Items.Count >= 1)
+                _levelList.SelectedItem = _levelList.Items[0];
 
-            Guid lastUniverseId;
-            if (Guid.TryParse(settings.Get<string>("LastUniverse"), out lastUniverseId))
+            if (Guid.TryParse(_settings.Get<string>("LastUniverse"), out var lastUniverseId))
             {
-                var lastlevel = levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
+                var lastlevel = _levelList.Items.FirstOrDefault(u => u.Id == lastUniverseId);
                 if (lastlevel != null)
-                    levelList.SelectedItem = lastlevel;
+                    _levelList.SelectedItem = lastlevel;
 
             }
         }
-
 
         protected override void OnKeyDown(KeyEventArgs args)
         {
             if (args.Key == Keys.Enter)
             {
-                if (levelList.SelectedItem == null)
+                if (_levelList.SelectedItem == null)
                     return;
 
                 Play();
@@ -176,10 +173,10 @@ namespace OctoAwesome.Client.Screens
         {
             Manager.Player.SetEntity(null);
 
-            Manager.Game.Simulation.LoadGame(levelList.SelectedItem.Id);
-            settings.Set("LastUniverse", levelList.SelectedItem.Id.ToString());
+            Manager.Game.Simulation.LoadGame(_levelList.SelectedItem.Id);
+            _settings.Set("LastUniverse", _levelList.SelectedItem.Id.ToString());
 
-            Player player = Manager.Game.Simulation.LoginPlayer("");
+            var player = Manager.Game.Simulation.LoginPlayer("");
             Manager.Game.Player.SetEntity(player);
 
             Manager.NavigateToScreen(new LoadingScreen(Manager));
