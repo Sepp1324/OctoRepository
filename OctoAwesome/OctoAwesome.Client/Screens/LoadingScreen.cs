@@ -13,6 +13,7 @@ namespace OctoAwesome.Client.Screens
     internal sealed class LoadingScreen : BaseScreen
     {
         private static readonly QuoteProvider _loadingQuoteProvider;
+
         static LoadingScreen()
         {
             var settings = TypeContainer.Get<ISettings>();

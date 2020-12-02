@@ -35,6 +35,9 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public IUniverse CurrentUniverse { get; private set; }
 
+        /// <summary>
+        /// Manager for all Definitions (Blocks, Entities, Items)
+        /// </summary>
         public IDefinitionManager DefinitionManager { get; private set; }
 
         public ConcurrentDictionary<int, IPlanet> Planets { get; }
@@ -46,7 +49,7 @@ namespace OctoAwesome.Runtime
         private CancellationTokenSource _tokenSource;
 
         /// <summary>
-        /// Konstruktor
+        /// Constructor
         /// </summary>
         /// <param name="extensionResolver">ExetnsionResolver</param>
         /// <param name="definitionManager">DefinitionManager</param>
@@ -68,6 +71,10 @@ namespace OctoAwesome.Runtime
             bool.TryParse(settings.Get<string>("DisablePersistence"), out _disablePersistence);
         }
 
+        /// <summary>
+        /// Insert UpdateHub for Entities
+        /// </summary>
+        /// <param name="updateHub"><see cref="UpdateHub"/></param>
         public void InsertUpdateHub(UpdateHub updateHub) => UpdateHub = updateHub;
 
         /// <summary>
@@ -350,6 +357,10 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <summary>
+        /// Serialize a Chunk
+        /// </summary>
+        /// <param name="chunkColumn"></param>
         public void SaveChunkColumn(IChunkColumn chunkColumn)
         {
             if (_disablePersistence)
@@ -359,6 +370,11 @@ namespace OctoAwesome.Runtime
                 _persistenceManager.SaveColumn(CurrentUniverse.Id, chunkColumn.Planet, chunkColumn);
         }
 
+        /// <summary>
+        /// Deserialize an Entity
+        /// </summary>
+        /// <param name="entityId"><see cref="Entity"/></param>
+        /// <returns></returns>
         public Entity LoadEntity(Guid entityId)
         {
             if (CurrentUniverse == null)
@@ -379,6 +395,10 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <summary>
+        /// Serializes an Entity
+        /// </summary>
+        /// <param name="entity"><see cref="Entity"/></param>
         public void SaveEntity(Entity entity)
         {
             if (CurrentUniverse == null)
@@ -393,6 +413,11 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <summary>
+        /// Loads the Entities with Components (BodyComponent, ..)
+        /// </summary>
+        /// <typeparam name="T"><see cref="Component"/></typeparam>
+        /// <returns></returns>
         public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : EntityComponent
         {
             _currentToken.ThrowIfCancellationRequested();
@@ -401,6 +426,11 @@ namespace OctoAwesome.Runtime
                 return _persistenceManager.LoadEntitiesWithComponent<T>(CurrentUniverse.Id);
         }
 
+        /// <summary>
+        /// Get EntityIds with Components
+        /// </summary>
+        /// <typeparam name="T"><see cref="Component"/></typeparam>
+        /// <returns></returns>
         public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent
         {
             _currentToken.ThrowIfCancellationRequested();
@@ -409,6 +439,10 @@ namespace OctoAwesome.Runtime
                 return _persistenceManager.GetEntityIdsFromComponent<T>(CurrentUniverse.Id);
         }
 
+        /// <summary>
+        /// Get IDs from all Entities
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Guid> GetEntityIds()
         {
             _currentToken.ThrowIfCancellationRequested();
@@ -417,6 +451,12 @@ namespace OctoAwesome.Runtime
                 return _persistenceManager.GetEntityIds(CurrentUniverse.Id);
         }
 
+        /// <summary>
+        /// Get Components from Entities
+        /// </summary>
+        /// <typeparam name="T"><see cref="Component"/></typeparam>
+        /// <param name="entityIds"><see cref="Entity"/></param>
+        /// <returns></returns>
         public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new()
         {
             _currentToken.ThrowIfCancellationRequested();
