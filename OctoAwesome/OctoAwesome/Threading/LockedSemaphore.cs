@@ -39,7 +39,7 @@ namespace OctoAwesome.Threading
             await _semaphoreSlim.WaitAsync(token);
             return new SemaphoreLock(this);
         }
-              
+
         /// <summary>
         /// General Dispose Pattern
         /// </summary>

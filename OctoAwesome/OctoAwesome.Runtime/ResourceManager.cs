@@ -109,7 +109,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Die Liste der Universen.</returns>
         public IUniverse[] ListUniverses()
         {
-            var awaiter = _persistenceManager.Load(out SerializableCollection<IUniverse> universes);
+            var awaiter = _persistenceManager.Load(out var universes);
 
             if (awaiter == null)
                 return Array.Empty<IUniverse>();

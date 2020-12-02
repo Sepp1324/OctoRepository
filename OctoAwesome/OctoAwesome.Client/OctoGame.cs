@@ -46,12 +46,6 @@ namespace OctoAwesome.Client
 
         public OctoGame() : base()
         {
-            //graphics = new GraphicsDeviceManager(this);
-            //graphics.PreferredBackBufferWidth = 1080;
-            //graphics.PreferredBackBufferHeight = 720;
-
-            //Content.RootDirectory = "Content";
-
             Title = "OctoAwesome";
             IsMouseVisible = true;
             Icon = Properties.Resources.octoawesome;
@@ -59,14 +53,12 @@ namespace OctoAwesome.Client
             _typeContainer = TypeContainer.Get<ITypeContainer>();
             Register(_typeContainer);
 
-            //Window.AllowUserResizing = true;
             Settings = TypeContainer.Get<Settings>();
 
             ExtensionLoader = TypeContainer.Get<ExtensionLoader>();
             ExtensionLoader.LoadExtensions();
 
             Service = TypeContainer.Get<GameService>();
-            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             var width = Settings.Get("Width", 1080);
             var height = Settings.Get("Height", 720);
@@ -98,24 +90,18 @@ namespace OctoAwesome.Client
             #region GameComponents
             DefinitionManager = TypeContainer.Get<DefinitionManager>();
 
-            //var persistenceManager = new DiskPersistenceManager(ExtensionLoader, DefinitionManager, Settings);
-            //ResourceManager = new ResourceManager(ExtensionLoader, DefinitionManager, Settings, persistenceManager);
             ResourceManager = TypeContainer.Get<ContainerResourceManager>();
 
 
-            Player = new PlayerComponent(this, ResourceManager);
-            Player.UpdateOrder = 2;
+            Player = new PlayerComponent(this, ResourceManager) { UpdateOrder = 2 };
             Components.Add(Player);
 
-            Simulation = new Components.SimulationComponent(this,
-              ExtensionLoader, ResourceManager);
+            Simulation = new Components.SimulationComponent(this, ExtensionLoader, ResourceManager);
 
-            Entity = new Components.EntityComponent(this, Simulation);
-            Entity.UpdateOrder = 2;
+            Entity = new Components.EntityComponent(this, Simulation) { UpdateOrder = 2 };
             Components.Add(Entity);
 
-            Camera = new CameraComponent(this);
-            Camera.UpdateOrder = 3;
+            Camera = new CameraComponent(this) { UpdateOrder = 3 };
             Components.Add(Camera);
 
             Simulation.UpdateOrder = 4;
@@ -123,16 +109,6 @@ namespace OctoAwesome.Client
 
             #endregion GameComponents
 
-            /*Resize += (s, e) =>
-            {
-                //if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
-                //   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
-                //    return;
-
-                //graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-                //graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-                //graphics.ApplyChanges();
-            };*/
             SetKeyBindings();
         }
 
@@ -180,7 +156,7 @@ namespace OctoAwesome.Client
             KeyMapper.RegisterBinding("octoawesome:fullscreen", Languages.OctoKeys.fullscreen);
             KeyMapper.RegisterBinding("octoawesome:teleport", Languages.OctoKeys.teleport);
 
-            Dictionary<string, Keys> standardKeys = new Dictionary<string, Keys>()
+            var standardKeys = new Dictionary<string, Keys>()
             {
                 { "octoawesome:forward", Keys.W },
                 { "octoawesome:left", Keys.A },
@@ -219,9 +195,7 @@ namespace OctoAwesome.Client
             KeyMapper.AddAction("octoawesome:fullscreen", type =>
             {
                 if (type == KeyMapper.KeyType.Down)
-                {
                     Window.Fullscreen = !Window.Fullscreen;
-                }
             });
         }
 

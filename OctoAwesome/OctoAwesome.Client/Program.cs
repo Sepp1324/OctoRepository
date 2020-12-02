@@ -31,8 +31,7 @@ namespace OctoAwesome.Client
                 var logger = (typeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As("OctoAwesome.Client");
                 AppDomain.CurrentDomain.UnhandledException += (s, e) =>
                 {
-                    File.WriteAllText(
-                        Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"),
+                    File.WriteAllText(Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"),
                         e.ExceptionObject.ToString());
 
                     logger.Fatal($"Unhandled Exception: {e.ExceptionObject}", e.ExceptionObject as Exception);
@@ -47,6 +46,7 @@ namespace OctoAwesome.Client
         public static void Restart()
         {
             game.Exit();
+
             using (game = new OctoGame())
                 game.Run(60, 60);
         }

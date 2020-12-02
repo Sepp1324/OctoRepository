@@ -9,7 +9,14 @@ namespace OctoAwesome
 {
     public class Awaiter : IPoolElement, IDisposable
     {
+        /// <summary>
+        /// Indicates whether a Component is serializable or not 
+        /// </summary>
         public ISerializable Serializable { get; set; }
+
+        /// <summary>
+        /// Indicates whether a Component is timeouted or not
+        /// </summary>
         public bool Timeouted { get; private set; }
 
         private readonly ManualResetEventSlim _manualReset;
@@ -17,12 +24,19 @@ namespace OctoAwesome
         private bool _alreadyDeserialized;
         private IPool _pool;
 
+        /// <summary>
+        /// Constructor for Awaiter
+        /// </summary>
         public Awaiter()
         {
             _manualReset = new ManualResetEventSlim(false);
             _lockedSemaphore = new LockedSemaphore(1, 1);
         }
 
+        /// <summary>
+        /// Waits until Serialization is finished
+        /// </summary>
+        /// <returns></returns>
         public ISerializable WaitOn()
         {
             if (!_alreadyDeserialized)
@@ -67,6 +81,10 @@ namespace OctoAwesome
             }
         }
 
+        /// <summary>
+        /// Init for an Awaiter
+        /// </summary>
+        /// <param name="pool"></param>
         public void Init(IPool pool)
         {
             _pool = pool;

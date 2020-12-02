@@ -7,14 +7,11 @@ namespace OctoAwesome.Client.Screens
 {
     internal abstract class BaseScreen : Screen
     {
-        private readonly AssetComponent assets;
+        private readonly AssetComponent _assets;
 
         protected Button BackButton;
 
-        public BaseScreen(ScreenComponent manager) : base(manager)
-        {
-            assets = manager.Game.Assets;
-        }
+        public BaseScreen(ScreenComponent manager) : base(manager) => _assets = manager.Game.Assets;
 
         protected override void OnNavigatedTo(NavigationEventArgs args)
         {
@@ -30,13 +27,9 @@ namespace OctoAwesome.Client.Screens
                 BackButton.Margin = new Border(10, 10, 10, 10);
                 Controls.Add(BackButton);
             }
-
         }
 
-        protected void SetDefaultBackground()
-        {
-            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
-        }
+        protected void SetDefaultBackground() => Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
 
         protected override void OnKeyPress(KeyEventArgs args)
         {
@@ -45,7 +38,6 @@ namespace OctoAwesome.Client.Screens
                 args.Handled = true;
                 Manager.NavigateBack();
             }
-
             base.OnKeyPress(args);
         }
 
@@ -65,6 +57,5 @@ namespace OctoAwesome.Client.Screens
             };
             return button;
         }
-
     }
 }
