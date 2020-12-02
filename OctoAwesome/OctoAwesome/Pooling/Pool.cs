@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Pooling
 {
     public sealed class Pool<T> : IPool<T> where T : IPoolElement, new()
     {
         private readonly Stack<T> internalStack;
-        private readonly SemaphoreExtended semaphoreExtended;
+        private readonly LockedSemaphore _lockedSemaphore;
 
         public Pool()
         {
             internalStack = new Stack<T>();
-            semaphoreExtended = new SemaphoreExtended(1, 1);
+            _lockedSemaphore = new LockedSemaphore(1, 1);
         }
 
         public T Get()
         {
             T obj;
 
-            using (semaphoreExtended.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 if (internalStack.Count > 0)
                     obj = internalStack.Pop();
@@ -35,7 +36,7 @@ namespace OctoAwesome.Pooling
 
         public void Push(T obj)
         {
-            using (semaphoreExtended.Wait())
+            using (_lockedSemaphore.Wait())
                 internalStack.Push(obj);
         }
 

@@ -6,6 +6,7 @@ using engenious;
 using System;
 using System.Windows.Threading;
 using System.Threading;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Client.Components
 {
@@ -15,7 +16,7 @@ namespace OctoAwesome.Client.Components
         private GraphicsDevice graphicsDevice;
 
         private Texture2DArray textures;
-        private readonly SemaphoreExtended semaphore;
+        private readonly LockedSemaphore _lockedSemaphore;
         private readonly Dispatcher dispatcher;
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace OctoAwesome.Client.Components
             this.definitionManager = definitionManager;
             this.graphicsDevice = graphicsDevice;
             this.textures = textures;
-            semaphore = new SemaphoreExtended(1, 1);
+            _lockedSemaphore = new LockedSemaphore(1, 1);
             dispatcher = Dispatcher.CurrentDispatcher;
             simple = simpleShader;
             GenerateIndexBuffer();

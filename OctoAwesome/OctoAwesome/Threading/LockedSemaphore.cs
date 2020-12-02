@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.Threading
 {
-    public sealed class SemaphoreExtended : IDisposable
+    public sealed class LockedSemaphore : IDisposable
     {
         private readonly SemaphoreSlim _semaphoreSlim;
 
-        public SemaphoreExtended(int initialCount, int maxCount) => _semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
+        public LockedSemaphore(int initialCount, int maxCount) => _semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
 
         public SemaphoreLock Wait()
         {
@@ -31,17 +31,17 @@ namespace OctoAwesome.Threading
         {
             public static SemaphoreLock Empty => new SemaphoreLock(null);
 
-            private readonly SemaphoreExtended _internalSemaphore;
+            private readonly LockedSemaphore _internalLockedSemaphore;
 
-            public SemaphoreLock(SemaphoreExtended semaphoreExtended) => _internalSemaphore = semaphoreExtended;
+            public SemaphoreLock(LockedSemaphore lockedSemaphore) => _internalLockedSemaphore = lockedSemaphore;
 
-            public void Dispose() => _internalSemaphore?.Release();
+            public void Dispose() => _internalLockedSemaphore?.Release();
 
             public override bool Equals(object obj) => obj is SemaphoreLock semLock && Equals(semLock);
 
-            public bool Equals(SemaphoreLock other) => EqualityComparer<SemaphoreExtended>.Default.Equals(_internalSemaphore, other._internalSemaphore);
+            public bool Equals(SemaphoreLock other) => EqualityComparer<LockedSemaphore>.Default.Equals(_internalLockedSemaphore, other._internalLockedSemaphore);
 
-            public override int GetHashCode() => 37286538 + EqualityComparer<SemaphoreExtended>.Default.GetHashCode(_internalSemaphore);
+            public override int GetHashCode() => 37286538 + EqualityComparer<LockedSemaphore>.Default.GetHashCode(_internalLockedSemaphore);
 
             public static bool operator ==(SemaphoreLock left, SemaphoreLock right) => left.Equals(right);
 

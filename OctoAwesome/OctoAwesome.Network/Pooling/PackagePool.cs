@@ -4,25 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Network.Pooling
 {
     public sealed class PackagePool : IPool<Package>
     {
         private readonly Stack<Package> internalStack;
-        private readonly SemaphoreExtended semaphoreExtended;
+        private readonly LockedSemaphore _lockedSemaphore;
 
         public PackagePool()
         {
             internalStack = new Stack<Package>();
-            semaphoreExtended = new SemaphoreExtended(1, 1);
+            _lockedSemaphore = new LockedSemaphore(1, 1);
         }
 
         public Package Get()
         {
             Package obj;
 
-            using (semaphoreExtended.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 if (internalStack.Count > 0)
                     obj = internalStack.Pop();
@@ -38,7 +39,7 @@ namespace OctoAwesome.Network.Pooling
         {
             Package obj;
 
-            using (semaphoreExtended.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 if (internalStack.Count > 0)
                     obj = internalStack.Pop();
@@ -52,7 +53,7 @@ namespace OctoAwesome.Network.Pooling
 
         public void Push(Package obj)
         {
-            using (semaphoreExtended.Wait())
+            using (_lockedSemaphore.Wait())
                 internalStack.Push(obj);
         }
 

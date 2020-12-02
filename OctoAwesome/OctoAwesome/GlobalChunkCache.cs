@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome
 {
@@ -31,8 +32,8 @@ namespace OctoAwesome
         /// <summary>
         /// Objekt, das für die Locks benutzt wird
         /// </summary>
-        private readonly SemaphoreExtended semaphore = new SemaphoreExtended(1, 1);
-        private readonly SemaphoreExtended updateSemaphore = new SemaphoreExtended(1, 1);
+        private readonly LockedSemaphore _lockedSemaphore = new LockedSemaphore(1, 1);
+        private readonly LockedSemaphore _updateLockedSemaphore = new LockedSemaphore(1, 1);
 
         // TODO: Früher oder später nach draußen auslagern
         private readonly Task cleanupTask;
@@ -47,7 +48,7 @@ namespace OctoAwesome
         {
             get
             {
-                using (semaphore.Wait())
+                using (_lockedSemaphore.Wait())
                 {
                     return _cache.Count;
                 }
@@ -93,7 +94,7 @@ namespace OctoAwesome
         {
             CacheItem cacheItem = null;
 
-            using (semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
 
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
@@ -132,7 +133,7 @@ namespace OctoAwesome
                     foreach (var entity in loadedEntities)
                         cacheItem.ChunkColumn.Entities.Add(entity);
 
-                    using (updateSemaphore.Wait())
+                    using (_updateLockedSemaphore.Wait())
                         _newChunks.Enqueue(cacheItem);
 
                 }
@@ -170,7 +171,7 @@ namespace OctoAwesome
         /// </summary>
         public void Clear()
         {
-            using (semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 foreach (CacheItem value in _cache.Values)
                 {
@@ -187,7 +188,7 @@ namespace OctoAwesome
         /// <param name="position">Die Position des freizugebenden Chunks</param>
         public void Release(Index2 position)
         {
-            using (semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out var cacheItem))
                 {
@@ -220,10 +221,10 @@ namespace OctoAwesome
                         using (ci.Wait())
                             ci.Changed -= ItemChanged;
 
-                        using (semaphore.Wait())
+                        using (_lockedSemaphore.Wait())
                             _cache.Remove(key);
 
-                        using (updateSemaphore.Wait())
+                        using (_updateLockedSemaphore.Wait())
                             _oldChunks.Enqueue(ci);
                     }
                 }
@@ -234,7 +235,7 @@ namespace OctoAwesome
 
         public void BeforeSimulationUpdate(Simulation simulation)
         {
-            lock (updateSemaphore)
+            lock (_updateLockedSemaphore)
             {
                 //Neue Chunks in die Simulation einpflegen
                 while (_newChunks.Count > 0)
@@ -260,7 +261,7 @@ namespace OctoAwesome
         public void AfterSimulationUpdate(Simulation simulation)
         {
             //TODO: Überarbeiten
-            using (semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 FailEntityChunkArgs[] failChunkEntities = _cache
                     .Where(chunk => chunk.Value.ChunkColumn != null)
@@ -346,8 +347,8 @@ namespace OctoAwesome
             _newChunks.Clear();
             _oldChunks.Clear();
 
-            semaphore.Dispose();
-            updateSemaphore.Dispose();
+            _lockedSemaphore.Dispose();
+            _updateLockedSemaphore.Dispose();
             _autoResetEvent.Dispose();
         }
 
@@ -357,7 +358,7 @@ namespace OctoAwesome
         private class CacheItem : IDisposable
         {
             private IChunkColumn _chunkColumn;
-            private readonly SemaphoreExtended internalSemaphore;
+            private readonly LockedSemaphore _internalLockedSemaphore;
 
             public IPlanet Planet { get; set; }
 
@@ -391,10 +392,10 @@ namespace OctoAwesome
 
             private bool disposed;
 
-            public CacheItem() => internalSemaphore = new SemaphoreExtended(1, 1);
+            public CacheItem() => _internalLockedSemaphore = new LockedSemaphore(1, 1);
 
-            public SemaphoreExtended.SemaphoreLock Wait()
-                => internalSemaphore.Wait();
+            public LockedSemaphore.SemaphoreLock Wait()
+                => _internalLockedSemaphore.Wait();
 
             public void Dispose()
             {
@@ -403,7 +404,7 @@ namespace OctoAwesome
 
                 disposed = true;
 
-                internalSemaphore.Dispose();
+                _internalLockedSemaphore.Dispose();
 
                 if (_chunkColumn is IDisposable disposable)
                     disposable.Dispose();

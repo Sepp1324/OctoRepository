@@ -121,8 +121,8 @@
     <Compile Include="Pooling\IPool.cs" />
     <Compile Include="Pooling\IPoolElement.cs" />
     <Compile Include="Pooling\Pool.cs" />
-    <Compile Include="Threading\SemaphoreCounting.cs" />
-    <Compile Include="Threading\SemaphoreExtended.cs" />
+    <Compile Include="Threading\CountedScopeSemaphore.cs" />
+    <Compile Include="Threading\LockedSemaphore.cs" />
     <Compile Include="Serialization\ChunkDiffDbContext.cs" />
     <Compile Include="Serialization\ChunkDiffTag.cs" />
     <Compile Include="Serialization\Entities\EntityComponentsDbContext.cs" />

@@ -3,6 +3,7 @@ using OctoAwesome.Serialization;
 using System;
 using System.IO;
 using System.Threading;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome
 {
@@ -12,14 +13,14 @@ namespace OctoAwesome
         public bool Timeouted { get; private set; }
 
         private readonly ManualResetEventSlim _manualReset;
-        private readonly SemaphoreExtended _semaphore;
+        private readonly LockedSemaphore _lockedSemaphore;
         private bool _alreadyDeserialized;
         private IPool _pool;
 
         public Awaiter()
         {
             _manualReset = new ManualResetEventSlim(false);
-            _semaphore = new SemaphoreExtended(1, 1);
+            _lockedSemaphore = new LockedSemaphore(1, 1);
         }
 
         public ISerializable WaitOn()
@@ -38,7 +39,7 @@ namespace OctoAwesome
 
         public void SetResult(ISerializable serializable)
         {
-            using (_semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 Serializable = serializable;
                 _manualReset.Set();
@@ -48,7 +49,7 @@ namespace OctoAwesome
 
         public bool TrySetResult(byte[] bytes)
         {
-            using (_semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 if (Timeouted)
                     return false;
@@ -74,7 +75,7 @@ namespace OctoAwesome
 
         public void Release()
         {
-            using (_semaphore.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 if (!_manualReset.IsSet)
                     _manualReset.Set();

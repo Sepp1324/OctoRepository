@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome
 {
@@ -14,8 +15,8 @@ namespace OctoAwesome
     /// </summary>
     public class LocalChunkCache : ILocalChunkCache
     {
-        private readonly SemaphoreExtended semaphore;
-        private readonly SemaphoreExtended taskSemaphore;
+        private readonly LockedSemaphore _lockedSemaphore;
+        private readonly LockedSemaphore _taskLockedSemaphore;
 
         /// <summary>
         /// Aktueller Planet auf dem sich der Cache bezieht.
@@ -70,8 +71,8 @@ namespace OctoAwesome
                 throw new ArgumentException("Range too big");
 
             
-            semaphore = new SemaphoreExtended(1, 1);
-            taskSemaphore = new SemaphoreExtended(1, 1);
+            _lockedSemaphore = new LockedSemaphore(1, 1);
+            _taskLockedSemaphore = new LockedSemaphore(1, 1);
             Planet = globalCache.Planet;
             this.globalCache = globalCache;
             this.range = range;
@@ -91,7 +92,7 @@ namespace OctoAwesome
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
         public bool SetCenter(Index2 index, Action<bool> successCallback = null)
         {
-            using (taskSemaphore.Wait())
+            using (_taskLockedSemaphore.Wait())
             {
                 var callerName = new StackFrame(1).GetMethod().Name;
                 logger.Debug($"Set Center from {callerName}");
@@ -159,7 +160,7 @@ namespace OctoAwesome
 
                 // Alten Chunk entfernen, falls notwendig
 
-                using (semaphore.Wait())
+                using (_lockedSemaphore.Wait())
                 {
                     if (chunkColumn != null && chunkColumn.Index != chunkColumnIndex)
                     {
@@ -179,7 +180,7 @@ namespace OctoAwesome
                     return;
                 }
 
-                using (semaphore.Wait())
+                using (_lockedSemaphore.Wait())
                 {
                     // Neuen Chunk laden
                     if (chunkColumn == null)

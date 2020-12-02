@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -14,18 +15,18 @@ namespace OctoAwesome.Client.Screens
         private bool loaded;
         private string[] quotes;
 
-        private readonly SemaphoreExtended semaphoreExtended;
+        private readonly LockedSemaphore _lockedSemaphore;
 
         public QuoteProvider(FileInfo fileInfo)
         {
             this.fileInfo = fileInfo;
             random = new Random();
-            semaphoreExtended = new SemaphoreExtended(1, 1);
+            _lockedSemaphore = new LockedSemaphore(1, 1);
         }
 
         public string GetRandomQuote()
         {
-            using (semaphoreExtended.Wait())
+            using (_lockedSemaphore.Wait())
             {
                 Load();
                 return quotes[random.Next(0, quotes.Length)];

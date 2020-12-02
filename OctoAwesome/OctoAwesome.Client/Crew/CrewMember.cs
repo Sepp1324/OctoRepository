@@ -22,7 +22,15 @@ namespace OctoAwesome.Client.Crew
             Musik,
             Grafik,
             WikiAdmin,
-            DatenbankFreigeschaltet
+            DatenbankFreigeschaltet,
+            Designer,
+            Designerin,
+            Tester,
+            Testerin,
+            MasterOfTheUniverse,
+            MistressOfTheUniverse,
+            Chef,
+            Chefin
         };
 
         public string Username { get; set; }

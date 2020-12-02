@@ -5,13 +5,13 @@ using System.Threading;
 
 namespace OctoAwesome.Threading
 {
-    public class SemaphoreCounting
+    public class CountedScopeSemaphore
     {
         private readonly SemaphoreSlim _semaphoreSlim;
 
         private volatile int _counter;
 
-        public SemaphoreCounting(int initialCount)
+        public CountedScopeSemaphore(int initialCount)
         {
             _semaphoreSlim = new SemaphoreSlim(1, 1);
             _counter = initialCount;
@@ -19,7 +19,8 @@ namespace OctoAwesome.Threading
 
         public void Wait()
         {
-            _semaphoreSlim.Wait();
+            if (_counter > 0)
+                _semaphoreSlim.Wait();
         }
 
         public CountScope EnterScope()
@@ -30,32 +31,29 @@ namespace OctoAwesome.Threading
 
         public void Dispose() => _semaphoreSlim.Dispose();
 
-        private void Release() => _semaphoreSlim.Release();
-
         private void LeaveScope()
         {
             _counter--;
 
-            if(_counter == 0)
-                Release();
+            if (_counter == 0 && _semaphoreSlim.CurrentCount < 1)
+                _semaphoreSlim.Release();
         }
 
-        /// <inheritdoc />
         public readonly struct CountScope : IDisposable, IEquatable<CountScope>
         {
             public static CountScope Empty => new CountScope(null);
 
-            private readonly SemaphoreCounting _internalSemaphore;
+            private readonly CountedScopeSemaphore _internalCountedScopeSemaphore;
 
-            public CountScope(SemaphoreCounting semaphoreCounting) => _internalSemaphore = semaphoreCounting;
+            public CountScope(CountedScopeSemaphore countedScopeSemaphore) => _internalCountedScopeSemaphore = countedScopeSemaphore;
 
-            public void Dispose() => _internalSemaphore?.LeaveScope();
+            public void Dispose() => _internalCountedScopeSemaphore?.LeaveScope();
 
             public override bool Equals(object obj) => obj is CountScope scope && Equals(scope);
 
-            public bool Equals(CountScope other) => EqualityComparer<SemaphoreCounting>.Default.Equals(_internalSemaphore, other._internalSemaphore);
+            public bool Equals(CountScope other) => EqualityComparer<CountedScopeSemaphore>.Default.Equals(_internalCountedScopeSemaphore, other._internalCountedScopeSemaphore);
 
-            public override int GetHashCode() => 37286538 + EqualityComparer<SemaphoreCounting>.Default.GetHashCode(_internalSemaphore);
+            public override int GetHashCode() => 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalCountedScopeSemaphore);
 
             public static bool operator ==(CountScope left, CountScope right) => left.Equals(right);
 
