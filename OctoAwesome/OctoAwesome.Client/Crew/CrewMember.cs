@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
-using engenious.UI;
 using OctoAwesome.Client.Components;
 using System;
 
@@ -50,11 +49,11 @@ namespace OctoAwesome.Client.Crew
         internal static List<CrewMember> getCrew(ScreenComponent manager)
         {
 
-            using (Stream stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
+            using (var stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
             {
                 try
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(List<CrewMember>));
+                    var serializer = new XmlSerializer(typeof(List<CrewMember>));
                     return (List<CrewMember>)serializer.Deserialize(stream);
                 }
                 catch (Exception)
@@ -64,10 +63,7 @@ namespace OctoAwesome.Client.Crew
             }
         }
 
-        public override string ToString()
-        {
-            return Username;
-        }
+        public override string ToString() => Username;
 
         public class Link
         {

@@ -178,9 +178,9 @@ namespace OctoAwesome.Client.Components
             var chunk = this.chunk;
             List<VertexPositionNormalTextureLight> vertices = new List<VertexPositionNormalTextureLight>();
             List<int> index = new List<int>();
-            int textureColumns = textures.Width / SceneControl.TEXTURESIZE;
+            int textureColumns = textures.Width / SceneControl.TEXTURE_SIZE;
             float textureWidth = 1f / textureColumns;
-            float texelSize = 1f / SceneControl.TEXTURESIZE;
+            float texelSize = 1f / SceneControl.TEXTURE_SIZE;
             float textureSizeGap = texelSize;
             float textureGap = texelSize / 2;
             // BlockTypes sammlen

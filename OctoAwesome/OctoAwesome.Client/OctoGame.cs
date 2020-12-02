@@ -73,7 +73,7 @@ namespace OctoAwesome.Client
                 if (viewRange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneControl.VIEWRANGE = viewRange;
+                SceneControl.VIEW_RANGE = viewRange;
             }
 
             Assets = new AssetComponent(this);
