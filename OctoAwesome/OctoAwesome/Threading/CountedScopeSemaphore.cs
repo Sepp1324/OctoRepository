@@ -1,43 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-// ReSharper disable NonAtomicCompoundOperator
 
 namespace OctoAwesome.Threading
 {
-    public class CountedScopeSemaphore
+    public class CountedScopeSemaphore : IDisposable
     {
-        private readonly SemaphoreSlim _semaphoreSlim;
+        private readonly ManualResetEventSlim _superLock;
+        private readonly ManualResetEventSlim _mainLock;
 
-        private volatile int _counter;
+        private readonly object _lockObject;
+        private readonly object _countLockObject;
 
-        public CountedScopeSemaphore(int initialCount)
+        private int _counter;
+
+        public CountedScopeSemaphore()
         {
-            _semaphoreSlim = new SemaphoreSlim(1, 1);
-            _counter = initialCount;
+            _mainLock = new ManualResetEventSlim(true);
+            _superLock = new ManualResetEventSlim(true);
+
+            _lockObject = new object();
+            _countLockObject = new object();
         }
 
-        public void Wait()
+        public SuperScope Wait()
         {
-            if (_counter > 0)
-                _semaphoreSlim.Wait();
+            lock (_lockObject)
+            {
+                _mainLock.Wait();
+                _superLock.Reset();
+            }
+
+            return new SuperScope(this);
         }
 
         public CountScope EnterScope()
         {
-            _counter++;
+            lock (_lockObject)
+            {
+                _superLock.Wait();
+                _mainLock.Reset();
+            }
+
+            lock (_countLockObject)
+                _counter++;
+
             return new CountScope(this);
         }
 
-        public void Dispose() => _semaphoreSlim.Dispose();
-
-        private void LeaveScope()
+        public void Dispose()
         {
-            _counter--;
-
-            if (_counter == 0 && _semaphoreSlim.CurrentCount < 1)
-                _semaphoreSlim.Release();
+            _superLock.Dispose();
+            _mainLock.Dispose();
         }
+
+        private void LeaveMainScope()
+        {
+            lock (_countLockObject)
+            {
+                _counter--;
+
+                if(_counter == 0)
+                    _mainLock.Set();
+            }
+        }
+
+        private void LeaveSuperScope() => _superLock.Set();
 
         public readonly struct CountScope : IDisposable, IEquatable<CountScope>
         {
@@ -47,7 +75,7 @@ namespace OctoAwesome.Threading
 
             public CountScope(CountedScopeSemaphore countedScopeSemaphore) => _internalCountedScopeSemaphore = countedScopeSemaphore;
 
-            public void Dispose() => _internalCountedScopeSemaphore?.LeaveScope();
+            public void Dispose() => _internalCountedScopeSemaphore?.LeaveMainScope();
 
             public override bool Equals(object obj) => obj is CountScope scope && Equals(scope);
 
@@ -58,6 +86,27 @@ namespace OctoAwesome.Threading
             public static bool operator ==(CountScope left, CountScope right) => left.Equals(right);
 
             public static bool operator !=(CountScope left, CountScope right) => !(left == right);
+        }
+
+        public readonly struct SuperScope : IDisposable, IEquatable<SuperScope>
+        {
+            public static SuperScope Empty => new SuperScope(null);
+
+            private readonly CountedScopeSemaphore _internalSemaphore;
+
+            public SuperScope(CountedScopeSemaphore semaphore) => _internalSemaphore = semaphore;
+
+            public void Dispose() => _internalSemaphore?.LeaveSuperScope();
+
+            public override bool Equals(object obj) => obj is SuperScope scope && Equals(scope);
+
+            public bool Equals(SuperScope other) => EqualityComparer<CountedScopeSemaphore>.Default.Equals(_internalSemaphore, other._internalSemaphore);
+
+            public override int GetHashCode() => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalSemaphore);
+
+            public static bool operator ==(SuperScope left, SuperScope right) => left.Equals(right);
+
+            public static bool operator !=(SuperScope left, SuperScope right) => !(left == right);
         }
     }
 }

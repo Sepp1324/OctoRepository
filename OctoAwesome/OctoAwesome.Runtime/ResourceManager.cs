@@ -57,7 +57,7 @@ namespace OctoAwesome.Runtime
         public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, IPersistenceManager persistenceManager)
         {
             _lockSemaphoreSlim = new LockSemaphore(1, 1);
-            _loadingSemaphore = new CountedScopeSemaphore(0);
+            _loadingSemaphore = new CountedScopeSemaphore();
             _extensionResolver = extensionResolver;
             DefinitionManager = definitionManager;
             _persistenceManager = persistenceManager;
@@ -87,7 +87,7 @@ namespace OctoAwesome.Runtime
         {
             _loadingSemaphore.Wait();
 
-            if(CurrentUniverse != null)
+            if (CurrentUniverse != null)
                 UnloadUniverse();
 
             using (_loadingSemaphore.EnterScope())
@@ -126,8 +126,6 @@ namespace OctoAwesome.Runtime
         /// <returns>Das geladene Universum.</returns>
         public bool TryLoadUniverse(Guid universeId)
         {
-            _loadingSemaphore.Wait();
-
             // Alte Daten entfernen
             if (CurrentUniverse != null)
                 UnloadUniverse();
@@ -153,29 +151,34 @@ namespace OctoAwesome.Runtime
 
                 return true;
             }
-        }
+        } 
 
         /// <summary>
         /// Entlädt das aktuelle Universum.
         /// </summary>
         public void UnloadUniverse()
         {
-            _loadingSemaphore.Wait();
-            _tokenSource.Cancel();
-            _loadingSemaphore.Wait();
+            using (_loadingSemaphore.Wait())
+                _tokenSource.Cancel();
 
-            _persistenceManager.SaveUniverse(CurrentUniverse);
-
-            foreach (var planet in Planets)
+            using (_loadingSemaphore.Wait())
             {
-                _persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
-                planet.Value.Dispose();
+                if (CurrentUniverse == null)
+                    return;
+
+                _persistenceManager.SaveUniverse(CurrentUniverse);
+
+                foreach (var planet in Planets)
+                {
+                    _persistenceManager.SavePlanet(CurrentUniverse.Id, planet.Value);
+                    planet.Value.Dispose();
+                }
+
+                Planets.Clear();
+
+                CurrentUniverse = null;
+                GC.Collect();
             }
-
-            Planets.Clear();
-
-            CurrentUniverse = null;
-            GC.Collect();
         }
 
         /// <summary>
@@ -207,7 +210,7 @@ namespace OctoAwesome.Runtime
                 throw new Exception("No Universe loaded");
 
             _currentToken.ThrowIfCancellationRequested();
-            
+
             using (_lockSemaphoreSlim.Wait())
             using (_loadingSemaphore.EnterScope())
             {
