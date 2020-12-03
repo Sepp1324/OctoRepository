@@ -11,18 +11,18 @@ namespace OctoAwesome.Client.Screens
         private bool _loaded;
         private string[] _quotes;
 
-        private readonly LockedSemaphore _lockedSemaphore;
+        private readonly LockSemaphore _lockSemaphore;
 
         public QuoteProvider(FileInfo fileInfo)
         {
             _fileInfo = fileInfo;
             _random = new Random();
-            _lockedSemaphore = new LockedSemaphore(1, 1);
+            _lockSemaphore = new LockSemaphore(1, 1);
         }
 
         public string GetRandomQuote()
         {
-            using (_lockedSemaphore.Wait())
+            using (_lockSemaphore.Wait())
             {
                 Load();
                 return _quotes[_random.Next(0, _quotes.Length)];

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome
 {
@@ -11,14 +12,22 @@ namespace OctoAwesome
     /// </summary>
     public class ChunkColumn : IChunkColumn
     {
-        private readonly IGlobalChunkCache globalChunkCache;
+        private readonly IGlobalChunkCache _globalChunkCache;
 
         /// <summary>
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
-        public IEntityList Entities { get; private set; }
+        private readonly IEntityList _entities;
+        private readonly LockSemaphore _entitySemaphore;
+
+        /// <summary>
+        /// DefinitionManager for BlockDefinitions
+        /// </summary>
         public IDefinitionManager DefinitionManager { get; }
 
+        /// <summary>
+        /// Counter for changed Blocks
+        /// </summary>
         public int ChangeCounter { get; set; }
 
         /// <summary>
@@ -31,8 +40,8 @@ namespace OctoAwesome
         {
             Chunks = chunks;
             Index = columnIndex;
-            Entities = new EntityList(this);
-            foreach (IChunk chunk in chunks)
+            
+            foreach (var chunk in chunks)
             {
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
@@ -45,10 +54,11 @@ namespace OctoAwesome
         public ChunkColumn(IPlanet planet)
         {
             Heights = new int[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
-            Entities = new EntityList(this);
+            _entities = new EntityList(this);
+            _entitySemaphore = new LockSemaphore(1, 1);
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
-            globalChunkCache = planet.GlobalChunkCache;
+            _globalChunkCache = planet.GlobalChunkCache;
         }
 
         private void OnChunkChanged(IChunk arg1)
@@ -65,9 +75,7 @@ namespace OctoAwesome
             for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
             {
                 for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
-                {
                     Heights[x, y] = GetTopBlockHeight(x, y);
-                }
             }
         }
 
@@ -75,11 +83,8 @@ namespace OctoAwesome
         {
             for (var z = Chunks.Length * Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
             {
-
                 if (GetBlock(x, y, z) != 0)
-                {
                     return z;
-                }
             }
             return -1;
         }
@@ -234,14 +239,15 @@ namespace OctoAwesome
         {
             // Definitionen sammeln
             var definitions = new List<IBlockDefinition>();
-            for (var c = 0; c < Chunks.Length; c++)
+
+            foreach (var chunk in Chunks)
             {
-                IChunk chunk = Chunks[c];
-                for (var i = 0; i < chunk.Blocks.Length; i++)
+                foreach (var block in chunk.Blocks)
                 {
-                    if (chunk.Blocks[i] != 0)
+                    if (block != 0)
                     {
-                        var definition = (IBlockDefinition)DefinitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
+                        var definition = (IBlockDefinition) DefinitionManager.GetDefinitionByIndex(block);
+
                         if (!definitions.Contains(definition))
                             definitions.Add(definition);
                     }
@@ -249,51 +255,50 @@ namespace OctoAwesome
             }
 
             var longIndex = definitions.Count > 254;
-            writer.Write((byte)((longIndex) ? 1 : 0));
+            writer.Write((byte) ((longIndex) ? 1 : 0));
 
             // Schreibe Phase 1 (Column Meta: Heightmap, populated, chunkcount)
-            writer.Write((byte)Chunks.Length); // Chunk Count
+            writer.Write((byte) Chunks.Length); // Chunk Count
             writer.Write(Populated); // Populated
             writer.Write(Index.X);
             writer.Write(Index.Y);
             writer.Write(Planet.Id);
 
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++) // Heightmap
-                for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
-                    writer.Write((ushort)Heights[x, y]);
+            for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
+                writer.Write((ushort) Heights[x, y]);
 
             // Schreibe Phase 2 (Block Definitionen)
             if (longIndex)
-                writer.Write((ushort)definitions.Count);
+                writer.Write((ushort) definitions.Count);
             else
-                writer.Write((byte)definitions.Count);
+                writer.Write((byte) definitions.Count);
 
             foreach (IBlockDefinition definition in definitions)
                 writer.Write(definition.GetType().FullName);
 
             // Schreibe Phase 3 (Chunk Infos)
-            for (var c = 0; c < Chunks.Length; c++)
+            foreach (var chunk in Chunks)
             {
-                IChunk chunk = Chunks[c];
                 for (var i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] == 0)
                     {
                         // Definition Index (Air)
                         if (longIndex)
-                            writer.Write((ushort)0);
+                            writer.Write((ushort) 0);
                         else
-                            writer.Write((byte)0);
+                            writer.Write((byte) 0);
                     }
                     else
                     {
                         // Definition Index
-                        var definition = (IBlockDefinition)DefinitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
+                        var definition = (IBlockDefinition) DefinitionManager.GetDefinitionByIndex(chunk.Blocks[i]);
 
                         if (longIndex)
-                            writer.Write((ushort)(definitions.IndexOf(definition) + 1));
+                            writer.Write((ushort) (definitions.IndexOf(definition) + 1));
                         else
-                            writer.Write((byte)(definitions.IndexOf(definition) + 1));
+                            writer.Write((byte) (definitions.IndexOf(definition) + 1));
 
                         // Meta Data
                         if (definition.HasMetaData)
@@ -301,10 +306,13 @@ namespace OctoAwesome
                     }
                 }
             }
+
             var resManager = TypeContainer.Get<IResourceManager>();
-            foreach (var entity in Entities)
+
+            using (var lockObj = _entitySemaphore.Wait())
             {
-                resManager.SaveEntity(entity);
+                foreach (var entity in _entities)
+                    resManager.SaveEntity(entity);
             }
         }
 
@@ -325,36 +333,38 @@ namespace OctoAwesome
             Populated = reader.ReadBoolean(); // Populated
 
             Index = new Index2(reader.ReadInt32(), reader.ReadInt32());
-            int planetId = reader.ReadInt32();
 
+            var planetId = reader.ReadInt32();
             var resManager = TypeContainer.Get<IResourceManager>();
+
             Planet = resManager.GetPlanet(planetId);
 
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++) // Heightmap
                 for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     Heights[x, y] = reader.ReadUInt16();
 
-         
+
             // Phase 2 (Block Definitionen)
             var types = new List<IDefinition>();
             var map = new Dictionary<ushort, ushort>();
 
-            int typecount = longIndex ? reader.ReadUInt16() : reader.ReadByte();
+            int typeCount = longIndex ? reader.ReadUInt16() : reader.ReadByte();
 
-            for (var i = 0; i < typecount; i++)
+            for (var i = 0; i < typeCount; i++)
             {
                 var typeName = reader.ReadString();
-                IDefinition[] definitions = DefinitionManager.GetDefinitions().ToArray();
-                IDefinition blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
-                types.Add(blockDefinition);
+                var definitions = DefinitionManager.GetDefinitions().ToArray();
+                var blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
 
+                types.Add(blockDefinition);
                 map.Add((ushort)types.Count, (ushort)(Array.IndexOf(definitions, blockDefinition) + 1));
             }
 
             // Phase 3 (Chunk Infos)
             for (var c = 0; c < Chunks.Length; c++)
             {
-                IChunk chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
+                var chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
+
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
 
@@ -362,6 +372,7 @@ namespace OctoAwesome
                 {
                     var typeIndex = longIndex ? reader.ReadUInt16() : reader.ReadByte();
                     chunk.MetaData[i] = 0;
+
                     if (typeIndex > 0)
                     {
                         chunk.Blocks[i] = map[typeIndex];
@@ -377,19 +388,39 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification)
-        {
-            globalChunkCache.OnUpdate(notification);
-        }
+        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
 
         public void Update(SerializableNotification notification)
         {
             if (notification is ChunkNotification chunkNotification)
+                Chunks.FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)?.Update(notification);
+        }
+
+        public void ForEachEntity(Action<Entity> action)
+        {
+            using (var lockObj = _entitySemaphore.Wait())
             {
-                Chunks
-                    .FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)?
-                    .Update(notification);
+                foreach (var entity in _entities)
+                    action(entity);
             }
+        }
+
+        public void Add(Entity entity)
+        {
+            using(var lockObj = _entitySemaphore.Wait())
+                _entities.Add(entity);
+        }
+
+        public void Remove(Entity entity)
+        {
+            using (var lockObj = _entitySemaphore.Wait())
+                _entities.Remove(entity);
+        }
+
+        public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
+        {
+            using (var lockObj = _entitySemaphore.Wait())
+                return _entities.FailChunkEntity().ToList();
         }
     }
 }

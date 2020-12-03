@@ -8,7 +8,7 @@ namespace OctoAwesome.Threading
     /// <summary>
     /// Deadlock for Threading
     /// </summary>
-    public sealed class LockedSemaphore : IDisposable
+    public sealed class LockSemaphore : IDisposable
     {
         private readonly SemaphoreSlim _semaphoreSlim;
 
@@ -17,7 +17,7 @@ namespace OctoAwesome.Threading
         /// </summary>
         /// <param name="initialCount">First value</param>
         /// <param name="maxCount">Maximal size of Semaphore</param>
-        public LockedSemaphore(int initialCount, int maxCount) => _semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
+        public LockSemaphore(int initialCount, int maxCount) => _semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
 
         /// <summary>
         /// Wait-Method for normal Threading
@@ -57,18 +57,18 @@ namespace OctoAwesome.Threading
             /// </summary>
             public static SemaphoreLock Empty => new SemaphoreLock(null);
 
-            private readonly LockedSemaphore _internalLockedSemaphore;
+            private readonly LockSemaphore _internalLockSemaphore;
 
             /// <summary>
             /// Constructor for nested Class
             /// </summary>
-            /// <param name="lockedSemaphore">Deadlock</param>
-            public SemaphoreLock(LockedSemaphore lockedSemaphore) => _internalLockedSemaphore = lockedSemaphore;
+            /// <param name="lockSemaphore">Deadlock</param>
+            public SemaphoreLock(LockSemaphore lockSemaphore) => _internalLockSemaphore = lockSemaphore;
 
             /// <summary>
             /// General Dispose-Pattern
             /// </summary>
-            public void Dispose() => _internalLockedSemaphore?.Release();
+            public void Dispose() => _internalLockSemaphore?.Release();
 
             /// <summary>
             /// <see cref="Equals(SemaphoreLock)"/>
@@ -82,13 +82,13 @@ namespace OctoAwesome.Threading
             /// </summary>
             /// <param name="other"></param>
             /// <returns></returns>
-            public bool Equals(SemaphoreLock other) => EqualityComparer<LockedSemaphore>.Default.Equals(_internalLockedSemaphore, other._internalLockedSemaphore);
+            public bool Equals(SemaphoreLock other) => EqualityComparer<LockSemaphore>.Default.Equals(_internalLockSemaphore, other._internalLockSemaphore);
 
             /// <summary>
             /// Unique HashCode
             /// </summary>
             /// <returns></returns>
-            public override int GetHashCode() => 37286538 + EqualityComparer<LockedSemaphore>.Default.GetHashCode(_internalLockedSemaphore);
+            public override int GetHashCode() => 37286538 + EqualityComparer<LockSemaphore>.Default.GetHashCode(_internalLockSemaphore);
 
             /// <summary>
             /// <see cref="Equals(object)"/>

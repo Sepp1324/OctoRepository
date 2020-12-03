@@ -10,19 +10,19 @@ namespace OctoAwesome.Pooling
     public sealed class Pool<T> : IPool<T> where T : IPoolElement, new()
     {
         private readonly Stack<T> internalStack;
-        private readonly LockedSemaphore _lockedSemaphore;
+        private readonly LockSemaphore _lockSemaphore;
 
         public Pool()
         {
             internalStack = new Stack<T>();
-            _lockedSemaphore = new LockedSemaphore(1, 1);
+            _lockSemaphore = new LockSemaphore(1, 1);
         }
 
         public T Get()
         {
             T obj;
 
-            using (_lockedSemaphore.Wait())
+            using (_lockSemaphore.Wait())
             {
                 if (internalStack.Count > 0)
                     obj = internalStack.Pop();
@@ -36,7 +36,7 @@ namespace OctoAwesome.Pooling
 
         public void Push(T obj)
         {
-            using (_lockedSemaphore.Wait())
+            using (_lockSemaphore.Wait())
                 internalStack.Push(obj);
         }
 

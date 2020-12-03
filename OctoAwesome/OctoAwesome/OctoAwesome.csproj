@@ -122,7 +122,7 @@
     <Compile Include="Pooling\IPoolElement.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Threading\CountedScopeSemaphore.cs" />
-    <Compile Include="Threading\LockedSemaphore.cs" />
+    <Compile Include="Threading\LockSemaphore.cs" />
     <Compile Include="Serialization\ChunkDiffDbContext.cs" />
     <Compile Include="Serialization\ChunkDiffTag.cs" />
     <Compile Include="Serialization\Entities\EntityComponentsDbContext.cs" />

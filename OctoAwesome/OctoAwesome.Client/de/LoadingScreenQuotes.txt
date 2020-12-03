@@ -13,3 +13,4 @@ Welt wird glasiert
 Texturen werden gesucht
 Wolken werden flauschig gemacht
 Wauzis werden gewaschen
+Arbeitsspeicher wird gefressen

@@ -28,7 +28,7 @@ namespace OctoAwesome.Runtime
         private readonly ILogger _logger;
         private readonly List<IMapPopulator> _populators = null;
         private Player _player;
-        private readonly LockedSemaphore _lockedSemaphoreSlim;
+        private readonly LockSemaphore _lockSemaphoreSlim;
 
         /// <summary>
         /// Das aktuell geladene Universum.
@@ -56,7 +56,7 @@ namespace OctoAwesome.Runtime
         /// <param name="settings">Einstellungen</param>
         public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, IPersistenceManager persistenceManager)
         {
-            _lockedSemaphoreSlim = new LockedSemaphore(1, 1);
+            _lockSemaphoreSlim = new LockSemaphore(1, 1);
             _loadingSemaphore = new CountedScopeSemaphore(0);
             _extensionResolver = extensionResolver;
             DefinitionManager = definitionManager;
@@ -208,7 +208,7 @@ namespace OctoAwesome.Runtime
 
             _currentToken.ThrowIfCancellationRequested();
             
-            using (_lockedSemaphoreSlim.Wait())
+            using (_lockSemaphoreSlim.Wait())
             using (_loadingSemaphore.EnterScope())
             {
                 if (!Planets.TryGetValue(id, out IPlanet planet))

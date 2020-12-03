@@ -15,8 +15,8 @@ namespace OctoAwesome
     /// </summary>
     public class LocalChunkCache : ILocalChunkCache
     {
-        private readonly LockedSemaphore _lockedSemaphore;
-        private readonly LockedSemaphore _taskLockedSemaphore;
+        private readonly LockSemaphore _lockSemaphore;
+        private readonly LockSemaphore _taskLockSemaphore;
 
         /// <summary>
         /// Aktueller Planet auf dem sich der Cache bezieht.
@@ -71,8 +71,8 @@ namespace OctoAwesome
                 throw new ArgumentException("Range too big");
 
             
-            _lockedSemaphore = new LockedSemaphore(1, 1);
-            _taskLockedSemaphore = new LockedSemaphore(1, 1);
+            _lockSemaphore = new LockSemaphore(1, 1);
+            _taskLockSemaphore = new LockSemaphore(1, 1);
             Planet = globalCache.Planet;
             this.globalCache = globalCache;
             this.range = range;
@@ -92,7 +92,7 @@ namespace OctoAwesome
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
         public bool SetCenter(Index2 index, Action<bool> successCallback = null)
         {
-            using (_taskLockedSemaphore.Wait())
+            using (_taskLockSemaphore.Wait())
             {
                 var callerName = new StackFrame(1).GetMethod().Name;
                 logger.Debug($"Set Center from {callerName}");
@@ -160,7 +160,7 @@ namespace OctoAwesome
 
                 // Alten Chunk entfernen, falls notwendig
 
-                using (_lockedSemaphore.Wait())
+                using (_lockSemaphore.Wait())
                 {
                     if (chunkColumn != null && chunkColumn.Index != chunkColumnIndex)
                     {
@@ -180,7 +180,7 @@ namespace OctoAwesome
                     return;
                 }
 
-                using (_lockedSemaphore.Wait())
+                using (_lockSemaphore.Wait())
                 {
                     // Neuen Chunk laden
                     if (chunkColumn == null)

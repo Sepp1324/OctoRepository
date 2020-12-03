@@ -16,7 +16,7 @@ namespace OctoAwesome.Client.Components
         private GraphicsDevice graphicsDevice;
 
         private Texture2DArray textures;
-        private readonly LockedSemaphore _lockedSemaphore;
+        private readonly LockSemaphore _lockSemaphore;
         private readonly Dispatcher dispatcher;
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace OctoAwesome.Client.Components
             this.definitionManager = definitionManager;
             this.graphicsDevice = graphicsDevice;
             this.textures = textures;
-            _lockedSemaphore = new LockedSemaphore(1, 1);
+            _lockSemaphore = new LockSemaphore(1, 1);
             dispatcher = Dispatcher.CurrentDispatcher;
             simple = simpleShader;
             GenerateIndexBuffer();

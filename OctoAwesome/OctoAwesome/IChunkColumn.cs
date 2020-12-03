@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using OctoAwesome.Serialization;
 
 namespace OctoAwesome
@@ -34,11 +33,6 @@ namespace OctoAwesome
         /// Die Chunks der Säule.
         /// </summary>
         IChunk[] Chunks { get; }
-
-        /// <summary>
-        /// Auflistung aller sich in dieser Column befindenden Entitäten.
-        /// </summary>
-        IEntityList Entities { get; }
 
         /// <summary>
         /// Liefet den Block an der angegebenen Koordinate zurück.
@@ -111,7 +105,17 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         void SetBlockResources(int x, int y, int z, ushort[] resources);
+
         void OnUpdate(Notifications.SerializableNotification notification);
+
         void Update(Notifications.SerializableNotification notification);
+
+        void ForEachEntity(Action<Entity> action);
+
+        void Add(Entity entity);
+
+        void Remove(Entity entity);
+
+        IEnumerable<FailEntityChunkArgs> FailChunkEntity();
     }
 }
