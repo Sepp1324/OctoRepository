@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -48,13 +45,7 @@ namespace OctoAwesome.Network.Tests
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
             server.OnClientConnected += (s, e) =>
             {
-                //server.Clients.TryPeek(out Client client);
-                //client.OnMessageRecived += (c, args) =>
-                //{
-                //    Assert.AreEqual(42, args.data[0]);
                 resetEvent.Set();
-                //};
-
                 wait.Set();
             };
             

@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Database.Tests
 {
@@ -17,7 +13,7 @@ namespace OctoAwesome.Database.Tests
             var bytes = key.GetBytes();
         }
 
-        public class DemoClass : ITag
+        private class DemoClass : ITag
         {
             public int Length => 0;
 

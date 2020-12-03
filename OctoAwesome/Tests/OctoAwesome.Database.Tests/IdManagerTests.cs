@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Database.Tests
 {
@@ -19,8 +14,8 @@ namespace OctoAwesome.Database.Tests
         {
             var manager = new IdManager(ids);
 
-            for (int i = 0; i < expected.Length; i++)
-                Assert.AreEqual(expected[i], manager.GetId());
+            foreach (var t in expected)
+                Assert.AreEqual(t, manager.GetId());
         }
     }
 }

@@ -71,7 +71,7 @@ namespace OctoAwesome.Client.Controls
                 grid.AddControl(_buttons[i], i, 1);
             }
         }
-
+        
         protected override void OnUpdate(GameTime gameTime)
         {
             if (!Visible || !Enabled)
