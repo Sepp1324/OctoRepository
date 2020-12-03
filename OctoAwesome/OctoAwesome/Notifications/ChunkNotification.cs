@@ -5,9 +5,13 @@ namespace OctoAwesome.Notifications
     public sealed class ChunkNotification : SerializableNotification
     {
         public int Meta { get; internal set; }
+
         public ushort Block { get; internal set; }
+
         public int FlatIndex { get; internal set; }
+
         public Index3 ChunkPos { get; internal set; }
+
         public int Planet { get; internal set; }
 
         public override void Deserialize(BinaryReader reader)
@@ -15,11 +19,7 @@ namespace OctoAwesome.Notifications
             Meta = reader.ReadInt32();
             Block = reader.ReadUInt16();
             FlatIndex = reader.ReadInt32();
-            ChunkPos = new Index3(
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32());
-
+            ChunkPos = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Planet = reader.ReadInt32();
         }
 
