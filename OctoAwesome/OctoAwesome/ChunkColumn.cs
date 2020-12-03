@@ -398,7 +398,7 @@ namespace OctoAwesome
 
         public void ForEachEntity(Action<Entity> action)
         {
-            using (var lockObj = _entitySemaphore.Wait())
+            using (_entitySemaphore.Wait())
             {
                 foreach (var entity in _entities)
                     action(entity);
@@ -407,19 +407,19 @@ namespace OctoAwesome
 
         public void Add(Entity entity)
         {
-            using(var lockObj = _entitySemaphore.Wait())
+            using(_entitySemaphore.Wait())
                 _entities.Add(entity);
         }
 
         public void Remove(Entity entity)
         {
-            using (var lockObj = _entitySemaphore.Wait())
+            using (_entitySemaphore.Wait())
                 _entities.Remove(entity);
         }
 
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
         {
-            using (var lockObj = _entitySemaphore.Wait())
+            using (_entitySemaphore.Wait())
                 return _entities.FailChunkEntity().ToList();
         }
     }
