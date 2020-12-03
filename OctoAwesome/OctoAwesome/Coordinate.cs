@@ -44,14 +44,10 @@ namespace OctoAwesome
         [XmlIgnore]
         public Index3 ChunkIndex
         {
-            get
-            {
-                return new Index3(block.X >> Chunk.LimitX, block.Y >> Chunk.LimitY,
-                    block.Z >> Chunk.LimitZ);
-            }
+            get => new Index3(block.X >> Chunk.LimitX, block.Y >> Chunk.LimitY, block.Z >> Chunk.LimitZ);
             set
             {
-                Index3 localBlockIndex = LocalBlockIndex;
+                var localBlockIndex = LocalBlockIndex;
                 block = new Index3(
                     (value.X * Chunk.CHUNKSIZE_X) + localBlockIndex.X,
                     (value.Y * Chunk.CHUNKSIZE_Y) + localBlockIndex.Y,
@@ -76,19 +72,13 @@ namespace OctoAwesome
         {
             get
             {
-                Index3 chunk = ChunkIndex;
-                return new Index3(
-                    block.X - (chunk.X * Chunk.CHUNKSIZE_X),
-                    block.Y - (chunk.Y * Chunk.CHUNKSIZE_Y),
-                    block.Z - (chunk.Z * Chunk.CHUNKSIZE_Z));
+                var chunk = ChunkIndex;
+                return new Index3(block.X - (chunk.X * Chunk.CHUNKSIZE_X), block.Y - (chunk.Y * Chunk.CHUNKSIZE_Y), block.Z - (chunk.Z * Chunk.CHUNKSIZE_Z));
             }
             set
             {
-                Index3 chunk = ChunkIndex;
-                GlobalBlockIndex = new Index3(
-                    (chunk.X * Chunk.CHUNKSIZE_X) + value.X,
-                    (chunk.Y * Chunk.CHUNKSIZE_Y) + value.Y,
-                    (chunk.Z * Chunk.CHUNKSIZE_Z) + value.Z);
+                var chunk = ChunkIndex;
+                GlobalBlockIndex = new Index3((chunk.X * Chunk.CHUNKSIZE_X) + value.X, (chunk.Y * Chunk.CHUNKSIZE_Y) + value.Y, (chunk.Z * Chunk.CHUNKSIZE_Z) + value.Z);
                 Normalize();
             }
         }
@@ -99,13 +89,11 @@ namespace OctoAwesome
         [XmlIgnore]
         public Vector3 GlobalPosition
         {
-            get
-            {
-                return new Vector3(
+            get =>
+                new Vector3(
                     block.X + position.X,
                     block.Y + position.Y,
                     block.Z + position.Z);
-            }
             set
             {
                 block = Index3.Zero;
@@ -122,19 +110,13 @@ namespace OctoAwesome
         {
             get
             {
-                Index3 blockIndex = LocalBlockIndex;
-                return new Vector3(
-                    blockIndex.X + position.X,
-                    blockIndex.Y + position.Y,
-                    blockIndex.Z + position.Z);
+                var blockIndex = LocalBlockIndex;
+                return new Vector3(blockIndex.X + position.X, blockIndex.Y + position.Y, blockIndex.Z + position.Z);
             }
             set
             {
-                Index3 chunkIndex = ChunkIndex;
-                block = new Index3(
-                    chunkIndex.X * Chunk.CHUNKSIZE_X,
-                    chunkIndex.Y * Chunk.CHUNKSIZE_Y,
-                    chunkIndex.Z * Chunk.CHUNKSIZE_Z);
+                var chunkIndex = ChunkIndex;
+                block = new Index3(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y, chunkIndex.Z * Chunk.CHUNKSIZE_Z);
                 position = value;
                 Normalize();
             }
@@ -158,10 +140,7 @@ namespace OctoAwesome
         /// </summary>
         private void Normalize()
         {
-            Index3 shift = new Index3(
-                (int)Math.Floor(position.X),
-                (int)Math.Floor(position.Y),
-                (int)Math.Floor(position.Z));
+            var shift = new Index3((int)Math.Floor(position.X), (int)Math.Floor(position.Y), (int)Math.Floor(position.Z));
 
             block += shift;
             position -= shift;
@@ -173,7 +152,7 @@ namespace OctoAwesome
         /// <param name="limit"></param>
         public void NormalizeChunkIndexXY(Index3 limit)
         {
-            Index3 index = ChunkIndex;
+            var index = ChunkIndex;
             index.NormalizeXY(limit);
             ChunkIndex = index;
         }
@@ -207,9 +186,9 @@ namespace OctoAwesome
         /// </summary>
         /// <returns></returns>
         public override string ToString() => $@"({ Planet }/
-                    {(block.X + position.X).ToString("0.00")}/
-                    {(block.Y + position.Y).ToString("0.00")}/
-                    {(block.Z + position.Z).ToString("0.00")})";
+              {(block.X + position.X):0.00}/
+                    {(block.Y + position.Y):0.00}/
+                    {(block.Z + position.Z):0.00})";
 
         /// <summary>
         /// Compare this object with an other object
@@ -218,9 +197,9 @@ namespace OctoAwesome
         /// <returns>true if both objects are equal</returns>
         public override bool Equals(object obj)
         {
-            if(obj is Coordinate coordinate)
-                return base.Equals(obj) || 
-                   ( Planet == coordinate.Planet &&
+            if (obj is Coordinate coordinate)
+                return base.Equals(obj) ||
+                   (Planet == coordinate.Planet &&
                      position == coordinate.position &&
                      block == coordinate.block
                    );

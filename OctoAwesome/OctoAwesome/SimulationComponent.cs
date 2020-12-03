@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -15,9 +13,9 @@ namespace OctoAwesome
         /// <summary>
         /// Entities die durch diese Simulationkomponete simuliert werden
         /// </summary>
-        protected List<Entity> entities = new List<Entity>();
+        protected readonly List<Entity> entities = new List<Entity>();
 
-        private List<Type[]> componentFilter = new List<Type[]>();
+        private readonly List<Type[]> _componentFilter = new List<Type[]>();
 
         /// <summary>
         /// Konstruktor
@@ -32,7 +30,7 @@ namespace OctoAwesome
                     if (!typeof(EntityComponent).IsAssignableFrom(entityComponentType))
                         throw new NotSupportedException();
 
-                    componentFilter.Add(attribute.EntityComponentTypes);
+                    _componentFilter.Add(attribute.EntityComponentTypes);
                 }
             }
         }
@@ -56,13 +54,10 @@ namespace OctoAwesome
         /// <returns>Ergebnis des Vergleiches</returns>
         protected virtual bool Match(Entity entity)
         {
-            if (componentFilter.Count == 0)
+            if (_componentFilter.Count == 0)
                 return true;
 
-            return componentFilter.Any(
-                x => x.All(
-                    t => entity.Components.Any(
-                        c => t.IsAssignableFrom(c.GetType()))));
+            return _componentFilter.Any(x => x.All(t => entity.Components.Any(c => t.IsAssignableFrom(c.GetType()))));
         }
 
         /// <summary>
@@ -109,8 +104,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) 
-            => entity.Components.ContainsComponent<C1>();
+        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>();
 
         /// <summary>
         /// Updatemethode der Entity
@@ -144,9 +138,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) 
-            => entity.Components.ContainsComponent<C1>()
-                && entity.Components.ContainsComponent<C2>();
+        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>() && entity.Components.ContainsComponent<C2>();
 
         /// <summary>
         /// Updatemethode der Entity
@@ -182,7 +174,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) 
+        protected override bool Match(Entity entity)
             => entity.Components.ContainsComponent<C1>()
                 && entity.Components.ContainsComponent<C2>()
                 && entity.Components.ContainsComponent<C3>();

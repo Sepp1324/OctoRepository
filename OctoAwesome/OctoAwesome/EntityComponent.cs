@@ -36,10 +36,6 @@ namespace OctoAwesome
 
         }
 
-        protected virtual void Update(SerializableNotification notification)
-        {
-            Entity?.OnUpdate(notification);
-        }
-        
+        protected virtual void Update(SerializableNotification notification) => Entity?.OnUpdate(notification);
     }
 }
