@@ -1,11 +1,7 @@
-﻿using CommandManagementSystem;
-using Newtonsoft.Json;
-using OctoAwesome.Logging;
+﻿using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading;
 
 namespace OctoAwesome.GameServer
@@ -55,7 +51,6 @@ namespace OctoAwesome.GameServer
                     logger.Debug("Load Settings");
                     settings = new Settings(fileInfo);
                 }
-                
 
                 typeContainer.Register(settings);
                 typeContainer.Register<ISettings, Settings>(settings);
@@ -67,7 +62,5 @@ namespace OctoAwesome.GameServer
                 settings.Save();
             }
         }
-
-
     }
 }

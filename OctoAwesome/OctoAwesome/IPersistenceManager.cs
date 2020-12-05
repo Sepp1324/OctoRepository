@@ -70,9 +70,9 @@ namespace OctoAwesome
         /// Lädt einen Player.
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
-        /// <param name="playername">Der Name des Spielers.</param>
+        /// <param name="playerName">Der Name des Spielers.</param>
         /// <returns></returns>
-        Awaiter Load(out Player player, Guid universeGuid, string playername);
+        Awaiter Load(out Player player, Guid universeGuid, string playerName);
 
         /// <summary>
         /// Speichert einen Player

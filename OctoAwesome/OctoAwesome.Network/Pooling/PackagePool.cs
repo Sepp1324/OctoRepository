@@ -1,21 +1,18 @@
 ﻿using OctoAwesome.Pooling;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OctoAwesome.Threading;
 
 namespace OctoAwesome.Network.Pooling
 {
     public sealed class PackagePool : IPool<Package>
     {
-        private readonly Stack<Package> internalStack;
+        private readonly Stack<Package> _internalStack;
         private readonly LockSemaphore _lockSemaphore;
 
         public PackagePool()
         {
-            internalStack = new Stack<Package>();
+            _internalStack = new Stack<Package>();
             _lockSemaphore = new LockSemaphore(1, 1);
         }
 
@@ -25,26 +22,21 @@ namespace OctoAwesome.Network.Pooling
 
             using (_lockSemaphore.Wait())
             {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new Package();
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new Package();
             }
 
             obj.Init(this);
             obj.UId = Package.NextUId;
             return obj;
         }
+
         public Package GetBlank()
         {
             Package obj;
 
             using (_lockSemaphore.Wait())
             {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new Package(false);
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new Package(false);
             }
 
             obj.Init(this);
@@ -54,19 +46,15 @@ namespace OctoAwesome.Network.Pooling
         public void Push(Package obj)
         {
             using (_lockSemaphore.Wait())
-                internalStack.Push(obj);
+                _internalStack.Push(obj);
         }
 
         public void Push(IPoolElement obj)
         {
             if (obj is Package package)
-            {
                 Push(package);
-            }
             else
-            {
                 throw new InvalidCastException("Can not push object from type: " + obj.GetType());
-            }
-        }       
+        }
     }
 }

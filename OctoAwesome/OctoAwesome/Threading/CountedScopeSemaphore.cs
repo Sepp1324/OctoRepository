@@ -39,11 +39,15 @@ namespace OctoAwesome.Threading
             lock (_lockObject)
             {
                 _superLock.Wait();
-                _mainLock.Reset();
-            }
 
-            lock (_countLockObject)
-                _counter++;
+                lock (_countLockObject)
+                {
+                    _counter++;
+
+                    if (_counter > 0)
+                        _mainLock.Reset();
+                }
+            }
 
             return new CountScope(this);
         }
@@ -60,7 +64,7 @@ namespace OctoAwesome.Threading
             {
                 _counter--;
 
-                if(_counter == 0)
+                if (_counter == 0)
                     _mainLock.Set();
             }
         }

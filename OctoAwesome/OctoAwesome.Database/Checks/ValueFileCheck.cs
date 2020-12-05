@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace OctoAwesome.Database.Checks
 {
@@ -19,7 +17,8 @@ namespace OctoAwesome.Database.Checks
             using (var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
-                int length = 0;
+                var length = 0;
+
                 do
                 {
                     fileStream.Read(keyBuffer, 0, keyBuffer.Length);

@@ -80,7 +80,7 @@ namespace OctoAwesome
             _cleanupTask.Start(TaskScheduler.Default);
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(GlobalChunkCache));
 
-            var ids = resourceManager.GetEntityIdsFromComponent<PositionComponent>();
+            var ids = resourceManager.GetEntityIdsFromComponent<PositionComponent>().ToList();
             _positionComponents = resourceManager.GetEntityComponents<PositionComponent>(ids);
         }
 
@@ -96,7 +96,6 @@ namespace OctoAwesome
 
             using (_lockSemaphore.Wait())
             {
-
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
                 {
 

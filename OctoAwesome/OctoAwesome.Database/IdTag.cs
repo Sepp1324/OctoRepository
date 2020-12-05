@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -10,15 +8,10 @@ namespace OctoAwesome.Database
 
         public int Length => sizeof(int);
 
-        public IdTag(int id)
-        {
-            Tag = id;
-        }
+        public IdTag(int id) => Tag = id;
 
-        public byte[] GetBytes() 
-            => BitConverter.GetBytes(Tag);
+        public byte[] GetBytes() => BitConverter.GetBytes(Tag);
 
-        public void FromBytes(byte[] array, int startIndex) 
-            => Tag = BitConverter.ToInt32(array, startIndex);
+        public void FromBytes(byte[] array, int startIndex) => Tag = BitConverter.ToInt32(array, startIndex);
     }
 }

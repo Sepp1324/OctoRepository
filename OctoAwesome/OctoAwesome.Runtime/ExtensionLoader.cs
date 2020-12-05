@@ -60,27 +60,26 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void LoadExtensions()
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
             var tempAssembly = Assembly.GetEntryAssembly();
 
             if (tempAssembly == null)
                 tempAssembly = Assembly.GetAssembly(GetType());
 
-            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
+            var dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
             assemblies.AddRange(LoadAssemblies(dir));
 
-            DirectoryInfo plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
+            var plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
             if (plugins.Exists)
                 assemblies.AddRange(LoadAssemblies(plugins));
 
             var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : new string[0];
 
             var result = new List<Type>();
+           
             foreach (var assembly in assemblies)
             {
-                var types = assembly
-                    .GetTypes()
-                    .Where(t => typeof(IExtension).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+                var types = assembly.GetTypes().Where(t => typeof(IExtension).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
 
                 foreach (var type in types)
                 {
@@ -104,7 +103,8 @@ namespace OctoAwesome.Runtime
 
         private IEnumerable<Assembly> LoadAssemblies(DirectoryInfo directory)
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
+           
             foreach (var file in directory.GetFiles("*.dll"))
             {
                 try
@@ -155,6 +155,7 @@ namespace OctoAwesome.Runtime
         public void RemoveDefinition<T>() where T : IDefinition
         {
             var definition = definitions.FirstOrDefault(d => d.GetType() == typeof(T));
+          
             if (definition != null)
                 definitions.Remove(definition);
         }
@@ -165,7 +166,8 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Entity Type</typeparam>
         public void RegisterEntity<T>() where T : Entity
         {
-            Type type = typeof(T);
+            var type = typeof(T);
+            
             if (entities.Contains(type))
                 throw new ArgumentException("Already registered");
 
@@ -179,9 +181,9 @@ namespace OctoAwesome.Runtime
         /// <param name="extenderDelegate">Extender Delegate</param>
         public void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity
         {
-            Type type = typeof(T);
-            List<Action<Entity>> list;
-            if (!entityExtender.TryGetValue(type, out list))
+            var type = typeof(T);
+            
+            if (!entityExtender.TryGetValue(type, out var list))
             {
                 list = new List<Action<Entity>>();
                 entityExtender.Add(type, list);
@@ -189,56 +191,35 @@ namespace OctoAwesome.Runtime
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : Entity 
-            => RegisterEntityExtender<T>((e) => e.RegisterDefault());
+        public void RegisterDefaultEntityExtender<T>() where T : Entity => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>
         /// Adds a new Extender for the simulation.
         /// </summary>
         /// <param name="extenderDelegate"></param>
-        public void RegisterSimulationExtender(Action<Simulation> extenderDelegate)
-        {
-            simulationExtender.Add(extenderDelegate);
-        }
+        public void RegisterSimulationExtender(Action<Simulation> extenderDelegate) => simulationExtender.Add(extenderDelegate);
 
         /// <summary>
         /// Adds a new Map Generator.
         /// </summary>
-        public void RegisterMapGenerator(IMapGenerator generator)
-        {
-            // TODO: Checks
-            mapGenerators.Add(generator);
-        }
+        public void RegisterMapGenerator(IMapGenerator generator) => mapGenerators.Add(generator);
 
-        public void RegisterMapPopulator(IMapPopulator populator)
-        {
-            mapPopulators.Add(populator);
-        }
-
+        public void RegisterMapPopulator(IMapPopulator populator) => mapPopulators.Add(populator);
 
 
         /// <summary>
         /// Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveEntity<T>() where T : Entity
-        {
-            entities.Remove(typeof(T));
-        }
+        public void RemoveEntity<T>() where T : Entity => entities.Remove(typeof(T));
 
         /// <summary>
         /// Removes an existing Map Generator.
         /// </summary>
         /// <typeparam name="T">Map Generator Type</typeparam>
-        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator
-        {
-            mapGenerators.Remove(item);
-        }
+        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator => mapGenerators.Remove(item);
 
-        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator
-        {
-            mapPopulators.Remove(item);
-        }
+        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator => mapPopulators.Remove(item);
 
         #endregion
 
@@ -260,9 +241,10 @@ namespace OctoAwesome.Runtime
         /// <param name="entity">Entity</param>
         public void ExtendEntity(Entity entity)
         {
-            List<Type> stack = new List<Type>();
-            Type t = entity.GetType();
+            var stack = new List<Type>();
+            var t = entity.GetType();
             stack.Add(t);
+          
             do
             {
                 t = t.BaseType;
@@ -273,8 +255,7 @@ namespace OctoAwesome.Runtime
 
             foreach (var type in stack)
             {
-                List<Action<Entity>> list;
-                if (!entityExtender.TryGetValue(type, out list))
+                if (!entityExtender.TryGetValue(type, out var list))
                     continue;
 
                 foreach (var item in list)
@@ -287,28 +268,19 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Definitiontype</typeparam>
         /// <returns>List</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition
-        {
-            return definitions.OfType<T>();
-        }
+        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition => definitions.OfType<T>();
 
         /// <summary>
         /// Return a List of MapGenerators
         /// </summary>
         /// <returns>List of Generators</returns>
-        public IEnumerable<IMapGenerator> GetMapGenerator()
-        {
-            return mapGenerators;
-        }
+        public IEnumerable<IMapGenerator> GetMapGenerator() => mapGenerators;
 
         /// <summary>
         /// Return a List of Populators
         /// </summary>
         /// <returns>List of Populators</returns>
-        public IEnumerable<IMapPopulator> GetMapPopulator()
-        {
-            return mapPopulators;
-        }
+        public IEnumerable<IMapPopulator> GetMapPopulator() => mapPopulators;
 
         #endregion
     }

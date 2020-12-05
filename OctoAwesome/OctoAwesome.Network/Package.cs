@@ -22,12 +22,12 @@ namespace OctoAwesome.Network
 
         public uint UId { get; set; }
 
-        public bool IsComplete => internalOffset == Payload.Length;
+        public bool IsComplete => _internalOffset == Payload.Length;
 
-        public int PayloadRest => Payload.Length - internalOffset;
+        public int PayloadRest => Payload.Length - _internalOffset;
 
-        private int internalOffset;
-        private IPool pool;
+        private int _internalOffset;
+        private IPool _pool;
 
         public Package(ushort command, int size) : this()
         {
@@ -55,17 +55,17 @@ namespace OctoAwesome.Network
             Command = (ushort)((buffer[offset] << 8) | buffer[offset + 1]);
             Payload = new byte[BitConverter.ToInt32(buffer, offset + 2)];
             UId = BitConverter.ToUInt32(buffer, offset + 6);
-            internalOffset = 0;
+            _internalOffset = 0;
             return true;
         }
 
         public int DeserializePayload(byte[] buffer, int offset, int count)
         {
-            if (internalOffset + count > Payload.Length)
+            if (_internalOffset + count > Payload.Length)
                 count = PayloadRest;
 
-            Buffer.BlockCopy(buffer, offset, Payload, internalOffset, count);
-            internalOffset += count;
+            Buffer.BlockCopy(buffer, offset, Payload, _internalOffset, count);
+            _internalOffset += count;
 
             return count;
         }
@@ -73,7 +73,7 @@ namespace OctoAwesome.Network
         {
             TryDeserializeHeader(buffer, offset);
             Buffer.BlockCopy(buffer, offset + HEAD_LENGTH, Payload, 0, Payload.Length);
-            internalOffset = Payload.Length;
+            _internalOffset = Payload.Length;
         }
 
         public int SerializePackage(byte[] buffer, int offset)
@@ -91,7 +91,7 @@ namespace OctoAwesome.Network
         public void Init(IPool pool)
         {      
             Payload = Array.Empty<byte>();
-            this.pool = pool;
+            _pool = pool;
         }
 
         public void Release()
@@ -100,9 +100,9 @@ namespace OctoAwesome.Network
             Command = default;
             Payload = default;
             UId = default;
-            internalOffset = default;
+            _internalOffset = default;
 
-            pool.Push(this);
+            _pool.Push(this);
         }
     }
 }
