@@ -5,6 +5,8 @@ namespace OctoAwesome.Database
 {
     public sealed class Writer : IDisposable
     {
+        internal long? Length => _fileStream?.Length;
+
         private readonly FileInfo _fileInfo;
         private FileStream _fileStream;
 

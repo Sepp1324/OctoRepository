@@ -296,7 +296,7 @@ namespace OctoAwesome
         public void Update(SerializableNotification notification)
         {
             if (notification is ChunkNotification chunkNotification && _cache.TryGetValue(new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
-                cacheItem.ChunkColumn.Update(notification);
+                cacheItem.ChunkColumn?.Update(notification);
         }
 
         public void InsertUpdateHub(IUpdateHub updateHub) => _updateHub = updateHub;

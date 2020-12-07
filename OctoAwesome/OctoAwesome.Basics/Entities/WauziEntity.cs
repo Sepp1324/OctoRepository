@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using engenious;
+﻿using engenious;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.EntityComponents;
 
@@ -24,8 +19,9 @@ namespace OctoAwesome.Basics.Entities
 
         public override void Update(GameTime gameTime)
         {
-            BodyPowerComponent body = Components.GetComponent<BodyPowerComponent>();
-            ControllableComponent controller = Components.GetComponent<ControllableComponent>();
+            var body = Components.GetComponent<BodyPowerComponent>();
+            var controller = Components.GetComponent<ControllableComponent>();
+            
             controller.MoveInput = new Vector2(0.5f, 0.5f) ;
             
             if (JumpTime <= 0)
