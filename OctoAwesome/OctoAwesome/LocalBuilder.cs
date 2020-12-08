@@ -91,10 +91,17 @@
             x += _originX;
             y += _originY;
             z += _originZ;
+          
             var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
+            var index = z / Chunk.CHUNKSIZE_Z;
+
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
-            column.SetBlock(x, y, z, block, meta);
+            z %= Chunk.CHUNKSIZE_Z;
+
+            var flatIndex = Chunk.GetFlatIndex(x, y, z);
+
+            column.Chunks[index].Blocks[flatIndex] = block;
         }
 
         /// <summary>

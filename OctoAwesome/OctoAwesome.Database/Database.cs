@@ -60,7 +60,7 @@ namespace OctoAwesome.Database
         {
             IsOpen = true;
 
-            if (_valueFile.Length > 0 && (!_keyFile.Exists || _keyFile.Length == 0))
+            if ((_valueFile.Exists &&_valueFile.Length > 0) && (!_keyFile.Exists || _keyFile.Length == 0))
                 _defragmentation.RecreateKeyFile();
 
             try
