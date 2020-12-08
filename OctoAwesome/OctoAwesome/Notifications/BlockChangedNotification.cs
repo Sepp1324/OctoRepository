@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace OctoAwesome.Notifications
 {
@@ -16,6 +17,9 @@ namespace OctoAwesome.Notifications
 
         public override void Deserialize(BinaryReader reader)
         {
+            if (reader.ReadByte() != (byte)BlockNotificationType.BlockChanged)
+                throw new InvalidCastException("Wrong type of Notification");
+
             Meta = reader.ReadInt32();
             Block = reader.ReadUInt16();
             FlatIndex = reader.ReadInt32();
@@ -25,6 +29,7 @@ namespace OctoAwesome.Notifications
 
         public override void Serialize(BinaryWriter writer)
         {
+            writer.Write((byte)BlockNotificationType.BlockChanged); //indicates that this is a single BlockNotification
             writer.Write(Meta);
             writer.Write(Block);
             writer.Write(FlatIndex);

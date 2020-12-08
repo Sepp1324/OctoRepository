@@ -27,8 +27,8 @@ namespace OctoAwesome.Basics.Definitions.Trees
         public override void PlantTree(IPlanet planet, Index3 index, LocalBuilder builder, int seed)
         {
             var ground = builder.GetBlock(0, 0, -1);
-            
-            if (ground == _water) 
+
+            if (ground == _water)
                 return;
 
             var rand = new Random(seed);
@@ -37,8 +37,12 @@ namespace OctoAwesome.Basics.Definitions.Trees
 
             builder.FillSphere(0, 0, height, radius, _leave);
 
+            var blockInfos = new BlockInfo[height + 2];
+
+           // builder.SetBlock(_blockInfos);
+
             for (var i = 0; i < height + 2; i++)
-                builder.SetBlock(0, 0, 0 + i, _wood);
+                blockInfos[i] = (0, 0, 0 + i, _wood);
         }
     }
 }

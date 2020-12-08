@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OctoAwesome.Basics</RootNamespace>
     <AssemblyName>OctoAwesome.Basics</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -17,6 +17,7 @@
     <SccProvider>SAK</SccProvider>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,17 +111,17 @@
     </Compile>
     <Compile Include="Definitions\Trees\OakTreeDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Definitions\Blocks\SandBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\SnowBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\StoneBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\WaterBlockDefinition.cs" />
     <Compile Include="Definitions\Blocks\WoodBlockDefinition.cs" />
     <Compile Include="Definitions\Trees\SpruceTreeDefinition.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SimulationComponents\BlockInteractionComponent.cs" />
     <Compile Include="SimulationComponents\CollisionComponent.cs" />
     <Compile Include="SimulationComponents\ForceAggregatorComponent.cs" />

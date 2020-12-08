@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OctoAwesome</RootNamespace>
     <AssemblyName>OctoAwesome</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -112,6 +112,7 @@
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="Notifications\BlockChangedNotification.cs" />
+    <Compile Include="Notifications\BlockNotificationType.cs" />
     <Compile Include="Notifications\BlocksChangedNotification.cs" />
     <Compile Include="Notifications\DefaultChannels.cs" />
     <Compile Include="Notifications\INotificationObservable.cs" />

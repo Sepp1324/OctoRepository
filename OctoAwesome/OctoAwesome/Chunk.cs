@@ -115,7 +115,7 @@ namespace OctoAwesome
         /// <param name="block">Die neue Block-ID</param>
         /// <param name="meta">(Optional) Die Metadaten des Blocks</param>
         public void SetBlock(int x, int y, int z, ushort block, int meta = 0) => SetBlock(GetFlatIndex(x, y, z), block, meta);
-      
+
         public void SetBlock(int flatIndex, ushort block, int meta = 0)
         {
             Blocks[flatIndex] = block;
@@ -184,10 +184,21 @@ namespace OctoAwesome
 
         public void Update(SerializableNotification notification)
         {
-            if (notification is BlockChangedNotification chunkNotification)
+            if (notification is BlockChangedNotification blockChanged)
             {
-                Blocks[chunkNotification.FlatIndex] = chunkNotification.Block;
-                MetaData[chunkNotification.FlatIndex] = chunkNotification.Meta;
+                Blocks[blockChanged.FlatIndex] = blockChanged.Block;
+                MetaData[blockChanged.FlatIndex] = blockChanged.Meta;
+                Changed?.Invoke(this);
+            }
+            else if (notification is BlocksChangedNotification blocksChanged)
+            {
+                foreach (var blockInfo in blocksChanged.BlockInfos)
+                {
+                    var flatIndex = GetFlatIndex(blockInfo.Position);
+
+                    Blocks[flatIndex] = blockInfo.Block;
+                    MetaData[flatIndex] = blockInfo.Meta;
+                }
                 Changed?.Invoke(this);
             }
         }

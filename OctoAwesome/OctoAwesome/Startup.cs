@@ -11,8 +11,8 @@ namespace OctoAwesome
     {
         public static void Register(ITypeContainer typeContainer)
         {
-            typeContainer.Register<GlobalChunkCache, GlobalChunkCache>(InstanceBehaviour.Instance);
-            typeContainer.Register<IGlobalChunkCache, GlobalChunkCache>(InstanceBehaviour.Instance);
+            typeContainer.Register<GlobalChunkCache, GlobalChunkCache>();
+            typeContainer.Register<IGlobalChunkCache, GlobalChunkCache>();
 
             typeContainer.Register<Logging.NullLogger, Logging.NullLogger>();
             typeContainer.Register<Logging.Logger, Logging.Logger>();
@@ -39,24 +39,23 @@ namespace OctoAwesome
                 case ClientType.DesktopClient:
                     config.AddRule(LogLevel.Debug, LogLevel.Fatal, new FileTarget("octoawesome.logfile")
                     {
-                        FileName = $"./logs/octoClient-{DateTime.Now.ToString("ddMMyy_hhmmss")}.log"
+                        FileName = $"./logs/octoClient-{DateTime.Now:ddMMyy_hhmmss}.log"
                     });
                     break;
                 case ClientType.GameServer:
                     config.AddRule(LogLevel.Debug, LogLevel.Fatal, new ColoredConsoleTarget("octoawesome.logconsole"));
                     config.AddRule(LogLevel.Debug, LogLevel.Fatal, new FileTarget("octoawesome.logfile")
                     {
-                        FileName = $"./logs/server-{DateTime.Now.ToString("ddMMyy_hhmmss")}.log"
+                        FileName = $"./logs/server-{DateTime.Now:ddMMyy_hhmmss}.log"
                     });
                     break;
                 default:
                     config.AddRule(LogLevel.Trace, LogLevel.Fatal, new FileTarget("octoawesome.logfile")
                     {
-                        FileName = $"./logs/generic-{DateTime.Now.ToString("ddMMyy_hhmmss")}.log"
+                        FileName = $"./logs/generic-{DateTime.Now:ddMMyy_hhmmss}.log"
                     });
                     break;
-            }            
-
+            }
             LogManager.Configuration = config;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OctoAwesome.Notifications
@@ -13,6 +14,9 @@ namespace OctoAwesome.Notifications
 
         public override void Deserialize(BinaryReader reader)
         {
+            if (reader.ReadByte() != (byte)BlockNotificationType.BlocksChanged)
+                throw new InvalidCastException("Wrong type of Notification");
+
             ChunkPos = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Planet = reader.ReadInt32();
 
@@ -25,6 +29,7 @@ namespace OctoAwesome.Notifications
 
         public override void Serialize(BinaryWriter writer)
         {
+            writer.Write((byte)BlockNotificationType.BlocksChanged); //indicates that this is a multiple BlockNotification
             writer.Write(ChunkPos.X);
             writer.Write(ChunkPos.Y);
             writer.Write(ChunkPos.Z);

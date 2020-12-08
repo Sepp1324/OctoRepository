@@ -1,4 +1,8 @@
-﻿namespace OctoAwesome
+﻿using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.Linq;
+
+namespace OctoAwesome
 {
     /// <summary>
     /// Erzeugt ein lokales Koordinatensystem.
@@ -104,6 +108,15 @@
             column.Chunks[index].Blocks[flatIndex] = block;
         }
 
+        public void SetBlocks(params BlockInfo[] blockInfos)
+        {
+            foreach (var item in blockInfos.GroupBy(x => new Index2(x.Position.X, x.Position.Y)))
+            {
+                var column = GetColumn(_column00, _column10, _column01, _column11, item.Key.X, item.Key.Y);
+                column.SetBlocks(item.ToArray());
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -115,6 +128,8 @@
         /// <param name="meta"></param>
         public void FillSphere(int x, int y, int z, int radius, ushort block, int meta = 0)
         {
+            var blockInfos = new List<BlockInfo>(radius * 6);
+
             for (var i = -radius; i <= radius; i++)
             {
                 for (var j = -radius; j <= radius; j++)
@@ -122,10 +137,13 @@
                     for (var k = -radius; k <= radius; k++)
                     {
                         if (i * i + j * j + k * k < radius * radius)
-                            SetBlock(x + i, y + j, z + k, block, meta);
+                            blockInfos.Add((x + i, y + j, z + k, block, meta));
+                            
                     }
                 }
             }
+
+            SetBlocks(blockInfos.ToArray());
         }
 
         /// <summary>
