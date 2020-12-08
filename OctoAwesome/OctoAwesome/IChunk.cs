@@ -108,5 +108,6 @@ namespace OctoAwesome
         void OnUpdate(Notifications.SerializableNotification notification);
 
         event Action<IChunk> Changed;
+        void SetBlocks(params BlockInfo[] blockInfos);
     }
 }

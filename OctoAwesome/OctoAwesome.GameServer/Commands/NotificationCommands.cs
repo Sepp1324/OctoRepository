@@ -10,13 +10,13 @@ namespace OctoAwesome.GameServer.Commands
     {
         private static readonly IUpdateHub _updateHub;
         private static readonly IPool<EntityNotification> _entityNotificationPool;
-        private static readonly IPool<ChunkNotification> _chunkNotificationPool;
+        private static readonly IPool<BlockChangedNotification> _chunkNotificationPool;
 
         static NotificationCommands()
         {
             _updateHub = TypeContainer.Get<IUpdateHub>();
             _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            _chunkNotificationPool = TypeContainer.Get<IPool<ChunkNotification>>();
+            _chunkNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
         }
 
         [Command((ushort)OfficialCommand.EntityNotification)]

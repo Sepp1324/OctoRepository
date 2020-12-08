@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Notifications
 {
-    public sealed class ChunkNotification : SerializableNotification
+    public sealed class BlockChangedNotification : SerializableNotification
     {
         public int Meta { get; internal set; }
 
@@ -32,7 +32,7 @@ namespace OctoAwesome.Notifications
             writer.Write(ChunkPos.Y);
             writer.Write(ChunkPos.Z);
             writer.Write(Planet);
-        }
+        } 
 
         protected override void OnRelease()
         {

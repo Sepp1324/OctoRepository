@@ -117,5 +117,6 @@ namespace OctoAwesome
         void Remove(Entity entity);
 
         IEnumerable<FailEntityChunkArgs> FailChunkEntity();
+        void SetBlocks(params BlockInfo[] blockInfos);
     }
 }

@@ -125,6 +125,19 @@ namespace OctoAwesome
             BlockChanged(flatIndex, block, meta);
         }
 
+        public void SetBlocks(params BlockInfo[] blockInfos)
+        {
+            for (var i = 0; i < blockInfos.Length; i++)
+            {
+                var flatIndex = GetFlatIndex(blockInfos[i].Position);
+                Blocks[flatIndex] = blockInfos[i].Block;
+                MetaData[flatIndex] = blockInfos[i].Meta;
+            }
+
+            Changed?.Invoke(this);
+            BlocksChanged(blockInfos);
+        }
+
         /// <summary>
         /// Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
         /// </summary>
@@ -171,7 +184,7 @@ namespace OctoAwesome
 
         public void Update(SerializableNotification notification)
         {
-            if (notification is ChunkNotification chunkNotification)
+            if (notification is BlockChangedNotification chunkNotification)
             {
                 Blocks[chunkNotification.FlatIndex] = chunkNotification.Block;
                 MetaData[chunkNotification.FlatIndex] = chunkNotification.Meta;
@@ -181,7 +194,7 @@ namespace OctoAwesome
 
         private void BlockChanged(int index, ushort block, int meta)
         {
-            var notification = TypeContainer.Get<IPool<ChunkNotification>>().Get();
+            var notification = TypeContainer.Get<IPool<BlockChangedNotification>>().Get();
             notification.FlatIndex = index;
             notification.Block = block;
             notification.Meta = meta;
@@ -190,6 +203,18 @@ namespace OctoAwesome
 
             OnUpdate(notification);
 
+            notification.Release();
+        }
+
+        private void BlocksChanged(params BlockInfo[] blocksInfo)
+        {
+            var notification = TypeContainer.Get<IPool<BlocksChangedNotification>>().Get();
+
+            notification.BlockInfos = blocksInfo;
+            notification.ChunkPos = Index;
+            notification.Planet = Planet.Id;
+
+            OnUpdate(notification);
             notification.Release();
         }
 
@@ -204,5 +229,7 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate</param>
         /// <returns>Index innerhalb des flachen Arrays</returns>
         public static int GetFlatIndex(int x, int y, int z) => ((z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY)) | ((y & (CHUNKSIZE_Y - 1)) << LimitX) | ((x & (CHUNKSIZE_X - 1)));
+
+        public static int GetFlatIndex(Index3 position) => GetFlatIndex(position.X, position.Y, position.Z);
     }
 }

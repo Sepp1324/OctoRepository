@@ -17,7 +17,7 @@ namespace OctoAwesome.Network
         private readonly IDisposable _hubSubscription;
         private readonly IDisposable _clientSubscription;
         private readonly IPool<EntityNotification> _entityNotificationPool;
-        private readonly IPool<ChunkNotification> _chunkNotificationPool;
+        private readonly IPool<BlockChangedNotification> _chunkNotificationPool;
         private readonly PackagePool _packagePool;
 
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
@@ -27,7 +27,7 @@ namespace OctoAwesome.Network
 
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
             _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            _chunkNotificationPool = TypeContainer.Get<IPool<ChunkNotification>>();
+            _chunkNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
             _packagePool = TypeContainer.Get<PackagePool>();
 
             _hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
@@ -67,7 +67,7 @@ namespace OctoAwesome.Network
                     command = (ushort)OfficialCommand.EntityNotification;
                     payload = Serializer.Serialize(entityNotification);
                     break;
-                case ChunkNotification chunkNotification:
+                case BlockChangedNotification chunkNotification:
                     command = (ushort)OfficialCommand.ChunkNotification;
                     payload = Serializer.Serialize(chunkNotification);
                     break;

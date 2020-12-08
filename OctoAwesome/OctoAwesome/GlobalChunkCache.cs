@@ -277,7 +277,7 @@ namespace OctoAwesome
         {
             switch (value)
             {
-                case ChunkNotification chunkNotification:
+                case BlockChangedNotification chunkNotification:
                     Update(chunkNotification);
                     break;
                 default:
@@ -289,13 +289,13 @@ namespace OctoAwesome
         {
             _updateHub?.Push(notification, DefaultChannels.Network);
 
-            if (notification is ChunkNotification chunkNotification)
+            if (notification is BlockChangedNotification chunkNotification)
                 _updateHub?.Push(chunkNotification, DefaultChannels.Chunk);
         }
 
         public void Update(SerializableNotification notification)
         {
-            if (notification is ChunkNotification chunkNotification && _cache.TryGetValue(new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
+            if (notification is BlockChangedNotification chunkNotification && _cache.TryGetValue(new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
                 cacheItem.ChunkColumn?.Update(notification);
         }
 

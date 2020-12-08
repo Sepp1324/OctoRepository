@@ -40,7 +40,7 @@ namespace OctoAwesome.Network
                     command = OfficialCommand.EntityNotification;
                     payload = Serializer.Serialize(entityNotification);
                     break;
-                case ChunkNotification chunkNotification:
+                case BlockChangedNotification chunkNotification:
                     command = OfficialCommand.ChunkNotification;
                     payload = Serializer.Serialize(chunkNotification);
                     break;
