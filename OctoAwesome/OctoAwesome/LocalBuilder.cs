@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace OctoAwesome
 {
@@ -109,9 +110,7 @@ namespace OctoAwesome
         /// <summary>
         /// Sets an Block (Generation)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
+        /// <param name="position"></param>
         /// <param name="block"></param>
         /// <param name="meta"></param>
         public void SetBlock(Index3 position, ushort block, int meta = 0) => SetBlock(position.X, position.Y, position.Z, block, meta);
@@ -121,44 +120,22 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="blockInfos"></param>
         public void SetBlocks(params BlockInfo[] blockInfos)
-        {
-            var list = new Dictionary<IChunkColumn, Dictionary<int, List<BlockInfo>>>();
-
-            foreach (var block in blockInfos)
-            {
-
-                var x = block.Position.X + _originX;
-                var y = block.Position.Y + _originY;
-                var z = block.Position.Z + _originZ;
-
-                var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
-                var index = z / Chunk.CHUNKSIZE_Z;
-
-                x %= Chunk.CHUNKSIZE_X;
-                y %= Chunk.CHUNKSIZE_Y;
-                z %= Chunk.CHUNKSIZE_Z;
-
-                if (list.TryGetValue(column, out var columnInfos))
+            => blockInfos
+                .Select(b =>
                 {
-                    if (columnInfos.TryGetValue(index, out var infos))
-                        infos.Add((x, y, z, block.Block, block.Meta));
-                    else
-                        columnInfos.Add(index, new List<BlockInfo> { (x, y, z, block.Block, block.Meta) });
-                }
-                else
-                {
-                    list.Add(column, new Dictionary<int, List<BlockInfo>> {{index, new List<BlockInfo> {(x, y, z, block.Block, block.Meta)}}});
-                }
-            }
+                    var x = b.Position.X + _originX;
+                    var y = b.Position.Y + _originY;
+                    var z = b.Position.Z + _originZ;
+                    var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
+                    var index = z / Chunk.CHUNKSIZE_Z;
 
-            foreach (var item in list)
-            {
-                foreach (var item2 in item.Value)
-                {
-                    item.Key.Chunks[item2.Key].SetBlocks(item2.Value.ToArray());
-                }
-            }
-        }
+                    x %= Chunk.CHUNKSIZE_X;
+                    y %= Chunk.CHUNKSIZE_Y;
+                    z %= Chunk.CHUNKSIZE_Z;
+
+                    var info = new BlockInfo(x, y, z, b.Block, b.Meta);
+                    return new { info, index, column };
+                }).GroupBy(a => a.column).ForEach(column => column.GroupBy(i => i.index).ForEach(i => column.Key.Chunks[i.Key].SetBlocks(i.Select(b => b.info).ToArray())));
 
         /// <summary>
         /// Crown of the Tree
@@ -202,7 +179,7 @@ namespace OctoAwesome
             z += _originZ;
 
             var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
-       
+
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             return column.GetBlock(x, y, z);
