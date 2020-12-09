@@ -32,8 +32,12 @@ namespace OctoAwesome.Basics.Definitions.Trees
             var rand = new Random(seed);
             var height = rand.Next(2, 4);
 
+            var blockInfos = new BlockInfo[height];
+
             for (var i = 0; i < height; i++)
-                builder.SetBlock(0, 0, i, _cactus);
+                blockInfos[i] = (0, 0, i, _cactus);
+
+            builder.SetBlocks(blockInfos);
         }
     }
 }

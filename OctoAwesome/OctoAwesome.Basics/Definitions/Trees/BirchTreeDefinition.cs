@@ -39,10 +39,10 @@ namespace OctoAwesome.Basics.Definitions.Trees
 
             var blockInfos = new BlockInfo[height + 2];
 
-           // builder.SetBlock(_blockInfos);
-
             for (var i = 0; i < height + 2; i++)
-                blockInfos[i] = (0, 0, 0 + i, _wood);
+                blockInfos[i] = (0, 0, i, _wood);
+
+            builder.SetBlocks(blockInfos);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO.IsolatedStorage;
-using System.Linq;
 
 namespace OctoAwesome
 {
@@ -83,7 +81,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
+        /// Sets an Block (Generation)
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -95,7 +93,7 @@ namespace OctoAwesome
             x += _originX;
             y += _originY;
             z += _originZ;
-          
+
             var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
             var index = z / Chunk.CHUNKSIZE_Z;
 
@@ -108,17 +106,62 @@ namespace OctoAwesome
             column.Chunks[index].Blocks[flatIndex] = block;
         }
 
+        /// <summary>
+        /// Sets an Block (Generation)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="block"></param>
+        /// <param name="meta"></param>
+        public void SetBlock(Index3 position, ushort block, int meta = 0) => SetBlock(position.X, position.Y, position.Z, block, meta);
+
+        /// <summary>
+        /// Sets a Array of Blocks (Generation)
+        /// </summary>
+        /// <param name="blockInfos"></param>
         public void SetBlocks(params BlockInfo[] blockInfos)
         {
-            foreach (var item in blockInfos.GroupBy(x => new Index2(x.Position.X, x.Position.Y)))
+            var list = new Dictionary<IChunkColumn, Dictionary<int, List<BlockInfo>>>();
+
+            foreach (var block in blockInfos)
             {
-                var column = GetColumn(_column00, _column10, _column01, _column11, item.Key.X, item.Key.Y);
-                column.SetBlocks(item.ToArray());
+
+                var x = block.Position.X + _originX;
+                var y = block.Position.Y + _originY;
+                var z = block.Position.Z + _originZ;
+
+                var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
+                var index = z / Chunk.CHUNKSIZE_Z;
+
+                x %= Chunk.CHUNKSIZE_X;
+                y %= Chunk.CHUNKSIZE_Y;
+                z %= Chunk.CHUNKSIZE_Z;
+
+                if (list.TryGetValue(column, out var columnInfos))
+                {
+                    if (columnInfos.TryGetValue(index, out var infos))
+                        infos.Add((x, y, z, block.Block, block.Meta));
+                    else
+                        columnInfos.Add(index, new List<BlockInfo> { (x, y, z, block.Block, block.Meta) });
+                }
+                else
+                {
+                    list.Add(column, new Dictionary<int, List<BlockInfo>> {{index, new List<BlockInfo> {(x, y, z, block.Block, block.Meta)}}});
+                }
+            }
+
+            foreach (var item in list)
+            {
+                foreach (var item2 in item.Value)
+                {
+                    item.Key.Chunks[item2.Key].SetBlocks(item2.Value.ToArray());
+                }
             }
         }
 
         /// <summary>
-        /// 
+        /// Crown of the Tree
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -138,7 +181,6 @@ namespace OctoAwesome
                     {
                         if (i * i + j * j + k * k < radius * radius)
                             blockInfos.Add((x + i, y + j, z + k, block, meta));
-                            
                     }
                 }
             }
@@ -147,7 +189,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
+        /// Returns a Block
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -158,7 +200,9 @@ namespace OctoAwesome
             x += _originX;
             y += _originY;
             z += _originZ;
+
             var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
+       
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             return column.GetBlock(x, y, z);

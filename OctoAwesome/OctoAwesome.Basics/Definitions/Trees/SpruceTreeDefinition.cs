@@ -37,8 +37,12 @@ namespace OctoAwesome.Basics.Definitions.Trees
 
             builder.FillSphere(0, 0, height, radius, _leave);
 
+            var blockInfos = new BlockInfo[height + 2];
+
             for (var i = 0; i < height + 2; i++)
-                builder.SetBlock(0, 0, 0 + i, _wood);
-        }
+                blockInfos[i] = (0, 0, i, _wood);
+
+            builder.SetBlocks(blockInfos);
+        } 
     }
 }
