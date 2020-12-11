@@ -17,7 +17,8 @@ namespace OctoAwesome.Network
         private readonly IDisposable _hubSubscription;
         private readonly IDisposable _clientSubscription;
         private readonly IPool<EntityNotification> _entityNotificationPool;
-        private readonly IPool<BlockChangedNotification> _chunkNotificationPool;
+        private readonly IPool<BlockChangedNotification> _blockChangedNotificationPool;
+        private readonly IPool<BlocksChangedNotification> _blocksChangedNotificationPool;
         private readonly PackagePool _packagePool;
 
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
@@ -27,7 +28,8 @@ namespace OctoAwesome.Network
 
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
             _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            _chunkNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
+            _blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
+            _blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
             _packagePool = TypeContainer.Get<PackagePool>();
 
             _hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
@@ -45,7 +47,20 @@ namespace OctoAwesome.Network
                     entityNotification.Release();
                     break;
                 case OfficialCommand.ChunkNotification:
-                    var chunkNotification = Serializer.DeserializePoolElement(_chunkNotificationPool, package.Payload);
+                    var notificationType = (BlockNotificationType)package.Payload[0];
+                    Notification chunkNotification;
+
+                    switch (notificationType)
+                    {
+                        case BlockNotificationType.BlockChanged:
+                            chunkNotification = Serializer.DeserializePoolElement(_blockChangedNotificationPool, package.Payload);
+                            break;
+                        case BlockNotificationType.BlocksChanged:
+                            chunkNotification = Serializer.DeserializePoolElement(_blocksChangedNotificationPool, package.Payload);
+                            break;
+                        default:
+                            throw new NotSupportedException($"Type is not supported: {notificationType}");
+                    }
                     _updateHub.Push(chunkNotification, DefaultChannels.Chunk);
                     chunkNotification.Release();
                     break;

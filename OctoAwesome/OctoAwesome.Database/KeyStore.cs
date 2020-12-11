@@ -29,6 +29,7 @@ namespace OctoAwesome.Database
             EmptyKeys = 0;
 
             _writer.Open();
+
             var buffer = _reader.Read(0, -1);
 
             for (var i = 0; i < buffer.Length; i += Key<TTag>.KEY_SIZE)
@@ -43,6 +44,9 @@ namespace OctoAwesome.Database
                     EmptyKeys++;
                     continue;
                 }
+
+                if (_keys.ContainsKey(key.Tag))
+                    continue;
 
                 _keys.Add(key.Tag, key);
             }

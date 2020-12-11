@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OctoAwesome.Notifications
 {
-    public sealed class BlocksChangedNotification : SerializableNotification
+    public sealed class BlocksChangedNotification : SerializableNotification, IChunkNotification
     {
         public ICollection<BlockInfo> BlockInfos { get; set; }
 

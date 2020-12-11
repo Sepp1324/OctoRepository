@@ -40,7 +40,7 @@ namespace OctoAwesome
         private readonly ILogger _logger;
         private readonly IEnumerable<(Guid Id, PositionComponent Component)> _positionComponents;
         private IUpdateHub _updateHub;
-      
+
         /// <summary>
         /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
         /// </summary>
@@ -92,13 +92,12 @@ namespace OctoAwesome
         /// <returns></returns>
         public IChunkColumn Subscribe(Index2 position)
         {
-            CacheItem cacheItem = null;
+            CacheItem cacheItem;
 
             using (_lockSemaphore.Wait())
             {
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
                 {
-
                     cacheItem = new CacheItem()
                     {
                         Planet = Planet,
@@ -124,7 +123,7 @@ namespace OctoAwesome
                     var chunkIndex = new Index3(position, Planet.Id);
                     var loadedEntities = _positionComponents
                         .Where(x => x.Component.Planet == Planet && x.Component.Position.ChunkIndex.X == chunkIndex.X && x.Component.Position.ChunkIndex.Y == chunkIndex.Y)
-                        .Select(x=> _resourceManager.LoadEntity(x.Id));
+                        .Select(x => _resourceManager.LoadEntity(x.Id));
 
                     foreach (var entity in loadedEntities)
                         cacheItem.ChunkColumn.Add(entity);
@@ -277,8 +276,11 @@ namespace OctoAwesome
         {
             switch (value)
             {
-                case BlockChangedNotification chunkNotification:
-                    Update(chunkNotification);
+                case BlockChangedNotification blockChangedNotification:
+                    Update(blockChangedNotification);
+                    break;
+                case BlocksChangedNotification blocksChangedNotification:
+                    Update(blocksChangedNotification);
                     break;
                 default:
                     break;
@@ -289,13 +291,13 @@ namespace OctoAwesome
         {
             _updateHub?.Push(notification, DefaultChannels.Network);
 
-            if (notification is BlockChangedNotification chunkNotification)
-                _updateHub?.Push(chunkNotification, DefaultChannels.Chunk);
+            if (notification is IChunkNotification)
+                _updateHub?.Push(notification, DefaultChannels.Chunk);
         }
 
         public void Update(SerializableNotification notification)
         {
-            if (notification is BlockChangedNotification chunkNotification && _cache.TryGetValue(new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
+            if (notification is IChunkNotification chunkNotification && _cache.TryGetValue(new Index3(chunkNotification.ChunkPos.X, chunkNotification.ChunkPos.Y, chunkNotification.Planet), out var cacheItem))
                 cacheItem.ChunkColumn?.Update(notification);
         }
 

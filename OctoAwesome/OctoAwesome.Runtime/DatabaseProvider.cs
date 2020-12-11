@@ -40,9 +40,18 @@ namespace OctoAwesome.Runtime
                 }
                 else
                 {
-                    Database<T> tmpDatabase = CreateDatabase<T>(_rootPath, fixedValueSize);
+                    var tmpDatabase = CreateDatabase<T>(_rootPath, fixedValueSize);
+
+                    try
+                    {
+                        tmpDatabase.Open();
+                    }
+                    catch
+                    {
+                        tmpDatabase.Dispose();
+                    }
+
                     _globalDatabaseRegister.Add(key, tmpDatabase);
-                    tmpDatabase.Open();
                     return tmpDatabase;
                 }
             }

@@ -177,7 +177,7 @@ namespace OctoAwesome.Runtime
             foreach (var folder in Directory.GetDirectories(root))
             {
                 var id = Path.GetFileNameWithoutExtension(folder);//folder.Replace(root + "\\", "");
-               
+
                 if (Guid.TryParse(id, out Guid guid))
                 {
                     Load(out var universe, guid).WaitOnAndRelease();
@@ -224,9 +224,9 @@ namespace OctoAwesome.Runtime
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
             var generatorInfo = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
-           
+
             planet = new Planet();
-            
+
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
@@ -300,7 +300,7 @@ namespace OctoAwesome.Runtime
             //TODO: Später durch Playername ersetzen
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
             player = new Player();
-           
+
             if (!File.Exists(file))
                 return null;
 
@@ -352,11 +352,25 @@ namespace OctoAwesome.Runtime
 
         public void OnNext(Notification notification)
         {
-            if (notification is BlockChangedNotification chunkNotification)
-                SaveChunk(chunkNotification);
+            switch (notification)
+            {
+                case BlockChangedNotification chunkNotification:
+                    SaveChunk(chunkNotification);
+                    break;
+                case BlocksChangedNotification blocksChanged:
+                    SaveChunk(blocksChanged);
+                    break;
+            }
         }
 
         private void SaveChunk(BlockChangedNotification blockChangedNotification)
+        {
+            var database = _databaseProvider.GetDatabase<ChunkDiffTag>(_currentUniverse.Id, blockChangedNotification.Planet, true);
+            var databaseContext = new ChunkDiffDbContext(database, _blockChangedNotificationPool);
+            databaseContext.AddOrUpdate(blockChangedNotification);
+        }
+
+        private void SaveChunk(BlocksChangedNotification blockChangedNotification)
         {
             var database = _databaseProvider.GetDatabase<ChunkDiffTag>(_currentUniverse.Id, blockChangedNotification.Planet, true);
             var databaseContext = new ChunkDiffDbContext(database, _blockChangedNotificationPool);
