@@ -63,7 +63,7 @@ namespace OctoAwesome
         /// <param name="block">Die neue Block-ID</param>
         void SetBlock(int x, int y, int z, ushort block, int meta = 0);
 
-        void SetBlock(int flatIndex, ushort block, int meta = 0);
+        void SetBlock(int flatIndex, BlockInfo blockInfo);
 
         /// <summary>
         /// Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
@@ -108,6 +108,7 @@ namespace OctoAwesome
         void OnUpdate(Notifications.SerializableNotification notification);
 
         event Action<IChunk> Changed;
+
         void SetBlocks(params BlockInfo[] blockInfos);
     }
 }

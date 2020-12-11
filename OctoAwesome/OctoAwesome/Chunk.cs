@@ -114,15 +114,15 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="block">Die neue Block-ID</param>
         /// <param name="meta">(Optional) Die Metadaten des Blocks</param>
-        public void SetBlock(int x, int y, int z, ushort block, int meta = 0) => SetBlock(GetFlatIndex(x, y, z), block, meta);
+        public void SetBlock(int x, int y, int z, ushort block, int meta = 0) => SetBlock(GetFlatIndex(x, y, z), new BlockInfo(x, y, z, block, meta));
 
-        public void SetBlock(int flatIndex, ushort block, int meta = 0)
+        public void SetBlock(int flatIndex, BlockInfo blockInfo)
         {
-            Blocks[flatIndex] = block;
-            MetaData[flatIndex] = meta;
+            Blocks[flatIndex] = blockInfo.Block;
+            MetaData[flatIndex] = blockInfo.Meta;
             Changed?.Invoke(this);
 
-            BlockChanged(flatIndex, block, meta);
+            BlockChanged(blockInfo);
         }
 
         public void SetBlocks(params BlockInfo[] blockInfos)
@@ -186,8 +186,10 @@ namespace OctoAwesome
         {
             if (notification is BlockChangedNotification blockChanged)
             {
-                Blocks[blockChanged.FlatIndex] = blockChanged.Block;
-                MetaData[blockChanged.FlatIndex] = blockChanged.Meta;
+                var flatIndex = GetFlatIndex(blockChanged.BlockInfo.Position);
+
+                Blocks[flatIndex] = blockChanged.BlockInfo.Block;
+                MetaData[flatIndex] = blockChanged.BlockInfo.Meta;
                 Changed?.Invoke(this);
             }
             else if (notification is BlocksChangedNotification blocksChanged)
@@ -203,12 +205,10 @@ namespace OctoAwesome
             }
         }
 
-        private void BlockChanged(int index, ushort block, int meta)
+        private void BlockChanged(BlockInfo blockInfo)
         {
             var notification = TypeContainer.Get<IPool<BlockChangedNotification>>().Get();
-            notification.FlatIndex = index;
-            notification.Block = block;
-            notification.Meta = meta;
+            notification.BlockInfo = blockInfo;
             notification.ChunkPos = Index;
             notification.Planet = Planet.Id;
 

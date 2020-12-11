@@ -62,6 +62,11 @@ namespace OctoAwesome.Tests
             throw new NotImplementedException();
         }
 
+        public void Release(Index2 position)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Clear()
         {
             throw new NotImplementedException();
@@ -94,6 +99,11 @@ namespace OctoAwesome.Tests
         public void OnError(Exception error) => throw new NotImplementedException();
         public void OnNext(Notification value) => throw new NotImplementedException();
         public IChunkColumn Subscribe(Index2 position, bool passive) => throw new NotImplementedException();
+        public IChunkColumn Subscribe(Index2 position)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsChunkLoaded(Index2 position) => throw new NotImplementedException();
         public IChunkColumn Peek(Index2 position) => throw new NotImplementedException();
         public void Release(Index2 position, bool passive) => throw new NotImplementedException();

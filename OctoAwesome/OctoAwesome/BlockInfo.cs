@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace OctoAwesome
 {
@@ -40,6 +41,17 @@ namespace OctoAwesome
                 return hashCode;
             }
         }
+
+        public static void Serialize(BinaryWriter binaryWriter, BlockInfo blockInfo)
+        {
+            binaryWriter.Write(blockInfo.Position.X);
+            binaryWriter.Write(blockInfo.Position.Y);
+            binaryWriter.Write(blockInfo.Position.Z);
+            binaryWriter.Write(blockInfo.Block);
+            binaryWriter.Write(blockInfo.Meta);
+        }
+
+        public static BlockInfo Deserialize(BinaryReader binaryReader) => new BlockInfo(binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadUInt16(), binaryReader.ReadInt32());
 
         public static bool operator ==(BlockInfo left, BlockInfo right) => left.Equals(right);
 
