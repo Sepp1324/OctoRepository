@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome.EntityComponents
+﻿namespace OctoAwesome.EntityComponents
 {
     /// <summary>
     /// EntityComponent, die eine Werkzeug-Toolbar für den Apieler bereitstellt.
@@ -41,11 +34,12 @@ namespace OctoAwesome.EntityComponents
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
         {
-            for (int i = 0; i < Tools.Length; i++)
+            for (var i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == slot)
                     Tools[i] = null;
             }
+
             if (ActiveTool == slot)
                 ActiveTool = null;
         }
@@ -82,7 +76,7 @@ namespace OctoAwesome.EntityComponents
         /// <param name="slot"></param>
         public void AddNewSlot(InventorySlot slot)
         {
-            for (int i = 0; i < Tools.Length; i++)
+            for (var i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == null)
                 {

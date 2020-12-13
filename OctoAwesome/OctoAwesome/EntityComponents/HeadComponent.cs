@@ -1,9 +1,4 @@
 ﻿using engenious;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace OctoAwesome.EntityComponents
@@ -54,7 +49,6 @@ namespace OctoAwesome.EntityComponents
             var y = reader.ReadSingle();
             var z = reader.ReadSingle();
             Offset = new Vector3(x, y, z);
-
 
             Tilt = reader.ReadSingle();
             Angle = reader.ReadSingle();
