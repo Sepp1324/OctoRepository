@@ -1,60 +1,63 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace OctoAwesome.Network.Tests
 {
-    [TestClass]
+    [TestOf(typeof(OctoNetworkStream))]
     public class OctoNetworkStreamTest
     {
-        private readonly OctoNetworkStream _testStream;
-        private readonly Random _rand;
+        private OctoNetworkStream testStream;
+        private Random rand;
 
         public OctoNetworkStreamTest()
         {
-            _testStream = new OctoNetworkStream();
-            _rand = new Random();
+            testStream = new OctoNetworkStream();
+            rand = new Random();
         }
 
-        [TestMethod]
+        [Test]
         public void WriteTest()
         {
             var buffer = new byte[500];
-            _rand.NextBytes(buffer);
-            
-            _testStream.Write(buffer, 0, buffer.Length);
+            rand.NextBytes(buffer);
+
+            testStream.Write(buffer, 0, buffer.Length);
         }
 
-        [TestMethod]
+        [Test]
         public void ReadTest()
         {
             var buffer = new byte[500];
             var resultTest = new byte[500];
-            _rand.NextBytes(buffer);
+            rand.NextBytes(buffer);
 
-            _testStream.Write(buffer, 0, buffer.Length);
-            _testStream.Read(resultTest, 0, resultTest.Length);
+            testStream.Write(buffer, 0, buffer.Length);
+            testStream.Read(resultTest, 0, resultTest.Length);
 
-            Assert.AreEqual(buffer.Length, resultTest.Length);            
+            Assert.AreEqual(buffer.Length, resultTest.Length);
             Assert.IsTrue(buffer.SequenceEqual(resultTest));
         }
 
-        [TestMethod]
+        [Test]
         public void RingTest()
         {
             var buffer = new byte[500];
             var resultTest = new byte[500];
-            _rand.NextBytes(buffer);
+            rand.NextBytes(buffer);
 
-            _testStream.Write(buffer, 0, buffer.Length);
-            _testStream.Read(resultTest, 0, resultTest.Length);
+            testStream.Write(buffer, 0, buffer.Length);
+            testStream.Read(resultTest, 0, resultTest.Length);
 
             buffer = new byte[600];
             resultTest = new byte[600];
-            _rand.NextBytes(buffer);
+            rand.NextBytes(buffer);
 
-            _testStream.Write(buffer, 0, buffer.Length);
-            _testStream.Read(resultTest, 0, resultTest.Length);
+            testStream.Write(buffer, 0, buffer.Length);
+            testStream.Read(resultTest, 0, resultTest.Length);
 
             Assert.AreEqual(buffer.Length, resultTest.Length);
             Assert.IsTrue(buffer.SequenceEqual(resultTest));

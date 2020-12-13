@@ -151,6 +151,7 @@ namespace OctoAwesome.Database
             {
 
             }
+            throw new NotImplementedException();
         }
 
         private void ExecuteOperationOnKeyValueStore(Action action)

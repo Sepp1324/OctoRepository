@@ -2,20 +2,19 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace OctoAwesome.Network.Tests
 {
-    [TestClass]
     public class AsyncStreamExperiments
     {
-        [TestMethod]
+        [Test]
         public void ReadWriteSwap()
         {
-            var test = new OctoNetworkStream();
-            var writeData = new byte[400];
-            var readData = new byte[400];
-            var r = new Random();
+            OctoNetworkStream test = new OctoNetworkStream();
+            byte[] writeData = new byte[400];
+            byte[] readData = new byte[400];
+            Random r = new Random();
 
             r.NextBytes(writeData);
 
@@ -25,17 +24,16 @@ namespace OctoAwesome.Network.Tests
             Assert.IsTrue(writeData.SequenceEqual(readData));
         }
 
-        [TestMethod]
+        [Test]
         public async Task ReadWriteSwapAsync()
         {
-            var test = new OctoNetworkStream();
-            var writeData = new byte[400];
-            var readData = new byte[400];
-            var r = new Random();
+            OctoNetworkStream test = new OctoNetworkStream();
+            byte[] writeData = new byte[400];
+            byte[] readData = new byte[400];
+            Random r = new Random();
 
             r.NextBytes(writeData);
-            
-            var readTask = new Task(() =>
+            Task readTask = new Task(() =>
             {
                 int o = 0;
                 while (test.Read(readData, o, 100) != 0)
@@ -49,7 +47,17 @@ namespace OctoAwesome.Network.Tests
             Thread.Sleep(100);
             readTask.Start();
 
+            //Task writeTask = new Task(() => {
+            //    for (int i = 0; i < 5; i++)
+            //    {
+            //        Thread.Sleep(1000);
+            //    }
+
+            //});
             Assert.IsTrue(writeData.SequenceEqual(readData));
+
         }
+
+
     }
 }

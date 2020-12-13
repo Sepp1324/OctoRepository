@@ -1,24 +1,27 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OctoAwesome.Runtime;
+﻿using OctoAwesome.Runtime;
 using System.Threading;
+using NUnit.Framework;
 
 namespace OctoAwesome.Network.Tests
 {
-    [TestClass]
+    [TestOf(typeof(SimulationManager))]
     public class SimulationManagerTests
     {
-        private readonly SimulationManager _simulationManager;
+        private SimulationManager simulationManager;
 
-        public SimulationManagerTests() => _simulationManager = new SimulationManager(new Settings(), new UpdateHub());
-
-        [TestMethod]
-        public void StartStopTest()
+        public SimulationManagerTests()
         {
-            _simulationManager.Start();
-            _simulationManager.Stop();
+            simulationManager = new SimulationManager(new Settings(), new UpdateHub());
         }
 
-        [TestMethod]
+        [Test]
+        public void StartStopTest()
+        {
+            simulationManager.Start();
+            simulationManager.Stop();
+        }
+
+        [Test]
         public void RuntimeTest()
         {
             var reset = new ManualResetEvent(false);
@@ -30,13 +33,13 @@ namespace OctoAwesome.Network.Tests
             timer.Elapsed += (s, e) => reset.Set();
 
 
-            _simulationManager.Start();
+            simulationManager.Start();
             timer.Start();
 
             reset.WaitOne();
 
-            _simulationManager.Stop();
-            
+            simulationManager.Stop();
+
         }
     }
 }

@@ -1,22 +1,25 @@
-﻿using System.Net;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace OctoAwesome.Network.Tests
 {
-    [TestClass]
+    [TestOf(typeof(Server))]
     public class ServerTests
     {
-        [TestMethod]
+        [Test]
         public void NewServerTest()
         {
             var server = new Server();
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
         }
 
-        [TestMethod]
+        [Test]
         public void ConnectionTest()
         {
             var resetEvent = new ManualResetEvent(false);
@@ -24,7 +27,7 @@ namespace OctoAwesome.Network.Tests
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
             var testClient = new TcpClient("localhost", 44444);
 
-            for (var i = 0; i < 201; i++)
+            for (int i = 0; i < 201; i++)
             {
                 Thread.Sleep(10);
 
@@ -35,20 +38,25 @@ namespace OctoAwesome.Network.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void SendingTest()
         {
             var resetEvent = new ManualResetEvent(false);
             var wait = new ManualResetEvent(false);
             var server = new Server();
-
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
             server.OnClientConnected += (s, e) =>
             {
+                //server.Clients.TryPeek(out Client client);
+                //client.OnMessageRecived += (c, args) =>
+                //{
+                //    Assert.AreEqual(42, args.data[0]);
                 resetEvent.Set();
+                //};
+
                 wait.Set();
             };
-            
+
             Task.Run(() =>
             {
                 var testClient = new Client();
