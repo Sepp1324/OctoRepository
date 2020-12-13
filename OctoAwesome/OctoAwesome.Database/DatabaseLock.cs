@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OctoAwesome.Database
+namespace OctoAwesome.Database.Threading
 {
     public readonly struct DatabaseLock : IDisposable
     {
