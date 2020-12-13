@@ -16,6 +16,13 @@ namespace OctoAwesome.Database
         public abstract void Close();
 
         public abstract void Dispose();
+
+        /// <summary>
+        /// Locks this Database for the specific operation
+        /// </summary>
+        /// <param name="operation">Indicates which operation is currently performed</param>
+        /// <returns>A new database lock</returns>
+        public abstract DatabaseLock Lock(Operation operation);
     }
 
     public sealed class Database<TTag> : Database where TTag : ITag, new()
@@ -131,6 +138,19 @@ namespace OctoAwesome.Database
         {
             _keyStore.Dispose();
             _valueStore.Dispose();
+        }
+
+        public override DatabaseLock Lock(Operation operation)
+        {
+            if(operation.HasFlag(Operation.Read))
+            {
+
+            }
+
+            if (operation.HasFlag(Operation.Write))
+            {
+
+            }
         }
 
         private void ExecuteOperationOnKeyValueStore(Action action)

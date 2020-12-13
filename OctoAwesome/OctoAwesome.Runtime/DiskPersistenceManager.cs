@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using OctoAwesome.Logging;
 
 namespace OctoAwesome.Runtime
 {
@@ -36,7 +37,7 @@ namespace OctoAwesome.Runtime
         {
             _extensionResolver = extensionResolver;
             _settings = Settings;
-            _databaseProvider = new DatabaseProvider(GetRoot());
+            _databaseProvider = new DatabaseProvider(GetRoot(), TypeContainer.Get<ILogger>());
             _awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
             _blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
             _chunkSubscription = updateHub.Subscribe(this, DefaultChannels.Chunk);
