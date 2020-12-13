@@ -1,27 +1,17 @@
 ﻿using NLog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Logging
 {
     public sealed class Logger : ILogger
     {
-        private readonly static NLog.ILogger nullLogger;
+        private readonly static NLog.ILogger _nullLogger;
 
-        static Logger()
-        {
-            nullLogger = LogManager.LogFactory.CreateNullLogger();
-        }
+        static Logger() => _nullLogger = LogManager.LogFactory.CreateNullLogger();
 
         private NLog.ILogger internalLogger;
 
-        public Logger()
-        {
-            internalLogger = nullLogger;
-        }
+        public Logger() => internalLogger = _nullLogger;
 
         public void Info(string message)
             => internalLogger.Info(message);
@@ -73,9 +63,6 @@ namespace OctoAwesome.Logging
         public ILogger As(Type type) 
             => As(type.FullName);
 
-        public void Flush()
-        {
-            LogManager.Flush();
-        }
+        public void Flush() => LogManager.Flush();
     }
 }

@@ -63,12 +63,12 @@
         /// <returns>Den Index des Slots, falls nicht gefunden -1.</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
-            for (int j = 0; j < Tools.Length; j++)
+            for (var j = 0; j < Tools.Length; j++)
                 if (Tools[j] == slot)
                     return j;
 
             return -1;
-        }
+        } 
 
         /// <summary>
         /// Fügt einen neuen InventorySlot an der ersten freien Stelle hinzu.

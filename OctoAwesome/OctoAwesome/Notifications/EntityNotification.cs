@@ -1,11 +1,7 @@
 ﻿using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
@@ -15,27 +11,21 @@ namespace OctoAwesome.Notifications
         public Guid EntityId { get; set; }
         public Entity Entity
         {
-            get => entity; set
+            get => _entity; set
             {
-                entity = value;
+                _entity = value;
                 EntityId = value?.Id ?? default;
             }
         }
 
         public PropertyChangedNotification Notification { get; set; }
 
-        private Entity entity;
-        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
+        private Entity _entity;
+        private readonly IPool<PropertyChangedNotification> _propertyChangedNotificationPool;
 
-        public EntityNotification()
-        {
-            propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
-        }
+        public EntityNotification() => _propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
 
-        public EntityNotification(Guid id) : this()
-        {
-            EntityId = id;
-        }
+        public EntityNotification(Guid id) : this() => EntityId = id;
 
         public override void Deserialize(BinaryReader reader)
         {
@@ -48,9 +38,10 @@ namespace OctoAwesome.Notifications
                 EntityId = new Guid(reader.ReadBytes(16));
 
             var isNotification = reader.ReadBoolean();
+
             if (isNotification)
                 Notification = Serializer.DeserializePoolElement(
-                    propertyChangedNotificationPool, reader.ReadBytes(reader.ReadInt32()));
+                    _propertyChangedNotificationPool, reader.ReadBytes(reader.ReadInt32()));
         }
 
         public override void Serialize(BinaryWriter writer)

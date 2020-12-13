@@ -1,25 +1,21 @@
-﻿using NLog.Targets.Wrappers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public sealed class BlocksChangedNotification : SerializableNotification, IChunkNotification
     {
         public ICollection<BlockInfo> BlockInfos { get; set; }
+
         public Index3 ChunkPos { get; internal set; }
+
         public int Planet { get; internal set; }
 
         public override void Deserialize(BinaryReader reader)
         {
             if (reader.ReadByte() != (byte)BlockNotificationType.BlocksChanged)//Read type of the notification
-            {
                 throw new InvalidCastException("this is the wrong type of notification");
-            }
 
             ChunkPos = new Index3(
                 reader.ReadInt32(),
@@ -29,7 +25,7 @@ namespace OctoAwesome.Notifications
             Planet = reader.ReadInt32();
             var count = reader.ReadInt32();
             var list = new List<BlockInfo>(count);
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 list.Add(new BlockInfo(
                     x: reader.ReadInt32(),
