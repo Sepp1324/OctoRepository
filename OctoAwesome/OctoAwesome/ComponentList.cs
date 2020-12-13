@@ -12,18 +12,18 @@ namespace OctoAwesome
     /// <typeparam name="T">Type of Component</typeparam>
     public class ComponentList<T> : IEnumerable<T> where T : Component, ISerializable
     {
-        private readonly Action<T> _insertValidator;
-        private readonly Action<T> _removeValidator;
-        private readonly Action<T> _onInserter;
-        private readonly Action<T> _onRemover;
+        private readonly Action<T> insertValidator;
+        private readonly Action<T> removeValidator;
+        private readonly Action<T> onInserter;
+        private readonly Action<T> onRemover;
 
-        private readonly Dictionary<Type, T> _components = new Dictionary<Type, T>();
+        private readonly Dictionary<Type, T> components = new Dictionary<Type, T>();
 
         public T this[Type type]
         {
             get
             {
-                if (_components.TryGetValue(type, out T result))
+                if (components.TryGetValue(type, out T result))
                     return result;
 
                 return null;
@@ -36,28 +36,31 @@ namespace OctoAwesome
 
         public ComponentList(Action<T> insertValidator, Action<T> removeValidator, Action<T> onInserter, Action<T> onRemover)
         {
-            _insertValidator = insertValidator;
-            _removeValidator = removeValidator;
-            _onInserter = onInserter;
-            _onRemover = onRemover;
+            this.insertValidator = insertValidator;
+            this.removeValidator = removeValidator;
+            this.onInserter = onInserter;
+            this.onRemover = onRemover;
         }
 
-        public IEnumerator<T> GetEnumerator() => _components.Values.GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+            => components.Values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => _components.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => components.Values.GetEnumerator();
 
         /// <summary>
         /// Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
-        public void AddComponent<V>(V component) where V : T => AddComponent(component, false);
+        public void AddComponent<V>(V component) where V : T 
+            => AddComponent(component, false);
 
 
         public void AddComponent<V>(V component, bool replace) where V : T
         {
-            var type = component.GetType();
+            Type type = component.GetType();
 
-            if (_components.ContainsKey(type))
+            if (components.ContainsKey(type))
             {
                 if (replace)
                 {
@@ -69,9 +72,9 @@ namespace OctoAwesome
                 }
             }
 
-            _insertValidator?.Invoke(component);
-            _components.Add(type, component);
-            _onInserter?.Invoke(component);
+            insertValidator?.Invoke(component);
+            components.Add(type, component);
+            onInserter?.Invoke(component);
         }
 
         /// <summary>
@@ -79,7 +82,8 @@ namespace OctoAwesome
         /// </summary>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
-        public bool ContainsComponent<V>() => _components.ContainsKey(typeof(V));
+        public bool ContainsComponent<V>() 
+            => components.ContainsKey(typeof(V));
 
         /// <summary>
         /// Returns the Component of the given Type or null
@@ -88,7 +92,7 @@ namespace OctoAwesome
         /// <returns>Component</returns>
         public V GetComponent<V>() where V : T
         {
-            if (_components.TryGetValue(typeof(V), out T result))
+            if (components.TryGetValue(typeof(V), out T result))
                 return (V)result;
 
             return null;
@@ -101,14 +105,13 @@ namespace OctoAwesome
         /// <returns></returns>
         public bool RemoveComponent<V>() where V : T
         {
-            if (!_components.TryGetValue(typeof(V), out T component))
+            if (!components.TryGetValue(typeof(V), out T component))
                 return false;
 
-            _removeValidator?.Invoke(component);
-           
-            if (_components.Remove(typeof(V)))
+            removeValidator?.Invoke(component);
+            if (components.Remove(typeof(V)))
             {
-                _onRemover?.Invoke(component);
+                onRemover?.Invoke(component);
                 return true;
             }
 
@@ -121,12 +124,12 @@ namespace OctoAwesome
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
         public virtual void Serialize(BinaryWriter writer)
         {
-            writer.Write(_components.Count);
-          
-            foreach (var component in _components)
+            writer.Write(components.Count);
+            foreach (var componente in components)
             {
-                writer.Write(component.Key.AssemblyQualifiedName);
-                component.Value.Serialize(writer);
+                writer.Write(componente.Key.AssemblyQualifiedName);
+                componente.Value.Serialize(writer);
+
             }
         }
 
@@ -137,18 +140,21 @@ namespace OctoAwesome
         public virtual void Deserialize(BinaryReader reader)
         {
             var count = reader.ReadInt32();
-           
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var name = reader.ReadString();
 
                 var type = Type.GetType(name);
 
-                if (!_components.TryGetValue(type, out var component))
+                T component;
+
+                if (!components.TryGetValue(type, out component))
                 {
                     component = (T)TypeContainer.GetUnregistered(type);
+                    //components.Add(type, component);
                     AddComponent(component);
                 }
+
                 component.Deserialize(reader);
             }
         }

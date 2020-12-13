@@ -1,5 +1,10 @@
-﻿using OctoAwesome.Client.Components;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using OctoAwesome.Client.Components;
 using engenious.UI;
+using engenious;
 using OctoAwesome.Client.Crew;
 using engenious.UI.Controls;
 
@@ -15,23 +20,23 @@ namespace OctoAwesome.Client.Screens
 
             SetDefaultBackground();
 
-            var crew = CrewMember.getCrew(manager);
+            List<CrewMember> crew = CrewMember.getCrew(manager);
 
-            var crewScroll = new ScrollContainer(manager)
+            ScrollContainer crewScroll = new ScrollContainer(manager)
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Margin = new Border(10, 10, 10, 10),
                 CanFocus = false
             };
 
-            var crewList = new StackPanel(manager) {
+            StackPanel crewList = new StackPanel(manager) {
                 MinWidth = 700,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Orientation = Orientation.Vertical,
             };
             crewScroll.Content = crewList;
 
-            foreach(var member in crew)
+            foreach(CrewMember member in crew)
             {
                 Button memberButton = new TextButton(manager, member.Username);
                 memberButton.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -44,6 +49,8 @@ namespace OctoAwesome.Client.Screens
 
                 crewList.Controls.Add(memberButton);
             }
+            
+
             Controls.Add(crewScroll);
         }
     }

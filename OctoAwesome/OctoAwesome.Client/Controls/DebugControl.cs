@@ -1,5 +1,8 @@
 ﻿using engenious.UI;
+using System.Collections.Generic;
+using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
+using System;
 using engenious;
 using engenious.Graphics;
 using System.Linq;
@@ -10,15 +13,15 @@ namespace OctoAwesome.Client.Controls
 {
     internal class DebugControl : Panel
     {
-        private int _buffersize = 10;
-        private float[] _framebuffer;
-        private int _bufferindex = 0;
+        private int buffersize = 10;
+        private float[] framebuffer;
+        private int bufferindex = 0;
 
-        private int _framecount = 0;
-        private double _seconds = 0;
-        private double _lastfps = 0f;
+        private int framecount = 0;
+        private double seconds = 0;
+        private double lastfps = 0f;
 
-        readonly AssetComponent _assets;
+        AssetComponent assets;
 
         public PlayerComponent Player { get; set; }
 
@@ -27,12 +30,13 @@ namespace OctoAwesome.Client.Controls
         StackPanel leftView, rightView;
         Label devText, position, rotation, fps, box, controlInfo, loadedChunks, loadedTextures, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo, gravityInfo;
 
-        public DebugControl(ScreenComponent screenManager) : base(screenManager)
+        public DebugControl(ScreenComponent screenManager)
+            : base(screenManager)
         {
-            _framebuffer = new float[_buffersize];
+            framebuffer = new float[buffersize];
             Player = screenManager.Player;
             manager = screenManager;
-            _assets = screenManager.Game.Assets;
+            assets = screenManager.Game.Assets;
 
             //Brush for Debug Background
             BorderBrush bg = new BorderBrush(Color.Black * 0.2f);
@@ -109,69 +113,73 @@ namespace OctoAwesome.Client.Controls
             Controls.Add(rightView);
 
             //Label Setup - Set Settings for all Labels in one place
-            foreach (var control in leftView.Controls)
+            foreach (Control control in leftView.Controls)
             {
                 control.HorizontalAlignment = HorizontalAlignment.Left;
-             
-                if (control is Label label)
-                    label.TextColor = Color.White;
+                if (control is Label)
+                {
+                    ((Label)control).TextColor = Color.White;
+                }
             }
-
-            foreach (var control in rightView.Controls)
+            foreach (Control control in rightView.Controls)
             {
                 control.HorizontalAlignment = HorizontalAlignment.Right;
-             
-                if (control is Label label)
-                    label.TextColor = Color.White;
+                if (control is Label)
+                {
+                    ((Label)control).TextColor = Color.White;
 
+                }
             }
         }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (!Visible || !Enabled || !_assets.Ready)
+            if (!Visible || !Enabled || !assets.Ready)
                 return;
 
             if (Player == null || Player.CurrentEntity == null)
                 return;
 
             //Calculate FPS
-            _framecount++;
-            _seconds += gameTime.ElapsedGameTime.TotalSeconds;
-            if (_framecount == 10)
+            framecount++;
+            seconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (framecount == 10)
             {
-                _lastfps = _seconds / _framecount;
-                _framecount = 0;
-                _seconds = 0;
+                lastfps = seconds / framecount;
+                framecount = 0;
+                seconds = 0;
             }
 
-            _framebuffer[_bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            _bufferindex %= _buffersize;
+            framebuffer[bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            bufferindex %= buffersize;
 
             //Draw Control Info
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
 
             //Draw Position
-            var pos = "pos: " + Player.Position.Position.ToString();
+            string pos = "pos: " + Player.Position.Position.ToString();
             position.Text = pos;
 
             //Draw Rotation
-            var grad = (Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360;
-            var rot = "rot: " +
-                      (((Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
-                      ((Player.CurrentEntityHead.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+            float grad = (Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360;
+            string rot = "rot: " +
+                (((Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((Player.CurrentEntityHead.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
             rotation.Text = rot;
 
             //Draw Fps
-            var fpsString = "fps: " + (1f / _lastfps).ToString("0.00");
+            string fpsString = "fps: " + (1f / lastfps).ToString("0.00");
             fps.Text = fpsString;
 
             //Draw Loaded Chunks
-            loadedChunks.Text =
-                $"{Languages.OctoClient.LoadedChunks}: {manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet).GlobalChunkCache.DirtyChunkColumn}/{manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet).GlobalChunkCache.LoadedChunkColumns}";
+            loadedChunks.Text = string.Format("{0}: {1}/{2}",
+                Languages.OctoClient.LoadedChunks,
+                manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet).GlobalChunkCache.DirtyChunkColumn,
+                manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet).GlobalChunkCache.LoadedChunkColumns);
 
             // Draw Loaded Textures
-            loadedTextures.Text = $"Loaded Textures: {_assets.LoadedTextures}";
+            loadedTextures.Text = string.Format("Loaded Textures: {0}",
+                assets.LoadedTextures);
 
             //Get Number of Loaded Items/Blocks
             loadedInfo.Text = "" + manager.Game.DefinitionManager.GetItemDefinitions().Count() + " " + Languages.OctoClient.Items + " - " +
@@ -189,7 +197,7 @@ namespace OctoAwesome.Client.Controls
             //if (Player.ActorHost.Player.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
             //else flyInfo.Text = "";
 
-            var planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
+            IPlanet planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
             // Temperature Info
             temperatureInfo.Text = Languages.OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.Position.Position.GlobalBlockIndex);
 
@@ -202,16 +210,17 @@ namespace OctoAwesome.Client.Controls
             //Draw Box Information
             if (Player.SelectedBox.HasValue)
             {
-                var selection = "box: " +
-                                Player.SelectedBox.Value.ToString() + " on " +
-                                Player.SelectedSide.ToString() + " (" +
-                                Player.SelectedPoint.Value.X.ToString("0.00") + "/" +
-                                Player.SelectedPoint.Value.Y.ToString("0.00") + ") -> " +
-                                Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
+                string selection = "box: " +
+                    Player.SelectedBox.Value.ToString() + " on " +
+                    Player.SelectedSide.ToString() + " (" +
+                    Player.SelectedPoint.Value.X.ToString("0.00") + "/" +
+                    Player.SelectedPoint.Value.Y.ToString("0.00") + ") -> " +
+                    Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
                 box.Text = selection;
             }
             else
                 box.Text = "";
+
         }
     }
 }

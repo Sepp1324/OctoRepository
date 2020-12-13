@@ -10,7 +10,6 @@ namespace OctoAwesome
     public abstract class Component : ISerializable
     {
         public bool Enabled { get; set; }
-
         public bool Sendable { get; set; }
 
         public Component()
@@ -32,7 +31,10 @@ namespace OctoAwesome
         /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
         /// </summary>
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
-        public virtual void Deserialize(BinaryReader reader) => Enabled = reader.ReadBoolean();
+        public virtual void Deserialize(BinaryReader reader)
+        {
+            Enabled = reader.ReadBoolean();
+        }
 
         protected virtual void OnPropertyChanged<T>(T value, string callerName)
         {

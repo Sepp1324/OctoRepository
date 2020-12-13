@@ -1,6 +1,11 @@
 ﻿using CommandManagementSystem.Attributes;
 using OctoAwesome.Network;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -10,7 +15,7 @@ namespace OctoAwesome.GameServer.Commands
         public static byte[] GetUniverse(CommandParameter parameter)
         {
             var universe = TypeContainer.Get<SimulationManager>().GetUniverse();
-
+            
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
             {

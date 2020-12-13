@@ -1,7 +1,10 @@
 ﻿using OctoAwesome.Database.Checks;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -9,27 +12,26 @@ namespace OctoAwesome.Database
     {
         public Type TagType { get; }
 
-        protected Database(Type tagType) => TagType = tagType;
+        protected Database(Type tagType)
+        {
+            TagType = tagType;
+        }
 
         public abstract void Open();
-
         public abstract void Close();
-
         public abstract void Dispose();
-
         /// <summary>
         /// Locks this Database for the specific operation
         /// </summary>
-        /// <param name="operation">Indicates which operation is currently performed</param>
+        /// <param name="mode">Indicates witch operation is currently performed</param>
         /// <returns>A new database lock</returns>
-        public abstract DatabaseLock Lock(Operation operation);
+        public abstract DatabaseLock Lock(Operation mode);
     }
 
     public sealed class Database<TTag> : Database where TTag : ITag, new()
     {
-        public bool FixedValueLength => _valueStore.FixedValueLength;
-
-        public IEnumerable<TTag> Keys => _keyStore.Tags;
+        public bool FixedValueLength => valueStore.FixedValueLength;
+        public IEnumerable<TTag> Keys => keyStore.Tags;
 
         public bool IsOpen { get; private set; }
 
@@ -41,133 +43,147 @@ namespace OctoAwesome.Database
         /// </summary>
         public int Threshold { get; set; }
 
-        private readonly KeyStore<TTag> _keyStore;
-        private readonly ValueStore _valueStore;
-        private readonly Defragmentation<TTag> _defragmentation;
-        private readonly ValueFileCheck<TTag> _fileCheck;
-        private readonly FileInfo _keyFile;
-        private readonly FileInfo _valueFile;
+        private readonly KeyStore<TTag> keyStore;
+        private readonly ValueStore valueStore;
+        private readonly Defragmentation<TTag> defragmentation;
+        private readonly ValueFileCheck<TTag> fileCheck;
+        private readonly FileInfo keyFile;
+        private readonly FileInfo valueFile;
 
         public Database(FileInfo keyFile, FileInfo valueFile, bool fixedValueLength) : base(typeof(TTag))
         {
-            _keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
-            _valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
-            _defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
-            _fileCheck = new ValueFileCheck<TTag>(valueFile);
-            _keyFile = keyFile;
-            _valueFile = valueFile;
+
+            keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
+            valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
+            defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
+            fileCheck = new ValueFileCheck<TTag>(valueFile);
+            this.keyFile = keyFile;
+            this.valueFile = valueFile;
             Threshold = 1000;
         }
-
         public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
         {
+
         }
 
         public override void Open()
         {
             IsOpen = true;
 
-            if (_valueFile.Exists &&_valueFile.Length > 0 && (!_keyFile.Exists || _keyFile.Length == 0))
-                _defragmentation.RecreateKeyFile();
+            if (valueFile.Exists && valueFile.Length > 0 && (!keyFile.Exists || keyFile.Length == 0))
+                defragmentation.RecreateKeyFile();
 
             try
             {
-                _keyStore.Open();
+                keyStore.Open();
             }
-            catch (Exception ex) when (ex is KeyInvalidException || ex is ArgumentException)
+            catch (Exception ex) 
+                when(ex is KeyInvalidException || ex is ArgumentException)
             {
-                _keyStore.Close();
-                _defragmentation.RecreateKeyFile();
-                _keyStore.Open();
+                keyStore.Close();
+                defragmentation.RecreateKeyFile();
+                keyStore.Open();
             }
 
-            _valueStore.Open();
+            valueStore.Open();
 
-            if (Threshold >= 0 && _keyStore.EmptyKeys >= Threshold)
-                Defragmentation();
+            if (Threshold >= 0 && keyStore.EmptyKeys >= Threshold)
+                Defragmentation();            
         }
 
         public override void Close()
         {
             IsOpen = false;
-            _keyStore.Close();
-            _valueStore.Close();
+            keyStore.Close();
+            valueStore.Close();
         }
 
-        public void Validate() => ExecuteOperationOnKeyValueStore(_fileCheck.Check);
+        public void Validate()
+            => ExecuteOperationOnKeyValueStore(fileCheck.Check);
 
-        public void Defragmentation() => ExecuteOperationOnKeyValueStore(_defragmentation.StartDefragmentation);
+        public void Defragmentation()
+            => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
 
         public Value GetValue(TTag tag)
         {
-            var key = _keyStore.GetKey(tag);
-            return _valueStore.GetValue(key);
+            var key = keyStore.GetKey(tag);
+            return valueStore.GetValue(key);
         }
 
         public void AddOrUpdate(TTag tag, Value value)
         {
-            var contains = _keyStore.Contains(tag);
-
+            var contains = keyStore.Contains(tag);
             if (contains)
             {
-                var key = _keyStore.GetKey(tag);
+                var key = keyStore.GetKey(tag);
 
                 if (FixedValueLength)
-                    _valueStore.Update(key, value);
+                {
+                    valueStore.Update(key, value);
+                }
                 else
-                    _valueStore.Remove(key);
+                {
+                    valueStore.Remove(key);
+                }
             }
 
-            var newKey = _valueStore.AddValue(tag, value);
+            var newKey = valueStore.AddValue(tag, value);
 
             if (contains)
-                _keyStore.Update(newKey);
+                keyStore.Update(newKey);
             else
-                _keyStore.Add(newKey);
+                keyStore.Add(newKey);
         }
 
-        public bool ContainsKey(TTag tag) => _keyStore.Contains(tag);
+        public bool ContainsKey(TTag tag)
+            => keyStore.Contains(tag);
 
         public void Remove(TTag tag)
         {
-            _keyStore.Remove(tag, out var key);
-            _valueStore.Remove(key);
+            keyStore.Remove(tag, out var key);
+            valueStore.Remove(key);
+        }
+
+        public override DatabaseLock Lock(Operation mode)
+        {
+            //1 counted für Read (1 komplett block)
+            //1 counted für Write (1 komplett block)
+
+            if (mode.HasFlag(Operation.Read))
+            {
+                //Read -> Blocks Write && Other read is ok
+                //Exclusive -> Blocks every other operation
+            }
+
+            if (mode.HasFlag(Operation.Write))
+            {
+                //Write -> Blocks Read && Other write is ok
+                //Exclusive -> Blocks every other operation
+            }
+
+            throw new NotImplementedException();
         }
 
         public override void Dispose()
         {
-            _keyStore.Dispose();
-            _valueStore.Dispose();
-        }
-
-        public override DatabaseLock Lock(Operation operation)
-        {
-            if(operation.HasFlag(Operation.Read))
-            {
-
-            }
-
-            if (operation.HasFlag(Operation.Write))
-            {
-
-            }
-            throw new NotImplementedException();
+            keyStore.Dispose();
+            valueStore.Dispose();
         }
 
         private void ExecuteOperationOnKeyValueStore(Action action)
         {
             if (IsOpen)
             {
-                _keyStore.Close();
-                _valueStore.Close();
+                keyStore.Close();
+                valueStore.Close();
             }
 
             action();
 
             if (IsOpen)
             {
-                _keyStore.Open();
-                _valueStore.Open();
+                keyStore.Open();
+                valueStore.Open();
             }
         }
     }

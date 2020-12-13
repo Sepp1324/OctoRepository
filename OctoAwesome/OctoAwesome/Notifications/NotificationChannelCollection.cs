@@ -1,58 +1,65 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public class NotificationChannelCollection : IEnumerable<KeyValuePair<string, ObserverHashSet>>
     {
-        public ObserverHashSet this[string channel] => _internalDictionary[channel];
+        public ObserverHashSet this[string channel] => internalDictionary[channel];
 
-        public ICollection<string> Channels => _internalDictionary.Keys;
+        public ICollection<string> Channels => internalDictionary.Keys;
 
-        public int Count => _internalDictionary.Count;
+        public int Count => internalDictionary.Count;
 
-        public Dictionary<string, ObserverHashSet>.ValueCollection Values => _internalDictionary.Values;
+        public Dictionary<string, ObserverHashSet>.ValueCollection Values => internalDictionary.Values;
 
-        private readonly Dictionary<string, ObserverHashSet> _internalDictionary;
-        private readonly SemaphoreSlim _addSemaphore;
+        private readonly Dictionary<string, ObserverHashSet> internalDictionary;
+        private readonly SemaphoreSlim addSemaphore;
 
         public NotificationChannelCollection()
         {
-            _internalDictionary = new Dictionary<string, ObserverHashSet>();
-            _addSemaphore = new SemaphoreSlim(1,1);
+            internalDictionary = new Dictionary<string, ObserverHashSet>();
+            addSemaphore = new SemaphoreSlim(1,1);
         }
 
         public void Add(string channel, INotificationObserver value)
         {
-            _addSemaphore.Wait();
-            if (_internalDictionary.TryGetValue(channel, out ObserverHashSet hashset))
+            addSemaphore.Wait();
+            if (internalDictionary.TryGetValue(channel, out ObserverHashSet hashset))
             {
                 using (hashset.Wait())
                     hashset.Add(value);
             }
             else
             {
-                _internalDictionary.Add(channel, new ObserverHashSet { value });
+                internalDictionary.Add(channel, new ObserverHashSet { value });
             }
-            _addSemaphore.Release();
+            addSemaphore.Release();
         }
 
-        public void Clear() => _internalDictionary.Clear();
+        public void Clear()
+            => internalDictionary.Clear();
 
-        public bool Contains(INotificationObserver item) => _internalDictionary.Values.Any(i => i == item);
-        public bool Contains(string key) => _internalDictionary.ContainsKey(key);
+        public bool Contains(INotificationObserver item)
+            => internalDictionary.Values.Any(i => i == item);
+        public bool Contains(string key)
+            => internalDictionary.ContainsKey(key);
 
-        public Dictionary<string, ObserverHashSet>.Enumerator GetEnumerator() => _internalDictionary.GetEnumerator();
+        public Dictionary<string, ObserverHashSet>.Enumerator GetEnumerator()
+            => internalDictionary.GetEnumerator();
 
-        public bool Remove(string key) => _internalDictionary.Remove(key);
-      
+        public bool Remove(string key)
+            => internalDictionary.Remove(key);
         public bool Remove(INotificationObserver item)
         {
             var returnValue = false;
 
-            foreach (ObserverHashSet hashSet in _internalDictionary.Values)
+            foreach (ObserverHashSet hashSet in internalDictionary.Values)
             {
                 using (hashSet.Wait())
                     returnValue = returnValue ? returnValue : hashSet.Remove(item);
@@ -60,10 +67,9 @@ namespace OctoAwesome.Notifications
 
             return returnValue;
         }
-
         public bool Remove(string key, INotificationObserver item)
         {
-            var hashSet = _internalDictionary[key];
+            ObserverHashSet hashSet = internalDictionary[key];
             bool returnValue;
 
             using (hashSet.Wait())
@@ -72,9 +78,12 @@ namespace OctoAwesome.Notifications
             return returnValue;
         }
 
-        public bool TryGetValue(string key, out ObserverHashSet value) => _internalDictionary.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out ObserverHashSet value)
+            => internalDictionary.TryGetValue(key, out value);
 
-        IEnumerator IEnumerable.GetEnumerator() => _internalDictionary.GetEnumerator();
-        IEnumerator<KeyValuePair<string, ObserverHashSet>> IEnumerable<KeyValuePair<string, ObserverHashSet>>.GetEnumerator() => _internalDictionary.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => internalDictionary.GetEnumerator();
+        IEnumerator<KeyValuePair<string, ObserverHashSet>> IEnumerable<KeyValuePair<string, ObserverHashSet>>.GetEnumerator()
+            => internalDictionary.GetEnumerator();
     }
 }

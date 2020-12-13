@@ -12,7 +12,6 @@ namespace OctoAwesome.Common
         /// <see cref="IDefinitionManager"/> der lokalen Daten.
         /// </summary>
         IDefinitionManager DefinitionManager { get; }
-
         /// <summary>
         /// Berechnet die Geschwindigkeit einer <see cref="Entity"/> nach der Kollision mit der Welt.
         /// </summary>
@@ -25,6 +24,8 @@ namespace OctoAwesome.Common
         /// <param name="velocity">Berechnete Geschwindigkeit</param>
         /// <exception cref="ArgumentNullException">Cache</exception>
         /// <returns>Geschwindigkeit der <see cref="Entity"/> nach der Killisionsprüfung</returns>
-        Vector3 WorldCollision(GameTime gameTime, Coordinate position, ILocalChunkCache cache, float radius, float height, Vector3 deltaPosition, Vector3 velocity);
+        Vector3 WorldCollision(GameTime gameTime, Coordinate position, ILocalChunkCache cache, float radius, float height,
+            Vector3 deltaPosition, Vector3 velocity);
+
     }
 }

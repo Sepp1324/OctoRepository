@@ -1,6 +1,10 @@
 ﻿using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
@@ -8,7 +12,8 @@ namespace OctoAwesome.Runtime
     {
         private readonly NotificationChannelCollection observers;
 
-        public UpdateHub() => observers = new NotificationChannelCollection();
+        public UpdateHub()
+            => observers = new NotificationChannelCollection();
 
         public IDisposable Subscribe(INotificationObserver observer, string channel = "none")
         {
@@ -16,13 +21,15 @@ namespace OctoAwesome.Runtime
             return new NotificationSubscription(this, observer, channel);
         }
 
-        public void Unsubscribe(INotificationObserver observer) => observers.Remove(observer);
+        public void Unsubscribe(INotificationObserver observer)
+            => observers.Remove(observer);
 
-        public void Unsubscribe(INotificationObserver observer, string channel) => observers.Remove(channel, observer);
+        public void Unsubscribe(INotificationObserver observer, string channel)
+            => observers.Remove(channel, observer);
 
         public void Push(Notification notification)
         {
-            foreach (var observerSet in observers)
+            foreach (KeyValuePair<string, ObserverHashSet> observerSet in observers)
             {
                 using (observerSet.Value.Wait())
                 {
@@ -42,6 +49,7 @@ namespace OctoAwesome.Runtime
                         observer.OnNext(notification);
                 }
             }
+
         }
 
         public void Dispose()
@@ -57,5 +65,6 @@ namespace OctoAwesome.Runtime
             }
             observers.Clear();
         }
+
     }
 }

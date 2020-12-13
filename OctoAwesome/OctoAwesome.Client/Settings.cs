@@ -1,16 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using static System.String;
+using System.Runtime.Serialization;
 
 namespace OctoAwesome.Client
 {
     /// <summary>
     /// Verwaltet die Anwendungseinstellungen.
     /// </summary>
-    [SuppressMessage("ReSharper", "CommentTypo")]
     public class Settings : ISettings
     {
         private Configuration _config;
@@ -24,7 +23,7 @@ namespace OctoAwesome.Client
         {
             if (debug)
             {
-                var map = new ExeConfigurationFileMap { ExeConfigFilename = "EXECONFIG_PATH" };
+                ExeConfigurationFileMap map = new ExeConfigurationFileMap { ExeConfigFilename = "EXECONFIG_PATH" };
                 _config = ConfigurationManager.OpenMappedExeConfiguration(map,
                     ConfigurationUserLevel.None);
             }
@@ -37,14 +36,20 @@ namespace OctoAwesome.Client
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Settings, die auf die Konfigurationsdatei der aktuell laufenden Anwendung zugreift.
         /// </summary>
-        public Settings() => _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
+        public Settings()
+        {
+            _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
+        }
 
         /// <summary>
         /// Gibt den Wert einer Einstellung zurück.
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns>Der Wert der Einstellung.</returns>
-        public T Get<T>(string key) => Get<T>(key, default(T));
+        public T Get<T>(string key)
+        {
+            return Get<T>(key, default(T));
+        }
 
         /// <summary>
         /// Gibt den Wert einer Einstellung zurück.
@@ -80,7 +85,10 @@ namespace OctoAwesome.Client
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns></returns>
-        public bool KeyExists(string key) => _config.AppSettings.Settings.AllKeys.Contains(key);
+        public bool KeyExists(string key)
+        {
+            return _config.AppSettings.Settings.AllKeys.Contains(key);
+        }
 
         /// <summary>
         /// Setzt den Wert einer Eigenschaft.
@@ -101,14 +109,20 @@ namespace OctoAwesome.Client
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, int value) => Set(key, Convert.ToString(value));
+        public void Set(string key, int value)
+        {
+            Set(key, Convert.ToString(value));
+        }
 
         /// <summary>
         /// Setzt den Wert einer Eigenschaft.
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, bool value) => Set(key, Convert.ToString(value));
+        public void Set(string key, bool value)
+        {
+            Set(key, Convert.ToString(value));
+        }
 
         /// <summary>
         /// Setzt den Wert einer Eigenschaft.
@@ -117,7 +131,12 @@ namespace OctoAwesome.Client
         /// <param name="values">Der Wert der Einstellung.</param>
         public void Set(string key, string[] values)
         {
-            var writeString = "[" + Join(",", values) + "]";
+            // Wir bauen das Array in eine Art serialisierten String um.
+            // Wenn eine Zeichenkette, die wir aus den Einstellugen lesen mit einer
+            // eckigen Klammer anfängt, ist es ein Array.
+            // [value1, value2, value3]
+
+            string writeString = "[" + String.Join(",", values) + "]";
             Set(key, writeString);
         }
 
@@ -128,11 +147,9 @@ namespace OctoAwesome.Client
         /// <param name="values">Der Wert der Einstellung.</param>
         public void Set(string key, int[] values)
         {
-            var strValues = new string[values.Length];
-
-            for (var i = 0; i < values.Length; i++)
+            string[] strValues = new string[values.Length];
+            for (int i = 0; i < values.Length; i++)
                 strValues[i] = Convert.ToString(values[i]);
-
             Set(key, strValues);
         }
 
@@ -143,23 +160,23 @@ namespace OctoAwesome.Client
         /// <param name="values">Der Wert der Einstellung.</param>
         public void Set(string key, bool[] values)
         {
-            var stringValues = new string[values.Length];
-
-            for (var i = 0; i < values.Length; i++)
+            string[] stringValues = new string[values.Length];
+            for (int i = 0; i < values.Length; i++)
                 stringValues[i] = Convert.ToString(values[i]);
-
             Set(key, stringValues);
         }
 
 
         private T[] DeserializeArray<T>(string arrayString)
         {
+            // Wir müssten, um beide Klammern zu entfernen, - 3 rechnen. Ich lasse die letzte Klammer stellvertretend für das Komma, was folgen würde, stehen.
+            // Das wird in der for-Schleife auseinander gepflückt.
+
             arrayString = arrayString.Substring(1, arrayString.Length - 2 /*- 1*/);
 
-            var partsString = arrayString.Split(',');
-            var tArray = new T[partsString.Length];
-            
-            for (var i = 0; i < partsString.Length; i++)
+            string[] partsString = arrayString.Split(',');
+            T[] tArray = new T[partsString.Length];
+            for (int i = 0; i < partsString.Length; i++)
                 tArray[i] = (T)Convert.ChangeType(partsString[i], typeof(T));
 
             return tArray;

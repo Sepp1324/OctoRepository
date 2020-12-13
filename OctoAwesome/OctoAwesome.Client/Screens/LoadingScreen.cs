@@ -1,10 +1,14 @@
 ﻿using engenious;
+using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,27 +16,26 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class LoadingScreen : BaseScreen
     {
-        private static readonly QuoteProvider _loadingQuoteProvider;
-
+        private static readonly QuoteProvider loadingQuoteProvider;
         static LoadingScreen()
         {
             var settings = TypeContainer.Get<ISettings>();
-            _loadingQuoteProvider = new QuoteProvider(new FileInfo(Path.Combine(settings.Get<string>("LoadingScreenQuotesPath"))));
+            loadingQuoteProvider = new QuoteProvider(new FileInfo(Path.Combine(settings.Get<string>("LoadingScreenQuotesPath"))));
         }
 
-        private readonly GameScreen _gameScreen;
-        private readonly CancellationTokenSource _tokenSource;
-        private readonly Task _quoteUpdate;
-
+        private readonly GameScreen gameScreen;
+        private readonly CancellationTokenSource tokenSource;
+        private readonly Task quoteUpdate;
+    
         public LoadingScreen(ScreenComponent manager) : base(manager)
         {
             Padding = new Border(0, 0, 0, 0);
-            _tokenSource = new CancellationTokenSource();
+            tokenSource = new CancellationTokenSource();
 
             Title = "Loading";
 
             SetDefaultBackground();
-
+            
             //Main Panel
             var mainStack = new Grid(manager);
             mainStack.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 4 });
@@ -76,7 +79,7 @@ namespace OctoAwesome.Client.Screens
                 Padding = Border.All(10),
             };
 
-            _quoteUpdate = Task.Run(async () => await UpdateLabel(text, _loadingQuoteProvider, TimeSpan.FromSeconds(1), _tokenSource.Token));
+            quoteUpdate = Task.Run(async () => await UpdateLabel(text, loadingQuoteProvider, TimeSpan.FromSeconds(1), tokenSource.Token));
             mainGrid.AddControl(text, 1, 1);
 
 
@@ -89,34 +92,36 @@ namespace OctoAwesome.Client.Screens
             };
             mainGrid.AddControl(buttonStack, 1, 2);
 
-            var cancelButton = GetButton(Languages.OctoClient.Cancel);
+            Button cancelButton = GetButton(Languages.OctoClient.Cancel);
             buttonStack.Controls.Add(cancelButton);
 
             Debug.WriteLine("Create GameScreen");
-            _gameScreen = new GameScreen(manager);
-            _gameScreen.Update(new GameTime());
-            _gameScreen.OnCenterChanged += SwitchToGame;
+            gameScreen = new GameScreen(manager);
+            gameScreen.Update(new GameTime());
+            gameScreen.OnCenterChanged += SwitchToGame;
 
             cancelButton.LeftMouseClick += (s, e) =>
             {
-                _tokenSource.Cancel();
-                _tokenSource.Dispose();
+                tokenSource.Cancel();
+                tokenSource.Dispose();
                 manager.Player.SetEntity(null);
                 manager.Game.Simulation.ExitGame();
-                _gameScreen.Unload();
+                gameScreen.Unload();
                 manager.NavigateBack();
             };
+
+
         }
 
         private void SwitchToGame(object sender, System.EventArgs args)
         {
             Manager.Invoke(() =>
             {
-                _tokenSource.Cancel();
-                _tokenSource.Dispose();
-                Manager.NavigateToScreen(_gameScreen);
-                _gameScreen.OnCenterChanged -= SwitchToGame;
-            });
+                tokenSource.Cancel();
+                tokenSource.Dispose();
+                Manager.NavigateToScreen(gameScreen);
+                gameScreen.OnCenterChanged -= SwitchToGame;
+            });            
         }
 
         private static async Task UpdateLabel(Label label, QuoteProvider quoteProvider, TimeSpan timeSpan, CancellationToken token)

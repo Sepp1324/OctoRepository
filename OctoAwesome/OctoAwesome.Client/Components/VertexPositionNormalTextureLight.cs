@@ -1,7 +1,9 @@
 ﻿using engenious;
 using engenious.Graphics;
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 namespace OctoAwesome.Client.Components
 {
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential,Pack=1)]
@@ -16,15 +18,15 @@ namespace OctoAwesome.Client.Components
         }
         public VertexPositionNormalTextureLight(Vector3 position, Vector3 normal, Vector2 uv,byte layer,uint light)
         {
-            var posX = (uint)position.X;
-            var posY = (uint)position.Y;
-            var posZ = (uint)position.Z;
+            uint posX = (uint)position.X;
+            uint posY = (uint)position.Y;
+            uint posZ = (uint)position.Z;
 
-            var normalX = (int)normal.X;
-            var normalY = (int)normal.Y;
-            var normalZ = (int)normal.Z;
+            int normalX = (int)normal.X;
+            int normalY = (int)normal.Y;
+            int normalZ = (int)normal.Z;
 
-            var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+            int normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
 
             uint normalPacked;
             switch (normalExpanded)
@@ -39,14 +41,18 @@ namespace OctoAwesome.Client.Components
                     throw new Exception("Expected error happened.");
             }
 
-            var uvExpanded = ((uint)uv.X << 1) | ((uint)uv.Y);
+            uint uvExpanded = ((uint)uv.X << 1) | ((uint)uv.Y);
             PackedValue = (posX & 0xFF) | ((posY & 0xFF) << 8) | ((posZ & 0xFF) << 16) | ((uint)layer << 24);
             PackedValue2 = light | (normalPacked << 24) | (uvExpanded << 28);
         }
         public uint PackedValue { get; private set; }
-
         public uint PackedValue2 { get; private set; }
-
-        VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+        VertexDeclaration IVertexType.VertexDeclaration
+        {
+            get
+            {
+                return VertexDeclaration;
+            }
+        }
     }
 }

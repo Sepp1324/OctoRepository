@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace OctoAwesome.Noise
 {
@@ -9,10 +12,10 @@ namespace OctoAwesome.Noise
 
         #region Props & Fields
 
-        private byte[] _permutations;
-        private static readonly byte[] range = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
-        private int _octaves;
-        private float _persistance;
+        private byte[] permutations;
+        private static byte[] range = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
+        private int octaves;
+        private float persistance;
 
         public int Seed { get; private set; }
 
@@ -25,56 +28,63 @@ namespace OctoAwesome.Noise
 
         public int Octaves
         {
-            get => _octaves;
+            get
+            {
+                return octaves;
+            }
             set
             {
-                _octaves = value;
+                octaves = value;
                 RecalcMax();
             }
         }
 
         public float Persistance
         {
-            get => _persistance;
+            get
+            {
+                return persistance;
+            }
             set
             {
-                _persistance = value;
+                persistance = value;
                 RecalcMax();
             }
         }
 
         private void CreatePermutations()
         {
-            var rnd = new Random(Seed);
-            var temp = range.OrderBy(a => rnd.Next()).ToArray();
-            _permutations = temp.Concat(temp).ToArray();
+            Random rnd = new Random(Seed);
+            byte[] temp = range.OrderBy(a => rnd.Next()).ToArray();
+            permutations = temp.Concat(temp).ToArray();
 
         }
 
         public float MaxValue { get; private set; }
-
         private void RecalcMax()
         {
             MaxValue = 0f;
-
-            for (var i = 0; i < Octaves; i++)
+            for (int i = 0; i < Octaves; i++)
+            {
                 MaxValue += (float)Math.Pow(Persistance, i);
+            }
         }
 
 
         #endregion
 
-        public SimplexNoiseGenerator(int seed, float frequencyX = 1f, float frequencyY = 1f, float frequencyZ = 1f, float frequencyW = 1f)
+        public SimplexNoiseGenerator(int seed,float frequencyX=1f,float frequencyY=1f,float frequencyZ=1f,float frequencyW=1f)
         {
-            Seed = seed;
-            Octaves = 5;
-            Persistance = 0.5f;
-            FrequencyX = frequencyX;
-            FrequencyY = frequencyY;
-            FrequencyZ = frequencyZ;
-            FrequencyW = frequencyW;
-            Factor = 1;
+            this.Seed = seed;
+            this.Octaves = 5;
+            this.Persistance = 0.5f;
+            this.FrequencyX = frequencyX;
+            this.FrequencyY = frequencyY;
+            this.FrequencyZ = frequencyZ;
+            this.FrequencyW = frequencyW;
+            this.Factor = 1;
             CreatePermutations();
+
         }
 
         #region NoiseMaps
@@ -87,13 +97,12 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein float-Array einer 1D Noise zurück</returns>
         public float[] GetNoiseMap(int startX, int width)
         {
-            var noise = new float[width];
-
-            for (var x = 0; x < width; x++)
+            float[] noise = new float[width];
+            for (int x = 0; x < width; x++)
             {
-                var frequencyX = FrequencyX;
-                var amplitude = 1f;
-                for (var i = 0; i < Octaves; i++)
+                float frequencyX = FrequencyX;
+                float amplitude = 1f;
+                for (int i = 0; i < Octaves; i++)
                 {
                     noise[x] += Noise((x + startX) * frequencyX) * amplitude;
                     amplitude *= Persistance;
@@ -114,17 +123,16 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück</returns>
         public float[,] GetNoiseMap2D(int startX, int startY, int width, int height)
         {
-            var noise = new float[width, height];
+            float[,] noise = new float[width, height];
 
             Parallel.For(0, width, x =>
             {
-                for (var y = 0; y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    var frequencyX = FrequencyX;
-                    var frequencyZ = FrequencyZ;
-                    var amplitude = 1f;
-
-                    for (var i = 0; i < Octaves; i++)
+                    float frequencyX = FrequencyX;
+                    float frequencyZ = FrequencyZ;
+                    float amplitude = 1f;
+                    for (int i = 0; i < Octaves; i++)
                     {
                         noise[x, y] += Noise2D((x + startX) * frequencyX, (y + startY) * frequencyZ) * amplitude;
                         amplitude *= Persistance;
@@ -149,11 +157,11 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück, welche kachelbar ist</returns>
         public float[,] GetTileableNoiseMap2D(int startX, int startY, int sizeX, int sizeY, int tileSizeX, int tileSizeY)
         {
-            var noise = new float[sizeX, sizeY];
+            float[,] noise = new float[sizeX, sizeY];
 
             Parallel.For(0, sizeX, x =>
             {
-                for (var y = 0; y < sizeY; y++)
+                for (int y = 0; y < sizeY; y++)
                 {
                     float frequencyX = FrequencyX;
                     float frequencyY = FrequencyY;
@@ -167,7 +175,7 @@ namespace OctoAwesome.Noise
                     float nz = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
                     float nw = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
 
-                    for (var i = 0; i < Octaves; i++)
+                    for (int i = 0; i < Octaves; i++)
                     {
                         noise[x, y] += Noise4D(nx * frequencyX, ny * frequencyY, nz * frequencyX, nw * frequencyY) * amplitude;
 
@@ -191,9 +199,9 @@ namespace OctoAwesome.Noise
         /// <param name="height">Höhe der Noise-Map</param>
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück</returns>
-        public float[,,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth)
+        public float[, ,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth)
         {
-            var noise = new float[width, height, depth];
+            float[, ,] noise = new float[width, height, depth];
 
 
             Parallel.For(0, width, x =>
@@ -236,9 +244,9 @@ namespace OctoAwesome.Noise
         /// <param name="tileSizeX">Breite der Kachel</param>
         /// <param name="tileSizeY">Höhe der Kachel</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück, welche in X und Y Richtung kachelbar ist</returns>
-        public float[,,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
+        public float[, ,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
         {
-            float[,,] noise = new float[width, height, depth];
+            float[, ,] noise = new float[width, height, depth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)
@@ -291,9 +299,9 @@ namespace OctoAwesome.Noise
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <param name="wDepth">Dicke(Tiefe 2.Grades) der Noise-Map</param>
         /// <returns>Gibt ein 4D-float-Array einer 4D-Noise zurück</returns>
-        public float[,,,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
+        public float[, , ,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
         {
-            float[,,,] noise = new float[width, height, depth, wDepth];
+            float[, , ,] noise = new float[width, height, depth, wDepth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)
@@ -603,9 +611,9 @@ namespace OctoAwesome.Noise
 
             int ii = i & 255;
             int jj = j & 255;
-            int gi0 = _permutations[ii + _permutations[jj]] % 12;
-            int gi1 = _permutations[ii + i1 + _permutations[jj + j1]] % 12;
-            int gi2 = _permutations[ii + 1 + _permutations[jj + 1]] % 12;
+            int gi0 = permutations[ii + permutations[jj]] % 12;
+            int gi1 = permutations[ii + i1 + permutations[jj + j1]] % 12;
+            int gi2 = permutations[ii + 1 + permutations[jj + 1]] % 12;
 
             float t0 = 0.5f - x0 * x0 - y0 * y0;
             if (t0 <= 0) n0 = 0.0f;
@@ -676,10 +684,10 @@ namespace OctoAwesome.Noise
             int jj = j & 255;
             int kk = k & 255;
 
-            int gi0 = _permutations[(ii + _permutations[jj + _permutations[kk]])] % 12;
-            int gi1 = _permutations[(ii + i1 + _permutations[jj + j1 + _permutations[kk + k1]])] % 12;
-            int gi2 = _permutations[(ii + i2 + _permutations[jj + j2 + _permutations[kk + k2]])] % 12;
-            int gi3 = _permutations[(ii + 1 + _permutations[jj + 1 + _permutations[kk + 1]])] % 12;
+            int gi0 = permutations[(ii + permutations[jj + permutations[kk]])] % 12;
+            int gi1 = permutations[(ii + i1 + permutations[jj + j1 + permutations[kk + k1]])] % 12;
+            int gi2 = permutations[(ii + i2 + permutations[jj + j2 + permutations[kk + k2]])] % 12;
+            int gi3 = permutations[(ii + 1 + permutations[jj + 1 + permutations[kk + 1]])] % 12;
 
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0;
             if (t0 <= 0) n0 = 0.0f;
@@ -783,11 +791,11 @@ namespace OctoAwesome.Noise
             int jj = j & 255;
             int kk = k & 255;
             int ll = l & 255;
-            int gi0 = _permutations[ii + _permutations[jj + _permutations[kk + _permutations[ll]]]] % 32;
-            int gi1 = _permutations[ii + i1 + _permutations[jj + j1 + _permutations[kk + k1 + _permutations[ll + l1]]]] % 32;
-            int gi2 = _permutations[ii + i2 + _permutations[jj + j2 + _permutations[kk + k2 + _permutations[ll + l2]]]] % 32;
-            int gi3 = _permutations[ii + i3 + _permutations[jj + j3 + _permutations[kk + k3 + _permutations[ll + l3]]]] % 32;
-            int gi4 = _permutations[ii + 1 + _permutations[jj + 1 + _permutations[kk + 1 + _permutations[ll + 1]]]] % 32;
+            int gi0 = permutations[ii + permutations[jj + permutations[kk + permutations[ll]]]] % 32;
+            int gi1 = permutations[ii + i1 + permutations[jj + j1 + permutations[kk + k1 + permutations[ll + l1]]]] % 32;
+            int gi2 = permutations[ii + i2 + permutations[jj + j2 + permutations[kk + k2 + permutations[ll + l2]]]] % 32;
+            int gi3 = permutations[ii + i3 + permutations[jj + j3 + permutations[kk + k3 + permutations[ll + l3]]]] % 32;
+            int gi4 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1 + permutations[ll + 1]]]] % 32;
 
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
             if (t0 < 0) n0 = 0.0f;
@@ -931,12 +939,12 @@ namespace OctoAwesome.Noise
             int kk = k & 255;
             int ll = l & 255;
             int mm = m & 255;
-            int gi0 = _permutations[ii + _permutations[jj + _permutations[kk + _permutations[ll + _permutations[mm]]]]] % 80;
-            int gi1 = _permutations[ii + i1 + _permutations[jj + j1 + _permutations[kk + k1 + _permutations[ll + l1 + _permutations[mm + m1]]]]] % 80;
-            int gi2 = _permutations[ii + i2 + _permutations[jj + j2 + _permutations[kk + k2 + _permutations[ll + l2 + _permutations[mm + m2]]]]] % 80;
-            int gi3 = _permutations[ii + i3 + _permutations[jj + j3 + _permutations[kk + k3 + _permutations[ll + l3 + _permutations[mm + m3]]]]] % 80;
-            int gi4 = _permutations[ii + i4 + _permutations[jj + j4 + _permutations[kk + k4 + _permutations[ll + l4 + _permutations[mm + m4]]]]] % 80;
-            int gi5 = _permutations[ii + 1 + _permutations[jj + 1 + _permutations[kk + 1 + _permutations[ll + 1 + _permutations[mm + 1]]]]] % 80;
+            int gi0 = permutations[ii + permutations[jj + permutations[kk + permutations[ll + permutations[mm]]]]] % 80;
+            int gi1 = permutations[ii + i1 + permutations[jj + j1 + permutations[kk + k1 + permutations[ll + l1 + permutations[mm + m1]]]]] % 80;
+            int gi2 = permutations[ii + i2 + permutations[jj + j2 + permutations[kk + k2 + permutations[ll + l2 + permutations[mm + m2]]]]] % 80;
+            int gi3 = permutations[ii + i3 + permutations[jj + j3 + permutations[kk + k3 + permutations[ll + l3 + permutations[mm + m3]]]]] % 80;
+            int gi4 = permutations[ii + i4 + permutations[jj + j4 + permutations[kk + k4 + permutations[ll + l4 + permutations[mm + m4]]]]] % 80;
+            int gi5 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1 + permutations[ll + 1 + permutations[mm + 1]]]]] % 80;
 
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
             if (t0 < 0) n0 = 0.0f;
@@ -1067,6 +1075,7 @@ namespace OctoAwesome.Noise
         //    max = 1f / max;
 
         #endregion
+
 
     }
 }

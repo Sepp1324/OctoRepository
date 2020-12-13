@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -11,20 +14,24 @@ namespace OctoAwesome.EntityComponents
         /// </summary>
         public List<InventorySlot> Inventory { get; set; }
 
-        public InventoryComponent() => Inventory = new List<InventorySlot>();
+        public InventoryComponent()
+        {
+            Inventory = new List<InventorySlot>();
+        }
 
         public override void Deserialize(BinaryReader reader)
         {
-            if (!TypeContainer.TryResolve(out IDefinitionManager definitionManager))
+            IDefinitionManager definitionManager;
+
+            if (!TypeContainer.TryResolve(out definitionManager))
                 return;
 
             base.Deserialize(reader);
 
             var count = reader.ReadInt32();
-            
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var name = reader.ReadString();
+                string name = reader.ReadString();
                 var definition = definitionManager.GetDefinitions().FirstOrDefault(d => d.GetType().FullName == name);
                 var amount = reader.ReadDecimal();
 
@@ -59,7 +66,8 @@ namespace OctoAwesome.EntityComponents
         /// <param name="definition">Die Definition.</param>
         public void AddUnit(IInventoryableDefinition definition)
         {
-            var slot = Inventory.FirstOrDefault(s => s.Definition == definition && s.Amount < definition.VolumePerUnit * definition.StackLimit);
+            var slot = Inventory.FirstOrDefault(s => s.Definition == definition &&
+                s.Amount < definition.VolumePerUnit * definition.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)

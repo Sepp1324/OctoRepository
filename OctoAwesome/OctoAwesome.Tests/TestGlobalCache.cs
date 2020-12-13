@@ -46,7 +46,7 @@ namespace OctoAwesome.Tests
             Loaded.Clear();
         }
 
-        public void Release(int planet,Index2 position, bool passiv)
+        public void Release(int planet, Index2 position, bool passiv)
         {
             SaveCounter++;
         }
@@ -57,12 +57,9 @@ namespace OctoAwesome.Tests
             return new ChunkColumn(new IChunk[] {new Chunk(new Index3(position,0),planet),new Chunk(new Index3(position,1),planet),new Chunk(new Index3(position,2),planet) },planet, position);
         }
 
-        public IChunkColumn Peek(int planet, Index2 position)
-        {
-            throw new NotImplementedException();
-        }
+        public IChunkColumn Subscribe(Index2 position) => throw new NotImplementedException();
 
-        public void Release(Index2 position)
+        public IChunkColumn Peek(int planet, Index2 position)
         {
             throw new NotImplementedException();
         }
@@ -99,13 +96,9 @@ namespace OctoAwesome.Tests
         public void OnError(Exception error) => throw new NotImplementedException();
         public void OnNext(Notification value) => throw new NotImplementedException();
         public IChunkColumn Subscribe(Index2 position, bool passive) => throw new NotImplementedException();
-        public IChunkColumn Subscribe(Index2 position)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsChunkLoaded(Index2 position) => throw new NotImplementedException();
         public IChunkColumn Peek(Index2 position) => throw new NotImplementedException();
         public void Release(Index2 position, bool passive) => throw new NotImplementedException();
+        public void Release(Index2 position) => throw new NotImplementedException();
     }
 }

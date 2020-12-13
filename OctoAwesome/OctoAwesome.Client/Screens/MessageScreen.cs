@@ -1,4 +1,5 @@
 ﻿using engenious;
+using engenious.Graphics;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
@@ -8,48 +9,46 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class MessageScreen : Screen
     {
-        private readonly Panel _panel;
-        private readonly AssetComponent _assets;
+        Panel panel;
+        AssetComponent assets;
 
         public MessageScreen(ScreenComponent manager, string title, string content, string buttonText = "OK", Action<Control, MouseEventArgs> buttonClick = null) : base(manager)
         {
-            _assets = manager.Game.Assets;
+            assets = manager.Game.Assets;
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.5f);
             Title = title;
 
-            _panel = new Panel(manager)
+            panel = new Panel(manager)
             {
                 Padding = Border.All(20),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            Controls.Add(_panel);
+            Controls.Add(panel);
 
-            var stackPanel = new StackPanel(manager);
-            _panel.Controls.Add(stackPanel);
+            StackPanel spanel = new StackPanel(manager);
+            panel.Controls.Add(spanel);
 
-            var headLine = new Label(manager)
+            Label headLine = new Label(manager)
             {
                 Text = title,
                 Font = Skin.Current.HeadlineFont,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
-            stackPanel.Controls.Add(headLine);
+            spanel.Controls.Add(headLine);
 
-            var contentLabel = new Label(manager)
+            Label contentLabel = new Label(manager)
             {
                 Text = content,
                 Font = Skin.Current.TextFont,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
-            stackPanel.Controls.Add(contentLabel);
+            spanel.Controls.Add(contentLabel);
 
-            Button closeButton = new TextButton(manager, buttonText)
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
+            Button closeButton = new TextButton(manager, buttonText);
+            closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             closeButton.LeftMouseClick += (s, e) => 
             {
                 if (buttonClick != null)
@@ -57,9 +56,9 @@ namespace OctoAwesome.Client.Screens
                 else
                     manager.NavigateBack();
             };
-            stackPanel.Controls.Add(closeButton);
+            spanel.Controls.Add(closeButton);
 
-            _panel.Background = NineTileBrush.FromSingleTexture(_assets.LoadTexture(typeof(ScreenComponent), "panel"), 30, 30);
+            panel.Background = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "panel"), 30, 30);
         }
     }
 }

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
+using System.IO;
 using OctoAwesome.Serialization;
 
 namespace OctoAwesome
@@ -105,18 +106,12 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         void SetBlockResources(int x, int y, int z, ushort[] resources);
-
         void OnUpdate(Notifications.SerializableNotification notification);
-
         void Update(Notifications.SerializableNotification notification);
-
         void ForEachEntity(Action<Entity> action);
-
-        void Add(Entity entity);
-
-        void Remove(Entity entity);
-
         IEnumerable<FailEntityChunkArgs> FailChunkEntity();
+        void Remove(Entity entity);
+        void Add(Entity entity);
         void SetBlocks(params BlockInfo[] blockInfos);
     }
 }

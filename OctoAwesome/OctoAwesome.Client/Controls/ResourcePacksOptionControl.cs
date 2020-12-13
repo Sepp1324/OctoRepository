@@ -7,18 +7,18 @@ namespace OctoAwesome.Client.Controls
 {
     internal sealed class ResourcePacksOptionControl : Panel
     {
-        private readonly Button _addButton;
-        private readonly Button _removeButton;
-        private readonly Button _moveUpButton;
-        private readonly Button _moveDownButton;
-        private readonly Button _applyButton;
-        private readonly Listbox<ResourcePack> _loadedPacksList;
-        private readonly Listbox<ResourcePack> _activePacksList;
-        private readonly Label _infoLabel;
+        private Button addButton;
+        private Button removeButton;
+        private Button moveUpButton;
+        private Button moveDownButton;
+        private Button applyButton;
+        private Listbox<ResourcePack> loadedPacksList;
+        private Listbox<ResourcePack> activePacksList;
+        private Label infoLabel;
 
         public ResourcePacksOptionControl(ScreenComponent manager) : base(manager)
         {
-            var grid = new Grid(manager)
+            Grid grid = new Grid(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -33,7 +33,7 @@ namespace OctoAwesome.Client.Controls
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
 
-            var buttons = new StackPanel(manager)
+            StackPanel buttons = new StackPanel(manager)
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
             };
@@ -41,46 +41,45 @@ namespace OctoAwesome.Client.Controls
 
             #region Manipulationsbuttons
 
-            _addButton = new TextButton(manager, Languages.OctoClient.Add);
-            _addButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _addButton.Visible = false;
-            buttons.Controls.Add(_addButton);
+            addButton = new TextButton(manager, Languages.OctoClient.Add);
+            addButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            addButton.Visible = false;
+            buttons.Controls.Add(addButton);
 
-            _removeButton = new TextButton(manager, Languages.OctoClient.Remove);
-            _removeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _removeButton.Visible = false;
-            buttons.Controls.Add(_removeButton);
+            removeButton = new TextButton(manager, Languages.OctoClient.Remove);
+            removeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            removeButton.Visible = false;
+            buttons.Controls.Add(removeButton);
 
-            _moveUpButton = new TextButton(manager, Languages.OctoClient.Up);
-            _moveUpButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _moveUpButton.Visible = false;
-            buttons.Controls.Add(_moveUpButton);
+            moveUpButton = new TextButton(manager, Languages.OctoClient.Up);
+            moveUpButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            moveUpButton.Visible = false;
+            buttons.Controls.Add(moveUpButton);
 
-            _moveDownButton = new TextButton(manager, Languages.OctoClient.Down);
-            _moveDownButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _moveDownButton.Visible = false;
-            buttons.Controls.Add(_moveDownButton);
+            moveDownButton = new TextButton(manager, Languages.OctoClient.Down);
+            moveDownButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            moveDownButton.Visible = false;
+            buttons.Controls.Add(moveDownButton);
 
             #endregion
 
-            _applyButton = new TextButton(manager, Languages.OctoClient.Apply)
-            {
-                HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom
-            };
-            grid.AddControl(_applyButton, 0, 2, 3);
+            applyButton = new TextButton(manager, Languages.OctoClient.Apply);
+            applyButton.HorizontalAlignment = HorizontalAlignment.Right;
+            applyButton.VerticalAlignment = VerticalAlignment.Bottom;
+            grid.AddControl(applyButton, 0, 2, 3);
 
-            _infoLabel = new Label(ScreenManager)
+            infoLabel = new Label(ScreenManager)
             {
                 HorizontalTextAlignment = HorizontalAlignment.Left,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Top,
                 WordWrap = true,
             };
-            grid.AddControl(_infoLabel, 0, 1, 3);
+            grid.AddControl(infoLabel, 0, 1, 3);
 
             #region Listen
 
-            _loadedPacksList = new Listbox<ResourcePack>(manager)
+            loadedPacksList = new Listbox<ResourcePack>(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -88,9 +87,9 @@ namespace OctoAwesome.Client.Controls
                 TemplateGenerator = ListTemplateGenerator,
             };
 
-            grid.AddControl(_loadedPacksList, 0, 0);
+            grid.AddControl(loadedPacksList, 0, 0);
 
-            _activePacksList = new Listbox<ResourcePack>(manager)
+            activePacksList = new Listbox<ResourcePack>(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -98,77 +97,110 @@ namespace OctoAwesome.Client.Controls
                 TemplateGenerator = ListTemplateGenerator,
             };
 
-            grid.AddControl(_activePacksList, 2, 0);
+            grid.AddControl(activePacksList, 2, 0);
 
             #endregion
 
-            _loadedPacksList.SelectedItemChanged += loadedList_SelectedItemChanged;
-            _activePacksList.SelectedItemChanged += activeList_SelectedItemChanged;
+            #region Info Grid
 
-            _addButton.LeftMouseClick += (s, e) =>
+            //Grid infoGrid = new Grid(ScreenManager)
+            //{
+            //    HorizontalAlignment = HorizontalAlignment.Stretch,
+            //};
+
+            //infoGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto, Width = 1 });
+            //infoGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            //infoGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
+            //infoGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
+            //infoGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
+
+            //Label nameLabel = new Label(ScreenManager)
+            //{
+            //    Text = "Name:",
+            //};
+            //infoGrid.AddControl(nameLabel, 0, 0);
+
+            //Label authorLabel = new Label(ScreenManager)
+            //{
+            //    Text = "Author:",
+            //};
+            //infoGrid.AddControl(authorLabel, 0, 1);
+
+            //Label descriptionLabel = new Label(ScreenManager)
+            //{
+            //    Text = "Description:",
+            //};
+            //infoGrid.AddControl(descriptionLabel, 0, 2);
+
+            //grid.AddControl(infoGrid, 0, 1, 3);
+
+            #endregion
+
+            loadedPacksList.SelectedItemChanged += loadedList_SelectedItemChanged;
+            activePacksList.SelectedItemChanged += activeList_SelectedItemChanged;
+
+            addButton.LeftMouseClick += (s, e) =>
             {
-                var pack = _loadedPacksList.SelectedItem;
-                _loadedPacksList.Items.Remove(pack);
-                _activePacksList.Items.Add(pack);
-                _activePacksList.SelectedItem = pack;
+                ResourcePack pack = loadedPacksList.SelectedItem;
+                loadedPacksList.Items.Remove(pack);
+                activePacksList.Items.Add(pack);
+                activePacksList.SelectedItem = pack;
             };
 
-            _removeButton.LeftMouseClick += (s, e) =>
+            removeButton.LeftMouseClick += (s, e) =>
             {
-                var pack = _activePacksList.SelectedItem;
-                _activePacksList.Items.Remove(pack);
-                _loadedPacksList.Items.Add(pack);
-                _loadedPacksList.SelectedItem = pack;
+                ResourcePack pack = activePacksList.SelectedItem;
+                activePacksList.Items.Remove(pack);
+                loadedPacksList.Items.Add(pack);
+                loadedPacksList.SelectedItem = pack;
             };
 
-            _moveUpButton.LeftMouseClick += (s, e) =>
+            moveUpButton.LeftMouseClick += (s, e) =>
             {
-                var pack = _activePacksList.SelectedItem;
+                ResourcePack pack = activePacksList.SelectedItem;
                 if (pack == null)
                     return;
 
-                var index = _activePacksList.Items.IndexOf(pack);
-                
+                int index = activePacksList.Items.IndexOf(pack);
                 if (index > 0)
                 {
-                    _activePacksList.Items.Remove(pack);
-                    _activePacksList.Items.Insert(index - 1, pack);
-                    _activePacksList.SelectedItem = pack;
+                    activePacksList.Items.Remove(pack);
+                    activePacksList.Items.Insert(index - 1, pack);
+                    activePacksList.SelectedItem = pack;
                 }
             };
 
-            _moveDownButton.LeftMouseClick += (s, e) =>
+            moveDownButton.LeftMouseClick += (s, e) =>
             {
-                var pack = _activePacksList.SelectedItem;
+                ResourcePack pack = activePacksList.SelectedItem;
                 if (pack == null) return;
 
-                var index = _activePacksList.Items.IndexOf(pack);
-                
-                if (index < _activePacksList.Items.Count - 1)
+                int index = activePacksList.Items.IndexOf(pack);
+                if (index < activePacksList.Items.Count - 1)
                 {
-                    _activePacksList.Items.Remove(pack);
-                    _activePacksList.Items.Insert(index + 1, pack);
-                    _activePacksList.SelectedItem = pack;
+                    activePacksList.Items.Remove(pack);
+                    activePacksList.Items.Insert(index + 1, pack);
+                    activePacksList.SelectedItem = pack;
                 }
             };
 
-            _applyButton.LeftMouseClick += (s, e) =>
+            applyButton.LeftMouseClick += (s, e) =>
             {
-                manager.Game.Assets.ApplyResourcePacks(_activePacksList.Items);
+                manager.Game.Assets.ApplyResourcePacks(activePacksList.Items);
                 Program.Restart();
             };
 
-            var assets = manager.Game.Assets;
+            // Daten laden
 
+            AssetComponent assets = manager.Game.Assets;
             foreach (var item in assets.LoadedResourcePacks)
-                _loadedPacksList.Items.Add(item);
+                loadedPacksList.Items.Add(item);
 
             foreach (var item in manager.Game.Assets.ActiveResourcePacks)
             {
-                _activePacksList.Items.Add(item);
-            
-                if (_loadedPacksList.Items.Contains(item))
-                    _loadedPacksList.Items.Remove(item);
+                activePacksList.Items.Add(item);
+                if (loadedPacksList.Items.Contains(item))
+                    loadedPacksList.Items.Remove(item);
             }
         }
 
@@ -185,16 +217,16 @@ namespace OctoAwesome.Client.Controls
         private void loadedList_SelectedItemChanged(Control control, SelectionEventArgs<ResourcePack> e)
         {
             e.Handled = true;
-            _addButton.Visible = e.NewItem != null;
+            addButton.Visible = e.NewItem != null;
 
             if (e.NewItem != null)
             {
-                _activePacksList.SelectedItem = null;
+                activePacksList.SelectedItem = null;
                 SetPackInfo(e.NewItem);
             }
             else
             {
-                if (_activePacksList.SelectedItem == null)
+                if (activePacksList.SelectedItem == null)
                     SetPackInfo(null);
             }
         }
@@ -202,22 +234,28 @@ namespace OctoAwesome.Client.Controls
         private void activeList_SelectedItemChanged(Control control, SelectionEventArgs<ResourcePack> e)
         {
             e.Handled = true;
-            _removeButton.Visible = e.NewItem != null;
-            _moveUpButton.Visible = e.NewItem != null;
-            _moveDownButton.Visible = e.NewItem != null;
+            removeButton.Visible = e.NewItem != null;
+            moveUpButton.Visible = e.NewItem != null;
+            moveDownButton.Visible = e.NewItem != null;
 
             if (e.NewItem != null)
             {
-                _loadedPacksList.SelectedItem = null;
+                loadedPacksList.SelectedItem = null;
                 SetPackInfo(e.NewItem);
             }
             else
             {
-                if (_loadedPacksList.SelectedItem == null)
+                if (loadedPacksList.SelectedItem == null)
                     SetPackInfo(null);
             }
         }
 
-        private void SetPackInfo(ResourcePack pack) => _infoLabel.Text = pack != null ? $"{pack.Name} ({pack.Version})\r\n{pack.Author}\r\n{pack.Description}" : string.Empty;
+        private void SetPackInfo(ResourcePack pack)
+        {
+            if (pack != null)
+                infoLabel.Text = string.Format("{0} ({1})\r\n{2}\r\n{3}", pack.Name, pack.Version, pack.Author, pack.Description);
+            else
+                infoLabel.Text = string.Empty;
+        }
     }
 }

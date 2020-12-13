@@ -1,4 +1,9 @@
 ﻿using OctoAwesome.Noise;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
@@ -21,21 +26,27 @@ namespace OctoAwesome.Basics.Biomes
 
         public override float[,] GetHeightmap(Index2 chunkIndex)
         {
-            var values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
-            var blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
-            var regions = BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
-            var biomeValues = new float[SubBiomes.Count][,];
+            float[,] values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
 
-            for (var i = 0; i < SubBiomes.Count; i++)
+            Index2 blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
+
+            float[,] regions = BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
+
+            float[][,] biomeValues = new float[SubBiomes.Count][,];
+
+            for (int i = 0; i < SubBiomes.Count; i++)
                 biomeValues[i] = SubBiomes[i].GetHeightmap(chunkIndex);
 
-            for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
+            for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
             {
-                for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
-                    var region = regions[x, y] / 2 + 0.5f;
-                    var biome1 = ChooseBiome(region, out int biome2);
-                    var interpolationValue = 0f;
+                    float region = regions[x, y] / 2 + 0.5f;
+
+                    int biome2;
+                    int biome1 = ChooseBiome(region, out biome2);
+
+                    float interpolationValue = 0f;
 
                     if (biome2 != -1)
                     {

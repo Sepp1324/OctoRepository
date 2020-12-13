@@ -1,7 +1,13 @@
 ﻿using engenious;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -16,7 +22,8 @@ namespace OctoAwesome.EntityComponents
                 var positionBlockX = ((int)(position.BlockPosition.X * 100)) / 100f;
                 var positionBlockY = ((int)(position.BlockPosition.Y * 100)) / 100f;
 
-                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || position.BlockPosition.Z != value.BlockPosition.Z;
+                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY
+                    || position.BlockPosition.Z != value.BlockPosition.Z;
 
                 SetValue(ref position, value);
                 TryUpdatePlanet(value.Planet);
@@ -24,7 +31,6 @@ namespace OctoAwesome.EntityComponents
         }
 
         public float Direction { get; set; }
-
         public IPlanet Planet { get; private set; }
 
         private Coordinate position;
@@ -57,13 +63,13 @@ namespace OctoAwesome.EntityComponents
             base.Deserialize(reader);
 
             // Position
-            var planet = reader.ReadInt32();
-            var blockX = reader.ReadInt32();
-            var blockY = reader.ReadInt32();
-            var blockZ = reader.ReadInt32();
-            var posX = reader.ReadSingle();
-            var posY = reader.ReadSingle();
-            var posZ = reader.ReadSingle();
+            int planet = reader.ReadInt32();
+            int blockX = reader.ReadInt32();
+            int blockY = reader.ReadInt32();
+            int blockZ = reader.ReadInt32();
+            float posX = reader.ReadSingle();
+            float posY = reader.ReadSingle();
+            float posZ = reader.ReadSingle();
 
             position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
             TryUpdatePlanet(planet);

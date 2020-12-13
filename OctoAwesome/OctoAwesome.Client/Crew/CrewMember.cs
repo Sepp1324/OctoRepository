@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.IO;
+using engenious.UI;
 using OctoAwesome.Client.Components;
 using System;
 
@@ -20,15 +22,7 @@ namespace OctoAwesome.Client.Crew
             Musik,
             Grafik,
             WikiAdmin,
-            DatenbankFreigeschaltet,
-            Designer,
-            Designerin,
-            Tester,
-            Testerin,
-            MasterOfTheUniverse,
-            MistressOfTheUniverse,
-            Chef,
-            Chefin
+            DatenbankFreigeschaltet
         };
 
         public string Username { get; set; }
@@ -48,11 +42,11 @@ namespace OctoAwesome.Client.Crew
         internal static List<CrewMember> getCrew(ScreenComponent manager)
         {
 
-            using (var stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
+            using (Stream stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
             {
                 try
                 {
-                    var serializer = new XmlSerializer(typeof(List<CrewMember>));
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<CrewMember>));
                     return (List<CrewMember>)serializer.Deserialize(stream);
                 }
                 catch (Exception)
@@ -62,7 +56,10 @@ namespace OctoAwesome.Client.Crew
             }
         }
 
-        public override string ToString() => Username;
+        public override string ToString()
+        {
+            return Username;
+        }
 
         public class Link
         {

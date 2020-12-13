@@ -10,11 +10,11 @@ namespace OctoAwesome.Client.Screens
     {
         public new ScreenComponent Manager => (ScreenComponent)base.Manager;
 
-        private readonly OctoGame _game;
+        private readonly OctoGame game;
 
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
-            _game = Manager.Game;
+            game = Manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
             Title = Languages.OctoClient.CreateUniverse;
@@ -44,7 +44,7 @@ namespace OctoAwesome.Client.Screens
 
             var serverNameInput = new Textbox(manager)
             {
-                Text = _game.Settings.Get("server", "localhost"),
+                Text = game.Settings.Get("server", "localhost"),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
             };
@@ -52,7 +52,7 @@ namespace OctoAwesome.Client.Screens
 
             var playerNameInput = new Textbox(manager)
             {
-                Text = _game.Settings.Get("player", "USERNAME"),
+                Text = game.Settings.Get("player", "USERNAME"),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
 
@@ -65,10 +65,11 @@ namespace OctoAwesome.Client.Screens
             createButton.Visible = true;
             createButton.LeftMouseClick += (s, e) =>
             {
-                _game.Settings.Set("server", serverNameInput.Text);
-                _game.Settings.Set("player", playerNameInput.Text);
+                game.Settings.Set("server", serverNameInput.Text);
+                game.Settings.Set("player", playerNameInput.Text);
 
-                ((ContainerResourceManager)_game.ResourceManager).CreateManager(true);
+                ((ContainerResourceManager)game.ResourceManager)
+                    .CreateManager(true);
 
                 PlayMultiplayer(manager, playerNameInput.Text);
             };
@@ -83,8 +84,9 @@ namespace OctoAwesome.Client.Screens
             Manager.Player.SetEntity(null);
 
             Manager.Game.Simulation.LoadGame(Guid.Empty);
+            //settings.Set("LastUniverse", levelList.SelectedItem.Id.ToString());
 
-            var player = Manager.Game.Simulation.LoginPlayer(playerName);
+            Player player = Manager.Game.Simulation.LoginPlayer(playerName);
             Manager.Game.Player.SetEntity(player);
 
             Manager.NavigateToScreen(new GameScreen(manager));

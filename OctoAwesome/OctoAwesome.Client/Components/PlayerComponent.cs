@@ -1,5 +1,8 @@
-﻿using System;
+﻿using OctoAwesome.Runtime;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using engenious;
 using OctoAwesome.EntityComponents;
 
@@ -9,7 +12,7 @@ namespace OctoAwesome.Client.Components
     {
         private new OctoGame Game;
 
-        private readonly IResourceManager _resourceManager;
+        private IResourceManager resourceManager;
 
         #region External Input
 
@@ -57,9 +60,10 @@ namespace OctoAwesome.Client.Components
 
         public OrientationFlags SelectedCorner { get; set; }
 
-        public PlayerComponent(OctoGame game, IResourceManager resourceManager) : base(game)
+        public PlayerComponent(OctoGame game, IResourceManager resourceManager)
+            : base(game)
         {
-            _resourceManager = resourceManager;
+            this.resourceManager = resourceManager;
             Game = game;
         }
 
@@ -76,10 +80,18 @@ namespace OctoAwesome.Client.Components
                 // Map other Components
 
                 CurrentController = CurrentEntity.Components.GetComponent<ControllableComponent>();
-                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>() ?? new HeadComponent();
-                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>() ?? new InventoryComponent();
-                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>() ?? new ToolBarComponent();
-                Position = CurrentEntity.Components.GetComponent<PositionComponent>() ?? new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
+
+                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>();
+                if (CurrentEntityHead == null) CurrentEntityHead = new HeadComponent();
+
+                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
+                if (Inventory == null) Inventory = new InventoryComponent();
+
+                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>();
+                if (Toolbar == null) Toolbar = new ToolBarComponent();
+
+                Position = CurrentEntity.Components.GetComponent<PositionComponent>();
+                if (Position == null) Position = new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
             }
         }
 
@@ -104,7 +116,6 @@ namespace OctoAwesome.Client.Components
 
             if (InteractInput && SelectedBox.HasValue)
                 CurrentController.InteractBlock = SelectedBox.Value;
-           
             InteractInput = false;
 
             if (ApplyInput && SelectedBox.HasValue)
@@ -122,23 +133,20 @@ namespace OctoAwesome.Client.Components
             if (Toolbar.Tools != null && Toolbar.Tools.Length > 0)
             {
                 if (Toolbar.ActiveTool == null) Toolbar.ActiveTool = Toolbar.Tools[0];
-              
-                for (var i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
+                for (int i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
                 {
                     if (SlotInput[i])
                         Toolbar.ActiveTool = Toolbar.Tools[i];
-
                     SlotInput[i] = false;
                 }
             }
 
             //Index des aktiven Werkzeugs ermitteln
-            var activeTool = -1;
-            var toolIndices = new List<int>();
-
+            int activeTool = -1;
+            List<int> toolIndices = new List<int>();
             if (Toolbar.Tools != null)
             {
-                for (var i = 0; i < Toolbar.Tools.Length; i++)
+                for (int i = 0; i < Toolbar.Tools.Length; i++)
                 {
                     if (Toolbar.Tools[i] != null)
                         toolIndices.Add(i);
@@ -182,11 +190,11 @@ namespace OctoAwesome.Client.Components
             if (inventory == null)
                 return;
 
-            var blockDefinitions = _resourceManager.DefinitionManager.GetBlockDefinitions();
+            var blockDefinitions = resourceManager.DefinitionManager.GetBlockDefinitions();
             foreach (var blockDefinition in blockDefinitions)
                 inventory.AddUnit(blockDefinition);
 
-            var itemDefinitions = _resourceManager.DefinitionManager.GetItemDefinitions();
+            var itemDefinitions = resourceManager.DefinitionManager.GetItemDefinitions();
             foreach (var itemDefinition in itemDefinitions)
                 inventory.AddUnit(itemDefinition);
         }

@@ -9,18 +9,18 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class TargetScreen : Screen
     {
-        private readonly AssetComponent _assets;
+        private AssetComponent assets;
 
         public TargetScreen(ScreenComponent manager, Action<int, int> tp, int x, int y) : base(manager)
         {
-            _assets = manager.Game.Assets;
+            assets = manager.Game.Assets;
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.5f);
             Title = Languages.OctoClient.SelectTarget;
 
-            var panelBackground = _assets.LoadTexture(typeof(ScreenComponent), "panel");
-            var panel = new Panel(manager)
+            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            Panel panel = new Panel(manager)
             {
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
                 Padding = Border.All(20),
@@ -29,27 +29,30 @@ namespace OctoAwesome.Client.Screens
             };
             Controls.Add(panel);
 
-            var stackPanel = new StackPanel(manager);
-            panel.Controls.Add(stackPanel);
+            StackPanel spanel = new StackPanel(manager);
+            panel.Controls.Add(spanel);
 
-            var headLine = new Label(manager)
+            Label headLine = new Label(manager)
             {
                 Text = Title,
                 Font = Skin.Current.HeadlineFont,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
-            stackPanel.Controls.Add(headLine);
+            spanel.Controls.Add(headLine);
 
-            var vStack = new StackPanel(manager) {Orientation = Orientation.Vertical};
-            stackPanel.Controls.Add(vStack);
+            StackPanel vstack = new StackPanel(manager);
+            vstack.Orientation = Orientation.Vertical;
+            spanel.Controls.Add(vstack);
 
-            var xStack = new StackPanel(manager) {Orientation = Orientation.Horizontal};
-            vStack.Controls.Add(xStack);
+            StackPanel xStack = new StackPanel(manager);
+            xStack.Orientation = Orientation.Horizontal;
+            vstack.Controls.Add(xStack);
 
-            var xLabel = new Label(manager) {Text = "X:"};
+            Label xLabel = new Label(manager);
+            xLabel.Text = "X:";
             xStack.Controls.Add(xLabel);
 
-            var xText = new Textbox(manager)
+            Textbox xText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
@@ -58,13 +61,15 @@ namespace OctoAwesome.Client.Screens
             };
             xStack.Controls.Add(xText);
 
-            var yStack = new StackPanel(manager) {Orientation = Orientation.Horizontal};
-            vStack.Controls.Add(yStack);
+            StackPanel yStack = new StackPanel(manager);
+            yStack.Orientation = Orientation.Horizontal;
+            vstack.Controls.Add(yStack);
 
-            var yLabel = new Label(manager) {Text = "Y:"};
+            Label yLabel = new Label(manager);
+            yLabel.Text = "Y:";
             yStack.Controls.Add(yLabel);
 
-            var yText = new Textbox(manager)
+            Textbox yText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
@@ -73,10 +78,8 @@ namespace OctoAwesome.Client.Screens
             };
             yStack.Controls.Add(yText);
 
-            Button closeButton = new TextButton(manager, Languages.OctoClient.Teleport)
-            {
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
+            Button closeButton = new TextButton(manager, Languages.OctoClient.Teleport);
+            closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             closeButton.LeftMouseClick += (s, e) =>
             {
                 if (tp != null)
@@ -84,7 +87,7 @@ namespace OctoAwesome.Client.Screens
                 else
                     manager.NavigateBack();
             };
-            stackPanel.Controls.Add(closeButton);
+            spanel.Controls.Add(closeButton);
 
             KeyDown += (s, e) =>
             {
