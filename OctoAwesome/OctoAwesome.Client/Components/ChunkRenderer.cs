@@ -4,8 +4,6 @@ using engenious.Graphics;
 using System.Linq;
 using engenious;
 using System;
-using System.Windows.Threading;
-using System.Threading;
 using OctoAwesome.Threading;
 
 namespace OctoAwesome.Client.Components
@@ -17,7 +15,7 @@ namespace OctoAwesome.Client.Components
 
         private readonly Texture2DArray _textures;
         private readonly LockSemaphore _lockSemaphore;
-        private readonly Dispatcher _dispatcher;
+        //private readonly Dispatcher _dispatcher;
 
         /// <summary>
         /// Referenz auf den aktuellen Chunk (falls vorhanden)
@@ -39,10 +37,7 @@ namespace OctoAwesome.Client.Components
         /// </summary>
         public Index3? ChunkPosition
         {
-            get
-            {
-                return _chunkPosition;
-            }
+            get => _chunkPosition;
             private set
             {
                 _chunkPosition = value;
@@ -50,7 +45,7 @@ namespace OctoAwesome.Client.Components
             }
         }
 
-        public bool DispatchRequired => Thread.CurrentThread.ManagedThreadId != _dispatcher.Thread.ManagedThreadId;
+        //public bool DispatchRequired => Thread.CurrentThread.ManagedThreadId != _dispatcher.Thread.ManagedThreadId;
 
         public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, Effect simpleShader, GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
         {
@@ -59,7 +54,7 @@ namespace OctoAwesome.Client.Components
             _graphicsDevice = graphicsDevice;
             _textures = textures;
             _lockSemaphore = new LockSemaphore(1, 1);
-            _dispatcher = Dispatcher.CurrentDispatcher;
+            //_dispatcher = Dispatcher.CurrentDispatcher;
             _simple = simpleShader;
             GenerateIndexBuffer();
         }
@@ -101,7 +96,7 @@ namespace OctoAwesome.Client.Components
             if (!_loaded)
                 return;
 
-            Matrix worldViewProj = projection * view * Matrix.CreateTranslation(
+            var worldViewProj = projection * view * Matrix.CreateTranslation(
                 shift.X * Chunk.CHUNKSIZE_X,
                 shift.Y * Chunk.CHUNKSIZE_Y,
                 shift.Z * Chunk.CHUNKSIZE_Z);
@@ -183,7 +178,7 @@ namespace OctoAwesome.Client.Components
             var textureGap = texelSize / 2;
             var textureOffsets = new Dictionary<IBlockDefinition, int>();
             var definitionIndex = 0;
-          
+
             foreach (var definition in _definitionManager.GetBlockDefinitions())
             {
                 var textureCount = definition.Textures.Count();
@@ -552,7 +547,6 @@ namespace OctoAwesome.Client.Components
                 }
             }
 
-
             lock (this)
             {
                 _loaded = true;
@@ -579,10 +573,10 @@ namespace OctoAwesome.Client.Components
 
         private void Dispatch(Action action)
         {
-            if (DispatchRequired)
-                _dispatcher.Invoke(action);
-            else
-                action();
+            //if (DispatchRequired)
+            //    _dispatcher.Invoke(action);
+            //else
+            action();
         }
     }
 }

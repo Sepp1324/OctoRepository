@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace OctoAwesome.Database.Threading
+namespace OctoAwesome.Threading
 {
-    internal class CountedScopeSemaphore : IDisposable
+    public class CountedScopeSemaphore : IDisposable
     {
         private readonly ManualResetEventSlim _superLock;
         private readonly ManualResetEventSlim _mainLock;
