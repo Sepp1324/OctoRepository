@@ -201,11 +201,11 @@ namespace OctoAwesome
             Chunks[index].SetBlock(x, y, z, block, meta);
         }
 
-        public void SetBlocks(params BlockInfo[] blockInfos)
+        public void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos)
         {
             foreach (var item in blockInfos.GroupBy(x => x.Position.Z / Chunk.CHUNKSIZE_Z))
             {
-                Chunks[item.Key].SetBlocks(item.ToArray());
+                Chunks[item.Key].SetBlocks(issueNotification, item.ToArray());
             }            
         }
 
@@ -432,6 +432,17 @@ namespace OctoAwesome
         {
             using (entitieSemaphore.Wait())
                 return entities.FailChunkEntity().ToList();
+        }
+
+        public void FlagDirty()
+        {
+            if (Chunks is null)
+                return;
+
+            foreach (var chunk in Chunks)
+            {
+                chunk.FlagDirty();
+            }
         }
     }
 }

@@ -1,71 +1,180 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 
 namespace OctoAwesome.Database.Threading
 {
-    internal sealed class DatabaseLockMonitor
+    public sealed class DatabaseLockMonitor : IDisposable
     {
-        private int _readLock;
-        private int _writeLock;
-        private int _exclusiveLock;
+        private int readLocks;
+        private int writeLocks;
+        private bool exclusiveLocks;
 
-        private readonly ManualResetEvent _readEvent;
-        private readonly ManualResetEvent _writeEvent;
+        private int readOperations;
+        private int writeOperations;
+
+        private readonly ManualResetEvent readEvent;
+        private readonly ManualResetEvent writeEvent;
+        private readonly ManualResetEvent exclusiveEvent;
+        private readonly SemaphoreSlim semaphoreSlim;
 
         public DatabaseLockMonitor()
         {
-            _readEvent = new ManualResetEvent(true);
-            _writeEvent = new ManualResetEvent(true);
+            readEvent = new ManualResetEvent(true);
+            writeEvent = new ManualResetEvent(true);
+            exclusiveEvent = new ManualResetEvent(true);
+            semaphoreSlim = new SemaphoreSlim(1, 1);
 
-            _readLock = 0;
-            _writeLock = 0;
-            _exclusiveLock = 0;
+            readLocks = 0;
+            writeLocks = 0;
+            readOperations = 0;
+            writeOperations = 0;
+            exclusiveLocks = false;
         }
 
         public bool CheckLock(Operation operation)
         {
-            if (_exclusiveLock > 0)
-                return false;
+            semaphoreSlim.Wait();
+            try
+            {
+                if (exclusiveLocks)
+                    return false;
 
-            if (operation.HasFlag(Operation.Read))
-                return _writeLock < 1;
+                if (operation.HasFlag(Operation.Read))
+                    return writeLocks < 1;
 
-            if (operation.HasFlag(Operation.Write))
-                return _readLock < 1;
+                if (operation.HasFlag(Operation.Write))
+                    return readLocks < 1;
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
 
             return true;
         }
 
         public void Wait(Operation operation)
         {
+            //if (operation.HasFlag(Operation.Exclusive))
+            //    exclusiveEvent.WaitOne();
+
             if (operation.HasFlag(Operation.Read))
-                _writeEvent.WaitOne();
+                writeEvent.WaitOne();
 
             if (operation.HasFlag(Operation.Write))
-                _readEvent.WaitOne();
+                readEvent.WaitOne();
+
+        }
+
+        internal DatabaseOperation StartOperation(Operation operation)
+        {
+            Wait(operation);
+            semaphoreSlim.Wait();
+            try
+            {
+                if (operation.HasFlag(Operation.Read))
+                    ++readOperations;
+
+                if (operation.HasFlag(Operation.Write))
+                    ++writeOperations;
+
+                return new DatabaseOperation(this, operation);
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
+        }
+
+        internal void StopOperation(Operation operation)
+        {
+            semaphoreSlim.Wait();
+            try
+            {
+                if (operation.HasFlag(Operation.Read))
+                    --readOperations;
+
+                if (operation.HasFlag(Operation.Write))
+                    --writeOperations;
+
+                if (readLocks == 0 && readOperations == 0)
+                    writeEvent.Set();
+
+                if (writeLocks == 0 && writeOperations == 0)
+                    readEvent.Set();
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
 
         public void SetLock(Operation operation)
         {
-            if (operation.HasFlag(Operation.Exclusive))
-                Interlocked.Increment(ref _exclusiveLock);
+            semaphoreSlim.Wait();
+            try
+            {
+                if (operation.HasFlag(Operation.Exclusive))
+                    exclusiveLocks = true;
 
-            if (operation.HasFlag(Operation.Read))
-                Interlocked.Increment(ref _readLock);
+                if (operation.HasFlag(Operation.Read))
+                    ++readLocks;
 
-            if (operation.HasFlag(Operation.Write))
-                Interlocked.Increment(ref _writeLock);
+                if (operation.HasFlag(Operation.Write))
+                    ++writeLocks;
+
+                if (exclusiveLocks)
+                {
+                    exclusiveEvent.Reset();
+                    return;
+                }
+
+                if (readLocks > 0)
+                    readEvent.Reset();
+
+                if (writeLocks > 0)
+                    writeEvent.Reset();
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
 
         public void ReleaseLock(Operation operation)
         {
-            if (operation.HasFlag(Operation.Exclusive))
-                Interlocked.Decrement(ref _exclusiveLock);
+            semaphoreSlim.Wait();
+            try
+            {
+                if (operation.HasFlag(Operation.Exclusive))
+                    exclusiveLocks = false;
 
-            if (operation.HasFlag(Operation.Read))
-                Interlocked.Decrement(ref _readLock);
+                if (operation.HasFlag(Operation.Read))
+                    --readLocks;
 
-            if (operation.HasFlag(Operation.Write))
-                Interlocked.Decrement(ref _writeLock);
+                if (operation.HasFlag(Operation.Write))
+                    --writeLocks;
+
+                if (readLocks == 0 && readOperations == 0)
+                    readEvent.Set();
+
+                if (writeLocks == 0 && writeOperations == 0)
+                    writeEvent.Set();
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
+        }
+
+        public void Dispose()
+        {
+            readEvent.Dispose();
+            writeEvent.Dispose();
+            exclusiveEvent.Dispose();
+            semaphoreSlim.Dispose();
         }
     }
 }

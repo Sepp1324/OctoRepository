@@ -13,13 +13,13 @@ namespace OctoAwesome.Serialization
     {
         private readonly IPlanet currentPlanet;
 
-        public ChunkColumnDbContext(Database<Index2Tag> database, IPlanet planet) : base(database)
-        {
-            currentPlanet = planet;
-        }
+        public ChunkColumnDbContext(Database<Index2Tag> database, IPlanet planet) : base(database) => currentPlanet = planet;
 
         public override void AddOrUpdate(IChunkColumn value)
-            => Database.AddOrUpdate(new Index2Tag(value.Index), new Value(Serializer.SerializeCompressed(value)));
+        {
+            using (Database.Lock(Operation.Write))
+                Database.AddOrUpdate(new Index2Tag(value.Index), new Value(Serializer.SerializeCompressed(value)));
+        }
 
         public IChunkColumn Get(Index2 key)
             => Get(new Index2Tag(key));
@@ -31,7 +31,8 @@ namespace OctoAwesome.Serialization
             var chunkColumn = new ChunkColumn(currentPlanet);
             using (var stream = new MemoryStream(Database.GetValue(key).Content))
             using (var zip = new GZipStream(stream, CompressionMode.Decompress))
-            using (var reader = new BinaryReader(zip))
+            using(var buffered = new BufferedStream(zip))
+            using (var reader = new BinaryReader(buffered))
             {
                 chunkColumn.Deserialize(reader);
                 return chunkColumn;
@@ -39,7 +40,9 @@ namespace OctoAwesome.Serialization
         }
 
         public override void Remove(IChunkColumn value)
-           => Database.Remove(new Index2Tag(value.Index));
-        
+        {
+            using (Database.Lock(Operation.Write))
+                Database.Remove(new Index2Tag(value.Index));
+        }
     }
 }

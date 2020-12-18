@@ -6,9 +6,7 @@ namespace OctoAwesome.Notifications
     public sealed class BlockChangedNotification : SerializableNotification, IChunkNotification
     {
         public BlockInfo BlockInfo { get; set; }
-
         public Index3 ChunkPos { get; internal set; }
-
         public int Planet { get; internal set; }
 
         public override void Deserialize(BinaryReader reader)
