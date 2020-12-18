@@ -9,24 +9,20 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedPlankBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.RedPlank; }
-        }
+        public override string Name => Languages.OctoBasics.RedPlank;
 
-        public override string Icon
-        {
-            get { return "planks"; }
-        }
+        public override string Icon => "planks";
 
-        public override bool HasMetaData { get { return true; } }
+        public override bool HasMetaData => true;
 
         public override string[] Textures
         {
             get
             {
-                return new[] {
-                "planks"};
+                return new[]
+                {
+                    "planks"
+                };
             }
         }
 
@@ -45,6 +41,5 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         {
             throw new NotImplementedException();
         }
-
     }
 }

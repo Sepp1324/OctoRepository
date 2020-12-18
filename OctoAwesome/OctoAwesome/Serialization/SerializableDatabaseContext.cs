@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 namespace OctoAwesome.Serialization
 {
     public abstract class SerializableDatabaseContext<TTag, TObject> : DatabaseContext<TTag, TObject>
-         where TTag : ITag, new()
-         where TObject : ISerializable, new()
+        where TTag : ITag, new()
+        where TObject : ISerializable, new()
     {
         public SerializableDatabaseContext(Database<TTag> database) : base(database)
         {
         }
 
         public override TObject Get(TTag key)
-            => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
+        {
+            return Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
+        }
 
         protected void InternalRemove(TTag tag)
         {

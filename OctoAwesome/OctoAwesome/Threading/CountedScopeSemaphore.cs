@@ -9,18 +9,25 @@ namespace OctoAwesome.Threading
 {
     public class CountedScopeSemaphore : IDisposable
     {
-        private readonly ManualResetEventSlim superLock;
-        private readonly ManualResetEventSlim mainLock;
+        private readonly object countLockObject;
 
         private readonly object lockObject;
-        private readonly object countLockObject;
+        private readonly ManualResetEventSlim mainLock;
+        private readonly ManualResetEventSlim superLock;
         private int counter;
+
         public CountedScopeSemaphore()
         {
             mainLock = new ManualResetEventSlim(true);
             superLock = new ManualResetEventSlim(true);
             lockObject = new object();
             countLockObject = new object();
+        }
+
+        public void Dispose()
+        {
+            superLock.Dispose();
+            mainLock.Dispose();
         }
 
         public SuperScope Wait()
@@ -30,6 +37,7 @@ namespace OctoAwesome.Threading
                 mainLock.Wait();
                 superLock.Reset();
             }
+
             return new SuperScope(this);
         }
 
@@ -48,12 +56,6 @@ namespace OctoAwesome.Threading
 
 
             return new CountScope(this);
-        }
-
-        public void Dispose()
-        {
-            superLock.Dispose();
-            mainLock.Dispose();
         }
 
         private void LeaveMainScope()
@@ -88,18 +90,31 @@ namespace OctoAwesome.Threading
             }
 
             public override bool Equals(object obj)
-                => obj is CountScope scope
-                  && Equals(scope);
+            {
+                return obj is CountScope scope
+                       && Equals(scope);
+            }
+
             public bool Equals(CountScope other)
-                => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
+            {
+                return EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore,
+                    other.internalSemaphore);
+            }
 
             public override int GetHashCode()
-                => 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
+            {
+                return 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
+            }
 
             public static bool operator ==(CountScope left, CountScope right)
-                => left.Equals(right);
+            {
+                return left.Equals(right);
+            }
+
             public static bool operator !=(CountScope left, CountScope right)
-                => !(left == right);
+            {
+                return !(left == right);
+            }
         }
 
         public readonly struct SuperScope : IDisposable, IEquatable<SuperScope>
@@ -118,14 +133,31 @@ namespace OctoAwesome.Threading
                 internalSemaphore?.LeaveSuperScope();
             }
 
-            public override bool Equals(object obj) => obj is SuperScope scope && Equals(scope);
-            public bool Equals(SuperScope other)
-                => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
-            public override int GetHashCode()
-                => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
+            public override bool Equals(object obj)
+            {
+                return obj is SuperScope scope && Equals(scope);
+            }
 
-            public static bool operator ==(SuperScope left, SuperScope right) => left.Equals(right);
-            public static bool operator !=(SuperScope left, SuperScope right) => !(left == right);
+            public bool Equals(SuperScope other)
+            {
+                return EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore,
+                    other.internalSemaphore);
+            }
+
+            public override int GetHashCode()
+            {
+                return 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
+            }
+
+            public static bool operator ==(SuperScope left, SuperScope right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(SuperScope left, SuperScope right)
+            {
+                return !(left == right);
+            }
         }
     }
 }

@@ -12,29 +12,14 @@ namespace OctoAwesome.Client.Components
     {
         private new OctoGame Game;
 
-        private IResourceManager resourceManager;
+        private readonly IResourceManager resourceManager;
 
-        #region External Input
-
-        public Vector2 HeadInput { get; set; }
-
-        public Vector2 MoveInput { get; set; }
-
-        public bool InteractInput { get; set; }
-
-        public bool ApplyInput { get; set; }
-
-        public bool JumpInput { get; set; }
-
-        public bool FlymodeInput { get; set; }
-
-        public bool[] SlotInput { get; private set; } = new bool[10];
-
-        public bool SlotLeftInput { get; set; }
-
-        public bool SlotRightInput { get; set; }
-
-        #endregion
+        public PlayerComponent(OctoGame game, IResourceManager resourceManager)
+            : base(game)
+        {
+            this.resourceManager = resourceManager;
+            Game = game;
+        }
 
         public Entity CurrentEntity { get; private set; }
 
@@ -60,13 +45,6 @@ namespace OctoAwesome.Client.Components
 
         public OrientationFlags SelectedCorner { get; set; }
 
-        public PlayerComponent(OctoGame game, IResourceManager resourceManager)
-            : base(game)
-        {
-            this.resourceManager = resourceManager;
-            Game = game;
-        }
-
         public void SetEntity(Entity entity)
         {
             CurrentEntity = entity;
@@ -91,7 +69,9 @@ namespace OctoAwesome.Client.Components
                 if (Toolbar == null) Toolbar = new ToolBarComponent();
 
                 Position = CurrentEntity.Components.GetComponent<PositionComponent>();
-                if (Position == null) Position = new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
+                if (Position == null)
+                    Position = new PositionComponent()
+                        {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0))};
             }
         }
 
@@ -103,8 +83,8 @@ namespace OctoAwesome.Client.Components
             if (CurrentEntity == null)
                 return;
 
-            CurrentEntityHead.Angle += (float)gameTime.ElapsedGameTime.TotalSeconds * HeadInput.X;
-            CurrentEntityHead.Tilt += (float)gameTime.ElapsedGameTime.TotalSeconds * HeadInput.Y;
+            CurrentEntityHead.Angle += (float) gameTime.ElapsedGameTime.TotalSeconds * HeadInput.X;
+            CurrentEntityHead.Tilt += (float) gameTime.ElapsedGameTime.TotalSeconds * HeadInput.Y;
             CurrentEntityHead.Tilt = Math.Min(1.5f, Math.Max(-1.5f, CurrentEntityHead.Tilt));
             HeadInput = Vector2.Zero;
 
@@ -133,7 +113,7 @@ namespace OctoAwesome.Client.Components
             if (Toolbar.Tools != null && Toolbar.Tools.Length > 0)
             {
                 if (Toolbar.ActiveTool == null) Toolbar.ActiveTool = Toolbar.Tools[0];
-                for (int i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
+                for (var i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
                 {
                     if (SlotInput[i])
                         Toolbar.ActiveTool = Toolbar.Tools[i];
@@ -142,11 +122,11 @@ namespace OctoAwesome.Client.Components
             }
 
             //Index des aktiven Werkzeugs ermitteln
-            int activeTool = -1;
-            List<int> toolIndices = new List<int>();
+            var activeTool = -1;
+            var toolIndices = new List<int>();
             if (Toolbar.Tools != null)
             {
-                for (int i = 0; i < Toolbar.Tools.Length; i++)
+                for (var i = 0; i < Toolbar.Tools.Length; i++)
                 {
                     if (Toolbar.Tools[i] != null)
                         toolIndices.Add(i);
@@ -163,6 +143,7 @@ namespace OctoAwesome.Client.Components
                 else if (toolIndices.Count > 0)
                     activeTool = toolIndices[toolIndices.Count - 1];
             }
+
             SlotLeftInput = false;
 
             if (SlotRightInput)
@@ -172,6 +153,7 @@ namespace OctoAwesome.Client.Components
                 else if (toolIndices.Count > 0)
                     activeTool = toolIndices[0];
             }
+
             SlotRightInput = false;
 
             if (activeTool > -1)
@@ -198,5 +180,27 @@ namespace OctoAwesome.Client.Components
             foreach (var itemDefinition in itemDefinitions)
                 inventory.AddUnit(itemDefinition);
         }
+
+        #region External Input
+
+        public Vector2 HeadInput { get; set; }
+
+        public Vector2 MoveInput { get; set; }
+
+        public bool InteractInput { get; set; }
+
+        public bool ApplyInput { get; set; }
+
+        public bool JumpInput { get; set; }
+
+        public bool FlymodeInput { get; set; }
+
+        public bool[] SlotInput { get; private set; } = new bool[10];
+
+        public bool SlotLeftInput { get; set; }
+
+        public bool SlotRightInput { get; set; }
+
+        #endregion
     }
 }

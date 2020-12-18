@@ -5,22 +5,17 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class LeavesBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Leaves; }
-        }
+        public override string Name => Languages.OctoBasics.Leaves;
 
-        public override string Icon
-        {
-            get { return "leaves"; }
-        }
+        public override string Icon => "leaves";
 
 
         public override string[] Textures
         {
             get
             {
-                return new[] {
+                return new[]
+                {
                     "leaves"
                 };
             }

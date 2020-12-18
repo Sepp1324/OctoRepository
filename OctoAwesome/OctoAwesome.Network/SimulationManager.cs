@@ -12,34 +12,14 @@ namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
-        public bool IsRunning { get; private set; }
-
-        public Simulation Simulation
-        {
-            get
-            {
-                lock (mainLock)
-                    return simulation;
-            }
-            set
-            {
-                lock (mainLock)
-                    simulation = value;
-            }
-        }
-
-        public GameTime GameTime { get; private set; }
-
-        public ResourceManager ResourceManager { get; private set; }
-        public GameService Service { get; }
-
-        private Simulation simulation;
+        private readonly Thread backgroundThread;
         private readonly ExtensionLoader extensionLoader;
+        private readonly object mainLock;
 
         private readonly ISettings settings;
         private readonly UpdateHub updateHub;
-        private readonly Thread backgroundThread;
-        private readonly object mainLock;
+
+        private Simulation simulation;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
@@ -76,6 +56,27 @@ namespace OctoAwesome.Network
             };
         }
 
+        public bool IsRunning { get; private set; }
+
+        public Simulation Simulation
+        {
+            get
+            {
+                lock (mainLock)
+                    return simulation;
+            }
+            set
+            {
+                lock (mainLock)
+                    simulation = value;
+            }
+        }
+
+        public GameTime GameTime { get; private set; }
+
+        public ResourceManager ResourceManager { get; private set; }
+        public GameService Service { get; }
+
         public void Start()
         {
             IsRunning = true;
@@ -109,7 +110,9 @@ namespace OctoAwesome.Network
         }
 
         public IUniverse GetUniverse()
-            => ResourceManager.CurrentUniverse;
+        {
+            return ResourceManager.CurrentUniverse;
+        }
 
         public IUniverse NewUniverse()
         {
@@ -124,9 +127,14 @@ namespace OctoAwesome.Network
         }
 
         public IChunkColumn LoadColumn(IPlanet planet, Index2 index2)
-            => ResourceManager.LoadChunkColumn(planet, index2);
+        {
+            return ResourceManager.LoadChunkColumn(planet, index2);
+        }
+
         public IChunkColumn LoadColumn(int planetId, Index2 index2)
-            => LoadColumn(GetPlanet(planetId), index2);
+        {
+            return LoadColumn(GetPlanet(planetId), index2);
+        }
 
         private void SimulationLoop()
         {

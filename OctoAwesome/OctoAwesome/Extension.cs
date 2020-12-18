@@ -21,7 +21,7 @@ namespace OctoAwesome
             extensionLoader.RegisterEntityExtender<Player>((p) =>
             {
                 p.Components.AddComponent(new ControllableComponent());
-                p.Components.AddComponent(new HeadComponent() { Offset = new Vector3(0, 0, 3.2f) });
+                p.Components.AddComponent(new HeadComponent() {Offset = new Vector3(0, 0, 3.2f)});
                 p.Components.AddComponent(new InventoryComponent());
                 p.Components.AddComponent(new ToolBarComponent());
             });

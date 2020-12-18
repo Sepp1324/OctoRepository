@@ -14,14 +14,14 @@ namespace OctoAwesome.Database
         {
             this.fileInfo = fileInfo ?? throw new ArgumentNullException(nameof(fileInfo));
         }
+
         public Writer(string path) : this(new FileInfo(path))
         {
-
         }
 
         public void Open()
         {
-           fileStream =  fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            fileStream = fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
         }
 
         public void Close()
@@ -31,7 +31,10 @@ namespace OctoAwesome.Database
         }
 
         public void Write(byte[] data, int offset, int length)
-            => fileStream.Write(data, offset, length);
+        {
+            fileStream.Write(data, offset, length);
+        }
+
         public void Write(byte[] data, int offset, int length, long position)
         {
             fileStream.Seek(position, SeekOrigin.Begin);
@@ -43,6 +46,7 @@ namespace OctoAwesome.Database
             Write(data, offset, length);
             fileStream.Flush();
         }
+
         public void WriteAndFlush(byte[] data, int offset, int length, long position)
         {
             Write(data, offset, length, position);
@@ -50,12 +54,14 @@ namespace OctoAwesome.Database
         }
 
         internal long ToEnd()
-            => fileStream.Seek(0, SeekOrigin.End);
+        {
+            return fileStream.Seek(0, SeekOrigin.End);
+        }
 
         #region IDisposable Support
+
         private bool disposedValue = false;
 
-        
 
         public void Dispose()
         {
@@ -66,7 +72,7 @@ namespace OctoAwesome.Database
 
             disposedValue = true;
         }
-        #endregion
 
+        #endregion
     }
 }

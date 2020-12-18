@@ -13,7 +13,23 @@ namespace OctoAwesome.Runtime
         private readonly NotificationChannelCollection observers;
 
         public UpdateHub()
-            => observers = new NotificationChannelCollection();
+        {
+            observers = new NotificationChannelCollection();
+        }
+
+        public void Dispose()
+        {
+            foreach (var observerSet in observers)
+            {
+                using (observerSet.Value.Wait())
+                {
+                    foreach (var observer in observerSet.Value)
+                        observer.OnCompleted();
+                }
+            }
+
+            observers.Clear();
+        }
 
         public IDisposable Subscribe(INotificationObserver observer, string channel = "none")
         {
@@ -22,49 +38,37 @@ namespace OctoAwesome.Runtime
         }
 
         public void Unsubscribe(INotificationObserver observer)
-            => observers.Remove(observer);
+        {
+            observers.Remove(observer);
+        }
 
         public void Unsubscribe(INotificationObserver observer, string channel)
-            => observers.Remove(channel, observer);
+        {
+            observers.Remove(channel, observer);
+        }
 
         public void Push(Notification notification)
         {
-            foreach (KeyValuePair<string, ObserverHashSet> observerSet in observers)
+            foreach (var observerSet in observers)
             {
                 using (observerSet.Value.Wait())
                 {
-                    foreach (INotificationObserver observer in observerSet.Value)
+                    foreach (var observer in observerSet.Value)
                         observer.OnNext(notification);
                 }
             }
         }
+
         public void Push(Notification notification, string channel)
         {
-
-            if (observers.TryGetValue(channel, out ObserverHashSet observerSet))
+            if (observers.TryGetValue(channel, out var observerSet))
             {
                 using (observerSet.Wait())
                 {
-                    foreach (INotificationObserver observer in observerSet)
+                    foreach (var observer in observerSet)
                         observer.OnNext(notification);
                 }
             }
-
         }
-
-        public void Dispose()
-        {
-
-            foreach (KeyValuePair<string, ObserverHashSet> observerSet in observers)
-            {
-                using (observerSet.Value.Wait())
-                {
-                    foreach (INotificationObserver observer in observerSet.Value)
-                        observer.OnCompleted();
-                }
-            }
-            observers.Clear();
-        }
-
     }
 }

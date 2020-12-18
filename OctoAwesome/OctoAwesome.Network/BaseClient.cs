@@ -13,32 +13,30 @@ namespace OctoAwesome.Network
 {
     public abstract class BaseClient : IAsyncObservable<Package>
     {
-        private static uint NextId => ++nextId;
         private static uint nextId;
+        private readonly CancellationTokenSource cancellationTokenSource;
+        private readonly ConcurrentBag<IAsyncObserver<Package>> observers;
+        private readonly PackagePool packagePool;
+        protected readonly SocketAsyncEventArgs ReceiveArgs;
+        private readonly SocketAsyncEventArgs sendArgs;
+        private readonly object sendLock;
+
+        private readonly (byte[] data, int len)[] sendQueue;
+        private Package currentPackage;
+        private byte nextSendQueueWriteIndex;
+
+        private byte readSendQueueIndex;
+        private bool sending;
+
+        protected Socket Socket;
 
         static BaseClient()
         {
             nextId = 0;
         }
-        public uint Id { get; }
-
-        protected Socket Socket;
-        protected readonly SocketAsyncEventArgs ReceiveArgs;
-
-        private byte readSendQueueIndex;
-        private byte nextSendQueueWriteIndex;
-        private bool sending;
-        private Package currentPackage;
-        private readonly ConcurrentBag<IAsyncObserver<Package>> observers;
-        private readonly PackagePool packagePool;
-        private readonly SocketAsyncEventArgs sendArgs;
-
-        private readonly (byte[] data, int len)[] sendQueue;
-        private readonly object sendLock;
-        private readonly CancellationTokenSource cancellationTokenSource;
 
         protected BaseClient()
-        {            
+        {
             sendQueue = new (byte[] data, int len)[256];
             sendLock = new object();
             ReceiveArgs = new SocketAsyncEventArgs();
@@ -54,10 +52,20 @@ namespace OctoAwesome.Network
 
             Id = NextId;
         }
+
         protected BaseClient(Socket socket) : this()
         {
             Socket = socket;
             Socket.NoDelay = true;
+        }
+
+        private static uint NextId => ++nextId;
+        public uint Id { get; }
+
+        public Task<IDisposable> Subscribe(IAsyncObserver<Package> observer)
+        {
+            observers.Add(observer);
+            return Task.FromResult(new Subscription<Package>(this, observer) as IDisposable);
         }
 
         public Task Start()
@@ -99,7 +107,7 @@ namespace OctoAwesome.Network
 
         public async Task SendPackageAsync(Package package)
         {
-            byte[] bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
+            var bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
             package.SerializePackage(bytes, 0);
             await SendAsync(bytes, bytes.Length);
         }
@@ -115,12 +123,6 @@ namespace OctoAwesome.Network
             var task = Task.Run(async () => await SendPackageAsync(package));
             task.Wait();
             package.Release();
-        }
-
-        public Task<IDisposable> Subscribe(IAsyncObserver<Package> observer)
-        {
-            observers.Add(observer);
-            return Task.FromResult( new Subscription<Package>(this, observer) as IDisposable);
         }
 
         private void SendInternal(byte[] data, int len)
@@ -184,20 +186,18 @@ namespace OctoAwesome.Network
                 if (e.BytesTransferred < 1)
                     return;
 
-                int offset = 0;
+                var offset = 0;
 
                 do
                 {
                     offset += DataReceived(e.Buffer, e.BytesTransferred, offset);
-
                 } while (offset < e.BytesTransferred);
-
             } while (!Socket.ReceiveAsync(e));
         }
 
         private int DataReceived(byte[] buffer, int length, int bufferOffset)
         {
-            int offset = 0;
+            var offset = 0;
 
             if (currentPackage == null)
             {
@@ -206,7 +206,8 @@ namespace OctoAwesome.Network
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)
                 {
-                    var ex = new Exception($"Buffer is to small for package head deserialization [length: {length} | offset: {bufferOffset}]");
+                    var ex = new Exception(
+                        $"Buffer is to small for package head deserialization [length: {length} | offset: {bufferOffset}]");
                     ex.Data.Add(nameof(length), length);
                     ex.Data.Add(nameof(bufferOffset), bufferOffset);
                     throw ex;
@@ -224,7 +225,8 @@ namespace OctoAwesome.Network
                 }
             }
 
-            offset += currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));
+            offset += currentPackage.DeserializePayload(buffer, bufferOffset + offset,
+                length - (bufferOffset + offset));
 
             if (currentPackage.IsComplete)
             {

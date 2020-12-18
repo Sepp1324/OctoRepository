@@ -13,16 +13,17 @@ namespace OctoAwesome.Database
 {
     public abstract class Database : IDisposable
     {
-        public Type TagType { get; }
-
         protected Database(Type tagType)
         {
             TagType = tagType;
         }
 
+        public Type TagType { get; }
+        public abstract void Dispose();
+
         public abstract void Open();
         public abstract void Close();
-        public abstract void Dispose();
+
         /// <summary>
         /// Locks this Database for the specific operation
         /// </summary>
@@ -33,7 +34,35 @@ namespace OctoAwesome.Database
 
     public sealed class Database<TTag> : Database where TTag : ITag, new()
     {
+        private readonly DatabaseLockMonitor databaseLockMonitor;
+        private readonly SemaphoreSlim dbLockSemaphore;
+        private readonly Defragmentation<TTag> defragmentation;
+        private readonly ValueFileCheck<TTag> fileCheck;
+        private readonly FileInfo keyFile;
+
+        private readonly KeyStore<TTag> keyStore;
+        private readonly FileInfo valueFile;
+        private readonly ValueStore valueStore;
+
+        public Database(FileInfo keyFile, FileInfo valueFile, bool fixedValueLength) : base(typeof(TTag))
+        {
+            dbLockSemaphore = new SemaphoreSlim(1, 1);
+            databaseLockMonitor = new DatabaseLockMonitor();
+            keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
+            valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
+            defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
+            fileCheck = new ValueFileCheck<TTag>(valueFile);
+            this.keyFile = keyFile;
+            this.valueFile = valueFile;
+            Threshold = 1000;
+        }
+
+        public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
+        {
+        }
+
         public bool FixedValueLength => valueStore.FixedValueLength;
+
         public IEnumerable<TTag> Keys
         {
             get
@@ -52,32 +81,6 @@ namespace OctoAwesome.Database
         /// Default Value is 1000.
         /// </summary>
         public int Threshold { get; set; }
-
-        private readonly KeyStore<TTag> keyStore;
-        private readonly ValueStore valueStore;
-        private readonly Defragmentation<TTag> defragmentation;
-        private readonly ValueFileCheck<TTag> fileCheck;
-        private readonly FileInfo keyFile;
-        private readonly FileInfo valueFile;
-        private readonly DatabaseLockMonitor databaseLockMonitor;
-        private readonly SemaphoreSlim dbLockSemaphore;
-
-        public Database(FileInfo keyFile, FileInfo valueFile, bool fixedValueLength) : base(typeof(TTag))
-        {
-            dbLockSemaphore = new SemaphoreSlim(1, 1);
-            databaseLockMonitor = new DatabaseLockMonitor();
-            keyStore = new KeyStore<TTag>(new Writer(keyFile), new Reader(keyFile));
-            valueStore = new ValueStore(new Writer(valueFile), new Reader(valueFile), fixedValueLength);
-            defragmentation = new Defragmentation<TTag>(keyFile, valueFile);
-            fileCheck = new ValueFileCheck<TTag>(valueFile);
-            this.keyFile = keyFile;
-            this.valueFile = valueFile;
-            Threshold = 1000;
-        }
-        public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
-        {
-
-        }
 
         public override void Open()
         {
@@ -112,10 +115,14 @@ namespace OctoAwesome.Database
         }
 
         public void Validate()
-            => ExecuteOperationOnKeyValueStore(fileCheck.Check);
+        {
+            ExecuteOperationOnKeyValueStore(fileCheck.Check);
+        }
 
         public void Defragmentation()
-            => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
+        {
+            ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
+        }
 
         public Value GetValue(TTag tag)
         {

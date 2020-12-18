@@ -14,6 +14,7 @@ namespace OctoAwesome.Database
         public IdManager() : this(Array.Empty<int>())
         {
         }
+
         public IdManager(IEnumerable<int> alreadyUsedIds)
         {
             if (alreadyUsedIds == null)
@@ -28,6 +29,7 @@ namespace OctoAwesome.Database
                 nextId = 0;
                 return;
             }
+
             nextId = ids.Max();
 
             var ids2 = new List<int>(nextId);
@@ -61,7 +63,9 @@ namespace OctoAwesome.Database
             reservedIds.Remove(id);
         }
 
-        public void ReserveId(int id) 
-            => reservedIds.Add(id);
+        public void ReserveId(int id)
+        {
+            reservedIds.Add(id);
+        }
     }
 }

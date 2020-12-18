@@ -5,22 +5,17 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GreenCottonBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.GreenCotton; }
-        }
+        public override string Name => Languages.OctoBasics.GreenCotton;
 
-        public override string Icon
-        {
-            get { return "cotton_green"; }
-        }
+        public override string Icon => "cotton_green";
 
 
         public override string[] Textures
         {
             get
             {
-                return new[] {
+                return new[]
+                {
                     "cotton_green"
                 };
             }

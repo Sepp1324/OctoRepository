@@ -5,26 +5,19 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GrassBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Grass; }
-        }
+        public override string Name => Languages.OctoBasics.Grass;
 
-        public override string Icon
-        {
-            get { return "grass_top"; }
-        }
+        public override string Icon => "grass_top";
 
         public override string[] Textures
         {
             get
             {
-                
-
-                return new[] {
+                return new[]
+                {
                     "grass_top",
                     "dirt",
-                    "dirt_grass",
+                    "dirt_grass"
                 };
             }
         }
@@ -50,7 +43,8 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             if (wall == Wall.Top)
             {
                 return 0;
-            } else if (wall == Wall.Bottom)
+            }
+            else if (wall == Wall.Bottom)
             {
                 return 1;
             }
