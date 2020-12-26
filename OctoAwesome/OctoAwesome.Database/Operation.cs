@@ -11,13 +11,15 @@ namespace OctoAwesome.Database
         /// Indicates that this lock is for this read process
         /// </summary>
         Read = 1 << 0,
+
         /// <summary>
         /// Indicates that this lock is for this write process
         /// </summary>
         Write = 1 << 1,
+
         /// <summary>
         /// Indicates that lock is exclusive for this operation
         /// </summary>
-        Exclusive = 1 << 2 
+        Exclusive = 1 << 2
     }
 }

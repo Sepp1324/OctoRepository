@@ -15,10 +15,14 @@ namespace OctoAwesome.Database
             Tag = id;
         }
 
-        public byte[] GetBytes() 
-            => BitConverter.GetBytes(Tag);
+        public byte[] GetBytes()
+        {
+            return BitConverter.GetBytes(Tag);
+        }
 
-        public void FromBytes(byte[] array, int startIndex) 
-            => Tag = BitConverter.ToInt32(array, startIndex);
+        public void FromBytes(byte[] array, int startIndex)
+        {
+            Tag = BitConverter.ToInt32(array, startIndex);
+        }
     }
 }

@@ -18,11 +18,10 @@ namespace OctoAwesome.Basics
 
         public void Register(IExtensionLoader extensionLoader)
         {
-
             foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(
                 t => !t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t)))
             {
-                extensionLoader.RegisterDefinition((IDefinition)Activator.CreateInstance(t));
+                extensionLoader.RegisterDefinition((IDefinition) Activator.CreateInstance(t));
             }
 
             extensionLoader.RegisterMapGenerator(new ComplexPlanetGenerator());
@@ -35,18 +34,18 @@ namespace OctoAwesome.Basics
 
             extensionLoader.RegisterEntityExtender<Player>((p) =>
             {
-                var posComponent = new PositionComponent { Position = new Coordinate(0, new Index3(0, 0, 200), new Vector3(0, 0, 0)) };
+                var posComponent = new PositionComponent
+                    {Position = new Coordinate(0, new Index3(0, 0, 200), new Vector3(0, 0, 0))};
 
                 p.Components.AddComponent(posComponent);
-                p.Components.AddComponent(new BodyComponent() { Mass = 50f, Height = 3.5f, Radius = 0.75f });
-                p.Components.AddComponent(new BodyPowerComponent() { Power = 600f, JumpTime = 120 });
+                p.Components.AddComponent(new BodyComponent() {Mass = 50f, Height = 3.5f, Radius = 0.75f});
+                p.Components.AddComponent(new BodyPowerComponent() {Power = 600f, JumpTime = 120});
                 p.Components.AddComponent(new GravityComponent());
                 p.Components.AddComponent(new MoveableComponent());
                 p.Components.AddComponent(new BoxCollisionComponent());
                 p.Components.AddComponent(new EntityCollisionComponent());
 
                 p.Components.AddComponent(new LocalChunkCacheComponent(posComponent.Planet.GlobalChunkCache, 4, 2));
-
             });
 
             extensionLoader.RegisterSimulationExtender((s) =>

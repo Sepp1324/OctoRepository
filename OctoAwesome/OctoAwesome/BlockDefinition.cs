@@ -42,16 +42,6 @@ namespace OctoAwesome
         public virtual bool HasMetaData => false;
 
         /// <summary>
-        /// Liefert die Physikalischen Paramerter, wie härte, dichte und bruchzähigkeit
-        /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
-        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
-        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
-        /// <returns>Die physikalischen Parameter</returns>
-        public abstract PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z);
-
-        /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
         /// </summary>
         /// <param name="block">Der Block-Typ des interagierenden Elements</param>
@@ -67,12 +57,33 @@ namespace OctoAwesome
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
         public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
-            => new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
+        {
+            return new[] {new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1))};
+        }
 
-        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
+        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        {
+            return 0;
+        }
 
-        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
-        
-        public bool IsSolidWall(Wall wall) => (SolidWall& (1 << (int)wall)) != 0;
+        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        {
+            return 0;
+        }
+
+        public bool IsSolidWall(Wall wall)
+        {
+            return (SolidWall & (1 << (int) wall)) != 0;
+        }
+
+        /// <summary>
+        /// Liefert die Physikalischen Paramerter, wie härte, dichte und bruchzähigkeit
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>Die physikalischen Parameter</returns>
+        public abstract PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z);
     }
 }

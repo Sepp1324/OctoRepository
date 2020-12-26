@@ -8,6 +8,6 @@ namespace OctoAwesome.Serialization
 {
     public interface IIdentification
     {
-        Guid Id { get;  }
+        Guid Id { get; }
     }
 }

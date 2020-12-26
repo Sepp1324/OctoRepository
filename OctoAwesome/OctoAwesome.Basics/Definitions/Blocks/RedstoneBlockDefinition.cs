@@ -5,23 +5,18 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedstoneBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Redstone; }
-        }
+        public override string Name => Languages.OctoBasics.Redstone;
 
-        public override string Icon
-        {
-            get { return "redstone"; }
-        }
+        public override string Icon => "redstone";
 
 
         public override string[] Textures
         {
             get
             {
-                return new[] {
-                    "redstone",
+                return new[]
+                {
+                    "redstone"
                 };
             }
         }

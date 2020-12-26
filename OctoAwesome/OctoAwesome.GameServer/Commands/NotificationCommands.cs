@@ -26,7 +26,7 @@ namespace OctoAwesome.GameServer.Commands
             blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
         }
 
-        [Command((ushort)OfficialCommand.EntityNotification)]
+        [Command((ushort) OfficialCommand.EntityNotification)]
         public static byte[] EntityNotification(CommandParameter parameter)
         {
             var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, parameter.Data);
@@ -37,10 +37,10 @@ namespace OctoAwesome.GameServer.Commands
             return null;
         }
 
-        [Command((ushort)OfficialCommand.ChunkNotification)]
+        [Command((ushort) OfficialCommand.ChunkNotification)]
         public static byte[] ChunkNotification(CommandParameter parameter)
         {
-            var notificationType = (BlockNotificationType)parameter.Data[0];
+            var notificationType = (BlockNotificationType) parameter.Data[0];
             Notification chunkNotification;
             switch (notificationType)
             {
@@ -48,7 +48,8 @@ namespace OctoAwesome.GameServer.Commands
                     chunkNotification = Serializer.DeserializePoolElement(blockChangedNotificationPool, parameter.Data);
                     break;
                 case BlockNotificationType.BlocksChanged:
-                    chunkNotification = Serializer.DeserializePoolElement(blocksChangedNotificationPool, parameter.Data);
+                    chunkNotification =
+                        Serializer.DeserializePoolElement(blocksChangedNotificationPool, parameter.Data);
                     break;
                 default:
                     throw new NotSupportedException($"This Type is not supported: {notificationType}");

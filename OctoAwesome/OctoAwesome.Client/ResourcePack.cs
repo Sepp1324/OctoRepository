@@ -9,8 +9,7 @@ namespace OctoAwesome.Client
 {
     public sealed class ResourcePack
     {
-        [XmlIgnore]
-        public string Path { get; set; }
+        [XmlIgnore] public string Path { get; set; }
 
         public string Name { get; set; }
 

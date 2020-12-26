@@ -61,7 +61,8 @@ namespace OctoAwesome.Serialization
             return obj;
         }
 
-        public static T DeserializePoolElement<T>(IPool<T> pool, byte[] data) where T : ISerializable, IPoolElement, new()
+        public static T DeserializePoolElement<T>(IPool<T> pool, byte[] data)
+            where T : ISerializable, IPoolElement, new()
         {
             var obj = pool.Get();
             InternalDeserialize(ref obj, data);

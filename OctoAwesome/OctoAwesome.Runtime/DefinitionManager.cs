@@ -9,13 +9,12 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
-        private IDefinition[] definitions;
+        private readonly IBlockDefinition[] blockDefinitions;
+        private readonly IDefinition[] definitions;
 
-        private IItemDefinition[] itemDefinitions;
+        private readonly IExtensionResolver extensionResolver;
 
-        private IBlockDefinition[] blockDefinitions;
-
-        private IExtensionResolver extensionResolver;
+        private readonly IItemDefinition[] itemDefinitions;
 
         public DefinitionManager(IExtensionResolver extensionResolver)
         {
@@ -25,7 +24,7 @@ namespace OctoAwesome.Runtime
 
             // Items sammeln
             itemDefinitions = definitions.OfType<IItemDefinition>().ToArray();
-            
+
             // Blöcke sammeln
             blockDefinitions = definitions.OfType<IBlockDefinition>().ToArray();
         }
@@ -47,7 +46,7 @@ namespace OctoAwesome.Runtime
         {
             return itemDefinitions;
         }
-                
+
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
@@ -77,7 +76,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex(IDefinition definition)
         {
-            return (ushort)(Array.IndexOf(definitions, definition) + 1);
+            return (ushort) (Array.IndexOf(definitions, definition) + 1);
         }
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex<T>() where T : IDefinition
         {
-            IDefinition definition = definitions.SingleOrDefault(d => d.GetType() == typeof(T));
+            var definition = definitions.SingleOrDefault(d => d.GetType() == typeof(T));
             return GetDefinitionIndex(definition);
         }
 

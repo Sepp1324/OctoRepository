@@ -13,21 +13,13 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class EntityComponent : GameComponent
     {
-        private struct ModelInfo
-        {
-            public bool render;
-            public Texture2D texture;
-            public Model model;
-        }
-        private GraphicsDevice graphicsDevice;
-        private BasicEffect effect;
-        public SimulationComponent Simulation { get; private set; }
+        private readonly BasicEffect effect;
+        private readonly GraphicsDevice graphicsDevice;
+
+        private int i = 0;
 
 
-        private Dictionary<string, ModelInfo> models = new Dictionary<string, ModelInfo>();
-
-
-        public List<Entity> Entities { get; set; }
+        private readonly Dictionary<string, ModelInfo> models = new Dictionary<string, ModelInfo>();
 
         public EntityComponent(OctoGame game, SimulationComponent simulation) : base(game)
         {
@@ -39,7 +31,11 @@ namespace OctoAwesome.Client.Components
             effect = new BasicEffect(graphicsDevice);
         }
 
-        private int i = 0;
+        public SimulationComponent Simulation { get; private set; }
+
+
+        public List<Entity> Entities { get; set; }
+
         public void Draw(Matrix view, Matrix projection, Index3 chunkOffset, Index2 planetSize)
         {
             effect.Projection = projection;
@@ -61,13 +57,13 @@ namespace OctoAwesome.Client.Components
                         var rendercomp = entity.Components.GetComponent<RenderComponent>();
 
 
-                        if (!models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
+                        if (!models.TryGetValue(rendercomp.Name, out var modelinfo))
                         {
                             modelinfo = new ModelInfo()
                             {
                                 render = true,
                                 model = Game.Content.Load<Model>(rendercomp.ModelName),
-                                texture = Game.Content.Load<Texture2D>(rendercomp.TextureName),
+                                texture = Game.Content.Load<Texture2D>(rendercomp.TextureName)
                             };
                         }
 
@@ -78,19 +74,22 @@ namespace OctoAwesome.Client.Components
                         var position = positioncomp.Position;
                         var body = entity.Components.GetComponent<BodyComponent>();
 
-                        HeadComponent head = new HeadComponent();
+                        var head = new HeadComponent();
                         if (entity.Components.ContainsComponent<HeadComponent>())
                             head = entity.Components.GetComponent<HeadComponent>();
 
-                        Index3 shift = chunkOffset.ShortestDistanceXY(
-                       position.ChunkIndex, planetSize);
+                        var shift = chunkOffset.ShortestDistanceXY(
+                            position.ChunkIndex, planetSize);
 
-                        var rotation = MathHelper.WrapAngle(positioncomp.Direction + MathHelper.ToRadians(rendercomp.BaseZRotation));
+                        var rotation = MathHelper.WrapAngle(positioncomp.Direction +
+                                                            MathHelper.ToRadians(rendercomp.BaseZRotation));
 
-                        Matrix world = Matrix.CreateTranslation(
-                            shift.X * Chunk.CHUNKSIZE_X + position.LocalPosition.X,
-                            shift.Y * Chunk.CHUNKSIZE_Y + position.LocalPosition.Y,
-                            shift.Z * Chunk.CHUNKSIZE_Z + position.LocalPosition.Z) * Matrix.CreateScaling(body.Radius * 2, body.Radius * 2, body.Height) * Matrix.CreateRotationZ(rotation);
+                        var world = Matrix.CreateTranslation(
+                                        shift.X * Chunk.CHUNKSIZE_X + position.LocalPosition.X,
+                                        shift.Y * Chunk.CHUNKSIZE_Y + position.LocalPosition.Y,
+                                        shift.Z * Chunk.CHUNKSIZE_Z + position.LocalPosition.Z) *
+                                    Matrix.CreateScaling(body.Radius * 2, body.Radius * 2, body.Height) *
+                                    Matrix.CreateRotationZ(rotation);
                         effect.World = world;
                         modelinfo.model.Transform = world;
 
@@ -112,6 +111,13 @@ namespace OctoAwesome.Client.Components
             Entities = simulation.Entities.Where(i => i.Components.ContainsComponent<PositionComponent>()).ToList();
 
             //base.Update(gameTime);
+        }
+
+        private struct ModelInfo
+        {
+            public bool render;
+            public Texture2D texture;
+            public Model model;
         }
     }
 }
