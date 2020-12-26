@@ -8,10 +8,7 @@ namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-        public IPlanet GeneratePlanet(Guid universe, int id, int seed)
-        {
-            return new ComplexPlanet(id, universe, new Index3(12, 12, 3), this, seed);
-        }
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed) => new ComplexPlanet(id, universe, new Index3(13, 13, 4), this, seed);
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
@@ -43,6 +40,7 @@ namespace OctoAwesome.Basics
             var localHeightmap = localPlanet.BiomeGenerator.GetHeightmap(index);
 
             var chunks = new IChunk[planet.Size.Z];
+            
             for (var i = 0; i < planet.Size.Z; i++)
                 chunks[i] = new Chunk(new Index3(index, i), planet);
 

@@ -13,19 +13,19 @@ namespace OctoAwesome
         /// Zweierpotenz der Chunkgrösse. Ausserdem gibt es die Anzahl Bits an,
         /// die die X-Koordinate im Array <see cref="Blocks"/> verwendet.
         /// </summary>
-        public const int LimitX = 5;
+        public const int LimitX = 4;
 
         /// <summary>
         /// Zweierpotenz der Chunkgrösse. Ausserdem gibt es die Anzahl Bits an,
         /// die die Y-Koordinate im Array <see cref="Blocks"/> verwendet.
         /// </summary>
-        public const int LimitY = 5;
+        public const int LimitY = 4;
 
         /// <summary>
         /// Zweierpotenz der Chunkgrösse. Ausserdem gibt es die Anzahl Bits an,
         /// die die Z-Koordinate im Array <see cref="Blocks"/> verwendet.
         /// </summary>
-        public const int LimitZ = 5;
+        public const int LimitZ = 4;
 
         /// <summary>
         /// Größe eines Chunks in Blocks in X-Richtung.
@@ -47,7 +47,7 @@ namespace OctoAwesome
         /// </summary>
         public static readonly Index3 CHUNKSIZE = new Index3(CHUNKSIZE_X, CHUNKSIZE_Y, CHUNKSIZE_Z);
 
-        private IChunkColumn chunkColumn;
+        private IChunkColumn _chunkColumn;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Chunk
@@ -214,12 +214,12 @@ namespace OctoAwesome
 
         public void SetColumn(IChunkColumn chunkColumn)
         {
-            this.chunkColumn = chunkColumn;
+            this._chunkColumn = chunkColumn;
         }
 
         public void OnUpdate(SerializableNotification notification)
         {
-            chunkColumn?.OnUpdate(notification);
+            _chunkColumn?.OnUpdate(notification);
         }
 
         public void Update(SerializableNotification notification)

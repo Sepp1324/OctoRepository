@@ -10,15 +10,15 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class GameScreen : Screen
     {
-        private const float mouseSpeed = 0.2f;
-        private readonly CompassControl compass;
-        private readonly CrosshairControl crosshair;
+        private const float MOUSE_SPEED = 0.2f;
+        private readonly CompassControl _compass;
+        private readonly CrosshairControl _crosshair;
 
-        private readonly DebugControl debug;
-        private readonly HealthBarControl healthbar;
-        private readonly MinimapControl minimap;
-        private readonly SceneControl scene;
-        private readonly ToolbarControl toolbar;
+        private readonly DebugControl _debug;
+        private readonly HealthBarControl _healthbar;
+        private readonly MinimapControl _minimap;
+        private readonly SceneControl _scene;
+        private readonly ToolbarControl _toolbar;
 
         public GameScreen(ScreenComponent manager) : base(manager)
         {
@@ -27,55 +27,68 @@ namespace OctoAwesome.Client.Screens
             Manager = manager;
             Padding = Border.All(0);
 
-            scene = new SceneControl(manager);
-            scene.HorizontalAlignment = HorizontalAlignment.Stretch;
-            scene.VerticalAlignment = VerticalAlignment.Stretch;
-            Controls.Add(scene);
+            _scene = new SceneControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch
+            };
+            Controls.Add(_scene);
 
-            debug = new DebugControl(manager);
-            debug.HorizontalAlignment = HorizontalAlignment.Stretch;
-            debug.VerticalAlignment = VerticalAlignment.Stretch;
-            debug.Visible = false;
-            Controls.Add(debug);
+            _debug = new DebugControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Visible = false
+            };
+            Controls.Add(_debug);
 
-            compass = new CompassControl(manager);
-            compass.HorizontalAlignment = HorizontalAlignment.Center;
-            compass.VerticalAlignment = VerticalAlignment.Top;
-            compass.Margin = Border.All(10);
-            compass.Width = 300;
-            compass.Height = 50;
-            Controls.Add(compass);
+            _compass = new CompassControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = Border.All(10),
+                Width = 300,
+                Height = 50
+            };
+            Controls.Add(_compass);
 
-            toolbar = new ToolbarControl(manager);
-            toolbar.HorizontalAlignment = HorizontalAlignment.Stretch;
-            toolbar.VerticalAlignment = VerticalAlignment.Bottom;
-            toolbar.Height = 100;
-            Controls.Add(toolbar);
+            _toolbar = new ToolbarControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Height = 100
+            };
+            Controls.Add(_toolbar);
 
-            minimap = new MinimapControl(manager, scene);
-            minimap.HorizontalAlignment = HorizontalAlignment.Right;
-            minimap.VerticalAlignment = VerticalAlignment.Bottom;
-            minimap.Width = 128;
-            minimap.Height = 128;
-            minimap.Margin = Border.All(5);
-            Controls.Add(minimap);
+            _minimap = new MinimapControl(manager, _scene)
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Width = 128,
+                Height = 128,
+                Margin = Border.All(5)
+            };
+            Controls.Add(_minimap);
 
-            healthbar = new HealthBarControl(manager);
-            healthbar.HorizontalAlignment = HorizontalAlignment.Left;
-            healthbar.VerticalAlignment = VerticalAlignment.Bottom;
-            healthbar.Width = 240;
-            healthbar.Height = 78;
-            healthbar.Maximum = 100;
-            healthbar.Value = 40;
-            healthbar.Margin = Border.All(20, 30);
-            Controls.Add(healthbar);
+            _healthbar = new HealthBarControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Width = 240,
+                Height = 78,
+                Maximum = 100,
+                Value = 40,
+                Margin = Border.All(20, 30)
+            };
+            Controls.Add(_healthbar);
 
-            crosshair = new CrosshairControl(manager);
-            crosshair.HorizontalAlignment = HorizontalAlignment.Center;
-            crosshair.VerticalAlignment = VerticalAlignment.Center;
-            crosshair.Width = 8;
-            crosshair.Height = 8;
-            Controls.Add(crosshair);
+            _crosshair = new CrosshairControl(manager)
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Width = 8,
+                Height = 8
+            };
+            Controls.Add(_crosshair);
 
             Title = Languages.OctoClient.Game;
 
@@ -86,30 +99,27 @@ namespace OctoAwesome.Client.Screens
 
         public event EventHandler OnCenterChanged
         {
-            add => scene.OnCenterChanged += value;
-            remove => scene.OnCenterChanged -= value;
+            add => _scene.OnCenterChanged += value;
+            remove => _scene.OnCenterChanged -= value;
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (pressedMoveUp) Manager.Player.MoveInput += new Vector2(0f, 1f);
-            if (pressedMoveLeft) Manager.Player.MoveInput += new Vector2(-1f, 0f);
-            if (pressedMoveDown) Manager.Player.MoveInput += new Vector2(0f, -1f);
-            if (pressedMoveRight) Manager.Player.MoveInput += new Vector2(1f, 0f);
-            if (pressedHeadUp) Manager.Player.HeadInput += new Vector2(0f, 1f);
-            if (pressedHeadDown) Manager.Player.HeadInput += new Vector2(0f, -1f);
-            if (pressedHeadLeft) Manager.Player.HeadInput += new Vector2(-1f, 0f);
-            if (pressedHeadRight) Manager.Player.HeadInput += new Vector2(1f, 0f);
+            if (_pressedMoveUp) Manager.Player.MoveInput += new Vector2(0f, 10f);
+            if (_pressedMoveLeft) Manager.Player.MoveInput += new Vector2(-10f, 0f);
+            if (_pressedMoveDown) Manager.Player.MoveInput += new Vector2(0f, -10f);
+            if (_pressedMoveRight) Manager.Player.MoveInput += new Vector2(10f, 0f);
+            if (_pressedHeadUp) Manager.Player.HeadInput += new Vector2(0f, 1f);
+            if (_pressedHeadDown) Manager.Player.HeadInput += new Vector2(0f, -1f);
+            if (_pressedHeadLeft) Manager.Player.HeadInput += new Vector2(-1f, 0f);
+            if (_pressedHeadRight) Manager.Player.HeadInput += new Vector2(1f, 0f);
 
             HandleGamePad();
 
             base.OnUpdate(gameTime);
         }
 
-        public void Unload()
-        {
-            scene.Dispose();
-        }
+        public void Unload() => _scene.Dispose();
 
         #region Mouse Input
 
@@ -135,7 +145,7 @@ namespace OctoAwesome.Client.Screens
 
             if (args.MouseMode == MouseMode.Captured && IsActiveScreen)
             {
-                Manager.Player.HeadInput = args.GlobalPosition.ToVector2() * mouseSpeed * new Vector2(1f, -1f);
+                Manager.Player.HeadInput = args.GlobalPosition.ToVector2() * MOUSE_SPEED * new Vector2(1f, -1f);
                 args.Handled = true;
             }
         }
@@ -153,64 +163,121 @@ namespace OctoAwesome.Client.Screens
 
         #region Keyboard Input
 
-        private bool pressedMoveUp = false;
-        private bool pressedMoveLeft = false;
-        private bool pressedMoveDown = false;
-        private bool pressedMoveRight = false;
-        private bool pressedHeadUp = false;
-        private bool pressedHeadDown = false;
-        private bool pressedHeadLeft = false;
-        private bool pressedHeadRight = false;
+        private bool _pressedMoveUp = false;
+        private bool _pressedMoveLeft = false;
+        private bool _pressedMoveDown = false;
+        private bool _pressedMoveRight = false;
+        private bool _pressedHeadUp = false;
+        private bool _pressedHeadDown = false;
+        private bool _pressedHeadLeft = false;
+        private bool _pressedHeadRight = false;
 
         private void RegisterKeyActions()
         {
             Manager.Game.KeyMapper.AddAction("octoawesome:forward", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedMoveUp = true;
-                else if (type == KeyMapper.KeyType.Up) pressedMoveUp = false;
+
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedMoveUp = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedMoveUp = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:left", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedMoveLeft = true;
-                else if (type == KeyMapper.KeyType.Up) pressedMoveLeft = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedMoveLeft = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedMoveLeft = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:backward", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedMoveDown = true;
-                else if (type == KeyMapper.KeyType.Up) pressedMoveDown = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedMoveDown = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedMoveDown = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:right", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedMoveRight = true;
-                else if (type == KeyMapper.KeyType.Up) pressedMoveRight = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedMoveRight = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedMoveRight = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:headup", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedHeadUp = true;
-                else if (type == KeyMapper.KeyType.Up) pressedHeadUp = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedHeadUp = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedHeadUp = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:headdown", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedHeadDown = true;
-                else if (type == KeyMapper.KeyType.Up) pressedHeadDown = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedHeadDown = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedHeadDown = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:headleft", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedHeadLeft = true;
-                else if (type == KeyMapper.KeyType.Up) pressedHeadLeft = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedHeadLeft = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedHeadLeft = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:headright", type =>
             {
                 if (!IsActiveScreen) return;
-                if (type == KeyMapper.KeyType.Down) pressedHeadRight = true;
-                else if (type == KeyMapper.KeyType.Up) pressedHeadRight = false;
+                switch (type)
+                {
+                    case KeyMapper.KeyType.Down:
+                        _pressedHeadRight = true;
+                        break;
+                    case KeyMapper.KeyType.Up:
+                        _pressedHeadRight = false;
+                        break;
+                }
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:interact", type =>
             {
@@ -250,7 +317,7 @@ namespace OctoAwesome.Client.Screens
             Manager.Game.KeyMapper.AddAction("octoawesome:debug.control", type =>
             {
                 if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
-                debug.Visible = !debug.Visible;
+                _debug.Visible = !_debug.Visible;
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:inventory", type =>
             {
@@ -260,11 +327,11 @@ namespace OctoAwesome.Client.Screens
             Manager.Game.KeyMapper.AddAction("octoawesome:hidecontrols", type =>
             {
                 if (!IsActiveScreen || type != KeyMapper.KeyType.Down) return;
-                compass.Visible = !compass.Visible;
-                toolbar.Visible = !toolbar.Visible;
-                minimap.Visible = !minimap.Visible;
-                crosshair.Visible = !crosshair.Visible;
-                debug.Visible = !debug.Visible;
+                _compass.Visible = !_compass.Visible;
+                _toolbar.Visible = !_toolbar.Visible;
+                _minimap.Visible = !_minimap.Visible;
+                _crosshair.Visible = !_crosshair.Visible;
+                _debug.Visible = !_debug.Visible;
             });
             Manager.Game.KeyMapper.AddAction("octoawesome:exit", type =>
             {
@@ -289,20 +356,31 @@ namespace OctoAwesome.Client.Screens
                     }, Manager.Game.Player.Position.Position.GlobalBlockIndex.X,
                     Manager.Game.Player.Position.Position.GlobalBlockIndex.Y));
             });
+            Manager.Game.KeyMapper.AddAction("octoawesome:toggleWireFrame", type =>
+            {
+                if (!IsActiveScreen || type != KeyMapper.KeyType.Up) return;
+                ChunkRenderer.WIRE_FRAME = !ChunkRenderer.WIRE_FRAME;
+            });
+            Manager.Game.KeyMapper.AddAction("octoawesome:toggleAmbientOcclusion", type =>
+            {
+                if (!IsActiveScreen || type != KeyMapper.KeyType.Up) return;
+
+                ChunkRenderer.OVERRIDE_LIGHT_LEVEL = ChunkRenderer.OVERRIDE_LIGHT_LEVEL > 0f ? 0f : 1f;
+            });
         }
 
         #endregion
 
         #region GamePad Input
 
-        private bool pressedGamepadInventory = false;
-        private bool pressedGamepadInteract = false;
-        private bool pressedGamepadApply = false;
-        private bool pressedGamepadJump = false;
-        private bool pressedGamepadFlymode = false;
-        private bool pressedGamepadSlotLeft = false;
-        private bool pressedGamepadSlotRight = false;
-        private bool disposedValue;
+        private bool _pressedGamepadInventory = false;
+        private bool _pressedGamepadInteract = false;
+        private bool _pressedGamepadApply = false;
+        private bool _pressedGamepadJump = false;
+        private bool _pressedGamepadFlymode = false;
+        private bool _pressedGamepadSlotLeft = false;
+        private bool _pressedGamepadSlotRight = false;
+        private bool _disposedValue;
 
         private void HandleGamePad()
         {
@@ -324,33 +402,33 @@ namespace OctoAwesome.Client.Screens
                 Manager.Player.MoveInput += gamePadState.ThumbSticks.Left;
                 Manager.Player.HeadInput += gamePadState.ThumbSticks.Right;
 
-                if (gamePadState.Buttons.X == ButtonState.Pressed && !pressedGamepadInteract)
+                if (gamePadState.Buttons.X == ButtonState.Pressed && !_pressedGamepadInteract)
                     Manager.Player.InteractInput = true;
-                pressedGamepadInteract = gamePadState.Buttons.X == ButtonState.Pressed;
+                _pressedGamepadInteract = gamePadState.Buttons.X == ButtonState.Pressed;
 
-                if (gamePadState.Buttons.A == ButtonState.Pressed && !pressedGamepadApply)
+                if (gamePadState.Buttons.A == ButtonState.Pressed && !_pressedGamepadApply)
                     Manager.Player.ApplyInput = true;
-                pressedGamepadApply = gamePadState.Buttons.A == ButtonState.Pressed;
+                _pressedGamepadApply = gamePadState.Buttons.A == ButtonState.Pressed;
 
-                if (gamePadState.Buttons.Y == ButtonState.Pressed && !pressedGamepadJump)
+                if (gamePadState.Buttons.Y == ButtonState.Pressed && !_pressedGamepadJump)
                     Manager.Player.JumpInput = true;
-                pressedGamepadJump = gamePadState.Buttons.Y == ButtonState.Pressed;
+                _pressedGamepadJump = gamePadState.Buttons.Y == ButtonState.Pressed;
 
-                if (gamePadState.Buttons.LeftStick == ButtonState.Pressed && !pressedGamepadFlymode)
+                if (gamePadState.Buttons.LeftStick == ButtonState.Pressed && !_pressedGamepadFlymode)
                     Manager.Player.FlymodeInput = true;
-                pressedGamepadFlymode = gamePadState.Buttons.LeftStick == ButtonState.Pressed;
+                _pressedGamepadFlymode = gamePadState.Buttons.LeftStick == ButtonState.Pressed;
 
-                if (gamePadState.Buttons.LeftShoulder == ButtonState.Pressed && !pressedGamepadSlotLeft)
+                if (gamePadState.Buttons.LeftShoulder == ButtonState.Pressed && !_pressedGamepadSlotLeft)
                     Manager.Player.SlotLeftInput = true;
-                pressedGamepadSlotLeft = gamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                _pressedGamepadSlotLeft = gamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
 
-                if (gamePadState.Buttons.RightShoulder == ButtonState.Pressed && !pressedGamepadSlotRight)
+                if (gamePadState.Buttons.RightShoulder == ButtonState.Pressed && !_pressedGamepadSlotRight)
                     Manager.Player.SlotRightInput = true;
-                pressedGamepadSlotRight = gamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                _pressedGamepadSlotRight = gamePadState.Buttons.RightShoulder == ButtonState.Pressed;
 
-                if (gamePadState.Buttons.Back == ButtonState.Pressed && !pressedGamepadInventory)
+                if (gamePadState.Buttons.Back == ButtonState.Pressed && !_pressedGamepadInventory)
                     Manager.NavigateToScreen(new InventoryScreen(Manager));
-                pressedGamepadInventory = gamePadState.Buttons.Back == ButtonState.Pressed;
+                _pressedGamepadInventory = gamePadState.Buttons.Back == ButtonState.Pressed;
             }
         }
 

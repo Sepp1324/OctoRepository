@@ -1,8 +1,5 @@
-﻿using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using engenious;
 using OctoAwesome.EntityComponents;
 
@@ -10,15 +7,15 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class PlayerComponent : GameComponent
     {
-        private new OctoGame Game;
+        private new OctoGame _game;
 
-        private readonly IResourceManager resourceManager;
+        private readonly IResourceManager _resourceManager;
 
         public PlayerComponent(OctoGame game, IResourceManager resourceManager)
             : base(game)
         {
-            this.resourceManager = resourceManager;
-            Game = game;
+            this._resourceManager = resourceManager;
+            _game = game;
         }
 
         public Entity CurrentEntity { get; private set; }
@@ -59,19 +56,13 @@ namespace OctoAwesome.Client.Components
 
                 CurrentController = CurrentEntity.Components.GetComponent<ControllableComponent>();
 
-                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>();
-                if (CurrentEntityHead == null) CurrentEntityHead = new HeadComponent();
+                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>() ?? new HeadComponent();
 
-                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
-                if (Inventory == null) Inventory = new InventoryComponent();
+                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>() ?? new InventoryComponent();
 
-                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>();
-                if (Toolbar == null) Toolbar = new ToolBarComponent();
+                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>() ?? new ToolBarComponent();
 
-                Position = CurrentEntity.Components.GetComponent<PositionComponent>();
-                if (Position == null)
-                    Position = new PositionComponent()
-                        {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0))};
+                Position = CurrentEntity.Components.GetComponent<PositionComponent>() ?? new PositionComponent() {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0))};
             }
         }
 
@@ -124,6 +115,7 @@ namespace OctoAwesome.Client.Components
             //Index des aktiven Werkzeugs ermitteln
             var activeTool = -1;
             var toolIndices = new List<int>();
+
             if (Toolbar.Tools != null)
             {
                 for (var i = 0; i < Toolbar.Tools.Length; i++)
@@ -172,11 +164,11 @@ namespace OctoAwesome.Client.Components
             if (inventory == null)
                 return;
 
-            var blockDefinitions = resourceManager.DefinitionManager.GetBlockDefinitions();
+            var blockDefinitions = _resourceManager.DefinitionManager.GetBlockDefinitions();
             foreach (var blockDefinition in blockDefinitions)
                 inventory.AddUnit(blockDefinition);
 
-            var itemDefinitions = resourceManager.DefinitionManager.GetItemDefinitions();
+            var itemDefinitions = _resourceManager.DefinitionManager.GetItemDefinitions();
             foreach (var itemDefinition in itemDefinitions)
                 inventory.AddUnit(itemDefinition);
         }
