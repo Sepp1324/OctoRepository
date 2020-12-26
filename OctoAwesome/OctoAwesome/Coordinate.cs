@@ -44,14 +44,12 @@ namespace OctoAwesome
         [XmlIgnore]
         public Index3 ChunkIndex
         {
-            get
-            {
-                return new Index3(block.X >> Chunk.LimitX, block.Y >> Chunk.LimitY,
+            get =>
+                new Index3(block.X >> Chunk.LimitX, block.Y >> Chunk.LimitY,
                     block.Z >> Chunk.LimitZ);
-            }
             set
             {
-                Index3 localBlockIndex = LocalBlockIndex;
+                var localBlockIndex = LocalBlockIndex;
                 block = new Index3(
                     (value.X * Chunk.CHUNKSIZE_X) + localBlockIndex.X,
                     (value.Y * Chunk.CHUNKSIZE_Y) + localBlockIndex.Y,
@@ -76,7 +74,7 @@ namespace OctoAwesome
         {
             get
             {
-                Index3 chunk = ChunkIndex;
+                var chunk = ChunkIndex;
                 return new Index3(
                     block.X - (chunk.X * Chunk.CHUNKSIZE_X),
                     block.Y - (chunk.Y * Chunk.CHUNKSIZE_Y),
@@ -84,7 +82,7 @@ namespace OctoAwesome
             }
             set
             {
-                Index3 chunk = ChunkIndex;
+                var chunk = ChunkIndex;
                 GlobalBlockIndex = new Index3(
                     (chunk.X * Chunk.CHUNKSIZE_X) + value.X,
                     (chunk.Y * Chunk.CHUNKSIZE_Y) + value.Y,
@@ -99,13 +97,11 @@ namespace OctoAwesome
         [XmlIgnore]
         public Vector3 GlobalPosition
         {
-            get
-            {
-                return new Vector3(
+            get =>
+                new Vector3(
                     block.X + position.X,
                     block.Y + position.Y,
                     block.Z + position.Z);
-            }
             set
             {
                 block = Index3.Zero;
@@ -122,7 +118,7 @@ namespace OctoAwesome
         {
             get
             {
-                Index3 blockIndex = LocalBlockIndex;
+                var blockIndex = LocalBlockIndex;
                 return new Vector3(
                     blockIndex.X + position.X,
                     blockIndex.Y + position.Y,
@@ -130,7 +126,7 @@ namespace OctoAwesome
             }
             set
             {
-                Index3 chunkIndex = ChunkIndex;
+                var chunkIndex = ChunkIndex;
                 block = new Index3(
                     chunkIndex.X * Chunk.CHUNKSIZE_X,
                     chunkIndex.Y * Chunk.CHUNKSIZE_Y,
@@ -145,7 +141,7 @@ namespace OctoAwesome
         /// </summary>
         public Vector3 BlockPosition
         {
-            get { return position; }
+            get => position;
             set
             {
                 position = value;
@@ -158,10 +154,10 @@ namespace OctoAwesome
         /// </summary>
         private void Normalize()
         {
-            Index3 shift = new Index3(
-                (int)Math.Floor(position.X),
-                (int)Math.Floor(position.Y),
-                (int)Math.Floor(position.Z));
+            var shift = new Index3(
+                (int) Math.Floor(position.X),
+                (int) Math.Floor(position.Y),
+                (int) Math.Floor(position.Z));
 
             block += shift;
             position -= shift;
@@ -173,7 +169,7 @@ namespace OctoAwesome
         /// <param name="limit"></param>
         public void NormalizeChunkIndexXY(Index3 limit)
         {
-            Index3 index = ChunkIndex;
+            var index = ChunkIndex;
             index.NormalizeXY(limit);
             ChunkIndex = index;
         }
@@ -200,16 +196,21 @@ namespace OctoAwesome
         /// <param name="i2"></param>
         /// <returns>Das Ergebnis der Addition</returns>
         public static Coordinate operator +(Coordinate i1, Vector3 i2)
-            => new Coordinate(i1.Planet, i1.block, i1.position + i2);
+        {
+            return new Coordinate(i1.Planet, i1.block, i1.position + i2);
+        }
 
         /// <summary>
         /// Stellt die Coordinate-Instanz als string dar.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $@"({ Planet }/
+        public override string ToString()
+        {
+            return $@"({Planet}/
                     {(block.X + position.X).ToString("0.00")}/
                     {(block.Y + position.Y).ToString("0.00")}/
                     {(block.Z + position.Z).ToString("0.00")})";
+        }
 
         /// <summary>
         /// Compare this object with an other object
@@ -218,16 +219,19 @@ namespace OctoAwesome
         /// <returns>true if both objects are equal</returns>
         public override bool Equals(object obj)
         {
-            if(obj is Coordinate coordinate)
-                return base.Equals(obj) || 
-                   ( Planet == coordinate.Planet &&
-                     position == coordinate.position &&
-                     block == coordinate.block
-                   );
+            if (obj is Coordinate coordinate)
+                return base.Equals(obj) ||
+                       (Planet == coordinate.Planet &&
+                        position == coordinate.position &&
+                        block == coordinate.block
+                       );
 
             return base.Equals(obj);
         }
 
-        public override int GetHashCode() => base.GetHashCode();
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

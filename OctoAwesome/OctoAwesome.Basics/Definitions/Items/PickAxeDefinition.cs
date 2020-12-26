@@ -9,37 +9,13 @@ namespace OctoAwesome.Basics.Definitions.Items
 {
     public class PickaxeDefinition : IItemDefinition
     {
-        public string Icon
-        {
-            get
-            {
-                return "pick_iron";
-            }
-        }
+        public float VolumePerUnit => 10;
 
-        public string Name
-        {
-            get
-            {
-                return "Pickaxe";
-            }
-        }
+        public string Icon => "pick_iron";
 
-        public int StackLimit
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public string Name => "Pickaxe";
 
-        public float VolumePerUnit
-        {
-            get
-            {
-                return 10;
-            }
-        }
+        public int StackLimit => 1;
 
         decimal IInventoryableDefinition.VolumePerUnit => 1;
 

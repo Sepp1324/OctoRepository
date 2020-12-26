@@ -11,11 +11,10 @@ namespace OctoAwesome.Network
 {
     public class Server //TODO: Should use a base class or interface
     {
-        public event EventHandler<ConnectedClient> OnClientConnected;
+        private readonly List<ConnectedClient> connectedClients;
 
         private readonly Socket ipv4Socket;
         private readonly Socket ipv6Socket;
-        private readonly List<ConnectedClient> connectedClients;
         private readonly object lockObj;
 
         public Server()
@@ -24,8 +23,9 @@ namespace OctoAwesome.Network
             ipv6Socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
             connectedClients = new List<ConnectedClient>();
             lockObj = new object();
-
         }
+
+        public event EventHandler<ConnectedClient> OnClientConnected;
 
         public void Start(params IPEndPoint[] endpoints)
         {
@@ -39,6 +39,7 @@ namespace OctoAwesome.Network
                 ipv4Socket.Listen(1024);
                 ipv4Socket.BeginAccept(OnClientAccepted, ipv4Socket);
             }
+
             if (endpoints.Any(x => x.AddressFamily == AddressFamily.InterNetworkV6))
             {
                 foreach (var endpoint in endpoints.Where(e => e.AddressFamily == AddressFamily.InterNetworkV6))
@@ -48,6 +49,7 @@ namespace OctoAwesome.Network
                 ipv6Socket.BeginAccept(OnClientAccepted, ipv6Socket);
             }
         }
+
         public void Start(string host, ushort port)
         {
             var address = Dns.GetHostAddresses(host).Where(
@@ -61,7 +63,7 @@ namespace OctoAwesome.Network
             var socket = ar.AsyncState as Socket;
 
             var tmpSocket = socket.EndAccept(ar);
-            
+
             tmpSocket.NoDelay = true;
 
             var client = new ConnectedClient(tmpSocket);

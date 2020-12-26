@@ -16,6 +16,11 @@ namespace OctoAwesome.Threading
             semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
         }
 
+        public void Dispose()
+        {
+            semaphoreSlim.Dispose();
+        }
+
         public SemaphoreLock Wait()
         {
             semaphoreSlim.Wait();
@@ -26,11 +31,6 @@ namespace OctoAwesome.Threading
         {
             await semaphoreSlim.WaitAsync(token);
             return new SemaphoreLock(this);
-        }
-              
-        public void Dispose()
-        {
-            semaphoreSlim.Dispose();
         }
 
         private void Release()
@@ -54,18 +54,31 @@ namespace OctoAwesome.Threading
                 internalSemaphore?.Release();
             }
 
-            public override bool Equals(object obj) 
-                => obj is SemaphoreLock @lock 
-                   && Equals(@lock);
-            public bool Equals(SemaphoreLock other) 
-                => EqualityComparer<LockSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
-            public override int GetHashCode() 
-                => 37286538 + EqualityComparer<LockSemaphore>.Default.GetHashCode(internalSemaphore);
+            public override bool Equals(object obj)
+            {
+                return obj is SemaphoreLock @lock
+                       && Equals(@lock);
+            }
 
-            public static bool operator ==(SemaphoreLock left, SemaphoreLock right) 
-                => left.Equals(right);
+            public bool Equals(SemaphoreLock other)
+            {
+                return EqualityComparer<LockSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
+            }
+
+            public override int GetHashCode()
+            {
+                return 37286538 + EqualityComparer<LockSemaphore>.Default.GetHashCode(internalSemaphore);
+            }
+
+            public static bool operator ==(SemaphoreLock left, SemaphoreLock right)
+            {
+                return left.Equals(right);
+            }
+
             public static bool operator !=(SemaphoreLock left, SemaphoreLock right)
-                => !(left == right);
+            {
+                return !(left == right);
+            }
         }
     }
 }

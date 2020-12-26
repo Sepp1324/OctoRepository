@@ -10,6 +10,16 @@ namespace OctoAwesome.Notifications
 {
     public class NotificationChannelCollection : IEnumerable<KeyValuePair<string, ObserverHashSet>>
     {
+        private readonly SemaphoreSlim addSemaphore;
+
+        private readonly Dictionary<string, ObserverHashSet> internalDictionary;
+
+        public NotificationChannelCollection()
+        {
+            internalDictionary = new Dictionary<string, ObserverHashSet>();
+            addSemaphore = new SemaphoreSlim(1, 1);
+        }
+
         public ObserverHashSet this[string channel] => internalDictionary[channel];
 
         public ICollection<string> Channels => internalDictionary.Keys;
@@ -18,48 +28,63 @@ namespace OctoAwesome.Notifications
 
         public Dictionary<string, ObserverHashSet>.ValueCollection Values => internalDictionary.Values;
 
-        private readonly Dictionary<string, ObserverHashSet> internalDictionary;
-        private readonly SemaphoreSlim addSemaphore;
-
-        public NotificationChannelCollection()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            internalDictionary = new Dictionary<string, ObserverHashSet>();
-            addSemaphore = new SemaphoreSlim(1,1);
+            return internalDictionary.GetEnumerator();
+        }
+
+        IEnumerator<KeyValuePair<string, ObserverHashSet>> IEnumerable<KeyValuePair<string, ObserverHashSet>>.
+            GetEnumerator()
+        {
+            return internalDictionary.GetEnumerator();
         }
 
         public void Add(string channel, INotificationObserver value)
         {
             addSemaphore.Wait();
-            if (internalDictionary.TryGetValue(channel, out ObserverHashSet hashset))
+            if (internalDictionary.TryGetValue(channel, out var hashset))
             {
                 using (hashset.Wait())
                     hashset.Add(value);
             }
             else
             {
-                internalDictionary.Add(channel, new ObserverHashSet { value });
+                internalDictionary.Add(channel, new ObserverHashSet {value});
             }
+
             addSemaphore.Release();
         }
 
         public void Clear()
-            => internalDictionary.Clear();
+        {
+            internalDictionary.Clear();
+        }
 
         public bool Contains(INotificationObserver item)
-            => internalDictionary.Values.Any(i => i == item);
+        {
+            return internalDictionary.Values.Any(i => i == item);
+        }
+
         public bool Contains(string key)
-            => internalDictionary.ContainsKey(key);
+        {
+            return internalDictionary.ContainsKey(key);
+        }
 
         public Dictionary<string, ObserverHashSet>.Enumerator GetEnumerator()
-            => internalDictionary.GetEnumerator();
+        {
+            return internalDictionary.GetEnumerator();
+        }
 
         public bool Remove(string key)
-            => internalDictionary.Remove(key);
+        {
+            return internalDictionary.Remove(key);
+        }
+
         public bool Remove(INotificationObserver item)
         {
             var returnValue = false;
 
-            foreach (ObserverHashSet hashSet in internalDictionary.Values)
+            foreach (var hashSet in internalDictionary.Values)
             {
                 using (hashSet.Wait())
                     returnValue = returnValue ? returnValue : hashSet.Remove(item);
@@ -67,9 +92,10 @@ namespace OctoAwesome.Notifications
 
             return returnValue;
         }
+
         public bool Remove(string key, INotificationObserver item)
         {
-            ObserverHashSet hashSet = internalDictionary[key];
+            var hashSet = internalDictionary[key];
             bool returnValue;
 
             using (hashSet.Wait())
@@ -79,11 +105,8 @@ namespace OctoAwesome.Notifications
         }
 
         public bool TryGetValue(string key, out ObserverHashSet value)
-            => internalDictionary.TryGetValue(key, out value);
-
-        IEnumerator IEnumerable.GetEnumerator()
-            => internalDictionary.GetEnumerator();
-        IEnumerator<KeyValuePair<string, ObserverHashSet>> IEnumerable<KeyValuePair<string, ObserverHashSet>>.GetEnumerator()
-            => internalDictionary.GetEnumerator();
+        {
+            return internalDictionary.TryGetValue(key, out value);
+        }
     }
 }

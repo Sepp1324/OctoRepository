@@ -10,9 +10,8 @@ namespace OctoAwesome
     /// </summary>
     public class LocalBuilder
     {
-        private readonly int originX, originY, originZ;
-
         private readonly IChunkColumn column00, column01, column10, column11;
+        private readonly int originX, originY, originZ;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse LocalBuilder
@@ -24,7 +23,8 @@ namespace OctoAwesome
         /// <param name="column10"></param>
         /// <param name="column01"></param>
         /// <param name="column11"></param>
-        public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
+        public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10,
+            IChunkColumn column01, IChunkColumn column11)
         {
             this.originX = originX;
             this.originY = originY;
@@ -46,7 +46,8 @@ namespace OctoAwesome
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static IChunkColumn GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
+        public static IChunkColumn GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01,
+            IChunkColumn column11, int x, int y)
         {
             IChunkColumn column;
 
@@ -72,9 +73,10 @@ namespace OctoAwesome
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static int GetSurfaceHeight(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
+        public static int GetSurfaceHeight(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01,
+            IChunkColumn column11, int x, int y)
         {
-            IChunkColumn curColumn = GetColumn(column00, column10, column01, column11, x, y);
+            var curColumn = GetColumn(column00, column10, column01, column11, x, y);
             return curColumn.Heights[x % Chunk.CHUNKSIZE_X, y % Chunk.CHUNKSIZE_Y];
         }
 
@@ -91,7 +93,7 @@ namespace OctoAwesome
             x += originX;
             y += originY;
             z += originZ;
-            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+            var column = GetColumn(column00, column10, column01, column11, x, y);
             var index = z / Chunk.CHUNKSIZE_Z;
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
@@ -105,24 +107,27 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="blockInfos"></param>
         public void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos)
-            => blockInfos
-                    .Select(b =>
-                    {
-                        var x = b.Position.X + originX;
-                        var y = b.Position.Y + originY;
-                        var z = b.Position.Z + originZ;
-                        IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
-                        var index = z / Chunk.CHUNKSIZE_Z;
-                        x %= Chunk.CHUNKSIZE_X;
-                        y %= Chunk.CHUNKSIZE_Y;
-                        z %= Chunk.CHUNKSIZE_Z;
-                        var info = new BlockInfo(x, y, z, b.Block, b.Meta);
-                        return new { info, index, column };
-                    })
-                    .GroupBy(a => a.column)
-                    .ForEach(column => column
-                        .GroupBy(i => i.index)
-                        .ForEach(i => column.Key.Chunks[i.Key].SetBlocks(issueNotification, i.Select(b => b.info).ToArray())));
+        {
+            blockInfos
+                .Select(b =>
+                {
+                    var x = b.Position.X + originX;
+                    var y = b.Position.Y + originY;
+                    var z = b.Position.Z + originZ;
+                    var column = GetColumn(column00, column10, column01, column11, x, y);
+                    var index = z / Chunk.CHUNKSIZE_Z;
+                    x %= Chunk.CHUNKSIZE_X;
+                    y %= Chunk.CHUNKSIZE_Y;
+                    z %= Chunk.CHUNKSIZE_Z;
+                    var info = new BlockInfo(x, y, z, b.Block, b.Meta);
+                    return new {info, index, column};
+                })
+                .GroupBy(a => a.column)
+                .ForEach(column => column
+                    .GroupBy(i => i.index)
+                    .ForEach(
+                        i => column.Key.Chunks[i.Key].SetBlocks(issueNotification, i.Select(b => b.info).ToArray())));
+        }
 
 
         /// <summary>
@@ -149,6 +154,7 @@ namespace OctoAwesome
                     }
                 }
             }
+
             SetBlocks(false, blockInfos.ToArray());
         }
 
@@ -164,7 +170,7 @@ namespace OctoAwesome
             x += originX;
             y += originY;
             z += originZ;
-            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+            var column = GetColumn(column00, column10, column01, column11, x, y);
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             return column.GetBlock(x, y, z);

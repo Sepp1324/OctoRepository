@@ -5,22 +5,17 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedCottonBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.RedCotton; }
-        }
+        public override string Name => Languages.OctoBasics.RedCotton;
 
-        public override string Icon
-        {
-            get { return "cotton_red"; }
-        }
+        public override string Icon => "cotton_red";
 
 
         public override string[] Textures
         {
             get
             {
-                return new[] {
+                return new[]
+                {
                     "cotton_red"
                 };
             }

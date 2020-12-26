@@ -4,23 +4,21 @@ namespace OctoAwesome.Network
 {
     public class OctoNetworkStream
     {
-        public int Length => writeBuffer.Length;
-
-        private byte[] readBuffer;
-        private byte[] writeBuffer;
-
         private readonly byte[] bufferA;
         private readonly byte[] bufferB;
+        private readonly int readLength;
 
         private readonly object readLock;
-        private readonly object writeLock;
 
         private readonly int writeLength;
-        private readonly int readLength;
+        private readonly object writeLock;
 
         private int maxReadCount;
 
+        private byte[] readBuffer;
+
         private int readPosition;
+        private byte[] writeBuffer;
         private int writePosition;
 
         private bool writingProcess;
@@ -38,6 +36,8 @@ namespace OctoAwesome.Network
             readLock = new object();
             writeLock = new object();
         }
+
+        public int Length => writeBuffer.Length;
 
         public int Write(byte[] buffer, int offset, int count)
         {
@@ -126,22 +126,20 @@ namespace OctoAwesome.Network
         private void SwapBuffer()
         {
             lock (readLock)
-                lock (writeLock)
-                {
-                    if (readPosition > maxReadCount)
-                        throw new IndexOutOfRangeException("ReadPositin is greater than MaxReadCount in OctoNetworkStream");
-                    else if (readPosition < maxReadCount)
-                        return;
+            lock (writeLock)
+            {
+                if (readPosition > maxReadCount)
+                    throw new IndexOutOfRangeException("ReadPositin is greater than MaxReadCount in OctoNetworkStream");
+                else if (readPosition < maxReadCount)
+                    return;
 
-                    var refBuf = writeBuffer;
-                    writeBuffer = readBuffer;
-                    readBuffer = refBuf;
-                    maxReadCount = writePosition;
-                    writePosition = 0;
-                    readPosition = 0;
-                }
+                var refBuf = writeBuffer;
+                writeBuffer = readBuffer;
+                readBuffer = refBuf;
+                maxReadCount = writePosition;
+                writePosition = 0;
+                readPosition = 0;
+            }
         }
-
-
     }
 }
