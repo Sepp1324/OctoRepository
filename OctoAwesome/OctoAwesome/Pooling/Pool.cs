@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,25 +10,27 @@ namespace OctoAwesome.Pooling
 {
     public sealed class Pool<T> : IPool<T> where T : IPoolElement, new()
     {
-        private readonly Stack<T> internalStack;
-        private readonly LockSemaphore semaphoreExtended;
+        private readonly Stack<T> _internalStack;
+        private readonly LockSemaphore _semaphoreExtended;
+        private readonly Func<T> GetInstance;
 
         public Pool()
         {
-            internalStack = new Stack<T>();
-            semaphoreExtended = new LockSemaphore(1, 1);
+            _internalStack = new Stack<T>();
+            _semaphoreExtended = new LockSemaphore(1, 1);
+
+            var body = Expression.New(typeof(T));
+
+            GetInstance = Expression.Lambda<Func<T>>(body).Compile();
         }
 
         public T Get()
         {
             T obj;
 
-            using (semaphoreExtended.Wait())
+            using (_semaphoreExtended.Wait())
             {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new T();
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new T();
             }
 
             obj.Init(this);
@@ -36,20 +39,16 @@ namespace OctoAwesome.Pooling
 
         public void Push(T obj)
         {
-            using (semaphoreExtended.Wait())
-                internalStack.Push(obj);
+            using (_semaphoreExtended.Wait())
+                _internalStack.Push(obj);
         }
 
         public void Push(IPoolElement obj)
         {
             if (obj is T t)
-            {
                 Push(t);
-            }
             else
-            {
-                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
-            }
+                throw new InvalidCastException("Cannot push object from type: " + obj.GetType());
         }
     }
 }

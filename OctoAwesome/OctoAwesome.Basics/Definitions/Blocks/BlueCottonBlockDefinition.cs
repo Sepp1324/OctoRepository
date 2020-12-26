@@ -9,17 +9,11 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "cotton_blue";
 
-
-        public override string[] Textures
-        {
-            get
+        public override string[] Textures =>
+            new[]
             {
-                return new[]
-                {
-                    "cotton_blue"
-                };
-            }
-        }
+                "cotton_blue"
+            };
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -32,9 +26,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
     }
 }
