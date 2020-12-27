@@ -11,11 +11,11 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(PowerComponent), typeof(MoveableComponent))]
     public sealed class PowerAggregatorComponent : SimulationComponent
     {
-        private readonly List<PoweredEntity> poweredEntities = new List<PoweredEntity>();
+        private readonly List<PoweredEntity> _poweredEntities = new List<PoweredEntity>();
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var entity in poweredEntities)
+            foreach (var entity in _poweredEntities)
             {
                 entity.Moveable.ExternalPowers =
                     entity.Powers.Aggregate(Vector3.Zero, (s, f) => s + f.Power * f.Direction);
@@ -31,15 +31,15 @@ namespace OctoAwesome.Basics.SimulationComponents
                 Powers = entity.Components.OfType<PowerComponent>().ToArray()
             };
 
-            poweredEntities.Add(poweredEntity);
+            _poweredEntities.Add(poweredEntity);
             return true;
         }
 
         protected override void RemoveEntity(Entity entity)
         {
-            var poweredEntity = poweredEntities.FirstOrDefault(e => e.Entity == entity);
+            var poweredEntity = _poweredEntities.FirstOrDefault(e => e.Entity == entity);
             if (poweredEntity != null)
-                poweredEntities.Remove(poweredEntity);
+                _poweredEntities.Remove(poweredEntity);
         }
 
         private class PoweredEntity

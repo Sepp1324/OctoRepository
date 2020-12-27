@@ -1,9 +1,4 @@
 ﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
 
 namespace OctoAwesome.Basics.SimulationComponents
@@ -11,17 +6,11 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(ControllableComponent), typeof(InventoryComponent))]
     public class BlockInteractionComponent : SimulationComponent<ControllableComponent, InventoryComponent>
     {
-        private readonly Simulation simulation;
+        private readonly Simulation _simulation;
 
-        public BlockInteractionComponent(Simulation simulation)
-        {
-            this.simulation = simulation;
-        }
+        public BlockInteractionComponent(Simulation simulation) => _simulation = simulation;
 
-        protected override bool AddEntity(Entity entity)
-        {
-            return true;
-        }
+        protected override bool AddEntity(Entity entity) => true;
 
         protected override void RemoveEntity(Entity entity)
         {
@@ -40,7 +29,8 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 if (lastBlock != 0)
                 {
-                    var blockDefinition = simulation.ResourceManager.DefinitionManager.GetDefinitionByIndex(lastBlock);
+                    var blockDefinition = _simulation.ResourceManager.DefinitionManager.GetDefinitionByIndex(lastBlock);
+                  
                     if (blockDefinition is IInventoryableDefinition invDef)
                         inventory.AddUnit(invDef);
                 }
@@ -53,6 +43,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                 if (toolbar.ActiveTool != null)
                 {
                     var add = new Index3();
+                    
                     switch (controller.ApplySide)
                     {
                         case OrientationFlags.SideWest:
@@ -83,33 +74,35 @@ namespace OctoAwesome.Basics.SimulationComponents
                         var boxes = definition.GetCollisionBoxes(cache, idx.X, idx.Y, idx.Z);
 
                         var intersects = false;
-                        var positioncomponent = entity.Components.GetComponent<PositionComponent>();
-                        var bodycomponent = entity.Components.GetComponent<BodyComponent>();
+                        var positionComponent = entity.Components.GetComponent<PositionComponent>();
+                        var bodyComponent = entity.Components.GetComponent<BodyComponent>();
 
-                        if (positioncomponent != null && bodycomponent != null)
+                        if (positionComponent != null && bodyComponent != null)
                         {
                             var gap = 0.01f;
+                            
                             var playerBox = new BoundingBox(
                                 new Vector3(
-                                    positioncomponent.Position.GlobalBlockIndex.X +
-                                    positioncomponent.Position.BlockPosition.X - bodycomponent.Radius + gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Y +
-                                    positioncomponent.Position.BlockPosition.Y - bodycomponent.Radius + gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Z +
-                                    positioncomponent.Position.BlockPosition.Z + gap),
+                                    positionComponent.Position.GlobalBlockIndex.X +
+                                    positionComponent.Position.BlockPosition.X - bodyComponent.Radius + gap,
+                                    positionComponent.Position.GlobalBlockIndex.Y +
+                                    positionComponent.Position.BlockPosition.Y - bodyComponent.Radius + gap,
+                                    positionComponent.Position.GlobalBlockIndex.Z +
+                                    positionComponent.Position.BlockPosition.Z + gap),
                                 new Vector3(
-                                    positioncomponent.Position.GlobalBlockIndex.X +
-                                    positioncomponent.Position.BlockPosition.X + bodycomponent.Radius - gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Y +
-                                    positioncomponent.Position.BlockPosition.Y + bodycomponent.Radius - gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Z +
-                                    positioncomponent.Position.BlockPosition.Z + bodycomponent.Height - gap)
+                                    positionComponent.Position.GlobalBlockIndex.X +
+                                    positionComponent.Position.BlockPosition.X + bodyComponent.Radius - gap,
+                                    positionComponent.Position.GlobalBlockIndex.Y +
+                                    positionComponent.Position.BlockPosition.Y + bodyComponent.Radius - gap,
+                                    positionComponent.Position.GlobalBlockIndex.Z +
+                                    positionComponent.Position.BlockPosition.Z + bodyComponent.Height - gap)
                             );
 
                             // Nicht in sich selbst reinbauen
                             foreach (var box in boxes)
                             {
                                 var newBox = new BoundingBox(idx + box.Min, idx + box.Max);
+                                
                                 if (newBox.Min.X < playerBox.Max.X && newBox.Max.X > playerBox.Min.X &&
                                     newBox.Min.Y < playerBox.Max.Y && newBox.Max.X > playerBox.Min.Y &&
                                     newBox.Min.Z < playerBox.Max.Z && newBox.Max.X > playerBox.Min.Z)
@@ -122,7 +115,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                             if (inventory.RemoveUnit(toolbar.ActiveTool))
                             {
                                 cache.SetBlock(idx,
-                                    simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
+                                    _simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 cache.SetBlockMeta(idx, (int) controller.ApplySide);
                                 if (toolbar.ActiveTool.Amount <= 0)
                                     toolbar.RemoveSlot(toolbar.ActiveTool);
@@ -130,7 +123,6 @@ namespace OctoAwesome.Basics.SimulationComponents
                         }
                     }
                 }
-
                 controller.ApplyBlock = null;
             }
         }

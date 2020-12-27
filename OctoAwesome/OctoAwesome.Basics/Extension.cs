@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Basics.Definitions.Blocks;
-using OctoAwesome.Basics.Entities;
+﻿using OctoAwesome.Basics.Entities;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.Basics.SimulationComponents;
 using OctoAwesome.EntityComponents;
@@ -18,11 +17,8 @@ namespace OctoAwesome.Basics
 
         public void Register(IExtensionLoader extensionLoader)
         {
-            foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(
-                t => !t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t)))
-            {
+            foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t)))
                 extensionLoader.RegisterDefinition((IDefinition) Activator.CreateInstance(t));
-            }
 
             extensionLoader.RegisterMapGenerator(new ComplexPlanetGenerator());
 
