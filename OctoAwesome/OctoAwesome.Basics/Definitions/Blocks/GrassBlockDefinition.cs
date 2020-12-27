@@ -9,18 +9,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "grass_top";
 
-        public override string[] Textures
+        public override string[] Textures { get; } =
         {
-            get
-            {
-                return new[]
-                {
-                    "grass_top",
-                    "dirt",
-                    "dirt_grass"
-                };
-            }
-        }
+            "grass_top",
+            "dirt",
+            "dirt_grass"
+        };
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {

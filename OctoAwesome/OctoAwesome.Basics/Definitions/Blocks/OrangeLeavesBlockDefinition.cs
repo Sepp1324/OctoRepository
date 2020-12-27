@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -9,17 +8,10 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "leaves_orange";
 
-
-        public override string[] Textures
+        public override string[] Textures { get; } =
         {
-            get
-            {
-                return new[]
-                {
-                    "leaves_orange"
-                };
-            }
-        }
+            "leaves_orange"
+        };
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -32,9 +24,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
     }
 }

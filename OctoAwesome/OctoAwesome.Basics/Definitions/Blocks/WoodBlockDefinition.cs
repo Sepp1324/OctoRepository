@@ -1,9 +1,4 @@
-﻿using OctoAwesome.Basics.Properties;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -15,7 +10,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override bool HasMetaData => true;
 
-        public override string[] Textures => new[]
+        public override string[] Textures { get; } =
         {
             "wood_top",
             "wood_side"
@@ -23,7 +18,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new PhysicalProperties
             {
                 Density = 0.87f,
                 FractureToughness = 0.3f,
@@ -32,10 +27,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {

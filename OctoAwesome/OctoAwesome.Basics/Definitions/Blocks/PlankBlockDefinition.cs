@@ -1,9 +1,4 @@
-﻿using OctoAwesome.Basics.Properties;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -15,16 +10,10 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override bool HasMetaData => true;
 
-        public override string[] Textures
+        public override string[] Textures { get; } =
         {
-            get
-            {
-                return new[]
-                {
-                    "planks_red"
-                };
-            }
-        }
+            "planks_red"
+        };
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -37,9 +26,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
     }
 }
