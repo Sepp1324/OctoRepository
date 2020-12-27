@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OctoAwesome.Database.Expressions;
 
 namespace OctoAwesome.Database
 {
     public readonly struct Key<TTag> : IEquatable<Key<TTag>> where TTag : ITag, new()
     {
         public const int BASE_KEY_SIZE = sizeof(long) + sizeof(int);
+        
         public static int KEY_SIZE { get; }
+        
         public static Key<TTag> Empty { get; }
 
         static Key()
@@ -41,7 +44,7 @@ namespace OctoAwesome.Database
         /// <summary>
         /// Returns true if the Key is not valid. Comparing with default should have the same result
         /// </summary>
-        public bool IsEmpty => Tag == null && ValueLength == 0;
+        public bool IsEmpty => ValueLength == 0 && Tag == null;
 
         public Key(TTag tag, long index, int length, long position)
         {
@@ -71,23 +74,15 @@ namespace OctoAwesome.Database
         {
             var localIndex = BitConverter.ToInt64(array, index);
             var length = BitConverter.ToInt32(array, index + sizeof(long));
-            var tag = new TTag();
+            var tag = InstanceCreator<TTag>.CreateInstance();
             tag.FromBytes(array, index + BASE_KEY_SIZE);
 
             return new Key<TTag>(tag, localIndex, length, index);
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is Key<TTag> key
-                   && Equals(key);
-        }
+        public override bool Equals(object obj) => obj is Key<TTag> key && Equals(key);
 
-        public bool Equals(Key<TTag> other)
-        {
-            return EqualityComparer<TTag>.Default.Equals(Tag, other.Tag)
-                   && ValueLength == other.ValueLength;
-        }
+        public bool Equals(Key<TTag> other) => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag) && ValueLength == other.ValueLength;
 
         public override int GetHashCode()
         {
@@ -97,22 +92,10 @@ namespace OctoAwesome.Database
             return hashCode;
         }
 
-        public bool Validate()
-        {
-            return ValueLength >= 0
-                   && Position >= 0
-                   && Index >= 0
-                   && KEY_SIZE > BASE_KEY_SIZE;
-        }
+        public bool Validate() => ValueLength >= 0 && Position >= 0 && Index >= 0 && KEY_SIZE > BASE_KEY_SIZE;
 
-        public static bool operator ==(Key<TTag> left, Key<TTag> right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(Key<TTag> left, Key<TTag> right) => left.Equals(right);
 
-        public static bool operator !=(Key<TTag> left, Key<TTag> right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(Key<TTag> left, Key<TTag> right) => !(left == right);
     }
 }

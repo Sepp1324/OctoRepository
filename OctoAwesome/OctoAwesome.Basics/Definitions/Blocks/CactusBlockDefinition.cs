@@ -12,12 +12,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Name => Languages.OctoBasics.Cactus;
 
-        public override string[] Textures => new[]
-        {
-            "cactus_inside",
-            "cactus_side",
-            "cactus_top"
-        };
+        public override string[] Textures { get; } 
+        
+        public CactusBlockDefinition() => Textures = new[] {"cactus_inside", "cactus_side", "cactus_top"};
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)
@@ -28,7 +25,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             {
                 case Wall.Top:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
@@ -40,10 +37,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideBottom:
                         case OrientationFlags.SideTop:
                         default:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                     }
                 }
                 case Wall.Bottom:
@@ -60,10 +54,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideBottom:
                         case OrientationFlags.SideTop:
                         default:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topblock != 0 ? 0 : 2;
                     }
                 }
 
@@ -208,9 +199,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
     }
 }

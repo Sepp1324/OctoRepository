@@ -32,13 +32,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
 
-        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
-            int x, int y, int z)
+        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             var orientation = (OrientationFlags) manager.GetBlockMeta(x, y, z);
 

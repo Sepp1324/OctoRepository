@@ -522,7 +522,7 @@ namespace OctoAwesome.Client.Components
 
         private uint AmbientToBrightness(uint ambient) => (0xFFFFFF / 2) + (0xFFFFFF / 6 * ambient);
 
-        private static /*unsafe */uint VertexAO(IBlockDefinition[] blockDefinitions, int cornerIndex, int side1Index, Wall side1Wall, int side2Index, Wall side2Wall)
+        private static uint VertexAO(IBlockDefinition[] blockDefinitions, int cornerIndex, int side1Index, Wall side1Wall, int side2Index, Wall side2Wall)
         {
             var cornerBlock = blockDefinitions[cornerIndex]?.SolidWall ?? 0;
             var side1Def = blockDefinitions[side1Index];
