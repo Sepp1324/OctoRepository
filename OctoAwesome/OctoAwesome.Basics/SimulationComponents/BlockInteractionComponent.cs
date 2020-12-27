@@ -1,5 +1,6 @@
 ﻿using OctoAwesome.EntityComponents;
 using engenious;
+using OctoAwesome.Basics.Services;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
@@ -7,8 +8,13 @@ namespace OctoAwesome.Basics.SimulationComponents
     public class BlockInteractionComponent : SimulationComponent<ControllableComponent, InventoryComponent>
     {
         private readonly Simulation _simulation;
+        private readonly BlockInteractionService _blockInteractionService;
 
-        public BlockInteractionComponent(Simulation simulation) => _simulation = simulation;
+        public BlockInteractionComponent(Simulation simulation, BlockInteractionService blockInteractionService)
+        {
+            _simulation = simulation;
+            _blockInteractionService = blockInteractionService;
+        }
 
         protected override bool AddEntity(Entity entity) => true;
 
