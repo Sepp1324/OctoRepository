@@ -5,18 +5,23 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GreystoneBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Greystone;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.Greystone; }
+        }
 
-        public override string Icon => "greystone";
+        public override string Icon
+        {
+            get { return "greystone"; }
+        }
 
 
         public override string[] Textures
         {
             get
             {
-                return new[]
-                {
-                    "greystone"
+                return new[] {
+                    "greystone",
                 };
             }
         }
@@ -32,9 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+     
     }
 }

@@ -12,7 +12,7 @@ namespace OctoAwesome.Client
     /// </summary>
     public class Settings : ISettings
     {
-        private readonly Configuration _config;
+        private Configuration _config;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Settings, die auf die Konfigurationsdatei der aktuell laufenden Anwendung zugreift.
@@ -23,7 +23,7 @@ namespace OctoAwesome.Client
         {
             if (debug)
             {
-                var map = new ExeConfigurationFileMap {ExeConfigFilename = "EXECONFIG_PATH"};
+                ExeConfigurationFileMap map = new ExeConfigurationFileMap { ExeConfigFilename = "EXECONFIG_PATH" };
                 _config = ConfigurationManager.OpenMappedExeConfiguration(map,
                     ConfigurationUserLevel.None);
             }
@@ -64,7 +64,7 @@ namespace OctoAwesome.Client
                 return defaultValue;
             var valueConfig = settingElement.Value;
 
-            return (T) Convert.ChangeType(valueConfig, typeof(T));
+            return (T)Convert.ChangeType(valueConfig, typeof(T));
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace OctoAwesome.Client
             // eckigen Klammer anfängt, ist es ein Array.
             // [value1, value2, value3]
 
-            var writeString = "[" + string.Join(",", values) + "]";
+            string writeString = "[" + String.Join(",", values) + "]";
             Set(key, writeString);
         }
 
@@ -147,8 +147,8 @@ namespace OctoAwesome.Client
         /// <param name="values">Der Wert der Einstellung.</param>
         public void Set(string key, int[] values)
         {
-            var strValues = new string[values.Length];
-            for (var i = 0; i < values.Length; i++)
+            string[] strValues = new string[values.Length];
+            for (int i = 0; i < values.Length; i++)
                 strValues[i] = Convert.ToString(values[i]);
             Set(key, strValues);
         }
@@ -160,20 +160,10 @@ namespace OctoAwesome.Client
         /// <param name="values">Der Wert der Einstellung.</param>
         public void Set(string key, bool[] values)
         {
-            var stringValues = new string[values.Length];
-            for (var i = 0; i < values.Length; i++)
+            string[] stringValues = new string[values.Length];
+            for (int i = 0; i < values.Length; i++)
                 stringValues[i] = Convert.ToString(values[i]);
             Set(key, stringValues);
-        }
-
-        /// <summary>
-        /// Löscht eine Eigenschaft aus den Einstellungen
-        /// </summary>
-        /// <param name="key">Der Schlüssel der Einstellung</param>
-        public void Delete(string key)
-        {
-            _config.AppSettings.Settings.Remove(key);
-            _config.Save(ConfigurationSaveMode.Modified, false);
         }
 
 
@@ -184,12 +174,22 @@ namespace OctoAwesome.Client
 
             arrayString = arrayString.Substring(1, arrayString.Length - 2 /*- 1*/);
 
-            var partsString = arrayString.Split(',');
-            var tArray = new T[partsString.Length];
-            for (var i = 0; i < partsString.Length; i++)
-                tArray[i] = (T) Convert.ChangeType(partsString[i], typeof(T));
+            string[] partsString = arrayString.Split(',');
+            T[] tArray = new T[partsString.Length];
+            for (int i = 0; i < partsString.Length; i++)
+                tArray[i] = (T)Convert.ChangeType(partsString[i], typeof(T));
 
             return tArray;
+        }
+
+        /// <summary>
+        /// Löscht eine Eigenschaft aus den Einstellungen
+        /// </summary>
+        /// <param name="key">Der Schlüssel der Einstellung</param>
+        public void Delete(string key)
+        {
+            _config.AppSettings.Settings.Remove(key);
+            _config.Save(ConfigurationSaveMode.Modified, false);
         }
     }
 }

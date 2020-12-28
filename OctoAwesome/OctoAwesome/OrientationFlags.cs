@@ -63,55 +63,55 @@ namespace OctoAwesome
         /// Beschreibt die komplette Seite von -X
         /// </summary>
         SideWest =
-            Corner000 |
-            Corner001 |
-            Corner010 |
-            Corner011,
+            OrientationFlags.Corner000 |
+            OrientationFlags.Corner001 |
+            OrientationFlags.Corner010 |
+            OrientationFlags.Corner011,
 
         /// <summary>
         /// Beschreibt die komplette Seite von +X
         /// </summary>
         SideEast =
-            Corner100 |
-            Corner101 |
-            Corner110 |
-            Corner111,
+            OrientationFlags.Corner100 |
+            OrientationFlags.Corner101 |
+            OrientationFlags.Corner110 |
+            OrientationFlags.Corner111,
 
         /// <summary>
         /// Beschreibt die komplette Seite von -Y
         /// </summary>
         SideSouth =
-            Corner000 |
-            Corner001 |
-            Corner100 |
-            Corner101,
+            OrientationFlags.Corner000 |
+            OrientationFlags.Corner001 |
+            OrientationFlags.Corner100 |
+            OrientationFlags.Corner101,
 
         /// <summary>
         /// Beschreibt die komplette Seite von +Y
         /// </summary>
         SideNorth =
-            Corner010 |
-            Corner011 |
-            Corner110 |
-            Corner111,
+            OrientationFlags.Corner010 |
+            OrientationFlags.Corner011 |
+            OrientationFlags.Corner110 |
+            OrientationFlags.Corner111,
 
         /// <summary>
         /// Beschreibt die komplette Seite von -Z
         /// </summary>
         SideBottom =
-            Corner010 |
-            Corner000 |
-            Corner110 |
-            Corner100,
+            OrientationFlags.Corner010 |
+            OrientationFlags.Corner000 |
+            OrientationFlags.Corner110 |
+            OrientationFlags.Corner100,
 
         /// <summary>
         /// Beschreibt die komplette Seite von +Z
         /// </summary>
         SideTop =
-            Corner011 |
-            Corner001 |
-            Corner111 |
-            Corner101,
+            OrientationFlags.Corner011 |
+            OrientationFlags.Corner001 |
+            OrientationFlags.Corner111 |
+            OrientationFlags.Corner101,
 
         #endregion
 

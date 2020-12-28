@@ -6,12 +6,12 @@ namespace OctoAwesome.Database
 {
     public abstract class DatabaseContext<Tag, TObject> : IDatabaseContext<Tag, TObject> where Tag : ITag, new()
     {
+        protected Database<Tag> Database { get; }
+
         protected DatabaseContext(Database<Tag> database)
         {
             Database = database;
         }
-
-        protected Database<Tag> Database { get; }
 
         public abstract TObject Get(Tag key);
 

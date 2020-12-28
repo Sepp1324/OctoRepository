@@ -9,8 +9,14 @@ namespace OctoAwesome.Notifications
 {
     public abstract class Notification : IPoolElement
     {
-        private IPool pool;
         public uint SenderId { get; set; }
+
+        private IPool pool;
+
+        public virtual bool Match<T>(T filter)
+        {
+            return true;
+        }
 
         public void Init(IPool pool)
         {
@@ -25,16 +31,12 @@ namespace OctoAwesome.Notifications
             pool.Push(this);
         }
 
-        public virtual bool Match<T>(T filter)
-        {
-            return true;
-        }
-
         /// <summary>
         /// This method is called from the Init method. It's not needed to hold an seperate pool
         /// </summary>
         protected virtual void OnInit()
         {
+
         }
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace OctoAwesome.Notifications
         /// </summary>
         protected virtual void OnRelease()
         {
+
         }
     }
 }

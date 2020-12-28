@@ -12,10 +12,10 @@ namespace OctoAwesome.Client.Screens
     {
         private readonly FileInfo fileInfo;
         private readonly Random random;
-
-        private readonly LockSemaphore semaphoreExtended;
         private bool loaded;
         private string[] quotes;
+
+        private readonly LockSemaphore semaphoreExtended;
 
         public QuoteProvider(FileInfo fileInfo)
         {

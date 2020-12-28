@@ -18,14 +18,6 @@ namespace OctoAwesome.EntityComponents
         public const int TOOLCOUNT = 10;
 
         /// <summary>
-        /// Erzeugte eine neue ToolBarComponent
-        /// </summary>
-        public ToolBarComponent()
-        {
-            Tools = new InventorySlot[TOOLCOUNT];
-        }
-
-        /// <summary>
         /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
         /// </summary>
         public InventorySlot[] Tools { get; set; }
@@ -36,17 +28,24 @@ namespace OctoAwesome.EntityComponents
         public InventorySlot ActiveTool { get; set; }
 
         /// <summary>
+        /// Erzeugte eine neue ToolBarComponent
+        /// </summary>
+        public ToolBarComponent()
+        {
+            Tools = new InventorySlot[TOOLCOUNT];
+        }
+
+        /// <summary>
         /// Entfernt einen InventorySlot aus der Toolbar
         /// </summary>
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
         {
-            for (var i = 0; i < Tools.Length; i++)
+            for (int i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == slot)
                     Tools[i] = null;
             }
-
             if (ActiveTool == slot)
                 ActiveTool = null;
         }
@@ -70,7 +69,7 @@ namespace OctoAwesome.EntityComponents
         /// <returns>Den Index des Slots, falls nicht gefunden -1.</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
-            for (var j = 0; j < Tools.Length; j++)
+            for (int j = 0; j < Tools.Length; j++)
                 if (Tools[j] == slot)
                     return j;
 
@@ -83,7 +82,7 @@ namespace OctoAwesome.EntityComponents
         /// <param name="slot"></param>
         public void AddNewSlot(InventorySlot slot)
         {
-            for (var i = 0; i < Tools.Length; i++)
+            for (int i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == null)
                 {

@@ -12,42 +12,42 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            var planet = new Planet(id, universe, new Index3(4, 4, 3), seed);
+            Planet planet = new Planet(id, universe, new Index3(5, 5, 4), seed);
             planet.Generator = this;
             return planet;
         }
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
-            var definitions = definitionManager.GetDefinitions().ToArray();
+            IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
 
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().First();
-            var sandIndex = (ushort) (Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);
+            ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);
 
-            var result = new IChunk[planet.Size.Z];
+            IChunk[] result = new IChunk[planet.Size.Z];
 
-            var column = new ChunkColumn(result, planet, index);
+            ChunkColumn column = new ChunkColumn(result, planet, index);
 
 
-            for (var layer = 0; layer < planet.Size.Z; layer++)
+            for (int layer = 0; layer < planet.Size.Z; layer++)
                 result[layer] = new Chunk(new Index3(index.X, index.Y, layer), planet);
 
-            var part = (planet.Size.Z * Chunk.CHUNKSIZE_Z) / 4;
+            int part = (planet.Size.Z * Chunk.CHUNKSIZE_Z) / 4;
 
-            for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+            for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
             {
-                var heightY = (float) Math.Sin((float) (y * Math.PI) / 15f);
-                for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
+                float heightY = (float)Math.Sin((float)(y * Math.PI) / 15f);
+                for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
                 {
-                    var heightX = (float) Math.Sin((float) (x * Math.PI) / 18f);
+                    float heightX = (float)Math.Sin((float)(x * Math.PI) / 18f);
 
-                    var height = ((heightX + heightY + 2) / 4) * (2 * part);
-                    for (var z = 0; z < planet.Size.Z * Chunk.CHUNKSIZE_Z; z++)
+                    float height = ((heightX + heightY + 2) / 4) * (2 * part);
+                    for (int z = 0; z < planet.Size.Z * Chunk.CHUNKSIZE_Z; z++)
                     {
-                        if (z < (int) (height + part))
+                        if (z < (int)(height + part))
                         {
-                            var block = z % (Chunk.CHUNKSIZE_Z);
-                            var layer = z / Chunk.CHUNKSIZE_Z;
+                            int block = z % (Chunk.CHUNKSIZE_Z);
+                            int layer = z / Chunk.CHUNKSIZE_Z;
                             result[layer].SetBlock(x, y, block, sandIndex);
                         }
                     }
@@ -65,6 +65,7 @@ namespace OctoAwesome.Basics
                 planet.Deserialize(reader);
             return planet;
         }
+
 
 
         public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)

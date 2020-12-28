@@ -14,9 +14,9 @@ namespace OctoAwesome.Database
         {
             this.fileInfo = fileInfo ?? throw new ArgumentNullException(nameof(fileInfo));
         }
-
         public Reader(string path) : this(new FileInfo(path))
         {
+
         }
 
         internal byte[] Read(long index, int length)
@@ -24,7 +24,7 @@ namespace OctoAwesome.Database
             if (length < 0)
             {
                 fileInfo.Refresh();
-                length = fileInfo.Exists ? (int) fileInfo.Length : length;
+                length = fileInfo.Exists ? (int)fileInfo.Length : length;
             }
 
             var array = new byte[length];
@@ -33,7 +33,6 @@ namespace OctoAwesome.Database
                 fileStream.Seek(index, SeekOrigin.Begin);
                 fileStream.Read(array, 0, length);
             }
-
             return array;
         }
     }

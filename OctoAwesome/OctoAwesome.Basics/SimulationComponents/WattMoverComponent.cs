@@ -22,8 +22,7 @@ namespace OctoAwesome.Basics.SimulationComponents
         {
         }
 
-        protected override void UpdateEntity(GameTime gameTime, Entity e, ControllableComponent controller,
-            BodyPowerComponent powercomp)
+        protected override void UpdateEntity(GameTime gameTime, Entity e, ControllableComponent controller, BodyPowerComponent powercomp)
         {
             //Move
 
@@ -31,23 +30,24 @@ namespace OctoAwesome.Basics.SimulationComponents
             {
                 var head = e.Components.GetComponent<HeadComponent>();
 
-                var lookX = (float) Math.Cos(head.Angle);
-                var lookY = -(float) Math.Sin(head.Angle);
+                float lookX = (float)Math.Cos(head.Angle);
+                float lookY = -(float)Math.Sin(head.Angle);
                 var velocitydirection = new Vector3(lookX, lookY, 0) * controller.MoveInput.Y;
 
-                var stafeX = (float) Math.Cos(head.Angle + MathHelper.PiOver2);
-                var stafeY = -(float) Math.Sin(head.Angle + MathHelper.PiOver2);
+                float stafeX = (float)Math.Cos(head.Angle + MathHelper.PiOver2);
+                float stafeY = -(float)Math.Sin(head.Angle + MathHelper.PiOver2);
                 velocitydirection += new Vector3(stafeX, stafeY, 0) * controller.MoveInput.X;
 
                 powercomp.Direction = velocitydirection;
+
             }
             else
             {
-                powercomp.Direction = new Vector3(controller.MoveInput.X, controller.MoveInput.Y);
+                powercomp.Direction = new Vector3(controller.MoveInput.X,controller.MoveInput.Y);
             }
 
             //Jump
-            if (controller.JumpInput && !controller.JumpActive)
+            if (controller.JumpInput &&!controller.JumpActive)
             {
                 controller.JumpTime = powercomp.JumpTime;
                 controller.JumpActive = true;
@@ -55,12 +55,14 @@ namespace OctoAwesome.Basics.SimulationComponents
 
             if (controller.JumpActive)
             {
-                powercomp.Direction += new Vector3(0, 0, 1);
+                powercomp.Direction += new Vector3(0,0,1);
                 controller.JumpTime -= gameTime.ElapsedGameTime.Milliseconds;
 
                 if (controller.JumpTime <= 0)
                     controller.JumpActive = false;
             }
+
+            
         }
     }
 }

@@ -5,17 +5,22 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GroundBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Ground;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.Ground; }
+        }
 
-        public override string Icon => "dirt";
+        public override string Icon
+        {
+            get { return "dirt"; }
+        }
 
 
         public override string[] Textures
         {
             get
             {
-                return new[]
-                {
+                return new[] {
                     "dirt"
                 };
             }
@@ -32,9 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }

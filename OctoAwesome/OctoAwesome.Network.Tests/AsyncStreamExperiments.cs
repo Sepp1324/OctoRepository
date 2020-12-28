@@ -11,10 +11,10 @@ namespace OctoAwesome.Network.Tests
         [Test]
         public void ReadWriteSwap()
         {
-            var test = new OctoNetworkStream();
-            var writeData = new byte[400];
-            var readData = new byte[400];
-            var r = new Random();
+            OctoNetworkStream test = new OctoNetworkStream();
+            byte[] writeData = new byte[400];
+            byte[] readData = new byte[400];
+            Random r = new Random();
 
             r.NextBytes(writeData);
 
@@ -27,15 +27,15 @@ namespace OctoAwesome.Network.Tests
         [Test]
         public async Task ReadWriteSwapAsync()
         {
-            var test = new OctoNetworkStream();
-            var writeData = new byte[400];
-            var readData = new byte[400];
-            var r = new Random();
+            OctoNetworkStream test = new OctoNetworkStream();
+            byte[] writeData = new byte[400];
+            byte[] readData = new byte[400];
+            Random r = new Random();
 
             r.NextBytes(writeData);
-            var readTask = new Task(() =>
+            Task readTask = new Task(() =>
             {
-                var o = 0;
+                int o = 0;
                 while (test.Read(readData, o, 100) != 0)
                 {
                     Thread.Sleep(200);
@@ -55,6 +55,9 @@ namespace OctoAwesome.Network.Tests
 
             //});
             Assert.IsTrue(writeData.SequenceEqual(readData));
+
         }
+
+       
     }
 }
