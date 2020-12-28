@@ -19,7 +19,6 @@
         /// <param name="column01">TODO: Kommentieren</param>
         /// <param name="column10">TODO: Kommentieren</param>
         /// <param name="column11">TODO: Kommentieren</param>
-        void Populate(IResourceManager resourceManager, IPlanet planet, IChunkColumn column00, IChunkColumn column01,
-            IChunkColumn column10, IChunkColumn column11);
+        void Populate(IResourceManager resourceManager, IPlanet planet, IChunkColumn column00, IChunkColumn column01, IChunkColumn column10, IChunkColumn column11);
     }
 }

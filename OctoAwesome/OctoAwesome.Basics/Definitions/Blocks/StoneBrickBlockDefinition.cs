@@ -1,17 +1,30 @@
 ﻿using System;
+using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class StoneBrickBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.StoneBrick;
-
-        public override string Icon => "brick_grey";
-
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "brick_grey"
-        };
+            get { return Languages.OctoBasics.StoneBrick; }
+        }
+
+        public override string Icon
+        {
+            get { return "brick_grey"; }
+        }
+
+
+        public override string[] Textures
+        {
+            get
+            {
+                return new[] {
+                    "brick_grey",
+                };
+            }
+        }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -24,6 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+      
     }
 }

@@ -13,7 +13,7 @@ namespace OctoAwesome.Basics.EntityComponents
         public float Power { get; set; }
 
         public Vector3 Direction { get; set; }
-
+        
 
         public override void Serialize(BinaryWriter writer)
         {

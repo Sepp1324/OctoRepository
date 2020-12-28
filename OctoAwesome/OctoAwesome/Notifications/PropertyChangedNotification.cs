@@ -1,11 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public class PropertyChangedNotification : SerializableNotification
     {
         public string Issuer { get; set; }
-        
         public string Property { get; set; }
 
         public byte[] Value { get; set; }

@@ -6,7 +6,7 @@ namespace OctoAwesome
     /// <summary>
     /// Struktur zur Definierung einer zweidimensionalen Index-Position.
     /// </summary>
-    public struct Index2 : IEquatable<Index2>
+    public struct Index2
     {
         /// <summary>
         /// X Anteil
@@ -33,53 +33,55 @@ namespace OctoAwesome
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte</param>
-        public Index2(Index2 value) : this(value.X, value.Y)
-        {
-        }
+        public Index2(Index2 value) : this(value.X, value.Y) { }
 
         /// <summary>
         /// Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte (X und Y Anteil wird übernommen)</param>
-        public Index2(Index3 value) : this(value.X, value.Y)
-        {
-        }
+        public Index2(Index3 value) : this(value.X, value.Y) { }
 
         /// <summary>
         /// Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X</param>
-        public void NormalizeX(int size) => X = NormalizeAxis(X, size);
+        public void NormalizeX(int size)
+            => X = NormalizeAxis(X, size);
 
         /// <summary>
         /// Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Größe (X-Anzeil wird genommen)</param>
-        public void NormalizeX(Index2 size) => NormalizeX(size.X);
+        public void NormalizeX(Index2 size)
+            => NormalizeX(size.X);
 
         /// <summary>
         /// Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Größe (X-Anzeil wird genommen)</param>
-        public void NormalizeX(Index3 size) => NormalizeX(size.X);
+        public void NormalizeX(Index3 size)
+            => NormalizeX(size.X);
 
         /// <summary>
         /// Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für Y</param>
-        public void NormalizeY(int size) => Y = NormalizeAxis(Y, size);
+        public void NormalizeY(int size)
+            => Y = NormalizeAxis(Y, size);
 
         /// <summary>
         /// Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Größe (Y-Anzeil wird genommen)</param>
-        public void NormalizeY(Index2 size) => NormalizeY(size.Y);
+        public void NormalizeY(Index2 size)
+            => NormalizeY(size.Y);
 
         /// <summary>
         /// Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Größe (Y-Anzeil wird genommen)</param>
-        public void NormalizeY(Index3 size) => NormalizeY(size.Y);
+        public void NormalizeY(Index3 size)
+            => NormalizeY(size.Y);
 
         /// <summary>
         /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
@@ -96,13 +98,15 @@ namespace OctoAwesome
         /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="size">2D Size</param>
-        public void NormalizeXY(Index2 size) => NormalizeXY(size.X, size.Y);
+        public void NormalizeXY(Index2 size)
+            => NormalizeXY(size.X, size.Y);
 
         /// <summary>
         /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="size">3D Size</param>
-        public void NormalizeXY(Index3 size) => NormalizeXY(size.X, size.Y);
+        public void NormalizeXY(Index3 size)
+            => NormalizeXY(size.X, size.Y);
 
         /// <summary>
         /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
@@ -121,7 +125,8 @@ namespace OctoAwesome
         /// <param name="x">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
         /// <returns>Entfernung</returns>
-        public int ShortestDistanceX(int x, int size) => ShortestDistanceOnAxis(X, x, size);
+        public int ShortestDistanceX(int x, int size)
+            => ShortestDistanceOnAxis(X, x, size);
 
         /// <summary>
         /// Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten Y-Achse.
@@ -129,7 +134,8 @@ namespace OctoAwesome
         /// <param name="y">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
         /// <returns>Entfernung</returns>
-        public int ShortestDistanceY(int y, int size) => ShortestDistanceOnAxis(Y, y, size);
+        public int ShortestDistanceY(int y, int size)
+            => ShortestDistanceOnAxis(Y, y, size);
 
         /// <summary>
         /// Ermittelt die kürzeste Entfernung zum Ziel auf den normalisierten Achsen.
@@ -137,19 +143,23 @@ namespace OctoAwesome
         /// <param name="destination">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
         /// <returns>Entfernung</returns>
-        public Index2 ShortestDistanceXY(Index2 destination, Index2 size) => new Index2(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y));
+        public Index2 ShortestDistanceXY(Index2 destination, Index2 size)
+            => new Index2(ShortestDistanceX(destination.X, size.X),
+                        ShortestDistanceY(destination.Y, size.Y));
 
         /// <summary>
         /// Ermittelt die Entferung zum Nullpunkt.
         /// </summary>
         /// <returns></returns>
-        public double Length() => Math.Sqrt(LengthSquared());
+        public double Length()
+            => Math.Sqrt(LengthSquared());
 
         /// <summary>
         /// Ermittelt die Entfernung zum Nullpunkt im Quadrat.
         /// </summary>
         /// <returns></returns>
-        public int LengthSquared() => X * X + Y * Y;
+        public int LengthSquared()
+            => (X * X) + (Y * Y);
 
         /// <summary>
         /// Addition von zwei Indices2
@@ -157,7 +167,8 @@ namespace OctoAwesome
         /// <param name="i1">1. Summand</param>
         /// <param name="i2">2. Summand</param>
         /// <returns></returns>
-        public static Index2 operator +(Index2 i1, Index2 i2) => new Index2(i1.X + i2.X, i1.Y + i2.Y);
+        public static Index2 operator +(Index2 i1, Index2 i2)
+            => new Index2(i1.X + i2.X, i1.Y + i2.Y);
 
         /// <summary>
         /// Subtraktion von zwei Indices2
@@ -165,7 +176,8 @@ namespace OctoAwesome
         /// <param name="i1">Minuend</param>
         /// <param name="i2">Subtrahend</param>
         /// <returns></returns>
-        public static Index2 operator -(Index2 i1, Index2 i2) => new Index2(i1.X - i2.X, i1.Y - i2.Y);
+        public static Index2 operator -(Index2 i1, Index2 i2)
+            => new Index2(i1.X - i2.X, i1.Y - i2.Y);
 
         /// <summary>
         /// Multiplikation eines Index2 mit einem Skalierungsfaktor
@@ -173,7 +185,8 @@ namespace OctoAwesome
         /// <param name="i1">Index</param>
         /// <param name="scale">Skalierungsfaktor</param>
         /// <returns></returns>
-        public static Index2 operator *(Index2 i1, int scale) => new Index2(i1.X * scale, i1.Y * scale);
+        public static Index2 operator *(Index2 i1, int scale)
+            => new Index2(i1.X * scale, i1.Y * scale);
 
         /// <summary>
         /// Division eines Index2 durch einen Skalierungsfaktor
@@ -181,7 +194,8 @@ namespace OctoAwesome
         /// <param name="i1">Index</param>
         /// <param name="scale">Skalierungsfaktor</param>
         /// <returns></returns>
-        public static Index2 operator /(Index2 i1, int scale) => new Index2(i1.X / scale, i1.Y / scale);
+        public static Index2 operator /(Index2 i1, int scale)
+            => new Index2(i1.X / scale, i1.Y / scale);
 
         /// <summary>
         /// Überprüft, ob beide gegebenen Indices gleich sind.
@@ -189,7 +203,8 @@ namespace OctoAwesome
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns></returns>
-        public static bool operator ==(Index2 i1, Index2 i2) => i1.Equals(i2);
+        public static bool operator ==(Index2 i1, Index2 i2)
+            => i1.Equals(i2);
 
         /// <summary>
         /// Überprüft, ob beide gegebenen Indices nicht gleich sind.
@@ -197,13 +212,15 @@ namespace OctoAwesome
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns></returns>
-        public static bool operator !=(Index2 i1, Index2 i2) => !i1.Equals(i2);
+        public static bool operator !=(Index2 i1, Index2 i2)
+            => !i1.Equals(i2);
 
         /// <summary>
         /// Implizite Umwandlung eines Index2 in einen Vector2. Möglicherweise entstehen dadurch Rundungsfehler.
         /// </summary>
         /// <param name="index"></param>
-        public static implicit operator Vector2(Index2 index) => new Vector2(index.X, index.Y);
+        public static implicit operator Vector2(Index2 index)
+            => new Vector2(index.X, index.Y);
 
         /// <summary>
         /// Normalisiert einen Integer auf die angegebene Maximalgröße.
@@ -214,10 +231,8 @@ namespace OctoAwesome
         public static int NormalizeAxis(int value, int size)
         {
             // Sicherheitsabfrage für die Normalisierungsgröße
-#if DEBUG
             if (size < 1)
                 throw new ArgumentException("Size darf nicht kleiner als 1 sein");
-#endif
 
             value %= size;
 
@@ -239,8 +254,8 @@ namespace OctoAwesome
             origin = NormalizeAxis(origin, size);
             destination = NormalizeAxis(destination, size);
 
-            var half = size / 2;
-            var distance = destination - origin;
+            int half = size / 2;
+            int distance = destination - origin;
 
             if (distance > half)
                 distance -= size;
@@ -255,30 +270,27 @@ namespace OctoAwesome
         /// </summary>
         /// <returns></returns>
         public override string ToString()
-        {
-            return $"({X}/{Y})";
-        }
+            => $"({X}/{Y})";
 
         /// <summary>
         /// Überprüft, ob das gegebene Objekt (falls ein <see cref="Index2"/> gleich der aktuellen Instanz ist.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => obj is Index2 other && Equals(other);
+        public override bool Equals(object obj)
+        {
+            if (obj is Index2 other)
+                return other.X == X && other.Y == Y;
 
-        public bool Equals(Index2 other) => X == other.X && Y == other.Y;
+            return false;
+        }
 
         /// <summary>
         /// Gibt einen möglichst eindeutigen Hashwert für den aktuellen Index2 zurück.
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X * 397) ^ Y;
-            }
-        }
+            => (X << 16) + Y;
 
         /// <summary>
         /// Null-Index

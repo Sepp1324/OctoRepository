@@ -1,18 +1,30 @@
 ﻿using System;
+using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GravelBLockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Gravel;
-
-        public override string Icon => "gravel";
-
-
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "gravel"
-        };
+            get { return Languages.OctoBasics.Gravel; }
+        }
+
+        public override string Icon
+        {
+            get { return "gravel"; }
+        }
+
+
+        public override string[] Textures
+        {
+            get
+            {
+                return new[] {
+                    "gravel",
+                };
+            }
+        }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -25,6 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+        
     }
 }

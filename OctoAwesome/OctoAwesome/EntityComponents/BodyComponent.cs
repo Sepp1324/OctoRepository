@@ -1,16 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
     public sealed class BodyComponent : EntityComponent
     {
-        public BodyComponent()
-        {
-            Mass = 1; //1kg
-            Radius = 1;
-            Height = 1;
-        }
-
         public float Mass { get; set; }
 
         /// <summary>
@@ -22,6 +20,13 @@ namespace OctoAwesome.EntityComponents
         /// Die Körperhöhe des Spielers in Blocks
         /// </summary>
         public float Height { get; set; }
+
+        public BodyComponent()
+        {
+            Mass = 1; //1kg
+            Radius = 1;
+            Height = 1;
+        }
 
         public override void Serialize(BinaryWriter writer)
         {

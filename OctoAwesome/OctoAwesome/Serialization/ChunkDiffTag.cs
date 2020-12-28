@@ -1,10 +1,13 @@
 ﻿using OctoAwesome.Database;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
-    public struct ChunkDiffTag : ITag, IEquatable<ChunkDiffTag>
+    public struct ChunkDiffTag : ITag
     {
         public int Length => sizeof(int) * 4;
 
@@ -16,22 +19,6 @@ namespace OctoAwesome.Serialization
             ChunkPositon = chunkPosition;
             FlatIndex = flatIndex;
         }
-
-        public bool Equals(ChunkDiffTag other) => Length == other.Length && EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon) && FlatIndex == other.FlatIndex;
-
-        public override bool Equals(object obj) => obj is ChunkDiffTag other && Equals(other);
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (ChunkPositon.GetHashCode() * 397) ^ FlatIndex;
-            }
-        }
-
-        public static bool operator ==(ChunkDiffTag left, ChunkDiffTag right) => left.Equals(right);
-
-        public static bool operator !=(ChunkDiffTag left, ChunkDiffTag right) => !left.Equals(right);
 
         public void FromBytes(byte[] array, int startIndex)
         {

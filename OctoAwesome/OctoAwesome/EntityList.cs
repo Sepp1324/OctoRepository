@@ -1,58 +1,67 @@
 ﻿using OctoAwesome.EntityComponents;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
     public class EntityList : IEntityList
     {
-        private readonly IResourceManager _resourceManager;
-        private readonly IChunkColumn _column;
-        private readonly List<Entity> _entities;
+        private List<Entity> entities;
+        private IChunkColumn column;
+        private readonly IResourceManager resourceManager;
 
         public EntityList(IChunkColumn column)
         {
-            _entities = new List<Entity>();
-            _column = column;
-            _resourceManager = TypeContainer.Get<IResourceManager>();
+            entities = new List<Entity>();
+            this.column = column;
+            resourceManager = TypeContainer.Get<IResourceManager>();
         }
 
-        public int Count => _entities.Count;
+        public int Count => entities.Count;
 
         public bool IsReadOnly => false;
 
-        public void Add(Entity item) => _entities.Add(item);
+        public void Add(Entity item)
+        {
+            entities.Add(item);
+        }
 
-        public void Clear() => _entities.Clear();
+        public void Clear() => entities.Clear();
 
-        public bool Contains(Entity item) => _entities.Contains(item);
+        public bool Contains(Entity item) => entities.Contains(item);
 
-        public void CopyTo(Entity[] array, int arrayIndex) => _entities.CopyTo(array, arrayIndex);
+        public void CopyTo(Entity[] array, int arrayIndex) => entities.CopyTo(array, arrayIndex);
 
-        public IEnumerator<Entity> GetEnumerator() => _entities.GetEnumerator();
+        public IEnumerator<Entity> GetEnumerator() => entities.GetEnumerator();
 
-        public bool Remove(Entity item) => _entities.Remove(item);
+        public bool Remove(Entity item)
+        {
+            return entities.Remove(item);
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => _entities.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => entities.GetEnumerator();
 
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
         {
-            foreach (var entity in _entities)
+            foreach (var entity in entities)
             {
                 if (entity.Components.ContainsComponent<PositionComponent>())
                 {
                     var position = entity.Components.GetComponent<PositionComponent>();
 
-                    if (position.Position.ChunkIndex.X != _column.Index.X ||
-                        position.Position.ChunkIndex.Y != _column.Index.Y)
+                    if (position.Position.ChunkIndex.X != column.Index.X || position.Position.ChunkIndex.Y != column.Index.Y)
                     {
                         yield return new FailEntityChunkArgs()
                         {
                             Entity = entity,
-                            CurrentChunk = new Index2(_column.Index),
-                            CurrentPlanet = _column.Planet,
+                            CurrentChunk = new Index2(column.Index),
+                            CurrentPlanet = column.Planet,
                             TargetChunk = new Index2(position.Position.ChunkIndex),
-                            TargetPlanet = _resourceManager.GetPlanet(position.Position.Planet)
+                            TargetPlanet = resourceManager.GetPlanet(position.Position.Planet),
                         };
                     }
                 }

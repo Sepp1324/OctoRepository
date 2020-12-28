@@ -11,26 +11,26 @@ namespace OctoAwesome
         /// Liefert eine Liste von Definitions.
         /// </summary>
         /// <returns></returns>
-        IDefinition[] GetDefinitions();
+        IEnumerable<IDefinition> GetDefinitions();
 
         /// <summary>
         /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
-        IItemDefinition[] GetItemDefinitions();
-
+        IEnumerable<IItemDefinition> GetItemDefinitions();
+        
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>
-        IBlockDefinition[] GetBlockDefinitions();
+        IEnumerable<IBlockDefinition> GetBlockDefinitions();
 
         /// <summary>
         /// Liefert die BlockDefinition zum angegebenen Index.
         /// </summary>
         /// <param name="index">Index der BlockDefinition</param>
         /// <returns>BlockDefinition</returns>
-        IDefinition GetDefinitionByIndex(ushort index);
+        IBlockDefinition GetBlockDefinitionByIndex(ushort index);
 
         /// <summary>
         /// Liefert den Index der angegebenen BlockDefinition.

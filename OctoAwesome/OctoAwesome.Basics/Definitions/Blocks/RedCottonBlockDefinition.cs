@@ -1,17 +1,30 @@
 ﻿using System;
+using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedCottonBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.RedCotton;
-
-        public override string Icon => "cotton_red";
-        
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "cotton_red"
-        };
+            get { return Languages.OctoBasics.RedCotton; }
+        }
+
+        public override string Icon
+        {
+            get { return "cotton_red"; }
+        }
+
+
+        public override string[] Textures
+        {
+            get
+            {
+                return new[] {
+                    "cotton_red"
+                };
+            }
+        }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -24,6 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+        
     }
 }

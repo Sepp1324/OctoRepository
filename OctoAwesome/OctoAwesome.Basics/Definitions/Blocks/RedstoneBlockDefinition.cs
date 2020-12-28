@@ -1,17 +1,30 @@
 ﻿using System;
+using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedstoneBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Redstone;
-
-        public override string Icon => "redstone";
-
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "redstone"
-        };
+            get { return Languages.OctoBasics.Redstone; }
+        }
+
+        public override string Icon
+        {
+            get { return "redstone"; }
+        }
+
+
+        public override string[] Textures
+        {
+            get
+            {
+                return new[] {
+                    "redstone",
+                };
+            }
+        }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -23,7 +36,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.9f
             };
         }
-
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+     
     }
 }

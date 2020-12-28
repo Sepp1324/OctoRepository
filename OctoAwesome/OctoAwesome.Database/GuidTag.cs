@@ -1,34 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 
 namespace OctoAwesome.Database
 {
-    public struct GuidTag<T> : ITag, IEquatable<GuidTag<T>>
+    public struct GuidTag<T> : ITag
     {
         public Guid Tag { get; private set; }
 
         public int Length => 16;
 
-        public GuidTag(Guid id) => Tag = id;
-
-        public byte[] GetBytes() => Tag.ToByteArray();
-
-        public void FromBytes(byte[] array, int startIndex) => Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
-
-        public bool Equals(GuidTag<T> other) => Length == other.Length && Tag.Equals(other.Tag);
-
-        public override bool Equals(object obj) => obj is GuidTag<T> other && Equals(other);
-
-        public override int GetHashCode()
+        public GuidTag(Guid id)
         {
-            var hashCode = 139101280;
-            hashCode = hashCode * -1521134295 + Tag.GetHashCode();
-            hashCode = hashCode * -1521134295 + Length.GetHashCode();
-            return hashCode;
+            Tag = id;
         }
 
-        public static bool operator ==(GuidTag<T> left, GuidTag<T> right) => left.Equals(right);
+        public byte[] GetBytes()
+            => Tag.ToByteArray();
 
-        public static bool operator !=(GuidTag<T> left, GuidTag<T> right) => !(left == right);
+        public void FromBytes(byte[] array, int startIndex)
+            => Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
     }
 }

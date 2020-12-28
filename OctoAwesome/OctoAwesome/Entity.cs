@@ -13,23 +13,9 @@ namespace OctoAwesome
     public abstract class Entity : ISerializable, IIdentification
     {
         /// <summary>
-        /// Entity die regelmäßig eine Updateevent bekommt
-        /// </summary>
-        public Entity()
-        {
-            Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
-            Id = Guid.Empty;
-        }
-
-        /// <summary>
         /// Contains all Components.
         /// </summary>
         public ComponentList<EntityComponent> Components { get; private set; }
-
-        /// <summary>
-        /// Reference to the active Simulation.
-        /// </summary>
-        public Simulation Simulation { get; internal set; }
 
         /// <summary>
         /// Id
@@ -37,28 +23,24 @@ namespace OctoAwesome
         public Guid Id { get; internal set; }
 
         /// <summary>
-        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
+        /// Reference to the active Simulation.
         /// </summary>
-        /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
-        public virtual void Serialize(BinaryWriter writer)
-        {
-            writer.Write(Id.ToByteArray());
+        public Simulation Simulation { get; internal set; }
 
-            Components.Serialize(writer);
-        }
 
         /// <summary>
-        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
+        /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
-        /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
-        public virtual void Deserialize(BinaryReader reader)
+        public Entity()
         {
-            Id = new Guid(reader.ReadBytes(16));
-            Components.Deserialize(reader);
+            Components = new ComponentList<EntityComponent>(
+                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+            Id = Guid.Empty;
         }
 
         private void OnRemoveComponent(EntityComponent component)
         {
+
         }
 
         private void OnAddComponent(EntityComponent component)
@@ -101,11 +83,34 @@ namespace OctoAwesome
         {
         }
 
-        public virtual void RegisterDefault()
+        /// <summary>
+        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
+        /// </summary>
+        /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
+        public virtual void Serialize(BinaryWriter writer)
         {
+            writer.Write(Id.ToByteArray());
+
+            Components.Serialize(writer);
         }
 
-        public override int GetHashCode() => Id.GetHashCode();
+        /// <summary>
+        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
+        /// </summary>
+        /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
+        public virtual void Deserialize(BinaryReader reader)
+        {
+            Id = new Guid(reader.ReadBytes(16));
+            Components.Deserialize(reader);
+        }
+
+        public virtual void RegisterDefault()
+        {
+
+        }
+
+        public override int GetHashCode()
+            => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -125,5 +130,6 @@ namespace OctoAwesome
             foreach (var component in Components)
                 component?.OnUpdate(notification);
         }
+
     }
 }

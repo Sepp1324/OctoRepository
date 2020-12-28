@@ -1,23 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class SnowBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Snow;
-
-        public override string Icon => "snow";
-
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "snow",
-            "dirt",
-            "dirt_snow"
-        };
+            get
+            {
+                return Languages.OctoBasics.Snow;
+            }
+        }
+
+        public override string Icon
+        {
+            get
+            {
+                return "snow"; 
+            }
+        }
+
+        public override string[] Textures
+        {
+            get
+            {
+                return new[] {
+                    "snow",
+                    "dirt",
+                    "dirt_snow",
+                };
+            }
+        }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties
+            return new PhysicalProperties()
             {
                 Density = 1.5f,
                 FractureToughness = 0.2f,
@@ -25,19 +46,20 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.05f
             };
         }
-
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
-
+             
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            switch (wall)
+            if (wall == Wall.Top)
             {
-                case Wall.Top:
-                    return 0;
-                case Wall.Bottom:
-                    return 1;
-                default:
-                    return 2;
+                return 0;
+            }
+            else if (wall == Wall.Bottom)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
             }
         }
     }

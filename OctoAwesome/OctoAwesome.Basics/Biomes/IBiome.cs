@@ -18,5 +18,6 @@ namespace OctoAwesome.Basics.Biomes
         INoise BiomeNoiseGenerator { get; }
 
         float[,] GetHeightmap(Index2 chunkIndex);
+
     }
 }

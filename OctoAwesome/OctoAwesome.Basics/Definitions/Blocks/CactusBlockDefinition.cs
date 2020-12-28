@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -8,124 +12,142 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Name => Languages.OctoBasics.Cactus;
 
-        public override string[] Textures { get; } 
-        
-        public CactusBlockDefinition() => Textures = new[] {"cactus_inside", "cactus_side", "cactus_top"};
+        public override string[] Textures => new[] {
+                    "cactus_inside",
+                    "cactus_side",
+                    "cactus_top"
+                };
 
-        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
+            int x, int y, int z)
         {
-            var orientation = (OrientationFlags) manager.GetBlockMeta(x, y, z);
+            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
                 case Wall.Top:
-                {
-                    var topBlock = manager.GetBlock(x, y, z + 1);
-
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                            return 1;
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
-                        default:
-                            return topBlock != 0 ? 0 : 2;
+                        ushort topblock = manager.GetBlock(x, y, z + 1);
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                                return 1;
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                if (topblock != 0)
+                                    return 0;
+                                else
+                                    return 2;
+                        }
                     }
-                }
                 case Wall.Bottom:
-                {
-                    var topBlock = manager.GetBlock(x, y, z + 1);
-
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                            return 1;
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
-                        default:
-                            return topBlock != 0 ? 0 : 2;
+                        ushort topblock = manager.GetBlock(x, y, z + 1);
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                                return 1;
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                if (topblock != 0)
+                                    return 0;
+                                else
+                                    return 2;
+                        }
                     }
-                }
 
                 case Wall.Front:
-                {
-                    var topBlock = manager.GetBlock(x, y, z + 1);
-
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                            return topBlock != 0 ? 0 : 2;
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
-                        default:
-                            return 1;
+                        ushort topblock = manager.GetBlock(x, y, z + 1);
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                                if (topblock != 0)
+                                    return 0;
+                                else
+                                    return 2;
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 1;
+                        }
                     }
-                }
                 case Wall.Back:
-                {
-                    var topBlock = manager.GetBlock(x, y, z + 1);
-
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                            return topBlock != 0 ? 0 : 2;
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
-                        default:
-                            return 1;
+                        ushort topblock = manager.GetBlock(x, y, z + 1);
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                                if (topblock != 0)
+                                    return 0;
+                                else
+                                    return 2;
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 1;
+                        }
                     }
-                }
 
                 case Wall.Left:
-                {
-                    var topBlock = manager.GetBlock(x, y, z + 1);
-
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                            return topBlock != 0 ? 0 : 2;
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
-                        default:
-                            return 1;
+                        ushort topblock = manager.GetBlock(x, y, z + 1);
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                                if (topblock != 0)
+                                    return 0;
+                                else
+                                    return 2;
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 1;
+                        }
                     }
-                }
 
                 case Wall.Right:
-                {
-                    var topblock = manager.GetBlock(x, y, z + 1);
-
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
-                        default:
-                            return 1;
+                        ushort topblock = manager.GetBlock(x, y, z + 1);
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                                if (topblock != 0)
+                                    return 0;
+                                else
+                                    return 2;
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 1;
+                        }
                     }
-                }
             }
 
             // Should never happen
@@ -135,7 +157,8 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            var orientation = (OrientationFlags) manager.GetBlockMeta(x, y, z);
+
+            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
@@ -185,6 +208,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+     
     }
 }

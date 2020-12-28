@@ -17,32 +17,6 @@ namespace OctoAwesome
     /// </summary>
     public sealed class Simulation : INotificationObserver
     {
-        private readonly HashSet<Entity> _entities = new HashSet<Entity>();
-        private readonly IPool<EntityNotification> _entityNotificationPool;
-
-        private readonly IExtensionResolver _extensionResolver;
-        private readonly IDisposable _simulationSubscription;
-
-        /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse Simulation.
-        /// </summary>
-        public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver, IGameService service)
-        {
-            ResourceManager = resourceManager;
-            _simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
-            _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-
-
-            _extensionResolver = extensionResolver;
-            State = SimulationState.Ready;
-            UniverseId = Guid.Empty;
-            Service = service;
-
-            Components = new ComponentList<SimulationComponent>(ValidateAddComponent, ValidateRemoveComponent, null, null);
-
-            extensionResolver.ExtendSimulation(this);
-        }
-
         public IResourceManager ResourceManager { get; private set; }
 
         public bool IsServerSide { get; set; }
@@ -70,34 +44,34 @@ namespace OctoAwesome
         /// <summary>
         /// List of all Entities.
         /// </summary>
-        public List<Entity> Entities => _entities.ToList();
+        public List<Entity> Entities => entities.ToList();
 
-        public void OnNext(Notification value)
-        {
-            if (_entities.Count < 1 && !IsServerSide)
-                return;
+        private readonly IExtensionResolver extensionResolver;
 
-            switch (value)
-            {
-                case EntityNotification entityNotification:
-                    if (entityNotification.Type == EntityNotification.ActionType.Remove)
-                        RemoveEntity(entityNotification.EntityId);
-                    else if (entityNotification.Type == EntityNotification.ActionType.Add)
-                        AddEntity(entityNotification.Entity);
-                    else if (entityNotification.Type == EntityNotification.ActionType.Update)
-                        EntityUpdate(entityNotification);
-                    else if (entityNotification.Type == EntityNotification.ActionType.Request)
-                        RequestEntity(entityNotification);
-                    break;
-                default:
-                    break;
-            }
-        }
+        private readonly HashSet<Entity> entities = new HashSet<Entity>();
+        private readonly IDisposable simulationSubscription;
+        private readonly IPool<EntityNotification> entityNotificationPool;
 
-        public void OnError(Exception error) => throw error;
+        /// <summary>
+        /// Erzeugt eine neue Instanz der Klasse Simulation.
+        /// </summary>
+        public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver, IGameService service)
+        {            
+            ResourceManager = resourceManager;
+            simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
+            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
-        public void OnCompleted()
-        {
+
+            this.extensionResolver = extensionResolver;
+            State = SimulationState.Ready;
+            UniverseId = Guid.Empty;
+            Service = service;
+
+            Components = new ComponentList<SimulationComponent>(
+                ValidateAddComponent, ValidateRemoveComponent, null, null);
+
+            extensionResolver.ExtendSimulation(this);
+
         }
 
         private void ValidateAddComponent(SimulationComponent component)
@@ -127,7 +101,7 @@ namespace OctoAwesome
                 var rand = new Random();
                 numericSeed = rand.Next(int.MaxValue);
             }
-            else if (int.TryParse(rawSeed, out var seed))
+            else if(int.TryParse(rawSeed, out var seed))
             {
                 numericSeed = seed;
             }
@@ -135,9 +109,9 @@ namespace OctoAwesome
             {
                 numericSeed = rawSeed.GetHashCode();
             }
+            
 
-
-            var guid = ResourceManager.NewUniverse(name, numericSeed);
+            Guid guid = ResourceManager.NewUniverse(name, numericSeed);
 
             Start();
 
@@ -208,7 +182,7 @@ namespace OctoAwesome
             // thread.Join();
 
             ResourceManager.UnloadUniverse();
-            _simulationSubscription?.Dispose();
+            simulationSubscription?.Dispose();
         }
 
         /// <summary>
@@ -226,17 +200,17 @@ namespace OctoAwesome
             if (entity.Simulation != null && entity.Simulation != this)
                 throw new NotSupportedException("Entity can't be part of more than one simulation");
 
-            if (_entities.Contains(entity))
+            if (entities.Contains(entity))
                 return;
 
-            _extensionResolver.ExtendEntity(entity);
+            extensionResolver.ExtendEntity(entity);
             entity.Initialize(ResourceManager);
             entity.Simulation = this;
 
             if (entity.Id == Guid.Empty)
                 entity.Id = Guid.NewGuid();
 
-            _entities.Add(entity);
+            entities.Add(entity);
 
             foreach (var component in Components)
                 component.Add(entity);
@@ -270,12 +244,44 @@ namespace OctoAwesome
             foreach (var component in Components)
                 component.Remove(entity);
 
-            _entities.Remove(entity);
+            entities.Remove(entity);
             entity.Id = Guid.Empty;
             entity.Simulation = null;
+
+        }
+        public void RemoveEntity(Guid entityId)
+            => RemoveEntity(entities.First(e => e.Id == entityId));
+
+        public void OnNext(Notification value)
+        {
+            if (entities.Count < 1 && !IsServerSide)
+                return;
+
+            switch (value)
+            {
+                case EntityNotification entityNotification:
+                    if (entityNotification.Type == EntityNotification.ActionType.Remove)
+                        RemoveEntity(entityNotification.EntityId);
+                    else if (entityNotification.Type == EntityNotification.ActionType.Add)
+                        AddEntity(entityNotification.Entity);
+                    else if (entityNotification.Type == EntityNotification.ActionType.Update)
+                        EntityUpdate(entityNotification);
+                    else if (entityNotification.Type == EntityNotification.ActionType.Request)
+                        RequestEntity(entityNotification);
+                    break;
+                default:
+                    break;
+            }
         }
 
-        public void RemoveEntity(Guid entityId) => RemoveEntity(_entities.First(e => e.Id == entityId));
+        public void OnError(Exception error)
+        {
+            throw error;
+        }
+
+        public void OnCompleted()
+        {
+        }
 
         public void OnUpdate(SerializableNotification notification)
         {
@@ -285,10 +291,10 @@ namespace OctoAwesome
 
         private void EntityUpdate(EntityNotification notification)
         {
-            var entity = _entities.FirstOrDefault(e => e.Id == notification.EntityId);
+            var entity = entities.FirstOrDefault(e => e.Id == notification.EntityId);
             if (entity == null)
             {
-                var entityNotification = _entityNotificationPool.Get();
+                var entityNotification = entityNotificationPool.Get();
                 entityNotification.EntityId = notification.EntityId;
                 entityNotification.Type = EntityNotification.ActionType.Request;
                 ResourceManager.UpdateHub.Push(entityNotification, DefaultChannels.Network);
@@ -305,25 +311,23 @@ namespace OctoAwesome
             if (!IsServerSide)
                 return;
 
-            var entity = _entities.FirstOrDefault(e => e.Id == entityNotification.EntityId);
+            var entity = entities.FirstOrDefault(e => e.Id == entityNotification.EntityId);
 
             if (entity == null)
                 return;
 
             var remoteEntity = new RemoteEntity(entity);
-            remoteEntity.Components.AddComponent(new BodyComponent() {Mass = 50f, Height = 2f, Radius = 1.5f});
-            remoteEntity.Components.AddComponent(
-                new RenderComponent() {Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90},
-                true);
-            remoteEntity.Components.AddComponent(new PositionComponent()
-                {Position = new Coordinate(0, new Index3(0, 0, 78), new Vector3(0, 0, 0))});
-
-            var newEntityNotification = _entityNotificationPool.Get();
+            remoteEntity.Components.AddComponent(new BodyComponent() { Mass = 50f, Height = 2f, Radius = 1.5f });
+            remoteEntity.Components.AddComponent(new RenderComponent() { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
+            remoteEntity.Components.AddComponent(new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 78), new Vector3(0, 0, 0)) });
+            
+            var newEntityNotification = entityNotificationPool.Get();
             newEntityNotification.Entity = remoteEntity;
             newEntityNotification.Type = EntityNotification.ActionType.Add;
 
             ResourceManager.UpdateHub.Push(newEntityNotification, DefaultChannels.Network);
             newEntityNotification.Release();
         }
+
     }
 }

@@ -1,18 +1,31 @@
-﻿using System;
+﻿using OctoAwesome.Information;
+using System;
+using System.Drawing;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class LeavesBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Leaves;
-
-        public override string Icon => "leaves";
-
-
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "leaves"
-        };
+            get { return Languages.OctoBasics.Leaves; }
+        }
+
+        public override string Icon
+        {
+            get { return "leaves"; }
+        }
+
+
+        public override string[] Textures
+        {
+            get
+            {
+                return new[] {
+                    "leaves"
+                };
+            }
+        }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
@@ -25,6 +38,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties) => throw new NotImplementedException();
+       
     }
 }

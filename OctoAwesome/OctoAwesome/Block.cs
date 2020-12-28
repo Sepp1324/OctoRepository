@@ -16,19 +16,18 @@ namespace OctoAwesome
         /// <param name="ray">Der Selektionsstrahl, der vom Spieler ausgeht</param>
         /// <param name="collisionAxis">Welche Achse von der Kollision betroffen ist</param>
         /// <returns>Die Entfernung zwischen der Kollision und der Kollisionsbox der Entität</returns>
-        public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, Ray ray,
-            out Axis? collisionAxis)
+        public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, Ray ray, out Axis? collisionAxis)
         {
-            var min = new Vector3(1, 1, 1);
+            Vector3 min = new Vector3(1, 1, 1);
             float raylength = Player.SELECTIONRANGE * 2;
             float? minDistance = null;
-            var collided = false;
+            bool collided = false;
 
             foreach (var localBox in collisionBoxes)
             {
-                var box = new BoundingBox(localBox.Min + boxPosition, localBox.Max + boxPosition);
+                BoundingBox box = new BoundingBox(localBox.Min + boxPosition, localBox.Max + boxPosition);
 
-                var distance = ray.Intersects(box);
+                float? distance = ray.Intersects(box);
 
                 if (!distance.HasValue)
                     continue;
@@ -36,12 +35,12 @@ namespace OctoAwesome
                 if (!minDistance.HasValue || minDistance > distance)
                     minDistance = distance;
 
-                var boxCorner = new Vector3(
-                    ray.Direction.X > 0 ? box.Min.X : box.Max.X,
-                    ray.Direction.Y > 0 ? box.Min.Y : box.Max.Y,
-                    ray.Direction.Z > 0 ? box.Min.Z : box.Max.Z);
+                Vector3 boxCorner = new Vector3(
+                        ray.Direction.X > 0 ? box.Min.X : box.Max.X,
+                        ray.Direction.Y > 0 ? box.Min.Y : box.Max.Y,
+                        ray.Direction.Z > 0 ? box.Min.Z : box.Max.Z);
 
-                var n = (boxCorner - ray.Position) / (ray.Direction * raylength);
+                Vector3 n = (boxCorner - ray.Position) / (ray.Direction * raylength);
                 min = new Vector3(Math.Min(min.X, n.X), Math.Min(min.Y, n.Y), Math.Min(min.Z, n.Z));
                 collided = true;
             }
@@ -52,7 +51,7 @@ namespace OctoAwesome
                 return null;
             }
 
-            var max = -5f;
+            float max = -5f;
             Axis? axis = null;
 
             // Fall X
@@ -93,28 +92,27 @@ namespace OctoAwesome
         /// <param name="move">Die befegungsrichtung der Entität</param>
         /// <param name="collisionAxis">Welche Achse von der Kollision betroffen ist</param>
         /// <returns>Die Entfernung zwischen der Kollision und der Kollisionsbox der Entität</returns>
-        public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, BoundingBox player,
-            Vector3 move, out Axis? collisionAxis)
+        public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, BoundingBox player, Vector3 move, out Axis? collisionAxis)
         {
-            var playerCorner = new Vector3(
-                (move.X > 0 ? player.Max.X : player.Min.X),
-                (move.Y > 0 ? player.Max.Y : player.Min.Y),
-                (move.Z > 0 ? player.Max.Z : player.Min.Z));
+            Vector3 playerCorner = new Vector3(
+                        (move.X > 0 ? player.Max.X : player.Min.X),
+                        (move.Y > 0 ? player.Max.Y : player.Min.Y),
+                        (move.Z > 0 ? player.Max.Z : player.Min.Z));
 
-            var targetPosition = playerCorner + move;
+            Vector3 targetPosition = playerCorner + move;
 
-            var playerMin = player.Min + move;
-            var playerMax = player.Max + move;
+            Vector3 playerMin = player.Min + move;
+            Vector3 playerMax = player.Max + move;
 
-            var min = new Vector3(1, 1, 1);
-            var collided = false;
+            Vector3 min = new Vector3(1, 1, 1);
+            bool collided = false;
 
             foreach (var localBox in collisionBoxes)
             {
-                var boxMin = localBox.Min + new Vector3(boxPosition.X, boxPosition.Y, boxPosition.Z);
-                var boxMax = localBox.Max + new Vector3(boxPosition.X, boxPosition.Y, boxPosition.Z);
+                Vector3 boxMin = localBox.Min + new Vector3(boxPosition.X, boxPosition.Y, boxPosition.Z);
+                Vector3 boxMax = localBox.Max + new Vector3(boxPosition.X, boxPosition.Y, boxPosition.Z);
 
-                var collide =
+                bool collide =
                     playerMin.X <= boxMax.X && playerMax.X >= boxMin.X &&
                     playerMin.Y <= boxMax.Y && playerMax.Y >= boxMin.Y &&
                     playerMin.Z <= boxMax.Z && playerMax.Z >= boxMin.Z;
@@ -122,12 +120,12 @@ namespace OctoAwesome
                 if (!collide)
                     continue;
 
-                var boxCorner = new Vector3(
-                    move.X > 0 ? boxMin.X : boxMax.X,
-                    move.Y > 0 ? boxMin.Y : boxMax.Y,
-                    move.Z > 0 ? boxMin.Z : boxMax.Z);
+                Vector3 boxCorner = new Vector3(
+                        move.X > 0 ? boxMin.X : boxMax.X,
+                        move.Y > 0 ? boxMin.Y : boxMax.Y,
+                        move.Z > 0 ? boxMin.Z : boxMax.Z);
 
-                var n = (boxCorner - playerCorner) / move;
+                Vector3 n = (boxCorner - playerCorner) / move;
                 min = new Vector3(Math.Min(min.X, n.X), Math.Min(min.Y, n.Y), Math.Min(min.Z, n.Z));
                 collided = true;
             }
@@ -137,8 +135,7 @@ namespace OctoAwesome
                 collisionAxis = null;
                 return null;
             }
-
-            var max = 0f;
+            float max = 0f;
             Axis? axis = null;
 
             // Fall X

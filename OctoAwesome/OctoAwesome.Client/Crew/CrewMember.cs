@@ -25,10 +25,6 @@ namespace OctoAwesome.Client.Crew
             DatenbankFreigeschaltet
         };
 
-        public CrewMember()
-        {
-        }
-
         public string Username { get; set; }
 
         public string Alias { get; set; }
@@ -38,21 +34,23 @@ namespace OctoAwesome.Client.Crew
         public List<Achievements> AchievementList { get; set; }
 
         public string PictureFilename { get; set; }
-
+        
         public List<Link> Links { get; set; }
+
+        public CrewMember() { }
 
         internal static List<CrewMember> getCrew(ScreenComponent manager)
         {
-            using (var stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
+
+            using (Stream stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
             {
                 try
                 {
-                    var serializer = new XmlSerializer(typeof(List<CrewMember>));
-                    return (List<CrewMember>) serializer.Deserialize(stream);
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<CrewMember>));
+                    return (List<CrewMember>)serializer.Deserialize(stream);
                 }
                 catch (Exception)
-                {
-                }
+                { }
 
                 return new List<CrewMember>();
             }
@@ -65,9 +63,13 @@ namespace OctoAwesome.Client.Crew
 
         public class Link
         {
-            [XmlAttribute] public string Title { get; set; }
+            [XmlAttribute]
+            public string Title { get; set; }
 
-            [XmlAttribute] public string Url { get; set; }
+            [XmlAttribute]
+            public string Url { get; set; }
         }
     }
 }
+
+    

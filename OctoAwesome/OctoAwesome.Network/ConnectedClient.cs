@@ -15,15 +15,15 @@ namespace OctoAwesome.Network
 {
     public sealed class ConnectedClient : BaseClient, INotificationObserver
     {
+        public IDisposable NetworkChannelSubscription { get; set; }
+        public IDisposable ServerSubscription { get; set; }
+
         private readonly PackagePool packagePool;
 
         public ConnectedClient(Socket socket) : base(socket)
         {
             packagePool = TypeContainer.Get<PackagePool>();
         }
-
-        public IDisposable NetworkChannelSubscription { get; set; }
-        public IDisposable ServerSubscription { get; set; }
 
         public void OnCompleted()
         {
@@ -65,7 +65,7 @@ namespace OctoAwesome.Network
         {
             var package = packagePool.Get();
             package.Payload = data;
-            package.Command = (ushort) officialCommand;
+            package.Command = (ushort)officialCommand;
             SendPackageAndRelase(package);
         }
     }

@@ -12,6 +12,21 @@ namespace OctoAwesome
     public class Universe : IUniverse
     {
         /// <summary>
+        /// ID des Universums
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Der Name des Universums
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Universe Seed
+        /// </summary>
+        public int Seed { get; set; }
+
+        /// <summary>
         /// Erzeugt eine neue Instanz eines Universums
         /// </summary>
         public Universe()
@@ -32,21 +47,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// ID des Universums
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Der Name des Universums
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Universe Seed
-        /// </summary>
-        public int Seed { get; set; }
-
-        /// <summary>
         /// Deserialisiert ein Universum aus dem angegebenen Stream
         /// </summary>
         /// <param name="stream"></param>
@@ -64,9 +64,11 @@ namespace OctoAwesome
         /// <param name="stream"></param>
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write(Id.ToString());
-            writer.Write(Name);
-            writer.Write(Seed);
+             writer.Write(Id.ToString());
+             writer.Write(Name);
+             writer.Write(Seed);
         }
+
+ 
     }
 }
