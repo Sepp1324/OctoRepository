@@ -517,9 +517,7 @@ namespace OctoAwesome.Client.Components
             lock (this)
             {
                 if (chunk != null && chunk.Index != ChunkPosition)
-                {
                     return _loaded;
-                }
 
                 _loaded = true;
                 NeedsUpdate |= chunk != this._chunk;

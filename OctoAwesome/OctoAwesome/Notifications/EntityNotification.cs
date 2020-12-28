@@ -1,11 +1,7 @@
 ﻿using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
@@ -24,17 +20,12 @@ namespace OctoAwesome.Notifications
 
         private Entity entity;
 
-        public EntityNotification()
-        {
-            propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
-        }
+        public EntityNotification() => propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
 
-        public EntityNotification(Guid id) : this()
-        {
-            EntityId = id;
-        }
+        public EntityNotification(Guid id) : this() => EntityId = id;
 
         public ActionType Type { get; set; }
+        
         public Guid EntityId { get; set; }
 
         public Entity Entity
@@ -82,6 +73,7 @@ namespace OctoAwesome.Notifications
 
             var subNotification = Notification != null;
             writer.Write(subNotification);
+           
             if (subNotification)
             {
                 var bytes = Serializer.Serialize(Notification);

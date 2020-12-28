@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Logging
 {
     public class NullLogger : ILogger
     {
-        static NullLogger()
-        {
-            Default = new NullLogger().As(nameof(Default));
-        }
+        static NullLogger() => Default = new NullLogger().As(nameof(Default));
 
         public static ILogger Default { get; }
 
@@ -25,10 +18,7 @@ namespace OctoAwesome.Logging
             };
         }
 
-        public ILogger As(Type type)
-        {
-            return As(type.FullName);
-        }
+        public ILogger As(Type type) => As(type.FullName);
 
         public void Debug(string message)
         {
