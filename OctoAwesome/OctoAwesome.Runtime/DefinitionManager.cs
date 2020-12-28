@@ -31,19 +31,19 @@ namespace OctoAwesome.Runtime
         /// Liefert eine Liste von Defintions.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IDefinition> GetDefinitions() => _definitions;
+        public IDefinition[] GetDefinitions() => _definitions;
 
         /// <summary>
         /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IItemDefinition> GetItemDefinitions() => _itemDefinitions;
+        public IItemDefinition[] GetItemDefinitions() => _itemDefinitions;
 
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IBlockDefinition> GetBlockDefinitions() => _blockDefinitions;
+        public IBlockDefinition[] GetBlockDefinitions() => _blockDefinitions;
 
         /// <summary>
         /// Liefert die BlockDefinition zum angegebenen Index.

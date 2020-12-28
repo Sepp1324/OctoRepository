@@ -15,10 +15,9 @@ namespace OctoAwesome
         /// <summary>
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
-        private readonly IEntityList entities;
-
-        private readonly LockSemaphore entitieSemaphore;
-        private readonly IGlobalChunkCache globalChunkCache;
+        private readonly IEntityList _entities;
+        private readonly LockSemaphore _entitieSemaphore;
+        private readonly IGlobalChunkCache _globalChunkCache;
 
         /// <summary>
         /// Erzeugt eine neue Instanz einer ChunkColumn.
@@ -30,6 +29,7 @@ namespace OctoAwesome
         {
             Chunks = chunks;
             Index = columnIndex;
+            
             foreach (var chunk in chunks)
             {
                 chunk.Changed += OnChunkChanged;
@@ -43,13 +43,12 @@ namespace OctoAwesome
         public ChunkColumn(IPlanet planet)
         {
             Heights = new int[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
-            entities = new EntityList(this);
-            entitieSemaphore = new LockSemaphore(1, 1);
+            _entities = new EntityList(this);
+            _entitieSemaphore = new LockSemaphore(1, 1);
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
-            globalChunkCache = planet.GlobalChunkCache;
+            _globalChunkCache = planet.GlobalChunkCache;
         }
-
 
         public IDefinitionManager DefinitionManager { get; }
 
@@ -85,10 +84,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Koordinate des Blocks innerhalb des Chunkgs</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        public ushort GetBlock(Index3 index)
-        {
-            return GetBlock(index.X, index.Y, index.Z);
-        }
+        public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
         /// Liefet den Block an der angegebenen Koordinate zurück.
@@ -138,10 +134,7 @@ namespace OctoAwesome
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
         /// <param name="meta">(Optional) Metainformationen für den Block</param>
-        public void SetBlock(Index3 index, ushort block, int meta = 0)
-        {
-            SetBlock(index.X, index.Y, index.Z, block, meta);
-        }
+        public void SetBlock(Index3 index, ushort block, int meta = 0) => SetBlock(index.X, index.Y, index.Z, block, meta);
 
         /// <summary>
         /// Überschreibt den Block an der angegebenen Koordinate.
@@ -203,6 +196,7 @@ namespace OctoAwesome
         {
             // Definitionen sammeln
             var definitions = new List<IBlockDefinition>();
+            
             for (var c = 0; c < Chunks.Length; c++)
             {
                 var chunk = Chunks[c];
@@ -272,9 +266,10 @@ namespace OctoAwesome
             }
 
             var resManager = TypeContainer.Get<IResourceManager>();
-            using (var lockObj = entitieSemaphore.Wait())
+          
+            using (_entitieSemaphore.Wait())
             {
-                foreach (var entity in entities)
+                foreach (var entity in _entities)
                     resManager.SaveEntity(entity);
             }
         }
@@ -348,10 +343,7 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification)
-        {
-            globalChunkCache.OnUpdate(notification);
-        }
+        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
 
         public void Update(SerializableNotification notification)
         {
@@ -365,9 +357,9 @@ namespace OctoAwesome
 
         public void ForEachEntity(Action<Entity> action)
         {
-            using (entitieSemaphore.Wait())
+            using (_entitieSemaphore.Wait())
             {
-                foreach (var entity in entities)
+                foreach (var entity in _entities)
                 {
                     action(entity);
                 }
@@ -376,20 +368,20 @@ namespace OctoAwesome
 
         public void Add(Entity entity)
         {
-            using (entitieSemaphore.Wait())
-                entities.Add(entity);
+            using (_entitieSemaphore.Wait())
+                _entities.Add(entity);
         }
 
         public void Remove(Entity entity)
         {
-            using (entitieSemaphore.Wait())
-                entities.Remove(entity);
+            using (_entitieSemaphore.Wait())
+                _entities.Remove(entity);
         }
 
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
         {
-            using (entitieSemaphore.Wait())
-                return entities.FailChunkEntity().ToList();
+            using (_entitieSemaphore.Wait())
+                return _entities.FailChunkEntity().ToList();
         }
 
         public void FlagDirty()
@@ -398,9 +390,7 @@ namespace OctoAwesome
                 return;
 
             foreach (var chunk in Chunks)
-            {
                 chunk.FlagDirty();
-            }
         }
 
         private void OnChunkChanged(IChunk arg1)

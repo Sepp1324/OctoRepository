@@ -17,8 +17,7 @@ namespace OctoAwesome
         /// </summary>
         public Entity()
         {
-            Components = new ComponentList<EntityComponent>(
-                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+            Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
             Id = Guid.Empty;
         }
 
@@ -106,10 +105,7 @@ namespace OctoAwesome
         {
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {

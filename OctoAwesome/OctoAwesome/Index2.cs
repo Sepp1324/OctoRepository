@@ -214,8 +214,10 @@ namespace OctoAwesome
         public static int NormalizeAxis(int value, int size)
         {
             // Sicherheitsabfrage für die Normalisierungsgröße
+#if DEBUG
             if (size < 1)
                 throw new ArgumentException("Size darf nicht kleiner als 1 sein");
+#endif
 
             value %= size;
 

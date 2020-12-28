@@ -43,10 +43,7 @@
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns></returns>
-        public static bool operator ==(PlanetIndex3 i1, PlanetIndex3 i2)
-        {
-            return i1.Equals(i2);
-        }
+        public static bool operator ==(PlanetIndex3 i1, PlanetIndex3 i2) => i1.Equals(i2);
 
         /// <summary>
         /// Überprüft, ob beide gegebenen PlanetIndex3 nicht den gleichen Wert aufweisen.
@@ -54,10 +51,7 @@
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns></returns>
-        public static bool operator !=(PlanetIndex3 i1, PlanetIndex3 i2)
-        {
-            return !i1.Equals(i2);
-        }
+        public static bool operator !=(PlanetIndex3 i1, PlanetIndex3 i2) => !i1.Equals(i2);
 
         /// <summary>
         /// Überprüft, ob der gegebene PlanetIndex3 den gleichen Wert aufweist, wie das gegebene Objekt.

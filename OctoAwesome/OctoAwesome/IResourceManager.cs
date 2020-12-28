@@ -27,35 +27,35 @@ namespace OctoAwesome
         /// Erzuegt ein neues Universum.
         /// </summary>
         /// <param name="name">Name des neuen Universums.</param>
-        /// <param name="seed">Weltgenerator-Seed für das neue Universum.</param>
+        /// <param name="seed">Weltgenerator-Seed fÃ¼r das neue Universum.</param>
         /// <returns>Die Guid des neuen Universums.</returns>
         Guid NewUniverse(string name, int seed);
 
         /// <summary>
-        /// Lädt das Universum für die angegebene GUID.
+        /// LÃ¤dt das Universum fÃ¼r die angegebene GUID.
         /// </summary>
         /// <param name="universeId">Die Guid des Universums.</param>
         bool TryLoadUniverse(Guid universeId);
 
         /// <summary>
-        /// Entlädt das aktuelle Universum.
+        /// EntlÃ¤dt das aktuelle Universum.
         /// </summary>
         void UnloadUniverse();
 
         /// <summary>
-        /// Gibt alle Universen zurück, die geladen werden können.
+        /// Gibt alle Universen zurÃ¼ck, die geladen werden kÃ¶nnen.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
         IUniverse[] ListUniverses();
 
         /// <summary>
-        /// Löscht ein Universum.
+        /// LÃ¶scht ein Universum.
         /// </summary>
         /// <param name="id">Die Guid des Universums.</param>
         void DeleteUniverse(Guid id);
 
         /// <summary>
-        /// Lädt einen Player.
+        /// LÃ¤dt einen Player.
         /// </summary>
         /// <param name="playername">Der Name des Players.</param>
         /// <returns></returns>
@@ -68,16 +68,16 @@ namespace OctoAwesome
         void SavePlayer(Player player);
 
         /// <summary>
-        /// Entlädt das aktuelle Universum
+        /// EntlÃ¤dt das aktuelle Universum
         /// </summary>
-        /// <returns>Das gewünschte Universum, falls es existiert</returns>
+        /// <returns>Das gewÃ¼nschte Universum, falls es existiert</returns>
         IUniverse GetUniverse();
 
         /// <summary>
-        /// Gibt den Planeten mit der angegebenen ID zurück
+        /// Gibt den Planeten mit der angegebenen ID zurÃ¼ck
         /// </summary>
-        /// <param name="planetId">Die Planteten-ID des gewünschten Planeten</param>
-        /// <returns>Der gewünschte Planet, falls er existiert</returns>
+        /// <param name="planetId">Die Planteten-ID des gewÃ¼nschten Planeten</param>
+        /// <returns>Der gewÃ¼nschte Planet, falls er existiert</returns>
         IPlanet GetPlanet(int planetId);
 
         void SaveEntity(Entity entity);
@@ -88,7 +88,7 @@ namespace OctoAwesome
         IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent;
         IEnumerable<Guid> GetEntityIds();
 
-        IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds)
+        (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds)
             where T : EntityComponent, new();
     }
 }

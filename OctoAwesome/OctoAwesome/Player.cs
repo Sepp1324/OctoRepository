@@ -19,15 +19,12 @@ namespace OctoAwesome
         /// </summary>
         public const int SELECTIONRANGE = 8;
 
-        private readonly IPool<EntityNotification> entityNotificationPool;
+        private readonly IPool<EntityNotification> _entityNotificationPool;
 
         /// <summary>
         /// Erzeugt eine neue Player-Instanz an der Default-Position.
         /// </summary>
-        public Player() : base()
-        {
-            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-        }
+        public Player() : base() => _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
         protected override void OnInitialize(IResourceManager manager)
         {
@@ -56,7 +53,7 @@ namespace OctoAwesome
         {
             base.OnUpdate(notification);
 
-            var entityNotification = entityNotificationPool.Get();
+            var entityNotification = _entityNotificationPool.Get();
             entityNotification.Entity = this;
             entityNotification.Type = EntityNotification.ActionType.Update;
             entityNotification.Notification = notification as PropertyChangedNotification;
