@@ -35,6 +35,21 @@ namespace OctoAwesome.Network.Pooling
             obj.UId = Package.NextUId;
             return obj;
         }
+        public Package GetBlank()
+        {
+            Package obj;
+
+            using (semaphoreExtended.Wait())
+            {
+                if (internalStack.Count > 0)
+                    obj = internalStack.Pop();
+                else
+                    obj = new Package(false);
+            }
+
+            obj.Init(this);
+            return obj;
+        }
 
         public void Push(Package obj)
         {
@@ -52,22 +67,6 @@ namespace OctoAwesome.Network.Pooling
             {
                 throw new InvalidCastException("Can not push object from type: " + obj.GetType());
             }
-        }
-
-        public Package GetBlank()
-        {
-            Package obj;
-
-            using (semaphoreExtended.Wait())
-            {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new Package(false);
-            }
-
-            obj.Init(this);
-            return obj;
-        }
+        }       
     }
 }

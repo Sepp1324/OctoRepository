@@ -25,10 +25,7 @@ namespace OctoAwesome.Database.Tests
             {
             }
 
-            public byte[] GetBytes()
-            {
-                return Array.Empty<byte>();
-            }
+            public byte[] GetBytes() => Array.Empty<byte>();
         }
     }
 }

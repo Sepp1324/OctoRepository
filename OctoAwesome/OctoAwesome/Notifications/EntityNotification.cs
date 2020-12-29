@@ -11,18 +11,21 @@ namespace OctoAwesome.Notifications
 {
     public sealed class EntityNotification : SerializableNotification
     {
-        public enum ActionType
+        public ActionType Type { get; set; }
+        public Guid EntityId { get; set; }
+        public Entity Entity
         {
-            None,
-            Add,
-            Remove,
-            Update,
-            Request
+            get => entity; set
+            {
+                entity = value;
+                EntityId = value?.Id ?? default;
+            }
         }
 
-        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
+        public PropertyChangedNotification Notification { get; set; }
 
         private Entity entity;
+        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
 
         public EntityNotification()
         {
@@ -34,24 +37,9 @@ namespace OctoAwesome.Notifications
             EntityId = id;
         }
 
-        public ActionType Type { get; set; }
-        public Guid EntityId { get; set; }
-
-        public Entity Entity
-        {
-            get => entity;
-            set
-            {
-                entity = value;
-                EntityId = value?.Id ?? default;
-            }
-        }
-
-        public PropertyChangedNotification Notification { get; set; }
-
         public override void Deserialize(BinaryReader reader)
         {
-            Type = (ActionType) reader.ReadInt32();
+            Type = (ActionType)reader.ReadInt32();
 
 
             if (Type == ActionType.Add)
@@ -67,7 +55,7 @@ namespace OctoAwesome.Notifications
 
         public override void Serialize(BinaryWriter writer)
         {
-            writer.Write((int) Type);
+            writer.Write((int)Type);
 
             if (Type == ActionType.Add)
             {
@@ -99,6 +87,15 @@ namespace OctoAwesome.Notifications
             Notification = default;
 
             base.OnRelease();
+        }
+
+        public enum ActionType
+        {
+            None,
+            Add,
+            Remove,
+            Update,
+            Request
         }
     }
 }

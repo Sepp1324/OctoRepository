@@ -27,7 +27,7 @@ namespace OctoAwesome.Network.Tests
             server.Start(new IPEndPoint(IPAddress.Any, 44444));
             var testClient = new TcpClient("localhost", 44444);
 
-            for (var i = 0; i < 201; i++)
+            for (int i = 0; i < 201; i++)
             {
                 Thread.Sleep(10);
 
@@ -56,7 +56,7 @@ namespace OctoAwesome.Network.Tests
 
                 wait.Set();
             };
-
+            
             Task.Run(() =>
             {
                 var testClient = new Client();
@@ -64,7 +64,8 @@ namespace OctoAwesome.Network.Tests
 
                 wait.WaitOne();
 
-                testClient.SendAsync(new byte[] {42}, 1);
+                testClient.SendAsync(new byte[] { 42 }, 1);
+
             });
             resetEvent.WaitOne();
         }

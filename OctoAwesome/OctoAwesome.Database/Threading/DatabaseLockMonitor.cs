@@ -7,17 +7,17 @@ namespace OctoAwesome.Database.Threading
 {
     public sealed class DatabaseLockMonitor : IDisposable
     {
-        private readonly ManualResetEvent exclusiveEvent;
-
-        private readonly ManualResetEvent readEvent;
-        private readonly SemaphoreSlim semaphoreSlim;
-        private readonly ManualResetEvent writeEvent;
-        private bool exclusiveLocks;
         private int readLocks;
+        private int writeLocks;
+        private bool exclusiveLocks;
 
         private int readOperations;
-        private int writeLocks;
         private int writeOperations;
+
+        private readonly ManualResetEvent readEvent;
+        private readonly ManualResetEvent writeEvent;
+        private readonly ManualResetEvent exclusiveEvent;
+        private readonly SemaphoreSlim semaphoreSlim;
 
         public DatabaseLockMonitor()
         {
@@ -31,14 +31,6 @@ namespace OctoAwesome.Database.Threading
             readOperations = 0;
             writeOperations = 0;
             exclusiveLocks = false;
-        }
-
-        public void Dispose()
-        {
-            readEvent.Dispose();
-            writeEvent.Dispose();
-            exclusiveEvent.Dispose();
-            semaphoreSlim.Dispose();
         }
 
         public bool CheckLock(Operation operation)
@@ -73,6 +65,7 @@ namespace OctoAwesome.Database.Threading
 
             if (operation.HasFlag(Operation.Write))
                 readEvent.WaitOne();
+
         }
 
         internal DatabaseOperation StartOperation(Operation operation)
@@ -174,6 +167,14 @@ namespace OctoAwesome.Database.Threading
             {
                 semaphoreSlim.Release();
             }
+        }
+
+        public void Dispose()
+        {
+            readEvent.Dispose();
+            writeEvent.Dispose();
+            exclusiveEvent.Dispose();
+            semaphoreSlim.Dispose();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace OctoAwesome
         /// </summary>
         /// <returns></returns>
         IEnumerable<IItemDefinition> GetItemDefinitions();
-
+        
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
@@ -30,7 +30,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Index der BlockDefinition</param>
         /// <returns>BlockDefinition</returns>
-        IDefinition GetDefinitionByIndex(ushort index);
+        IBlockDefinition GetBlockDefinitionByIndex(ushort index);
 
         /// <summary>
         /// Liefert den Index der angegebenen BlockDefinition.

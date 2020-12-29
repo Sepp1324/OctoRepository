@@ -5,17 +5,22 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class IceBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Ice;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.Ice; }
+        }
 
-        public override string Icon => "ice";
+        public override string Icon
+        {
+            get { return "ice"; }
+        }
 
 
         public override string[] Textures
         {
             get
             {
-                return new[]
-                {
+                return new[] {
                     "ice"
                 };
             }
@@ -32,9 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }

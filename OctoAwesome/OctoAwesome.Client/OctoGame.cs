@@ -20,7 +20,33 @@ namespace OctoAwesome.Client
     /// </summary>
     internal class OctoGame : Game
     {
-        private readonly ITypeContainer _typeContainer;
+        private readonly ITypeContainer typeContainer;
+
+        //GraphicsDeviceManager graphics;
+
+        public CameraComponent Camera { get; private set; }
+
+        public PlayerComponent Player { get; private set; }
+
+        public Components.SimulationComponent Simulation { get; private set; }
+
+        public GameService Service { get; private set; }
+
+        public ScreenComponent Screen { get; private set; }
+
+        public KeyMapper KeyMapper { get; private set; }
+
+        public AssetComponent Assets { get; private set; }
+
+        public Settings Settings { get; private set; }
+
+        public IDefinitionManager DefinitionManager { get; private set; }
+
+        public IResourceManager ResourceManager { get; private set; }
+
+        public ExtensionLoader ExtensionLoader { get; private set; }
+
+        public Components.EntityComponent Entity { get; private set; }
 
         public OctoGame() : base()
         {
@@ -29,13 +55,13 @@ namespace OctoAwesome.Client
             //graphics.PreferredBackBufferHeight = 720;
 
             //Content.RootDirectory = "Content";
-
+            
             Title = "OctoAwesome";
             IsMouseVisible = true;
             Icon = Properties.Resources.octoawesome;
 
-            _typeContainer = TypeContainer.Get<ITypeContainer>();
-            Register(_typeContainer);
+            typeContainer = TypeContainer.Get<ITypeContainer>();
+            Register(typeContainer);
 
             //Window.AllowUserResizing = true;
             Settings = TypeContainer.Get<Settings>();
@@ -46,8 +72,8 @@ namespace OctoAwesome.Client
             Service = TypeContainer.Get<GameService>();
             //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
-            var width = Settings.Get("Width", 1080);
-            var height = Settings.Get("Height", 720);
+            int width = Settings.Get("Width", 1080);
+            int height = Settings.Get("Height", 720);
             Window.ClientSize = new Size(width, height);
 
             Window.Fullscreen = Settings.Get("EnableFullscreen", false);
@@ -75,8 +101,8 @@ namespace OctoAwesome.Client
             KeyMapper = new KeyMapper(Screen, Settings);
 
 
-            #region GameComponents
 
+            #region GameComponents
             DefinitionManager = TypeContainer.Get<DefinitionManager>();
 
             //var persistenceManager = new DiskPersistenceManager(ExtensionLoader, DefinitionManager, Settings);
@@ -84,15 +110,19 @@ namespace OctoAwesome.Client
             ResourceManager = TypeContainer.Get<ContainerResourceManager>();
 
 
-            Player = new PlayerComponent(this, ResourceManager) {UpdateOrder = 2};
+            Player = new PlayerComponent(this, ResourceManager);
+            Player.UpdateOrder = 2;
             Components.Add(Player);
 
-            Simulation = new Components.SimulationComponent(this, ExtensionLoader, ResourceManager);
+            Simulation = new Components.SimulationComponent(this,
+              ExtensionLoader, ResourceManager);
 
-            Entity = new Components.EntityComponent(this, Simulation) {UpdateOrder = 2};
+            Entity = new Components.EntityComponent(this, Simulation);
+            Entity.UpdateOrder = 2;
             Components.Add(Entity);
 
-            Camera = new CameraComponent(this) {UpdateOrder = 3};
+            Camera = new CameraComponent(this);
+            Camera.UpdateOrder = 3;
             Components.Add(Camera);
 
             Simulation.UpdateOrder = 4;
@@ -100,34 +130,19 @@ namespace OctoAwesome.Client
 
             #endregion GameComponents
 
+            /*Resize += (s, e) =>
+            {
+                //if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
+                //   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
+                //    return;
+
+                //graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                //graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                //graphics.ApplyChanges();
+            };*/
             SetKeyBindings();
+
         }
-
-        //GraphicsDeviceManager graphics;
-
-        public CameraComponent Camera { get; private set; }
-
-        public PlayerComponent Player { get; private set; }
-
-        public Components.SimulationComponent Simulation { get; private set; }
-
-        public GameService Service { get; private set; }
-
-        public ScreenComponent Screen { get; private set; }
-
-        public KeyMapper KeyMapper { get; private set; }
-
-        public AssetComponent Assets { get; private set; }
-
-        public Settings Settings { get; private set; }
-
-        public IDefinitionManager DefinitionManager { get; private set; }
-
-        public IResourceManager ResourceManager { get; private set; }
-
-        public ExtensionLoader ExtensionLoader { get; private set; }
-
-        public Components.EntityComponent Entity { get; private set; }
 
         private static void Register(ITypeContainer typeContainer)
         {
@@ -160,9 +175,8 @@ namespace OctoAwesome.Client
             KeyMapper.RegisterBinding("octoawesome:apply", Languages.OctoKeys.apply);
             KeyMapper.RegisterBinding("octoawesome:flymode", Languages.OctoKeys.flymode);
             KeyMapper.RegisterBinding("octoawesome:jump", Languages.OctoKeys.jump);
-            for (var i = 0; i < 10; i++)
-                KeyMapper.RegisterBinding("octoawesome:slot" + i,
-                    Languages.OctoKeys.ResourceManager.GetString("slot" + i));
+            for (int i = 0; i < 10; i++)
+                KeyMapper.RegisterBinding("octoawesome:slot" + i, Languages.OctoKeys.ResourceManager.GetString("slot" + i));
             KeyMapper.RegisterBinding("octoawesome:debug.allblocks", Languages.OctoKeys.debug_allblocks);
             KeyMapper.RegisterBinding("octoawesome:debug.control", Languages.OctoKeys.debug_control);
             KeyMapper.RegisterBinding("octoawesome:inventory", Languages.OctoKeys.inventory);
@@ -171,43 +185,43 @@ namespace OctoAwesome.Client
             KeyMapper.RegisterBinding("octoawesome:freemouse", Languages.OctoKeys.freemouse);
             KeyMapper.RegisterBinding("octoawesome:fullscreen", Languages.OctoKeys.fullscreen);
             KeyMapper.RegisterBinding("octoawesome:teleport", Languages.OctoKeys.teleport);
-            KeyMapper.RegisterBinding("octoawesome:toggleAmbientOcclusion", Languages.OctoKeys.toggleAmbientOcclusion);
-            KeyMapper.RegisterBinding("octoawesome:toggleWireFrame", Languages.OctoKeys.toggleWireFrame);
+            KeyMapper.RegisterBinding("octoawesome:toggleAmbientOcclusion", Languages.OctoKeys.ambientOcclusion);
+            KeyMapper.RegisterBinding("octoawesome:toggleWireFrame", Languages.OctoKeys.wireFrame);
 
-            var standardKeys = new Dictionary<string, Keys>()
+            Dictionary<string, Keys> standardKeys = new Dictionary<string, Keys>()
             {
-                {"octoawesome:forward", Keys.W},
-                {"octoawesome:left", Keys.A},
-                {"octoawesome:backward", Keys.S},
-                {"octoawesome:right", Keys.D},
-                {"octoawesome:headup", Keys.Up},
-                {"octoawesome:headdown", Keys.Down},
-                {"octoawesome:headleft", Keys.Left},
-                {"octoawesome:headright", Keys.Right},
-                {"octoawesome:interact", Keys.E},
-                {"octoawesome:apply", Keys.Q},
-                {"octoawesome:flymode", Keys.ScrollLock},
-                {"octoawesome:jump", Keys.Space},
-                {"octoawesome:slot0", Keys.D1},
-                {"octoawesome:slot1", Keys.D2},
-                {"octoawesome:slot2", Keys.D3},
-                {"octoawesome:slot3", Keys.D4},
-                {"octoawesome:slot4", Keys.D5},
-                {"octoawesome:slot5", Keys.D6},
-                {"octoawesome:slot6", Keys.D7},
-                {"octoawesome:slot7", Keys.D8},
-                {"octoawesome:slot8", Keys.D9},
-                {"octoawesome:slot9", Keys.D0},
-                {"octoawesome:debug.allblocks", Keys.L},
-                {"octoawesome:debug.control", Keys.F10},
-                {"octoawesome:inventory", Keys.I},
-                {"octoawesome:hidecontrols", Keys.F9},
-                {"octoawesome:exit", Keys.Escape},
-                {"octoawesome:freemouse", Keys.F12},
-                {"octoawesome:fullscreen", Keys.F11},
-                {"octoawesome:teleport", Keys.T},
-                {"octoawesome:toggleAmbientOcclusion", Keys.O},
-                {"octoawesome:toggleWireFrame", Keys.J}
+                { "octoawesome:forward", Keys.W },
+                { "octoawesome:left", Keys.A },
+                { "octoawesome:backward", Keys.S },
+                { "octoawesome:right", Keys.D },
+                { "octoawesome:headup", Keys.Up },
+                { "octoawesome:headdown", Keys.Down },
+                { "octoawesome:headleft", Keys.Left },
+                { "octoawesome:headright", Keys.Right },
+                { "octoawesome:interact", Keys.E },
+                { "octoawesome:apply", Keys.Q },
+                { "octoawesome:flymode", Keys.ScrollLock },
+                { "octoawesome:jump", Keys.Space },
+                { "octoawesome:slot0", Keys.D1 },
+                { "octoawesome:slot1", Keys.D2 },
+                { "octoawesome:slot2", Keys.D3 },
+                { "octoawesome:slot3", Keys.D4 },
+                { "octoawesome:slot4", Keys.D5 },
+                { "octoawesome:slot5", Keys.D6 },
+                { "octoawesome:slot6", Keys.D7 },
+                { "octoawesome:slot7", Keys.D8 },
+                { "octoawesome:slot8", Keys.D9 },
+                { "octoawesome:slot9", Keys.D0 },
+                { "octoawesome:debug.allblocks", Keys.L },
+                { "octoawesome:debug.control", Keys.F10 },
+                { "octoawesome:inventory", Keys.I },
+                { "octoawesome:hidecontrols", Keys.F9 },
+                { "octoawesome:exit", Keys.Escape },
+                { "octoawesome:freemouse", Keys.F12 },
+                { "octoawesome:fullscreen", Keys.F11 },
+                { "octoawesome:teleport", Keys.T },
+                { "octoawesome:toggleAmbientOcclusion", Keys.O },
+                { "octoawesome:toggleWireFrame", Keys.J }
             };
 
             KeyMapper.LoadFromConfig(standardKeys);
@@ -215,7 +229,9 @@ namespace OctoAwesome.Client
             KeyMapper.AddAction("octoawesome:fullscreen", type =>
             {
                 if (type == KeyMapper.KeyType.Down)
+                {
                     Window.Fullscreen = !Window.Fullscreen;
+                }
             });
         }
 
@@ -224,7 +240,8 @@ namespace OctoAwesome.Client
             Player.SetEntity(null);
             Simulation.ExitGame();
         }
-        
+
+
         public override void Dispose()
         {
             base.Dispose();

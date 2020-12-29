@@ -8,15 +8,6 @@ namespace OctoAwesome
     public abstract class Item : IItem
     {
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse Item.
-        /// </summary>
-        public Item()
-        {
-            Resources = new List<IResource>();
-            Condition = 99;
-        }
-
-        /// <summary>
         /// Der Zustand des Items
         /// </summary>
         public int Condition { get; set; }
@@ -30,6 +21,18 @@ namespace OctoAwesome
         /// Die Liste aller Ressourcen, die im Item enthalten sind
         /// </summary>
         public List<IResource> Resources { get; private set; }
+
+        public IItemDefinition Definition { get; }
+
+        /// <summary>
+        /// Erzeugt eine neue Instanz der Klasse Item.
+        /// </summary>
+        public Item(IItemDefinition definition)
+        {
+            Definition = definition;
+            Resources = new List<IResource>();
+            Condition = 99;
+        }
 
         /// <summary>
         /// Das was passiert wenn das Item zuschlägt.

@@ -5,25 +5,25 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class SandBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Sand;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.Sand; }
+        }
 
-        public override string Icon => "sand";
+        public override string Icon
+        {
+            get { return "sand"; }
+        }
 
 
         public override string[] Textures
         {
             get
             {
-                return new[]
-                {
+                return new[] {
                     "sand"
                 };
             }
-        }
-
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
         }
 
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
