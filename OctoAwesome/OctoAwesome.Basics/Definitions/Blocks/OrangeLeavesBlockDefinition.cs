@@ -5,17 +5,22 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class OrangeLeavesBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.OrangeLeaves;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.OrangeLeaves; }
+        }
 
-        public override string Icon => "leaves_orange";
+        public override string Icon
+        {
+            get { return "leaves_orange"; }
+        }
 
 
         public override string[] Textures
         {
             get
             {
-                return new[]
-                {
+                return new[] {
                     "leaves_orange"
                 };
             }
@@ -32,9 +37,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             };
         }
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

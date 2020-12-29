@@ -16,7 +16,7 @@ namespace OctoAwesome.Notifications
 
         public override void Deserialize(BinaryReader reader)
         {
-            if (reader.ReadByte() != (byte) BlockNotificationType.BlocksChanged) //Read type of the notification
+            if (reader.ReadByte() != (byte)BlockNotificationType.BlocksChanged)//Read type of the notification
             {
                 throw new InvalidCastException("this is the wrong type of notification");
             }
@@ -29,7 +29,7 @@ namespace OctoAwesome.Notifications
             Planet = reader.ReadInt32();
             var count = reader.ReadInt32();
             var list = new List<BlockInfo>(count);
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 list.Add(new BlockInfo(
                     x: reader.ReadInt32(),
@@ -42,7 +42,7 @@ namespace OctoAwesome.Notifications
 
         public override void Serialize(BinaryWriter writer)
         {
-            writer.Write((byte) BlockNotificationType.BlocksChanged); //indicate that this is a multi Block Notification
+            writer.Write((byte)BlockNotificationType.BlocksChanged); //indicate that this is a multi Block Notification
             writer.Write(ChunkPos.X);
             writer.Write(ChunkPos.Y);
             writer.Write(ChunkPos.Z);

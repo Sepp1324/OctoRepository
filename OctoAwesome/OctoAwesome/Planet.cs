@@ -10,38 +10,6 @@ namespace OctoAwesome
     /// </summary>
     public class Planet : IPlanet
     {
-        private IDisposable chunkSubscription;
-
-        private bool disposed;
-
-        private IUpdateHub updateHub;
-
-        /// <summary>
-        /// Initialisierung des Planeten.
-        /// </summary>
-        /// <param name="id">ID des Planeten.</param>
-        /// <param name="universe">ID des Universums.</param>
-        /// <param name="size">Größe des Planeten in Zweierpotenzen Chunks.</param>
-        /// <param name="seed">Seed des Zufallsgenerators.</param>
-        public Planet(int id, Guid universe, Index3 size, int seed) : this()
-        {
-            Id = id;
-            Universe = universe;
-            Size = new Index3(
-                (int) Math.Pow(2, size.X),
-                (int) Math.Pow(2, size.Y),
-                (int) Math.Pow(2, size.Z));
-            Seed = seed;
-        }
-
-        /// <summary>
-        /// Erzeugt eine neue Instanz eines Planeten.
-        /// </summary>
-        public Planet()
-        {
-            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
-        }
-
         /// <summary>
         /// ID des Planeten.
         /// </summary>
@@ -78,16 +46,47 @@ namespace OctoAwesome
         public IMapGenerator Generator { get; set; }
 
         public IGlobalChunkCache GlobalChunkCache { get; set; }
-
         public IUpdateHub UpdateHub
         {
-            get => updateHub;
-            set
+            get => updateHub; set
             {
+
                 chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
                 GlobalChunkCache.InsertUpdateHub(value);
                 updateHub = value;
             }
+        }
+
+        private IUpdateHub updateHub;
+        private IDisposable chunkSubscription;
+
+        private bool disposed;
+
+        /// <summary>
+        /// Initialisierung des Planeten.
+        /// </summary>
+        /// <param name="id">ID des Planeten.</param>
+        /// <param name="universe">ID des Universums.</param>
+        /// <param name="size">Größe des Planeten in Zweierpotenzen Chunks.</param>
+        /// <param name="seed">Seed des Zufallsgenerators.</param>
+        public Planet(int id, Guid universe, Index3 size, int seed) : this()
+        {
+
+            Id = id;
+            Universe = universe;
+            Size = new Index3(
+                (int)Math.Pow(2, size.X),
+                (int)Math.Pow(2, size.Y),
+                (int)Math.Pow(2, size.Z));
+            Seed = seed;
+        }
+
+        /// <summary>
+        /// Erzeugt eine neue Instanz eines Planeten.
+        /// </summary>
+        public Planet()
+        {
+            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
         }
 
         /// <summary>

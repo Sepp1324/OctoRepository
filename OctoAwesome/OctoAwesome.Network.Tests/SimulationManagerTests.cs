@@ -14,7 +14,7 @@ namespace OctoAwesome.Network.Tests
     [TestOf(typeof(SimulationManager))]
     public class SimulationManagerTests
     {
-        private readonly SimulationManager simulationManager;
+        private SimulationManager simulationManager;
 
         public SimulationManagerTests()
         {
@@ -46,6 +46,7 @@ namespace OctoAwesome.Network.Tests
             reset.WaitOne();
 
             simulationManager.Stop();
+            
         }
     }
 }

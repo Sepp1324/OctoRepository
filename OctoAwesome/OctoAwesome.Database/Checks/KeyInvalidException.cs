@@ -7,6 +7,8 @@ namespace OctoAwesome.Database.Checks
     [Serializable]
     public class KeyInvalidException : Exception
     {
+        public long Position { get;  }
+
         public KeyInvalidException(string message, long position) : base($"{message} on Position {position}")
         {
             Position = position;
@@ -14,11 +16,7 @@ namespace OctoAwesome.Database.Checks
         }
 
         protected KeyInvalidException(
-            System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context) : base(info, context)
-        {
-        }
-
-        public long Position { get; }
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

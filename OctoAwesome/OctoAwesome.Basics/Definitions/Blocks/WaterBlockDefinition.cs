@@ -11,12 +11,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "water";
 
-
-        public override string[] Textures => new[]
-        {
-            "water"
-        };
-
         public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
             return new PhysicalProperties()
@@ -27,10 +21,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.1f
             };
         }
+     
 
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
+        public override string[] Textures => new[] {
+                    "water"
+                };
+
+
+
     }
 }

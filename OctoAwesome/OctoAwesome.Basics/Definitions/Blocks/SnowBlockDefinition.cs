@@ -8,19 +8,30 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class SnowBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Snow;
+        public override string Name
+        {
+            get
+            {
+                return Languages.OctoBasics.Snow;
+            }
+        }
 
-        public override string Icon => "snow";
+        public override string Icon
+        {
+            get
+            {
+                return "snow"; 
+            }
+        }
 
         public override string[] Textures
         {
             get
             {
-                return new[]
-                {
+                return new[] {
                     "snow",
                     "dirt",
-                    "dirt_snow"
+                    "dirt_snow",
                 };
             }
         }
@@ -35,12 +46,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.05f
             };
         }
-
-        public override void Hit(IBlockDefinition block, PhysicalProperties itemProperties)
-        {
-            throw new NotImplementedException();
-        }
-
+             
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             if (wall == Wall.Top)

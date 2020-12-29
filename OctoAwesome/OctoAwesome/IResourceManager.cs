@@ -13,17 +13,6 @@ namespace OctoAwesome
         IDefinitionManager DefinitionManager { get; }
 
         /// <summary>
-        /// Das aktuell geladene Universum.
-        /// </summary>
-        IUniverse CurrentUniverse { get; }
-
-        ConcurrentDictionary<int, IPlanet> Planets { get; }
-
-        IUpdateHub UpdateHub { get; }
-
-        Player CurrentPlayer { get; }
-
-        /// <summary>
         /// Erzuegt ein neues Universum.
         /// </summary>
         /// <param name="name">Name des neuen Universums.</param>
@@ -36,6 +25,11 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="universeId">Die Guid des Universums.</param>
         bool TryLoadUniverse(Guid universeId);
+
+        /// <summary>
+        /// Das aktuell geladene Universum.
+        /// </summary>
+        IUniverse CurrentUniverse { get; }
 
         /// <summary>
         /// Entlädt das aktuelle Universum.
@@ -79,6 +73,11 @@ namespace OctoAwesome
         /// <param name="planetId">Die Planteten-ID des gewünschten Planeten</param>
         /// <returns>Der gewünschte Planet, falls er existiert</returns>
         IPlanet GetPlanet(int planetId);
+        ConcurrentDictionary<int, IPlanet> Planets { get; }
+
+        IUpdateHub UpdateHub { get; }
+
+        Player CurrentPlayer { get; }
 
         void SaveEntity(Entity entity);
         void SaveChunkColumn(IChunkColumn value);
@@ -87,8 +86,6 @@ namespace OctoAwesome
         IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : EntityComponent;
         IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent;
         IEnumerable<Guid> GetEntityIds();
-
-        IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds)
-            where T : EntityComponent, new();
+        IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new();
     }
 }

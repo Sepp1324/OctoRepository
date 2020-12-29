@@ -17,13 +17,9 @@ namespace OctoAwesome.Database
         }
 
         public byte[] GetBytes()
-        {
-            return Tag.ToByteArray();
-        }
+            => Tag.ToByteArray();
 
         public void FromBytes(byte[] array, int startIndex)
-        {
-            Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
-        }
+            => Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
     }
 }

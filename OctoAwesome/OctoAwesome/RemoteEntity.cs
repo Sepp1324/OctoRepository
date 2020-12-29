@@ -11,6 +11,7 @@ namespace OctoAwesome
     {
         public RemoteEntity()
         {
+
         }
 
         public RemoteEntity(Entity originEntity)

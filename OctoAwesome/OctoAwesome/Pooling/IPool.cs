@@ -10,8 +10,7 @@ namespace OctoAwesome.Pooling
     {
         void Push(IPoolElement obj);
     }
-
-    public interface IPool<T> : IPool where T : IPoolElement, new()
+    public interface IPool<T> : IPool where T : IPoolElement, new() 
     {
         T Get();
 
