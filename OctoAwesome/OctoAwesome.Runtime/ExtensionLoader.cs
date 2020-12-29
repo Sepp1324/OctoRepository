@@ -13,19 +13,13 @@ namespace OctoAwesome.Runtime
     {
         private const string SETTINGSKEY = "DisabledExtensions";
 
-        private readonly List<IDefinition> definitions;
-
-        private readonly List<Type> entities;
-
-        private readonly Dictionary<Type, List<Action<Entity>>> entityExtender;
-
-        private readonly List<IMapGenerator> mapGenerators;
-
-        private readonly List<IMapPopulator> mapPopulators;
-
-        private readonly ISettings settings;
-
-        private readonly List<Action<Simulation>> simulationExtender;
+        private readonly List<IDefinition> _definitions;
+        private readonly List<Type> _entities;
+        private readonly Dictionary<Type, List<Action<Entity>>> _entityExtender;
+        private readonly List<IMapGenerator> _mapGenerators;
+        private readonly List<IMapPopulator> _mapPopulators;
+        private readonly ISettings _settings;
+        private readonly List<Action<Simulation>> _simulationExtender;
 
         /// <summary>
         /// Constructor
@@ -33,13 +27,13 @@ namespace OctoAwesome.Runtime
         /// <param name="settings">Current Gamesettings</param>
         public ExtensionLoader(ISettings settings)
         {
-            this.settings = settings;
-            definitions = new List<IDefinition>();
-            entities = new List<Type>();
-            entityExtender = new Dictionary<Type, List<Action<Entity>>>();
-            simulationExtender = new List<Action<Simulation>>();
-            mapGenerators = new List<IMapGenerator>();
-            mapPopulators = new List<IMapPopulator>();
+            _settings = settings;
+            _definitions = new List<IDefinition>();
+            _entities = new List<Type>();
+            _entityExtender = new Dictionary<Type, List<Action<Entity>>>();
+            _simulationExtender = new List<Action<Simulation>>();
+            _mapGenerators = new List<IMapGenerator>();
+            _mapPopulators = new List<IMapPopulator>();
             LoadedExtensions = new List<IExtension>();
             ActiveExtensions = new List<IExtension>();
         }
@@ -61,7 +55,7 @@ namespace OctoAwesome.Runtime
         public void ApplyExtensions(IList<IExtension> disabledExtensions)
         {
             var types = disabledExtensions.Select(e => e.GetType().FullName).ToArray();
-            settings.Set(SETTINGSKEY, types);
+            _settings.Set(SETTINGSKEY, types);
         }
 
         /// <summary>
@@ -83,9 +77,10 @@ namespace OctoAwesome.Runtime
                 assemblies.AddRange(LoadAssemblies(plugins));
 
             var disabledExtensions =
-                settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : new string[0];
+                _settings.KeyExists(SETTINGSKEY) ? _settings.GetArray<string>(SETTINGSKEY) : new string[0];
 
             var result = new List<Type>();
+            
             foreach (var assembly in assemblies)
             {
                 var types = assembly
@@ -143,10 +138,10 @@ namespace OctoAwesome.Runtime
                 throw new ArgumentNullException(nameof(definition));
 
             // TODO: Replace? Ignore?
-            if (definitions.Any(d => d.GetType() == definition.GetType()))
+            if (_definitions.Any(d => d.GetType() == definition.GetType()))
                 throw new ArgumentException("Already registered");
 
-            definitions.Add(definition);
+            _definitions.Add(definition);
         }
 
         /// <summary>
@@ -155,9 +150,9 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Definition Type</typeparam>
         public void RemoveDefinition<T>() where T : IDefinition
         {
-            var definition = definitions.FirstOrDefault(d => d.GetType() == typeof(T));
+            var definition = _definitions.FirstOrDefault(d => d.GetType() == typeof(T));
             if (definition != null)
-                definitions.Remove(definition);
+                _definitions.Remove(definition);
         }
 
         /// <summary>
@@ -167,10 +162,10 @@ namespace OctoAwesome.Runtime
         public void RegisterEntity<T>() where T : Entity
         {
             var type = typeof(T);
-            if (entities.Contains(type))
+            if (_entities.Contains(type))
                 throw new ArgumentException("Already registered");
 
-            entities.Add(type);
+            _entities.Add(type);
         }
 
         /// <summary>
@@ -182,66 +177,43 @@ namespace OctoAwesome.Runtime
         {
             var type = typeof(T);
             List<Action<Entity>> list;
-            if (!entityExtender.TryGetValue(type, out list))
+            if (!_entityExtender.TryGetValue(type, out list))
             {
                 list = new List<Action<Entity>>();
-                entityExtender.Add(type, list);
+                _entityExtender.Add(type, list);
             }
 
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : Entity
-        {
-            RegisterEntityExtender<T>((e) => e.RegisterDefault());
-        }
+        public void RegisterDefaultEntityExtender<T>() where T : Entity => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>
         /// Adds a new Extender for the simulation.
         /// </summary>
         /// <param name="extenderDelegate"></param>
-        public void RegisterSimulationExtender(Action<Simulation> extenderDelegate)
-        {
-            simulationExtender.Add(extenderDelegate);
-        }
+        public void RegisterSimulationExtender(Action<Simulation> extenderDelegate) => _simulationExtender.Add(extenderDelegate);
 
         /// <summary>
         /// Adds a new Map Generator.
         /// </summary>
-        public void RegisterMapGenerator(IMapGenerator generator)
-        {
-            // TODO: Checks
-            mapGenerators.Add(generator);
-        }
+        public void RegisterMapGenerator(IMapGenerator generator) => _mapGenerators.Add(generator);
 
-        public void RegisterMapPopulator(IMapPopulator populator)
-        {
-            mapPopulators.Add(populator);
-        }
-
+        public void RegisterMapPopulator(IMapPopulator populator) => _mapPopulators.Add(populator);
 
         /// <summary>
         /// Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveEntity<T>() where T : Entity
-        {
-            entities.Remove(typeof(T));
-        }
+        public void RemoveEntity<T>() where T : Entity => _entities.Remove(typeof(T));
 
         /// <summary>
         /// Removes an existing Map Generator.
         /// </summary>
         /// <typeparam name="T">Map Generator Type</typeparam>
-        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator
-        {
-            mapGenerators.Remove(item);
-        }
+        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator => _mapGenerators.Remove(item);
 
-        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator
-        {
-            mapPopulators.Remove(item);
-        }
+        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator => _mapPopulators.Remove(item);
 
         #endregion
 
@@ -253,7 +225,7 @@ namespace OctoAwesome.Runtime
         /// <param name="simulation">Simulation</param>
         public void ExtendSimulation(Simulation simulation)
         {
-            foreach (var extender in simulationExtender)
+            foreach (var extender in _simulationExtender)
                 extender(simulation);
         }
 
@@ -277,7 +249,7 @@ namespace OctoAwesome.Runtime
             foreach (var type in stack)
             {
                 List<Action<Entity>> list;
-                if (!entityExtender.TryGetValue(type, out list))
+                if (!_entityExtender.TryGetValue(type, out list))
                     continue;
 
                 foreach (var item in list)
@@ -290,28 +262,19 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Definitiontype</typeparam>
         /// <returns>List</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition
-        {
-            return definitions.OfType<T>();
-        }
+        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition => _definitions.OfType<T>();
 
         /// <summary>
         /// Return a List of MapGenerators
         /// </summary>
         /// <returns>List of Generators</returns>
-        public IEnumerable<IMapGenerator> GetMapGenerator()
-        {
-            return mapGenerators;
-        }
+        public IEnumerable<IMapGenerator> GetMapGenerator() => _mapGenerators;
 
         /// <summary>
         /// Return a List of Populators
         /// </summary>
         /// <returns>List of Populators</returns>
-        public IEnumerable<IMapPopulator> GetMapPopulator()
-        {
-            return mapPopulators;
-        }
+        public IEnumerable<IMapPopulator> GetMapPopulator() => _mapPopulators;
 
         #endregion
     }
