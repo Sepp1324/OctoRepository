@@ -1,21 +1,13 @@
-﻿using System;
-using System.Drawing;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedstoneBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Redstone; }
-        }
+        public override string Name => Languages.OctoBasics.Redstone;
 
-        public override string Icon
-        {
-            get { return "redstone"; }
-        }
-
-
+        public override string Icon => "redstone";
+        
         public override string[] Textures
         {
             get
@@ -26,9 +18,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new IMaterialDefinition()
             {
                 Density = 2.5f,
                 FractureToughness = 0.1f,
@@ -36,6 +28,5 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.9f
             };
         }
-     
     }
 }

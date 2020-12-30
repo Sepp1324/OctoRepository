@@ -1,23 +1,12 @@
-﻿using OctoAwesome.Basics.Properties;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedPlankBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.RedPlank; }
-        }
+        public override string Name => Languages.OctoBasics.RedPlank;
 
-        public override string Icon
-        {
-            get { return "planks"; }
-        }
+        public override string Icon => "planks";
 
         public override bool HasMetaData { get { return true; } }
 
@@ -30,9 +19,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new IMaterialDefinition()
             {
                 Density = 0.87f,
                 FractureToughness = 0.3f,
@@ -40,8 +29,5 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.1f
             };
         }
-
-       
-
     }
 }

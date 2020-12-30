@@ -8,6 +8,7 @@ using engenious;
 using engenious.Graphics;
 using engenious.Helper;
 using engenious.UI;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Controls
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -21,7 +17,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)
         {
-            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
+            var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
@@ -157,8 +153,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-
-            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
+            var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
@@ -197,9 +192,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new IMaterialDefinition()
             {
                 Density = 2f,
                 FractureToughness = 0.3f,
@@ -207,7 +202,5 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.1f
             };
         }
-
-     
     }
 }

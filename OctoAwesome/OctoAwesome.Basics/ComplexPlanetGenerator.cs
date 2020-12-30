@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics
 {
@@ -21,7 +22,7 @@ namespace OctoAwesome.Basics
             IBlockDefinition snowDefinition = definitions.OfType<SnowBlockDefinition>().FirstOrDefault();
             ushort snowIndex = (ushort)(Array.IndexOf(definitions.ToArray(), snowDefinition) + 1);
 
-            IBlockDefinition groundDefinition = definitions.OfType<GroundBlockDefinition>().FirstOrDefault();
+            IBlockDefinition groundDefinition = definitions.OfType<DirtBlockDefinition>().FirstOrDefault();
             ushort groundIndex = (ushort)(Array.IndexOf(definitions.ToArray(), groundDefinition) + 1);
 
             IBlockDefinition stoneDefinition = definitions.OfType<StoneBlockDefinition>().FirstOrDefault();

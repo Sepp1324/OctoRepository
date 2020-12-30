@@ -1,19 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class IceBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Ice; }
-        }
+        public override string Name => Languages.OctoBasics.Ice;
 
-        public override string Icon
-        {
-            get { return "ice"; }
-        }
+        public override string Icon => "ice";
 
 
         public override string[] Textures
@@ -26,9 +19,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new IMaterialDefinition()
             {
                 Density = 2f,
                 FractureToughness = 0.3f,
@@ -36,7 +29,5 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.1f
             };
         }
-
-      
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using engenious;
+using OctoAwesome.Definitions;
 using OctoAwesome.Services;
 using OctoAwesome.Definitions.Items;
 
@@ -48,11 +49,11 @@ namespace OctoAwesome.Basics.SimulationComponents
                 {
                     var blockHitInformation = service.Hit(lastBlock, hand, cache);
 
-                    if (blockHitInformation.IsHitValid)
-                        foreach (var definition in blockHitInformation.Definitions ?? Array.Empty<KeyValuePair<int, IDefinition>>())
+                    if (blockHitInformation.Valid)
+                        foreach (var (Quantity, Definition) in blockHitInformation.List)
                         {
-                            if (definition.Value is IInventoryableDefinition invDef)
-                                inventory.AddUnit(definition.Key, invDef);
+                            if (Definition is IInventoryableDefinition invDef)
+                                inventory.AddUnit(Quantity, invDef);
                         }
 
                 }
@@ -74,10 +75,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    if (toolbar.ActiveTool.Definition is IBlockDefinition)
+                    if (toolbar.ActiveTool.Definition is IBlockDefinition definition)
                     {
-                        IBlockDefinition definition = toolbar.ActiveTool.Definition as IBlockDefinition;
-
                         Index3 idx = controller.ApplyBlock.Value + add;
                         var boxes = definition.GetCollisionBoxes(cache, idx.X, idx.Y, idx.Z);
 
@@ -100,8 +99,9 @@ namespace OctoAwesome.Basics.SimulationComponents
                                 );
 
                             // Nicht in sich selbst reinbauen
-                            foreach (var box in boxes)
+                            for (var i = 0; i < boxes.Length; i++)
                             {
+                                var box = boxes[i];
                                 var newBox = new BoundingBox(idx + box.Min, idx + box.Max);
                                 if (newBox.Min.X < playerBox.Max.X && newBox.Max.X > playerBox.Min.X &&
                                     newBox.Min.Y < playerBox.Max.Y && newBox.Max.X > playerBox.Min.Y &&

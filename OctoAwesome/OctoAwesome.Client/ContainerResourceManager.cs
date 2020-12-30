@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client
 {

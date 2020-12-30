@@ -1,9 +1,6 @@
 ﻿using OctoAwesome.Basics.EntityComponents;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.EntityComponents;
 
@@ -53,9 +50,10 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override void RemoveEntity(Entity entity)
         {
-            var gravityentity = entities.FirstOrDefault(i => i.Entity == entity);
-            if (gravityentity != null)
-                entities.Remove(gravityentity);
+            var gravityEntity = entities.FirstOrDefault(i => i.Entity == entity);
+         
+            if (gravityEntity != null)
+                entities.Remove(gravityEntity);
         }
     }
 }

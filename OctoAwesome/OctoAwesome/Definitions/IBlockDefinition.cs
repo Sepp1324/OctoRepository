@@ -1,9 +1,9 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
-using System;
 
-namespace OctoAwesome
+namespace OctoAwesome.Definitions
 {
     /// <summary>
     /// Basisinterface für eine Blockdefinition
@@ -60,6 +60,7 @@ namespace OctoAwesome
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
         uint SolidWall { get; }
+        TimeSpan TimeToVolumeReset { get; }
 
         bool IsSolidWall(Wall wall);
     }

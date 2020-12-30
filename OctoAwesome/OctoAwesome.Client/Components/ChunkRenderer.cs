@@ -6,6 +6,7 @@ using engenious;
 using System;
 using System.Windows.Threading;
 using System.Threading;
+using OctoAwesome.Definitions;
 using OctoAwesome.Threading;
 
 namespace OctoAwesome.Client.Components

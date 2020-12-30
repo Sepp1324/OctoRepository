@@ -1,19 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class SandBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Sand; }
-        }
+        public override string Name => Languages.OctoBasics.Sand;
 
-        public override string Icon
-        {
-            get { return "sand"; }
-        }
+        public override string Icon => "sand";
 
 
         public override string[] Textures
@@ -26,9 +19,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new IMaterialDefinition()
             {
                 //Schüttdichte
                 Density = 1.5f,

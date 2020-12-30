@@ -1,10 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
 using engenious;
-using System.Collections.Generic;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
 
-namespace OctoAwesome
+namespace OctoAwesome.Definitions
 {
     /// <summary>
     /// Eine definition eines Block-Typen
@@ -33,6 +32,8 @@ namespace OctoAwesome
         /// </summary>
         public virtual int VolumePerUnit => 125;
 
+        public virtual int VolumePerHit => 25;
+
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
         /// </summary>
@@ -43,6 +44,8 @@ namespace OctoAwesome
         /// </summary>
         public virtual bool HasMetaData => false;
 
+        public virtual TimeSpan TimeToVolumeReset { get; } = TimeSpan.FromSeconds(10);
+
         /// <summary>
         /// Liefert die Physikalischen Paramerter, wie härte, dichte und bruchzähigkeit
         /// </summary>
@@ -51,7 +54,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Die physikalischen Parameter</returns>
-        public abstract PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z);
+        public abstract IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z);
 
         /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
@@ -60,7 +63,7 @@ namespace OctoAwesome
         /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
         public virtual BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition)
         {
-            return default;
+            return new BlockHitInformation(true, VolumePerHit, new[] { (VolumePerUnit, (IDefinition)this)});
         }
 
         /// <summary>

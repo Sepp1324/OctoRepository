@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using OctoAwesome.Basics.Definitions.Blocks;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics
 {
@@ -12,8 +13,7 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            Planet planet = new Planet(id, universe, new Index3(5, 5, 4), seed);
-            planet.Generator = this;
+            var planet = new Planet(id, universe, new Index3(5, 5, 4), seed) {Generator = this};
             return planet;
         }
 

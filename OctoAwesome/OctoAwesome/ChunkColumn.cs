@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome
 {
@@ -12,14 +13,13 @@ namespace OctoAwesome
     /// </summary>
     public class ChunkColumn : IChunkColumn
     {
-        private readonly IGlobalChunkCache globalChunkCache;
+        private readonly IGlobalChunkCache _globalChunkCache;
 
         /// <summary>
         /// Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
-        private readonly IEntityList entities;
-        private readonly LockSemaphore entitieSemaphore;
-
+        private readonly IEntityList _entities;
+        private readonly LockSemaphore _entitieSemaphore;
 
         public IDefinitionManager DefinitionManager { get; }
 
@@ -35,7 +35,8 @@ namespace OctoAwesome
         {
             Chunks = chunks;
             Index = columnIndex;
-            foreach (IChunk chunk in chunks)
+            
+            foreach (var chunk in chunks)
             {
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
@@ -48,11 +49,11 @@ namespace OctoAwesome
         public ChunkColumn(IPlanet planet)
         {
             Heights = new int[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
-            entities = new EntityList(this);
-            entitieSemaphore = new LockSemaphore(1, 1);
+            _entities = new EntityList(this);
+            _entitieSemaphore = new LockSemaphore(1, 1);
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
-            globalChunkCache = planet.GlobalChunkCache;
+            _globalChunkCache = planet.GlobalChunkCache;
         }
 
         private void OnChunkChanged(IChunk arg1)
@@ -204,9 +205,7 @@ namespace OctoAwesome
         public void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos)
         {
             foreach (var item in blockInfos.GroupBy(x => x.Position.Z / Chunk.CHUNKSIZE_Z))
-            {
                 Chunks[item.Key].SetBlocks(issueNotification, item.ToArray());
-            }            
         }
 
         /// <summary>
@@ -246,9 +245,11 @@ namespace OctoAwesome
         {
             // Definitionen sammeln
             var definitions = new List<IBlockDefinition>();
+            
             for (var c = 0; c < Chunks.Length; c++)
             {
-                IChunk chunk = Chunks[c];
+                var chunk = Chunks[c];
+                
                 for (var i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] != 0)
@@ -280,13 +281,13 @@ namespace OctoAwesome
             else
                 writer.Write((byte)definitions.Count);
 
-            foreach (IBlockDefinition definition in definitions)
+            foreach (var definition in definitions)
                 writer.Write(definition.GetType().FullName);
 
             // Schreibe Phase 3 (Chunk Infos)
             for (var c = 0; c < Chunks.Length; c++)
             {
-                IChunk chunk = Chunks[c];
+                var chunk = Chunks[c];
                 for (var i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] == 0)
@@ -314,9 +315,10 @@ namespace OctoAwesome
                 }
             }
             var resManager = TypeContainer.Get<IResourceManager>();
-            using (var lockObj = entitieSemaphore.Wait())
+            
+            using (_entitieSemaphore.Wait())
             {
-                foreach (var entity in entities)
+                foreach (var entity in _entities)
                     resManager.SaveEntity(entity);
             }
         }
@@ -347,7 +349,6 @@ namespace OctoAwesome
                 for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
                     Heights[x, y] = reader.ReadUInt16();
 
-
             // Phase 2 (Block Definitionen)
             var types = new List<IDefinition>();
             var map = new Dictionary<ushort, ushort>();
@@ -367,7 +368,7 @@ namespace OctoAwesome
             // Phase 3 (Chunk Infos)
             for (var c = 0; c < Chunks.Length; c++)
             {
-                IChunk chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
+                var chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
 
@@ -390,10 +391,7 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification)
-        {
-            globalChunkCache.OnUpdate(notification);
-        }
+        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
 
         public void Update(SerializableNotification notification)
         {
@@ -407,9 +405,9 @@ namespace OctoAwesome
 
         public void ForEachEntity(Action<Entity> action)
         {
-            using (entitieSemaphore.Wait())
+            using (_entitieSemaphore.Wait())
             {
-                foreach (var entity in entities)
+                foreach (var entity in _entities)
                 {
                     action(entity);
                 }
@@ -418,20 +416,20 @@ namespace OctoAwesome
 
         public void Add(Entity entity)
         {
-            using (entitieSemaphore.Wait())
-                entities.Add(entity);
+            using (_entitieSemaphore.Wait())
+                _entities.Add(entity);
         }
 
         public void Remove(Entity entity)
         {
-            using (entitieSemaphore.Wait())
-                entities.Remove(entity);
+            using (_entitieSemaphore.Wait())
+                _entities.Remove(entity);
         }
 
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
         {
-            using (entitieSemaphore.Wait())
-                return entities.FailChunkEntity().ToList();
+            using (_entitieSemaphore.Wait())
+                return _entities.FailChunkEntity().ToList();
         }
 
         public void FlagDirty()

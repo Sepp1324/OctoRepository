@@ -1,22 +1,13 @@
-﻿using OctoAwesome.Information;
-using System;
-using System.Drawing;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class LeavesBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Leaves; }
-        }
+        public override string Name => Languages.OctoBasics.Leaves;
 
-        public override string Icon
-        {
-            get { return "leaves"; }
-        }
-
-
+        public override string Icon => "leaves";
+        
         public override string[] Textures
         {
             get
@@ -27,9 +18,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
         {
-            return new PhysicalProperties()
+            return new IMaterialDefinition()
             {
                 Density = 2f,
                 FractureToughness = 0.3f,
@@ -37,7 +28,5 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 Hardness = 0.1f
             };
         }
-
-       
     }
 }
