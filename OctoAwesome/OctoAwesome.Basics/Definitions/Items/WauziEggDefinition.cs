@@ -1,17 +1,41 @@
-﻿using OctoAwesome.Definitions;
-using OctoAwesome.Information;
+﻿using OctoAwesome.Information;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
     public sealed class WauziEggDefinition : IItemDefinition
     {
-        public string Icon => "wauziegg";
+        public string Icon
+        {
+            get
+            {
+                return "wauziegg";
+            }
+        }
 
-        public string Name => "Wauzi Egg";
+        public string Name
+        {
+            get
+            {
+                return "Wauzi Egg";
+            }
+        }
 
-        public int StackLimit => 1000;
+        public int StackLimit
+        {
+            get
+            {
+                return 1000;
+            }
+        }
 
-        public float VolumePerUnit => 1;
+        public float VolumePerUnit
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         int IInventoryableDefinition.VolumePerUnit => 1;
 

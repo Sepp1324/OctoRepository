@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Network;
+﻿using OctoAwesome.Definitions;
+using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
@@ -8,7 +9,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client
 {

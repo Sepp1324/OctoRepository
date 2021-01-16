@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Definitions.Items;
+﻿using OctoAwesome.Definitions;
+using OctoAwesome.Definitions.Items;
 using OctoAwesome.Information;
 using OctoAwesome.Pooling;
 using System;
@@ -6,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Services
 {

@@ -13,13 +13,14 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            var planet = new Planet(id, universe, new Index3(5, 5, 4), seed) {Generator = this};
+            Planet planet = new Planet(id, universe, new Index3(5, 5, 4), seed);
+            planet.Generator = this;
             return planet;
         }
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
-            IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
+            IDefinition[] definitions = definitionManager.Definitions.ToArray();
 
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().First();
             ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);

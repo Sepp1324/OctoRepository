@@ -1,20 +1,24 @@
-﻿using System;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Materials
 {
     public class GlassMaterialDefinition : ISolidMaterialDefinition
     {
-        public string Name => "Glass";
-
-        public string Icon => string.Empty;
-
         public int Hardness => 55;
 
         public int Density => 2500;
-        
-        public int Granularity { get; }
-        
-        public int FractureToughness { get; }
+
+        public int Granularity => 1;
+
+        public int FractureToughness => 50;
+
+        public string Name => "Glass";
+
+        public string Icon => string.Empty;
     }
 }

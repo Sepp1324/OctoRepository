@@ -1,7 +1,7 @@
-﻿using System;
-using engenious;
+﻿using engenious;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
+using System;
 
 namespace OctoAwesome.Definitions
 {

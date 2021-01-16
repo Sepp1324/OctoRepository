@@ -110,7 +110,7 @@ namespace OctoAwesome.Client.Controls
             sunTexture = assets.LoadTexture(typeof(ScreenComponent), "sun");
 
             //List<Bitmap> bitmaps = new List<Bitmap>();
-            var definitions = Manager.Game.DefinitionManager.GetBlockDefinitions();
+            var definitions = Manager.Game.DefinitionManager.BlockDefinitions;
             int textureCount = 0;
             foreach (var definition in definitions)
             {
@@ -296,7 +296,7 @@ namespace OctoAwesome.Client.Controls
                         if (block == 0)
                             continue;
 
-                        IBlockDefinition blockDefinition = (IBlockDefinition)Manager.Game.DefinitionManager.GetBlockDefinitionByIndex(block);
+                        IBlockDefinition blockDefinition = Manager.Game.DefinitionManager.GetBlockDefinitionByIndex(block);
 
                         float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out Axis? collisionAxis);
 

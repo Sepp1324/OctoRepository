@@ -1,4 +1,10 @@
-﻿using OctoAwesome.Definitions;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -17,7 +23,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)
         {
-            var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
+            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
@@ -153,7 +159,8 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
+
+            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
@@ -192,15 +199,11 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition Material { get; }
+
+        public CactusBlockDefinition(CactusMaterialDefinition material)
         {
-            return new IMaterialDefinition()
-            {
-                Density = 2f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
-            };
+            Material = material;
         }
     }
 }

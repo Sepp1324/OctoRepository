@@ -1,6 +1,6 @@
-﻿using System;
+﻿using OctoAwesome.Definitions;
+using System;
 using System.Collections.Generic;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome
 {
@@ -29,7 +29,7 @@ namespace OctoAwesome
         /// Registers a new Definition.
         /// </summary>
         /// <param name="definition">Definition Instance</param>
-        void RegisterDefinition(IDefinition definition);
+        void RegisterDefinition(Type definition);
 
         /// <summary>
         /// Removes an existing Definition Type.

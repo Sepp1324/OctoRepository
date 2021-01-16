@@ -1,7 +1,9 @@
-﻿using System;
+﻿using System.Drawing;
 using engenious;
+using System.Collections.Generic;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
+using System;
 
 namespace OctoAwesome.Definitions
 {
@@ -47,14 +49,10 @@ namespace OctoAwesome.Definitions
         public virtual TimeSpan TimeToVolumeReset { get; } = TimeSpan.FromSeconds(10);
 
         /// <summary>
-        /// Liefert die Physikalischen Paramerter, wie härte, dichte und bruchzähigkeit
+        /// Provides the material assigned to this block 
+        /// which contains physical properties e.g. hardness, density
         /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
-        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
-        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
-        /// <returns>Die physikalischen Parameter</returns>
-        public abstract IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z);
+        public abstract IMaterialDefinition Material { get; }
 
         /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.

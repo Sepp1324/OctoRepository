@@ -1,8 +1,8 @@
-﻿using System;
+﻿using OctoAwesome.Definitions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics
 {

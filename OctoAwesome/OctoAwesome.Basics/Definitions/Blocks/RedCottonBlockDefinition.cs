@@ -1,12 +1,21 @@
-﻿using OctoAwesome.Definitions;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedCottonBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.RedCotton;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.RedCotton; }
+        }
 
-        public override string Icon => "cotton_red";
+        public override string Icon
+        {
+            get { return "cotton_red"; }
+        }
 
 
         public override string[] Textures
@@ -19,15 +28,11 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition Material { get; }
+
+        public RedCottonBlockDefinition(CottonMaterialDefinition material)
         {
-            return new IMaterialDefinition()
-            {
-                Density = 2f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
-            };
+            Material = material;
         }
     }
 }

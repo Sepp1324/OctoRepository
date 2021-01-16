@@ -1,4 +1,7 @@
-﻿using OctoAwesome.Definitions;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -10,21 +13,19 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "water";
 
-        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition Material { get; }
+
+
+        public WaterBlockDefinition(WaterMaterialDefinition material)
         {
-            return new IMaterialDefinition()
-            {
-                Density = 1f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
-            };
+            Material = material;
         }
 
+        public override string[] Textures => new[] {
+                    "water"
+                };
 
-        public override string[] Textures => new[]
-        {
-            "water"
-        };
+
+
     }
 }

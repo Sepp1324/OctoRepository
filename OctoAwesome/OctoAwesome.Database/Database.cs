@@ -15,7 +15,10 @@ namespace OctoAwesome.Database
     {
         public Type TagType { get; }
 
-        protected Database(Type tagType) => TagType = tagType;
+        protected Database(Type tagType)
+        {
+            TagType = tagType;
+        }
 
         public abstract void Open();
         public abstract void Close();

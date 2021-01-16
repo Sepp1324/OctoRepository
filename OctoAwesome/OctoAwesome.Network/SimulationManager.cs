@@ -1,4 +1,5 @@
 ﻿using engenious;
+using OctoAwesome.Definitions;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Network
 {

@@ -6,8 +6,8 @@ using engenious;
 using System;
 using System.Windows.Threading;
 using System.Threading;
-using OctoAwesome.Definitions;
 using OctoAwesome.Threading;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Components
 {
@@ -200,7 +200,7 @@ namespace OctoAwesome.Client.Components
             Dictionary<IBlockDefinition, int> textureOffsets = new Dictionary<IBlockDefinition, int>();
             // Dictionary<Type, BlockDefinition> definitionMapping = new Dictionary<Type, BlockDefinition>();
             int definitionIndex = 0;
-            foreach (var definition in definitionManager.GetBlockDefinitions())
+            foreach (var definition in definitionManager.BlockDefinitions)
             {
                 int textureCount = definition.Textures.Count();
                 textureOffsets.Add(definition, definitionIndex);

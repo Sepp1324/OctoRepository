@@ -1,9 +1,9 @@
-﻿using System;
+﻿using OctoAwesome.Definitions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Runtime
 {
@@ -13,8 +13,6 @@ namespace OctoAwesome.Runtime
     public sealed class ExtensionLoader : IExtensionLoader, IExtensionResolver
     {
         private const string SETTINGSKEY = "DisabledExtensions";
-
-        private List<IDefinition> definitions;
 
         private List<Type> entities;
 
@@ -36,8 +34,11 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public List<IExtension> ActiveExtensions { get; private set; }
 
+        private readonly Dictionary<Type, List<Type>> definitionsLookup;
+
         private readonly ISettings settings;
         private readonly ITypeContainer typeContainer;
+        private readonly ITypeContainer definitionTypeContainer;
 
         /// <summary>
         /// Constructor
@@ -47,7 +48,8 @@ namespace OctoAwesome.Runtime
         {
             this.settings = settings;
             this.typeContainer = typeContainer;
-            definitions = new List<IDefinition>();
+            definitionTypeContainer = new StandaloneTypeContainer();
+            definitionsLookup = new Dictionary<Type, List<Type>>();
             entities = new List<Type>();
             entityExtender = new Dictionary<Type, List<Action<Entity>>>();
             simulationExtender = new List<Action<Simulation>>();
@@ -140,16 +142,26 @@ namespace OctoAwesome.Runtime
         /// Registers a new Definition.
         /// </summary>
         /// <param name="definition">Definition Instance</param>
-        public void RegisterDefinition(IDefinition definition)
+        public void RegisterDefinition(Type definition)
         {
             if (definition == null)
                 throw new ArgumentNullException(nameof(definition));
 
-            // TODO: Replace? Ignore?
-            if (definitions.Any(d => d.GetType() == definition.GetType()))
-                throw new ArgumentException("Already registered");
+            var interfaceTypes = definition.GetInterfaces();
 
-            definitions.Add(definition);
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (definitionsLookup.TryGetValue(interfaceType, out var typeList))
+                {
+                    typeList.Add(definition);
+                }
+                else
+                {
+                    definitionsLookup.Add(interfaceType, new List<Type> { definition });
+                }
+            }
+
+            definitionTypeContainer.Register(definition, definition, InstanceBehaviour.Singleton);
         }
 
         /// <summary>
@@ -158,9 +170,7 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Definition Type</typeparam>
         public void RemoveDefinition<T>() where T : IDefinition
         {
-            var definition = definitions.FirstOrDefault(d => d.GetType() == typeof(T));
-            if (definition != null)
-                definitions.Remove(definition);
+            throw new NotSupportedException("Currently not supported by TypeContainer");
         }
 
         /// <summary>
@@ -193,7 +203,7 @@ namespace OctoAwesome.Runtime
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : Entity 
+        public void RegisterDefaultEntityExtender<T>() where T : Entity
             => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>
@@ -291,9 +301,13 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Definitiontype</typeparam>
         /// <returns>List</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition
+        public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
         {
-            return definitions.OfType<T>();
+            if (definitionsLookup.TryGetValue(typeof(T), out var definitionTypes))
+            {
+                foreach (var type in definitionTypes)
+                    yield return (T)definitionTypeContainer.Get(type);
+            }
         }
 
         /// <summary>

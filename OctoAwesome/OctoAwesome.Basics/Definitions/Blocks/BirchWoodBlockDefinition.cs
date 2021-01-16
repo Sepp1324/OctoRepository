@@ -1,4 +1,12 @@
-﻿using OctoAwesome.Definitions;
+﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Properties;
+using OctoAwesome.Definitions;
+using OctoAwesome.Information;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -10,68 +18,77 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override bool HasMetaData => true;
 
-        public override string[] Textures => new[]
+        public override string[] Textures => new[] {
+                "birch_wood_top",
+                "birch_wood_side" };
+
+        public override IMaterialDefinition Material { get; }
+
+
+        public BirchWoodBlockDefinition(WoodMaterialDefinition material)
         {
-            "birch_wood_top",
-            "birch_wood_side"
-        };
+            Material = material;
+        }
 
-        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
-            => new IMaterialDefinition()
-            {
-                Density = 0.87f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
-            };
-
-
-        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
+            int x, int y, int z)
         {
-            var orientation = (OrientationFlags) manager.GetBlockMeta(x, y, z);
+            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
                 case Wall.Top:
                 case Wall.Bottom:
-                {
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                            return 1;
-                        default:
-                            return 0;
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                                return 1;
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 0;
+                        }
                     }
-                }
 
                 case Wall.Front:
                 case Wall.Back:
-                {
-                    switch (orientation)
+
                     {
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                            return 0;
-                        default:
-                            return 1;
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                                return 0;
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 1;
+                        }
                     }
-                }
 
                 case Wall.Left:
                 case Wall.Right:
-                {
-                    switch (orientation)
                     {
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                            return 0;
-                        default:
-                            return 1;
+
+                        switch (orientation)
+                        {
+                            case OrientationFlags.SideWest:
+                            case OrientationFlags.SideEast:
+                                return 0;
+                            case OrientationFlags.SideSouth:
+                            case OrientationFlags.SideNorth:
+                            case OrientationFlags.SideBottom:
+                            case OrientationFlags.SideTop:
+                            default:
+                                return 1;
+                        }
                     }
-                }
             }
 
             // Should never happen
@@ -81,18 +98,22 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            var orientation = (OrientationFlags) manager.GetBlockMeta(x, y, z);
+            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
             switch (wall)
             {
                 case Wall.Top:
                 case Wall.Bottom:
                 case Wall.Back:
                 case Wall.Front:
-                    switch (orientation) //top and bottom north south
+                    switch (orientation)//top and bottom north south
                     {
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
                             return 1;
+                        case OrientationFlags.SideSouth:
+                        case OrientationFlags.SideNorth:
+                        case OrientationFlags.SideBottom:
+                        case OrientationFlags.SideTop:
                         default:
                             return 0;
                     }
@@ -103,6 +124,10 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
                             return 1;
+                        case OrientationFlags.SideWest:
+                        case OrientationFlags.SideEast:
+                        case OrientationFlags.SideBottom:
+                        case OrientationFlags.SideTop:
                         default:
                             return 0;
                     }

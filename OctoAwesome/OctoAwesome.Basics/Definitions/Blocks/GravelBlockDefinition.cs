@@ -1,12 +1,21 @@
-﻿using OctoAwesome.Definitions;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
-    public sealed class GravelBLockDefinition : BlockDefinition
+    public sealed class GravelBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Gravel;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.Gravel; }
+        }
 
-        public override string Icon => "gravel";
+        public override string Icon
+        {
+            get { return "gravel"; }
+        }
 
 
         public override string[] Textures
@@ -19,15 +28,11 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition Material { get; }
+
+        public GravelBlockDefinition(GravelMaterialDefinition material)
         {
-            return new IMaterialDefinition()
-            {
-                Density = 2.5f,
-                FractureToughness = 0.1f,
-                Granularity = 0.1f,
-                Hardness = 0.9f
-            };
+            Material = material;
         }
     }
 }

@@ -1,12 +1,30 @@
-﻿using OctoAwesome.Definitions;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class SnowBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.Snow;
+        public override string Name
+        {
+            get
+            {
+                return Languages.OctoBasics.Snow;
+            }
+        }
 
-        public override string Icon => "snow";
+        public override string Icon
+        {
+            get
+            {
+                return "snow"; 
+            }
+        }
 
         public override string[] Textures
         {
@@ -20,27 +38,26 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             }
         }
 
-        public override IMaterialDefinition GetProperties(ILocalChunkCache manager, int x, int y, int z)
+        public override IMaterialDefinition Material { get; }
+
+        public SnowBlockDefinition(SnowMaterialDefinition material)
         {
-            return new IMaterialDefinition()
-            {
-                Density = 1.5f,
-                FractureToughness = 0.2f,
-                Granularity = 0.9f,
-                Hardness = 0.05f
-            };
+            Material = material;
         }
-             
+
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            switch (wall)
+            if (wall == Wall.Top)
             {
-                case Wall.Top:
-                    return 0;
-                case Wall.Bottom:
-                    return 1;
-                default:
-                    return 2;
+                return 0;
+            }
+            else if (wall == Wall.Bottom)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
             }
         }
     }

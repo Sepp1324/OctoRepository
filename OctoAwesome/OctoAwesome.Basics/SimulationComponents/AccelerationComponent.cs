@@ -10,16 +10,20 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(MoveableComponent), typeof(BodyComponent))]
     public sealed class AccelerationComponent : SimulationComponent
     {
-        private readonly List<AcceleratedEntity> _acceleratedEntities;
+        private readonly List<AcceleratedEntity> acceleratedEntities;
 
-        public AccelerationComponent() => _acceleratedEntities = new List<AcceleratedEntity>();
+        public AccelerationComponent()
+        {
+            acceleratedEntities = new List<AcceleratedEntity>();
+        }
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var entity in _acceleratedEntities.ToArray())
+            foreach (var entity in acceleratedEntities.ToArray())
             {
                 // Convert external Forces to Powers
-                var power = ((entity.Move.ExternalForces * entity.Move.ExternalForces) / (2 * entity.Body.Mass)) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                Vector3 power = ((entity.Move.ExternalForces * entity.Move.ExternalForces) / (2 * entity.Body.Mass)) * 
+                    (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 // Take care of direction
                 power *= new Vector3(
@@ -61,23 +65,22 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            var acceleratedEntity = new AcceleratedEntity()
+            AcceleratedEntity acceleratedEntity = new AcceleratedEntity()
             {
                 Entity = entity,
                 Move = entity.Components.GetComponent<MoveableComponent>(),
                 Body = entity.Components.GetComponent<BodyComponent>()
             };
 
-            _acceleratedEntities.Add(acceleratedEntity);
+            acceleratedEntities.Add(acceleratedEntity);
             return true;
         }
 
         protected override void RemoveEntity(Entity entity)
         {
-            var acceleratedEntity = _acceleratedEntities.FirstOrDefault(e => e.Entity == entity);
-          
+            AcceleratedEntity acceleratedEntity = acceleratedEntities.FirstOrDefault(e => e.Entity == entity);
             if (acceleratedEntity != null)
-                _acceleratedEntities.Remove(acceleratedEntity);
+                acceleratedEntities.Remove(acceleratedEntity);
         }
 
         private class AcceleratedEntity

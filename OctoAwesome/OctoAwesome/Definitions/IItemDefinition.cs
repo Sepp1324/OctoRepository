@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Information;
+using System;
 
 namespace OctoAwesome.Definitions
 {

@@ -9,13 +9,13 @@ namespace OctoAwesome.Database
 {
     public sealed class Defragmentation<TTag> where TTag : ITag, new()
     {
-        private readonly FileInfo _keyStoreFile;
-        private readonly FileInfo _valueStoreFile;
+        private readonly FileInfo keyStoreFile;
+        private readonly FileInfo valueStoreFile;
 
         public Defragmentation(FileInfo keyStoreFile, FileInfo valueStoreFile)
         {
-            _keyStoreFile = keyStoreFile;
-            _valueStoreFile = valueStoreFile;
+            this.keyStoreFile = keyStoreFile;
+            this.valueStoreFile = valueStoreFile;
         }
 
         public void StartDefragmentation()
@@ -23,13 +23,13 @@ namespace OctoAwesome.Database
             var newValueStoreFile = new FileInfo(Path.GetTempFileName());
             var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
 
-            var keys = DefragmentValues(newValueStoreFile, keyBuffer);
+            IEnumerable<Key<TTag>> keys = DefragmentValues(newValueStoreFile, keyBuffer);
 
-            _keyStoreFile.Delete();
+            keyStoreFile.Delete();
             WriteKeyFile(keys);
 
-            _valueStoreFile.Delete();
-            newValueStoreFile.MoveTo(_valueStoreFile.FullName);
+            valueStoreFile.Delete();
+            newValueStoreFile.MoveTo(valueStoreFile.FullName);
         }
 
         public void RecreateKeyFile()
@@ -38,23 +38,23 @@ namespace OctoAwesome.Database
 
             IEnumerable<Key<TTag>> keys = GetKeys(keyBuffer);
 
-            _keyStoreFile.Delete();
+            keyStoreFile.Delete();
             WriteKeyFile(keys);
         }
 
         private void WriteKeyFile(IEnumerable<Key<TTag>> keyList)
         {
-            using (var newKeyStoreFile = _keyStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            using (FileStream newKeyStoreFile = keyStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
-                foreach (var key in keyList)
+                foreach (Key<TTag> key in keyList)
                     newKeyStoreFile.Write(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
             }
         }
 
         private IEnumerable<Key<TTag>> DefragmentValues(FileInfo newValueStoreFile, byte[] keyBuffer)
         {
-            using (var newValueStoreStream = newValueStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            using (var currentValueStoreStream = _valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+            using (FileStream newValueStoreStream = newValueStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            using (FileStream currentValueStoreStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 do
                 {
@@ -87,7 +87,7 @@ namespace OctoAwesome.Database
 
         private IEnumerable<Key<TTag>> GetKeys(byte[] keyBuffer)
         {
-            using (var fileStream = _valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+            using (FileStream fileStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 do
                 {

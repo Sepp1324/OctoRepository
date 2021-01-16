@@ -1,6 +1,6 @@
 ﻿using engenious;
-using System;
 using OctoAwesome.Definitions;
+using System;
 
 namespace OctoAwesome.Common
 {

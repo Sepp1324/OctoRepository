@@ -12,12 +12,12 @@ namespace OctoAwesome.Basics.SimulationComponents
     {
         protected override bool AddEntity(Entity entity)
         {
-            var posComp = entity.Components.GetComponent<PositionComponent>();
+            var poscomp = entity.Components.GetComponent<PositionComponent>();
             var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
 
             var planet = cache.Planet;
-            posComp.Position.NormalizeChunkIndexXY(planet.Size);
-            cache.SetCenter(new Index2(posComp.Position.ChunkIndex));
+            poscomp.Position.NormalizeChunkIndexXY(planet.Size);
+            cache.SetCenter(new Index2(poscomp.Position.ChunkIndex));
             return true;
         }
 
@@ -34,7 +34,9 @@ namespace OctoAwesome.Basics.SimulationComponents
             //TODO:Sehr unschön
 
             if (entity.Components.ContainsComponent<BoxCollisionComponent>())
+            {
                 CheckBoxCollision(gameTime, entity, movecomp, poscomp);
+            }
 
             var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
 
@@ -64,54 +66,60 @@ namespace OctoAwesome.Basics.SimulationComponents
             if (!entity.Components.ContainsComponent<BodyComponent>())
                 return;
 
-            var bc = entity.Components.GetComponent<BodyComponent>();
-            var position = poscomp.Position;
-            var move = movecomp.PositionMove;
+            BodyComponent bc = entity.Components.GetComponent<BodyComponent>();
+
+
+            Coordinate position = poscomp.Position;
+
+            Vector3 move = movecomp.PositionMove;
 
             //Blocks finden die eine Kollision verursachen könnten
-            var minx = (int)Math.Floor(Math.Min(
+            int minx = (int)Math.Floor(Math.Min(
                 position.BlockPosition.X - bc.Radius,
                 position.BlockPosition.X - bc.Radius + movecomp.PositionMove.X));
-            var maxx = (int)Math.Ceiling(Math.Max(
+            int maxx = (int)Math.Ceiling(Math.Max(
                 position.BlockPosition.X + bc.Radius,
                 position.BlockPosition.X + bc.Radius + movecomp.PositionMove.X));
-            var miny = (int)Math.Floor(Math.Min(
+            int miny = (int)Math.Floor(Math.Min(
                 position.BlockPosition.Y - bc.Radius,
                 position.BlockPosition.Y - bc.Radius + movecomp.PositionMove.Y));
-            var maxy = (int)Math.Ceiling(Math.Max(
+            int maxy = (int)Math.Ceiling(Math.Max(
                 position.BlockPosition.Y + bc.Radius,
                 position.BlockPosition.Y + bc.Radius + movecomp.PositionMove.Y));
-            var minz = (int)Math.Floor(Math.Min(
+            int minz = (int)Math.Floor(Math.Min(
                 position.BlockPosition.Z,
                 position.BlockPosition.Z + movecomp.PositionMove.Z));
-            var maxz = (int)Math.Ceiling(Math.Max(
+            int maxz = (int)Math.Ceiling(Math.Max(
                 position.BlockPosition.Z + bc.Height,
                 position.BlockPosition.Z + bc.Height + movecomp.PositionMove.Z));
 
             //Beteiligte Flächen des Spielers
-            var playerPlanes = CollisionPlane.GetEntityCollisionPlanes(bc.Radius, bc.Height, movecomp.Velocity, poscomp.Position);
-            var abort = false;
+            var playerplanes = CollisionPlane.GetEntityCollisionPlanes(bc.Radius, bc.Height, movecomp.Velocity, poscomp.Position);
+
+            bool abort = false;
+
             var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
 
-            for (var z = minz; z <= maxz && !abort; z++)
+            for (int z = minz; z <= maxz && !abort; z++)
             {
-                for (var y = miny; y <= maxy && !abort; y++)
+                for (int y = miny; y <= maxy && !abort; y++)
                 {
-                    for (var x = minx; x <= maxx && !abort; x++)
+                    for (int x = minx; x <= maxx && !abort; x++)
                     {
                         move = movecomp.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                        var pos = new Index3(x, y, z);
-                        var blockPos = pos + position.GlobalBlockIndex;
-                        var block = cache.GetBlock(blockPos);
-                        
+                        Index3 pos = new Index3(x, y, z);
+                        Index3 blockPos = pos + position.GlobalBlockIndex;
+                        ushort block = cache.GetBlock(blockPos);
                         if (block == 0)
                             continue;
 
-                        var blockPlane = CollisionPlane.GetBlockCollisionPlanes(pos, movecomp.Velocity).ToList();
 
-                        var planes = from pp in playerPlanes
-                                     from bp in blockPlane
+
+                        var blockplane = CollisionPlane.GetBlockCollisionPlanes(pos, movecomp.Velocity).ToList();
+
+                        var planes = from pp in playerplanes
+                                     from bp in blockplane
                                      where CollisionPlane.Intersect(bp, pp)
                                      let distance = CollisionPlane.GetDistance(bp, pp)
                                      where CollisionPlane.CheckDistance(distance, move)

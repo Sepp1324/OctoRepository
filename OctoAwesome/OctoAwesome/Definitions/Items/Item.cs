@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using OctoAwesome.Definitions;
 
-namespace OctoAwesome
+namespace OctoAwesome.Definitions.Items
 {
     /// <summary>
     /// Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity"/>
