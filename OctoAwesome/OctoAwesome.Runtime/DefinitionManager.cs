@@ -14,7 +14,7 @@ namespace OctoAwesome.Runtime
 
         public DefinitionManager(IExtensionResolver extensionResolver)
         {
-            this._extensionResolver = extensionResolver;
+            _extensionResolver = extensionResolver;
 
             Definitions = extensionResolver.GetDefinitions<IDefinition>().ToArray();
 
