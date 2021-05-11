@@ -10,11 +10,11 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
-        private readonly IExtensionResolver _extensionResolver;
+        private readonly IExtensionResolver extensionResolver;
 
         public DefinitionManager(IExtensionResolver extensionResolver)
         {
-            _extensionResolver = extensionResolver;
+            this.extensionResolver = extensionResolver;
 
             Definitions = extensionResolver.GetDefinitions<IDefinition>().ToArray();
 
@@ -66,7 +66,10 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="definition">BlockDefinition</param>
         /// <returns>Index der Block Definition</returns>
-        public ushort GetDefinitionIndex(IDefinition definition) => (ushort)(Array.IndexOf(Definitions, definition) + 1);
+        public ushort GetDefinitionIndex(IDefinition definition)
+        {
+            return (ushort)(Array.IndexOf(Definitions, definition) + 1);
+        }
 
         /// <summary>
         /// Liefert den Index der angegebenen BlockDefinition.
@@ -87,7 +90,7 @@ namespace OctoAwesome.Runtime
         public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
         {
             // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary)
-            return _extensionResolver.GetDefinitions<T>();
+            return extensionResolver.GetDefinitions<T>();
         }
     }
 }

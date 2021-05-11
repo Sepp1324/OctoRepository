@@ -1,4 +1,6 @@
-﻿using engenious;
+﻿using System.Drawing;
+using engenious;
+using System.Collections.Generic;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
 using System;
@@ -57,7 +59,10 @@ namespace OctoAwesome.Definitions
         /// </summary>
         /// <param name="block">Der Block-Typ des interagierenden Elements</param>
         /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
-        public virtual BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition) => new BlockHitInformation(true, VolumePerHit, new[] { (VolumePerUnit, (IDefinition)this)});
+        public virtual BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition)
+        {
+            return new BlockHitInformation(true, VolumePerHit, new[] { (VolumePerUnit, (IDefinition)this)});
+        }
 
         /// <summary>
         /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die 

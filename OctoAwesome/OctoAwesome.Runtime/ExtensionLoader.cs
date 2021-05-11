@@ -168,7 +168,10 @@ namespace OctoAwesome.Runtime
         /// Removes an existing Definition Type.
         /// </summary>
         /// <typeparam name="T">Definition Type</typeparam>
-        public void RemoveDefinition<T>() where T : IDefinition => throw new NotSupportedException("Currently not supported by TypeContainer");
+        public void RemoveDefinition<T>() where T : IDefinition
+        {
+            throw new NotSupportedException("Currently not supported by TypeContainer");
+        }
 
         /// <summary>
         /// Registers a new Entity.
@@ -176,7 +179,7 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Entity Type</typeparam>
         public void RegisterEntity<T>() where T : Entity
         {
-            var type = typeof(T);
+            Type type = typeof(T);
             if (entities.Contains(type))
                 throw new ArgumentException("Already registered");
 
@@ -190,7 +193,7 @@ namespace OctoAwesome.Runtime
         /// <param name="extenderDelegate">Extender Delegate</param>
         public void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity
         {
-            var type = typeof(T);
+            Type type = typeof(T);
             List<Action<Entity>> list;
             if (!entityExtender.TryGetValue(type, out list))
             {
@@ -221,21 +224,35 @@ namespace OctoAwesome.Runtime
             mapGenerators.Add(generator);
         }
 
-        public void RegisterMapPopulator(IMapPopulator populator) => mapPopulators.Add(populator);
+        public void RegisterMapPopulator(IMapPopulator populator)
+        {
+            mapPopulators.Add(populator);
+        }
+
+
 
         /// <summary>
         /// Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveEntity<T>() where T : Entity => entities.Remove(typeof(T));
+        public void RemoveEntity<T>() where T : Entity
+        {
+            entities.Remove(typeof(T));
+        }
 
         /// <summary>
         /// Removes an existing Map Generator.
         /// </summary>
         /// <typeparam name="T">Map Generator Type</typeparam>
-        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator => mapGenerators.Remove(item);
+        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator
+        {
+            mapGenerators.Remove(item);
+        }
 
-        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator => mapPopulators.Remove(item);
+        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator
+        {
+            mapPopulators.Remove(item);
+        }
 
         #endregion
 
@@ -257,8 +274,8 @@ namespace OctoAwesome.Runtime
         /// <param name="entity">Entity</param>
         public void ExtendEntity(Entity entity)
         {
-            var stack = new List<Type>();
-            var t = entity.GetType();
+            List<Type> stack = new List<Type>();
+            Type t = entity.GetType();
             stack.Add(t);
             do
             {
@@ -270,7 +287,8 @@ namespace OctoAwesome.Runtime
 
             foreach (var type in stack)
             {
-                if (!entityExtender.TryGetValue(type, out var list))
+                List<Action<Entity>> list;
+                if (!entityExtender.TryGetValue(type, out list))
                     continue;
 
                 foreach (var item in list)
@@ -296,13 +314,19 @@ namespace OctoAwesome.Runtime
         /// Return a List of MapGenerators
         /// </summary>
         /// <returns>List of Generators</returns>
-        public IEnumerable<IMapGenerator> GetMapGenerator() => mapGenerators;
+        public IEnumerable<IMapGenerator> GetMapGenerator()
+        {
+            return mapGenerators;
+        }
 
         /// <summary>
         /// Return a List of Populators
         /// </summary>
         /// <returns>List of Populators</returns>
-        public IEnumerable<IMapPopulator> GetMapPopulator() => mapPopulators;
+        public IEnumerable<IMapPopulator> GetMapPopulator()
+        {
+            return mapPopulators;
+        }
 
         #endregion
     }
