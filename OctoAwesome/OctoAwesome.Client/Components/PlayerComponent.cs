@@ -1,8 +1,5 @@
-﻿using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using engenious;
 using OctoAwesome.EntityComponents;
 
@@ -80,18 +77,10 @@ namespace OctoAwesome.Client.Components
                 // Map other Components
 
                 CurrentController = CurrentEntity.Components.GetComponent<ControllableComponent>();
-
-                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>();
-                if (CurrentEntityHead == null) CurrentEntityHead = new HeadComponent();
-
-                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
-                if (Inventory == null) Inventory = new InventoryComponent();
-
-                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>();
-                if (Toolbar == null) Toolbar = new ToolBarComponent();
-
-                Position = CurrentEntity.Components.GetComponent<PositionComponent>();
-                if (Position == null) Position = new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
+                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>() ?? new HeadComponent();
+                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>() ?? new InventoryComponent();
+                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>() ?? new ToolBarComponent();
+                Position = CurrentEntity.Components.GetComponent<PositionComponent>() ?? new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
             }
         }
 
@@ -133,7 +122,7 @@ namespace OctoAwesome.Client.Components
             if (Toolbar.Tools != null && Toolbar.Tools.Length > 0)
             {
                 if (Toolbar.ActiveTool == null) Toolbar.ActiveTool = Toolbar.Tools[0];
-                for (int i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
+                for (var i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
                 {
                     if (SlotInput[i])
                         Toolbar.ActiveTool = Toolbar.Tools[i];
@@ -142,11 +131,11 @@ namespace OctoAwesome.Client.Components
             }
 
             //Index des aktiven Werkzeugs ermitteln
-            int activeTool = -1;
-            List<int> toolIndices = new List<int>();
+            var activeTool = -1;
+            var toolIndices = new List<int>();
             if (Toolbar.Tools != null)
             {
-                for (int i = 0; i < Toolbar.Tools.Length; i++)
+                for (var i = 0; i < Toolbar.Tools.Length; i++)
                 {
                     if (Toolbar.Tools[i] != null)
                         toolIndices.Add(i);

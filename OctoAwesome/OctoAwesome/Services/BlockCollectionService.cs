@@ -1,12 +1,7 @@
 ﻿using OctoAwesome.Definitions;
-using OctoAwesome.Definitions.Items;
-using OctoAwesome.Information;
 using OctoAwesome.Pooling;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Services
 {
@@ -40,9 +35,7 @@ namespace OctoAwesome.Services
             var blockHitInformation = volumeState.BlockDefinition.Hit(volumeState, item);
 
             if (!blockHitInformation.IsHitValid)
-                return (false, null); 
-
-            item.Definition.Hit(item, volumeState.BlockDefinition, blockHitInformation);
+                return (false, null);
 
             volumeState.VolumeRemaining -= blockHitInformation.Quantity;
             volumeState.RestoreTime();

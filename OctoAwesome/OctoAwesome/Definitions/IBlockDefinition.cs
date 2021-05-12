@@ -15,7 +15,7 @@ namespace OctoAwesome.Definitions
         /// </summary>
         /// <param name="block">Der Block-Typ des interagierenden Elements</param>
         /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
-        BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition);
+        BlockHitInformation Hit(BlockVolumeState blockVolume, IItem item);
 
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält

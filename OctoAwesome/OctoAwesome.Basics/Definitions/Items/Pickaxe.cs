@@ -10,9 +10,5 @@ namespace OctoAwesome.Basics
         {
 
         }
-
-        public override void Hit(IItem item)
-        {
-        }
     }
 }

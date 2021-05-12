@@ -1,16 +1,10 @@
-﻿using System.Collections.Generic;
-
-namespace OctoAwesome.Definitions
+﻿namespace OctoAwesome.Definitions
 {
     /// <summary>
     /// Interface, das ein Item darstellt
     /// </summary>
     public interface IItem
     {
-        /// <summary>
-        /// Die Liste aller Ressourcen, die im Item enthalten sind
-        /// </summary>
-        List<IResource> Resources { get; }
 
         /// <summary>
         /// Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
@@ -21,6 +15,11 @@ namespace OctoAwesome.Definitions
         /// Der Zustand des Items
         /// </summary>
         int Condition { get; set; }
+        
         IItemDefinition Definition { get; }
+        
+        IMaterialDefinition Material { get; set; }
+        
+        int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit);
     }
 }

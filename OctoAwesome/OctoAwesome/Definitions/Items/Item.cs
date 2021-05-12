@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace OctoAwesome.Definitions.Items
+﻿namespace OctoAwesome.Definitions.Items
 {
     /// <summary>
     /// Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity"/>
@@ -17,12 +15,9 @@ namespace OctoAwesome.Definitions.Items
         /// </summary>
         public Coordinate? Position { get; set; }
 
-        /// <summary>
-        /// Die Liste aller Ressourcen, die im Item enthalten sind
-        /// </summary>
-        public List<IResource> Resources { get; private set; }
-
         public IItemDefinition Definition { get; }
+        
+        public IMaterialDefinition Material { get; set; }
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Item.
@@ -30,14 +25,21 @@ namespace OctoAwesome.Definitions.Items
         public Item(IItemDefinition definition)
         {
             Definition = definition;
-            Resources = new List<IResource>();
             Condition = 99;
         }
+        
+        public virtual int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit)
+        {
+            if (!Definition.CanMineMaterial(material))
+                return 0;
 
-        /// <summary>
-        /// Das was passiert wenn das Item zuschlägt.
-        /// </summary>
-        /// <param name="item">Das interagierende Item</param>
-        public abstract void Hit(IItem item);
+            if (material.Density > 1)
+                return volumePerHit;
+
+            if (Material.Hardness * 1.2f < material.Hardness)
+                return 0;
+
+            return ((Material.Hardness - material.Hardness) * 3 + 100) * volumePerHit / 100;
+        }
     }
 }
