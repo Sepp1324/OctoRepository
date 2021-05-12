@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Information;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
@@ -12,12 +11,9 @@ namespace OctoAwesome.Basics.Definitions.Items
         public int StackLimit => 1;
 
         public float VolumePerUnit => 10;
-
-        int IInventoryableDefinition.VolumePerUnit => 1;
         
-        public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            return material is ISolidMaterialDefinition solid;
-        }
+        public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
+
+        public Pickaxe Create(IMaterialDefinition material) => new Pickaxe(this, material);
     }
 }

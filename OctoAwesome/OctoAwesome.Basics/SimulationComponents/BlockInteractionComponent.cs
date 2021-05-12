@@ -1,9 +1,4 @@
 ﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Services;
 using OctoAwesome.Definitions.Items;
@@ -26,10 +21,7 @@ namespace OctoAwesome.Basics.SimulationComponents
             hand = new Hand(new HandDefinition());
         }
 
-        protected override bool AddEntity(Entity entity)
-        {
-            return true;
-        }
+        protected override bool AddEntity(Entity entity) => true;
 
         protected override void RemoveEntity(Entity entity)
         {
@@ -47,12 +39,15 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 if (!lastBlock.IsEmpty)
                 {
-                    var blockHitInformation = service.Hit(lastBlock, hand, cache);
+                    if (!(toolbar.ActiveTool.Item is IItem item))
+                        item = hand;
+                    
+                    var blockHitInformation = service.Hit(lastBlock, item, cache);
 
                     if (blockHitInformation.Valid)
                         foreach (var (Quantity, Definition) in blockHitInformation.List)
                         {
-                            if (Definition is IInventoryableDefinition invDef)
+                            if (Definition is IInventoryable invDef)
                                 inventory.AddUnit(Quantity, invDef);
                         }
 
@@ -64,7 +59,7 @@ namespace OctoAwesome.Basics.SimulationComponents
             {
                 if (toolbar.ActiveTool != null)
                 {
-                    Index3 add = new Index3();
+                    var add = new Index3();
                     switch (controller.ApplySide)
                     {
                         case OrientationFlags.SideWest: add = new Index3(-1, 0, 0); break;
@@ -75,27 +70,27 @@ namespace OctoAwesome.Basics.SimulationComponents
                         case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
                     }
 
-                    if (toolbar.ActiveTool.Definition is IBlockDefinition definition)
+                    if (toolbar.ActiveTool.Item is IBlockDefinition definition)
                     {
-                        Index3 idx = controller.ApplyBlock.Value + add;
+                        var idx = controller.ApplyBlock.Value + add;
                         var boxes = definition.GetCollisionBoxes(cache, idx.X, idx.Y, idx.Z);
 
-                        bool intersects = false;
-                        var positioncomponent = entity.Components.GetComponent<PositionComponent>();
-                        var bodycomponent = entity.Components.GetComponent<BodyComponent>();
+                        var intersects = false;
+                        var positionComponent = entity.Components.GetComponent<PositionComponent>();
+                        var bodyComponent = entity.Components.GetComponent<BodyComponent>();
 
-                        if (positioncomponent != null && bodycomponent != null)
+                        if (positionComponent != null && bodyComponent != null)
                         {
-                            float gap = 0.01f;
+                            var gap = 0.01f;
                             var playerBox = new BoundingBox(
                                 new Vector3(
-                                    positioncomponent.Position.GlobalBlockIndex.X + positioncomponent.Position.BlockPosition.X - bodycomponent.Radius + gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Y + positioncomponent.Position.BlockPosition.Y - bodycomponent.Radius + gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Z + positioncomponent.Position.BlockPosition.Z + gap),
+                                    positionComponent.Position.GlobalBlockIndex.X + positionComponent.Position.BlockPosition.X - bodyComponent.Radius + gap,
+                                    positionComponent.Position.GlobalBlockIndex.Y + positionComponent.Position.BlockPosition.Y - bodyComponent.Radius + gap,
+                                    positionComponent.Position.GlobalBlockIndex.Z + positionComponent.Position.BlockPosition.Z + gap),
                                 new Vector3(
-                                    positioncomponent.Position.GlobalBlockIndex.X + positioncomponent.Position.BlockPosition.X + bodycomponent.Radius - gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Y + positioncomponent.Position.BlockPosition.Y + bodycomponent.Radius - gap,
-                                    positioncomponent.Position.GlobalBlockIndex.Z + positioncomponent.Position.BlockPosition.Z + bodycomponent.Height - gap)
+                                    positionComponent.Position.GlobalBlockIndex.X + positionComponent.Position.BlockPosition.X + bodyComponent.Radius - gap,
+                                    positionComponent.Position.GlobalBlockIndex.Y + positionComponent.Position.BlockPosition.Y + bodyComponent.Radius - gap,
+                                    positionComponent.Position.GlobalBlockIndex.Z + positionComponent.Position.BlockPosition.Z + bodyComponent.Height - gap)
                                 );
 
                             // Nicht in sich selbst reinbauen

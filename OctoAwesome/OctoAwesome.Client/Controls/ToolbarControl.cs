@@ -1,11 +1,6 @@
 ﻿using engenious.UI;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Runtime;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using engenious;
 using engenious.Graphics;
 using OctoAwesome.EntityComponents;
@@ -40,11 +35,11 @@ namespace OctoAwesome.Client.Controls
 
             foreach (var item in screenManager.Game.DefinitionManager.Definitions)
             {
-                Texture2D texture = screenManager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
+                var texture = screenManager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
                 toolTextures.Add(item.GetType().FullName, texture);
             }
 
-            Grid grid = new Grid(screenManager)
+            var grid = new Grid(screenManager)
             {
                 Margin = new Border(0, 0, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -55,19 +50,13 @@ namespace OctoAwesome.Client.Controls
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 50 });
 
-            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
-            {
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
                 grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
-            }
 
-            activeToolLabel = new Label(screenManager);
-            activeToolLabel.VerticalAlignment = VerticalAlignment.Top;
-            activeToolLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            activeToolLabel.Background = new BorderBrush(Color.Black * 0.3f);
-            activeToolLabel.TextColor = Color.White;
+            activeToolLabel = new Label(screenManager) {VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Center, Background = new BorderBrush(Color.Black * 0.3f), TextColor = Color.White};
             grid.AddControl(activeToolLabel, 0, 0, ToolBarComponent.TOOLCOUNT);
 
-            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 buttons[i] = new Button(screenManager)
                 {
@@ -76,11 +65,7 @@ namespace OctoAwesome.Client.Controls
                     Background = buttonBackgroud,
                     HoveredBackground = null,
                     PressedBackground = null,
-                };
-                buttons[i].Content = images[i] = new Image(screenManager)
-                {
-                    Width = 42,
-                    Height = 42,
+                    Content = images[i] = new Image(screenManager) {Width = 42, Height = 42,},
                 };
                 grid.AddControl(buttons[i], i, 1);
             }
@@ -94,19 +79,15 @@ namespace OctoAwesome.Client.Controls
             if (Player.CurrentEntity == null) return;
 
            // Aktualisierung des aktiven Buttons
-            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 if (Player.Toolbar.Tools != null &&
                     Player.Toolbar.Tools.Length > i &&
                     Player.Toolbar.Tools[i] != null &&
-                    Player.Toolbar.Tools[i].Definition != null)
+                    Player.Toolbar.Tools[i].Item != null)
                 {
                     images[i].Texture = toolTextures[Player.Toolbar.Tools[i].Definition.GetType().FullName];
-
-                    if (Player.Toolbar.ActiveTool == Player.Toolbar.Tools[i])
-                        buttons[i].Background = activeBackground;
-                    else
-                        buttons[i].Background = buttonBackgroud;
+                    buttons[i].Background = Player.Toolbar.ActiveTool == Player.Toolbar.Tools[i] ? activeBackground : buttonBackgroud;
                 }
                 else
                 {
@@ -116,11 +97,10 @@ namespace OctoAwesome.Client.Controls
             }
 
             // Aktualisierung des ActiveTool Labels
-            activeToolLabel.Text = Player.Toolbar.ActiveTool != null ?
-                string.Format("{0} ({1})", Player.Toolbar.ActiveTool.Definition.Name, Player.Toolbar.ActiveTool.Amount) :
-                string.Empty;
+            activeToolLabel.Text = Player.Toolbar.ActiveTool != null ? $"{Player.Toolbar.ActiveTool.Definition.Name} ({Player.Toolbar.ActiveTool.Amount})"
+                : string.Empty;
 
-            activeToolLabel.Visible = !(activeToolLabel.Text == string.Empty);
+            activeToolLabel.Visible = activeToolLabel.Text != string.Empty;
 
             base.OnUpdate(gameTime);
         }

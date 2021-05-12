@@ -38,7 +38,7 @@ namespace OctoAwesome.Client.Screens
 
             foreach (var item in manager.Game.DefinitionManager.Definitions)
             {
-                Texture2D texture = manager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
+                var texture = manager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
                 toolTextures.Add(item.GetType().FullName, texture);
             }
 
@@ -50,9 +50,9 @@ namespace OctoAwesome.Client.Screens
             backgroundBrush = new BorderBrush(Color.Black);
             hoverBrush = new BorderBrush(Color.Brown);
 
-            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            var panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
 
-            Grid grid = new Grid(manager)
+            var grid = new Grid(manager)
             {
                 Width = 800,
                 Height = 500,
@@ -75,7 +75,7 @@ namespace OctoAwesome.Client.Screens
 
             grid.AddControl(inventory, 0, 0);
 
-            StackPanel infoPanel = new StackPanel(manager)
+            var infoPanel = new StackPanel(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -92,7 +92,7 @@ namespace OctoAwesome.Client.Screens
             infoPanel.Controls.Add(volumeLabel);
             grid.AddControl(infoPanel, 1, 0);
 
-            Grid toolbar = new Grid(manager)
+            var toolbar = new Grid(manager)
             {
                 Margin = Border.All(0, 10, 0, 0),
                 Height = 100,
@@ -102,15 +102,15 @@ namespace OctoAwesome.Client.Screens
             };
 
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
                 toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
             toolbar.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
 
             images = new Image[ToolBarComponent.TOOLCOUNT];
-            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
-                Image image = images[i] = new Image(manager)
+                var image = images[i] = new Image(manager)
                 {
                     Width = 42,
                     Height = 42,
@@ -122,11 +122,11 @@ namespace OctoAwesome.Client.Screens
 
                 image.StartDrag += (e) =>
                 {
-                    InventorySlot slot = player.Toolbar.Tools[(int)image.Tag];
+                    var slot = player.Toolbar.Tools[(int)image.Tag];
                     if (slot != null)
                     {
                         e.Handled = true;
-                        e.Icon = toolTextures[slot.Definition.GetType().FullName];
+                        e.Icon = toolTextures[slot.Item.GetType().FullName];
                         e.Content = slot;
                         e.Sender = toolbar;
                     }
@@ -171,7 +171,7 @@ namespace OctoAwesome.Client.Screens
 
             if (args.Sender is Grid)
             {
-                InventorySlot slot = args.Content as InventorySlot;
+                var slot = args.Content as InventorySlot;
                 player.Toolbar.RemoveSlot(slot);
             }
         }
@@ -181,7 +181,7 @@ namespace OctoAwesome.Client.Screens
             // Tool neu zuweisen
             if ((int)args.Key >= (int)Keys.D0 && (int)args.Key <= (int)Keys.D9)
             {
-                int offset = (int)args.Key - (int)Keys.D0;
+                var offset = (int)args.Key - (int)Keys.D0;
                 player.Toolbar.SetTool(inventory.HoveredSlot, offset);
                 args.Handled = true;
             }
@@ -199,16 +199,16 @@ namespace OctoAwesome.Client.Screens
         {
             base.OnUpdate(gameTime);
 
-            nameLabel.Text = inventory.HoveredSlot?.Definition.Name ?? "";
+            nameLabel.Text = inventory.HoveredSlot?.Definition?.Name ?? "";
             massLabel.Text = volumeLabel.Text = inventory.HoveredSlot?.Amount.ToString() ?? "";
 
             // Aktualisierung des aktiven Buttons
-            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
                 if (player.Toolbar.Tools != null &&
                     player.Toolbar.Tools.Length > i &&
                     player.Toolbar.Tools[i] != null &&
-                    player.Toolbar.Tools[i].Definition != null)
+                    player.Toolbar.Tools[i].Item != null)
                 {
                     images[i].Texture = toolTextures[player.Toolbar.Tools[i].Definition.GetType().FullName];
                 }

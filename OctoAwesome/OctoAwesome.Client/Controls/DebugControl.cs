@@ -1,8 +1,5 @@
 ﻿using engenious.UI;
-using System.Collections.Generic;
-using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
-using System;
 using engenious;
 using engenious.Graphics;
 using System.Linq;
@@ -39,7 +36,7 @@ namespace OctoAwesome.Client.Controls
             assets = screenManager.Game.Assets;
 
             //Brush for Debug Background
-            BorderBrush bg = new BorderBrush(Color.Black * 0.2f);
+            var bg = new BorderBrush(Color.Black * 0.2f);
 
             //The left side of the Screen
             leftView = new StackPanel(ScreenManager)
@@ -58,8 +55,7 @@ namespace OctoAwesome.Client.Controls
             };
 
             //Creating all Labels
-            devText = new Label(ScreenManager);
-            devText.Text = Languages.OctoClient.DevelopmentVersion;
+            devText = new Label(ScreenManager) {Text = Languages.OctoClient.DevelopmentVersion};
             leftView.Controls.Add(devText);
 
             loadedChunks = new Label(ScreenManager);
@@ -102,10 +98,7 @@ namespace OctoAwesome.Client.Controls
             rightView.Controls.Add(flyInfo);
 
             //This Label gets added to the root and is set to Bottom Left
-            box = new Label(ScreenManager);
-            box.VerticalAlignment = VerticalAlignment.Bottom;
-            box.HorizontalAlignment = HorizontalAlignment.Left;
-            box.TextColor = Color.White;
+            box = new Label(ScreenManager) {VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Left, TextColor = Color.White};
             Controls.Add(box);
 
             //Add the left & right side to the root
@@ -121,7 +114,7 @@ namespace OctoAwesome.Client.Controls
                     ((Label)control).TextColor = Color.White;
                 }
             }
-            foreach (Control control in rightView.Controls)
+            foreach (var control in rightView.Controls)
             {
                 control.HorizontalAlignment = HorizontalAlignment.Right;
                 if (control is Label)
@@ -157,14 +150,14 @@ namespace OctoAwesome.Client.Controls
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
 
             //Draw Position
-            string pos = "pos: " + Player.Position.Position.ToString();
+            var pos = "pos: " + Player.Position.Position.ToString();
             position.Text = pos;
 
             //Draw Rotation
-            float grad = (Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360;
-            string rot = "rot: " +
-                (((Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
-                ((Player.CurrentEntityHead.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
+            var grad = (Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360;
+            var rot = "rot: " +
+                      (((Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                      ((Player.CurrentEntityHead.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
             rotation.Text = rot;
 
             //Draw Fps
@@ -197,7 +190,7 @@ namespace OctoAwesome.Client.Controls
             //if (Player.ActorHost.Player.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
             //else flyInfo.Text = "";
 
-            IPlanet planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
+            var planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
             // Temperature Info
             temperatureInfo.Text = Languages.OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.Position.Position.GlobalBlockIndex);
 
@@ -210,12 +203,12 @@ namespace OctoAwesome.Client.Controls
             //Draw Box Information
             if (Player.SelectedBox.HasValue)
             {
-                string selection = "box: " +
-                    Player.SelectedBox.Value.ToString() + " on " +
-                    Player.SelectedSide.ToString() + " (" +
-                    Player.SelectedPoint.Value.X.ToString("0.00") + "/" +
-                    Player.SelectedPoint.Value.Y.ToString("0.00") + ") -> " +
-                    Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
+                var selection = "box: " +
+                                Player.SelectedBox.Value.ToString() + " on " +
+                                Player.SelectedSide.ToString() + " (" +
+                                Player.SelectedPoint.Value.X.ToString("0.00") + "/" +
+                                Player.SelectedPoint.Value.Y.ToString("0.00") + ") -> " +
+                                Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
                 box.Text = selection;
             }
             else

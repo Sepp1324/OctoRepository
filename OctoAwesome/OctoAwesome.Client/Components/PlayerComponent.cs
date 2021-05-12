@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using engenious;
+using OctoAwesome.Basics.Definitions.Items;
 using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome.Client.Components
@@ -176,16 +178,30 @@ namespace OctoAwesome.Client.Components
         internal void AllBlocksDebug()
         {
             var inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
+            
             if (inventory == null)
                 return;
 
             var blockDefinitions = resourceManager.DefinitionManager.BlockDefinitions;
+            
             foreach (var blockDefinition in blockDefinitions)
                 inventory.AddUnit(blockDefinition.VolumePerUnit, blockDefinition);
 
             var itemDefinitions = resourceManager.DefinitionManager.ItemDefinitions;
+            var wood = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Wood");
+            var stone = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Stone");
+
             foreach (var itemDefinition in itemDefinitions)
-                inventory.AddUnit(itemDefinition.VolumePerUnit, itemDefinition);
+            {
+                if (!(itemDefinition is PickaxeDefinition pickaxeDefinition))
+                    continue;
+
+                var woodItem = pickaxeDefinition.Create(wood);
+                var stoneItem = pickaxeDefinition.Create(stone);
+                
+                inventory.AddUnit(woodItem.VolumePerUnit, woodItem);
+                inventory.AddUnit(stoneItem.VolumePerUnit, stoneItem);
+            }
         }
     }
 }
