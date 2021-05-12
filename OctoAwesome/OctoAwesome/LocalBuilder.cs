@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.Common;
 using System.Linq;
 
 namespace OctoAwesome
@@ -74,7 +72,7 @@ namespace OctoAwesome
         /// <returns></returns>
         public static int GetSurfaceHeight(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
-            IChunkColumn curColumn = GetColumn(column00, column10, column01, column11, x, y);
+            var curColumn = GetColumn(column00, column10, column01, column11, x, y);
             return curColumn.Heights[x % Chunk.CHUNKSIZE_X, y % Chunk.CHUNKSIZE_Y];
         }
 
@@ -91,12 +89,16 @@ namespace OctoAwesome
             x += originX;
             y += originY;
             z += originZ;
-            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+            
+            var column = GetColumn(column00, column10, column01, column11, x, y);
             var index = z / Chunk.CHUNKSIZE_Z;
+            
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             z %= Chunk.CHUNKSIZE_Z;
+            
             var flatIndex = Chunk.GetFlatIndex(x, y, z);
+            
             column.Chunks[index].Blocks[flatIndex] = block;
         }
 
@@ -164,9 +166,11 @@ namespace OctoAwesome
             x += originX;
             y += originY;
             z += originZ;
-            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+            
+            var column = GetColumn(column00, column10, column01, column11, x, y);
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
+            
             return column.GetBlock(x, y, z);
         }
     }

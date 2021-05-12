@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using OctoAwesome.Notifications;
 
 namespace OctoAwesome
@@ -115,7 +114,6 @@ namespace OctoAwesome
             Gravity = reader.ReadSingle();
             Size = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Universe = new Guid(reader.ReadBytes(16));
-            //var name = reader.ReadString();
         }
 
         public void Dispose()

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Threading
 {
@@ -66,10 +63,7 @@ namespace OctoAwesome.Threading
             }
         }
 
-        private void LeaveSuperScope()
-        {
-            superLock.Set();
-        }
+        private void LeaveSuperScope() => superLock.Set();
 
         public readonly struct CountScope : IDisposable, IEquatable<CountScope>
         {
@@ -82,24 +76,17 @@ namespace OctoAwesome.Threading
                 internalSemaphore = countingSemaphore;
             }
 
-            public void Dispose()
-            {
-                internalSemaphore?.LeaveMainScope();
-            }
+            public void Dispose() => internalSemaphore?.LeaveMainScope();
 
-            public override bool Equals(object obj)
-                => obj is CountScope scope
-                  && Equals(scope);
-            public bool Equals(CountScope other)
-                => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
+            public override bool Equals(object obj) => obj is CountScope scope && Equals(scope);
+            
+            public bool Equals(CountScope other) => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
 
-            public override int GetHashCode()
-                => 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
+            public override int GetHashCode() => 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
 
-            public static bool operator ==(CountScope left, CountScope right)
-                => left.Equals(right);
-            public static bool operator !=(CountScope left, CountScope right)
-                => !(left == right);
+            public static bool operator ==(CountScope left, CountScope right) => left.Equals(right);
+           
+            public static bool operator !=(CountScope left, CountScope right) => !(left == right);
         }
 
         public readonly struct SuperScope : IDisposable, IEquatable<SuperScope>
@@ -108,23 +95,18 @@ namespace OctoAwesome.Threading
 
             private readonly CountedScopeSemaphore internalSemaphore;
 
-            public SuperScope(CountedScopeSemaphore semaphore)
-            {
-                internalSemaphore = semaphore;
-            }
+            public SuperScope(CountedScopeSemaphore semaphore) => internalSemaphore = semaphore;
 
-            public void Dispose()
-            {
-                internalSemaphore?.LeaveSuperScope();
-            }
+            public void Dispose() => internalSemaphore?.LeaveSuperScope();
 
             public override bool Equals(object obj) => obj is SuperScope scope && Equals(scope);
-            public bool Equals(SuperScope other)
-                => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
-            public override int GetHashCode()
-                => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
+           
+            public bool Equals(SuperScope other) => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
+            
+            public override int GetHashCode() => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
 
             public static bool operator ==(SuperScope left, SuperScope right) => left.Equals(right);
+            
             public static bool operator !=(SuperScope left, SuperScope right) => !(left == right);
         }
     }

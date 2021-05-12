@@ -25,7 +25,7 @@ namespace OctoAwesome
 
             foreach (var localBox in collisionBoxes)
             {
-                BoundingBox box = new BoundingBox(localBox.Min + boxPosition, localBox.Max + boxPosition);
+                var box = new BoundingBox(localBox.Min + boxPosition, localBox.Max + boxPosition);
 
                 float? distance = ray.Intersects(box);
 

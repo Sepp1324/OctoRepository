@@ -34,7 +34,6 @@ namespace OctoAwesome
             }
         }
 
-
         /// <summary>
         /// Volumen des Elementes <see cref="Item"/> in diesem Slot in dm³.
         /// </summary>

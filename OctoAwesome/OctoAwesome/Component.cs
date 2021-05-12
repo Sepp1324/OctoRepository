@@ -36,10 +36,7 @@ namespace OctoAwesome
             Enabled = reader.ReadBoolean();
         }
 
-        protected virtual void OnPropertyChanged<T>(T value, string callerName)
-        {
-
-        }
+        protected virtual void OnPropertyChanged<T>(T value, string callerName) { }
 
         protected void SetValue<T>(ref T field, T value, [CallerMemberName]string callerName = "")
         {

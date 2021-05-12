@@ -199,8 +199,7 @@ namespace OctoAwesome
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns>Das Ergebnis der Addition</returns>
-        public static Coordinate operator +(Coordinate i1, Vector3 i2)
-            => new Coordinate(i1.Planet, i1.block, i1.position + i2);
+        public static Coordinate operator +(Coordinate i1, Vector3 i2) => new Coordinate(i1.Planet, i1.block, i1.position + i2);
 
         /// <summary>
         /// Stellt die Coordinate-Instanz als string dar.

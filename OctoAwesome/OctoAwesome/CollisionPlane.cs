@@ -1,5 +1,4 @@
 ﻿using engenious;
-using System;
 using System.Collections.Generic;
 
 namespace OctoAwesome
@@ -13,14 +12,17 @@ namespace OctoAwesome
         /// Normalenvector der Fläche
         /// </summary>
         public Vector3 normal;
+        
         /// <summary>
         /// Mittelpunkt der Fläche
         /// </summary>
         public Vector3 pos;
+        
         /// <summary>
         /// Erste Ecke der Fläche
         /// </summary>
         public Vector3 edgepos1;
+        
         /// <summary>
         /// Zweite Ecke der Fläche
         /// </summary>

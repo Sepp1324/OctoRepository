@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
-using engenious;
-using System.IO;
-using System.Linq;
-using OctoAwesome.EntityComponents;
+﻿using System.IO;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 
@@ -24,10 +19,7 @@ namespace OctoAwesome
         /// <summary>
         /// Erzeugt eine neue Player-Instanz an der Default-Position.
         /// </summary>
-        public Player() : base()
-        {
-            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-        }
+        public Player() : base() => entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
         protected override void OnInitialize(IResourceManager manager)
         {
@@ -60,6 +52,5 @@ namespace OctoAwesome
             Simulation?.OnUpdate(entityNotification);
             entityNotification.Release();
         }
-
     }
 }

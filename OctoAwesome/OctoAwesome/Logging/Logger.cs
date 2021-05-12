@@ -1,9 +1,5 @@
 ﻿using NLog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Logging
 {
@@ -11,17 +7,11 @@ namespace OctoAwesome.Logging
     {
         private readonly static NLog.ILogger nullLogger;
 
-        static Logger()
-        {
-            nullLogger = LogManager.LogFactory.CreateNullLogger();
-        }
+        static Logger() => nullLogger = LogManager.LogFactory.CreateNullLogger();
 
         private NLog.ILogger internalLogger;
 
-        public Logger()
-        {
-            internalLogger = nullLogger;
-        }
+        public Logger() => internalLogger = nullLogger;
 
         public void Info(string message)
             => internalLogger.Info(message);
@@ -70,12 +60,10 @@ namespace OctoAwesome.Logging
             internalLogger = NLog.LogManager.GetLogger(loggerName);
             return this;
         }
+        
         public ILogger As(Type type) 
             => As(type.FullName);
 
-        public void Flush()
-        {
-            LogManager.Flush();
-        }
+        public void Flush() => LogManager.Flush();
     }
 }

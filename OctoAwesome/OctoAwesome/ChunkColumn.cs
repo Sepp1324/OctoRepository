@@ -391,18 +391,13 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification)
-        {
-            globalChunkCache.OnUpdate(notification);
-        }
+        public void OnUpdate(SerializableNotification notification) => globalChunkCache.OnUpdate(notification);
 
         public void Update(SerializableNotification notification)
         {
             if (notification is IChunkNotification chunkNotification)
             {
-                Chunks
-                    .FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)?
-                    .Update(notification);
+                Chunks.FirstOrDefault(c => c.Index == chunkNotification.ChunkPos)?.Update(notification);
             }
         }
 
@@ -441,9 +436,7 @@ namespace OctoAwesome
                 return;
 
             foreach (var chunk in Chunks)
-            {
                 chunk.FlagDirty();
-            }
         }
     }
 }

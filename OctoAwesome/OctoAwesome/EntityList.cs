@@ -1,10 +1,6 @@
 ﻿using OctoAwesome.EntityComponents;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -25,10 +21,7 @@ namespace OctoAwesome
 
         public bool IsReadOnly => false;
 
-        public void Add(Entity item)
-        {
-            entities.Add(item);
-        }
+        public void Add(Entity item) => entities.Add(item);
 
         public void Clear() => entities.Clear();
 
@@ -38,10 +31,7 @@ namespace OctoAwesome
 
         public IEnumerator<Entity> GetEnumerator() => entities.GetEnumerator();
 
-        public bool Remove(Entity item)
-        {
-            return entities.Remove(item);
-        }
+        public bool Remove(Entity item) => entities.Remove(item);
 
         IEnumerator IEnumerable.GetEnumerator() => entities.GetEnumerator();
 

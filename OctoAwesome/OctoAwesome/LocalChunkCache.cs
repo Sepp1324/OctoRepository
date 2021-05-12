@@ -3,7 +3,6 @@ using OctoAwesome.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -130,13 +129,13 @@ namespace OctoAwesome
                 return;
             }
 
-            List<Index2> requiredChunkColumns = new List<Index2>();
+            var requiredChunkColumns = new List<Index2>();
 
-            for (int x = -range; x <= range; x++)
+            for (var x = -range; x <= range; x++)
             {
-                for (int y = -range; y <= range; y++)
+                for (var y = -range; y <= range; y++)
                 {
-                    Index2 local = new Index2(index.X + x, index.Y + y);
+                    var local = new Index2(index.X + x, index.Y + y);
                     local.NormalizeXY(Planet.Size);
                     requiredChunkColumns.Add(local);
                 }
@@ -153,10 +152,10 @@ namespace OctoAwesome
                                                 .OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size))
                                                 .LengthSquared()))
             {
-                int localX = chunkColumnIndex.X & mask;
-                int localY = chunkColumnIndex.Y & mask;
-                int flatIndex = FlatIndex(localX, localY);
-                IChunkColumn chunkColumn = chunkColumns[flatIndex];
+                var localX = chunkColumnIndex.X & mask;
+                var localY = chunkColumnIndex.Y & mask;
+                var flatIndex = FlatIndex(localX, localY);
+                var chunkColumn = chunkColumns[flatIndex];
 
                 // Alten Chunk entfernen, falls notwendig
 
@@ -220,8 +219,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Chunk Index</param>
         /// <returns>Instanz des Chunks</returns>
-        public IChunk GetChunk(Index3 index)
-            => GetChunk(index.X, index.Y, index.Z);
+        public IChunk GetChunk(Index3 index) => GetChunk(index.X, index.Y, index.Z);
 
         /// <summary>
         /// Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
@@ -238,7 +236,7 @@ namespace OctoAwesome
             x = Index2.NormalizeAxis(x, Planet.Size.X);
             y = Index2.NormalizeAxis(y, Planet.Size.Y);
 
-            IChunkColumn chunkColumn = chunkColumns[FlatIndex(x, y)];
+            var chunkColumn = chunkColumns[FlatIndex(x, y)];
 
             if (chunkColumn != null && chunkColumn.Index.X == x && chunkColumn.Index.Y == y)
                 return chunkColumn.Chunks[z];
@@ -251,8 +249,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block Index</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        public ushort GetBlock(Index3 index)
-            => GetBlock(index.X, index.Y, index.Z);
+        public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
         /// Liefert den Block an der angegebenen Block-Koodinate zurück.
@@ -261,7 +258,7 @@ namespace OctoAwesome
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
         public BlockInfo GetBlockInfo(Index3 index)
         {
-            IChunk chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
+            var chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
 
             if (chunk != null)
             {
@@ -284,12 +281,8 @@ namespace OctoAwesome
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
         public ushort GetBlock(int x, int y, int z)
         {
-            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
-
-            if (chunk != null)
-                return chunk.GetBlock(x, y, z);
-
-            return 0;
+            var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+            return chunk?.GetBlock(x, y, z) ?? (ushort) 0;
         }
 
         /// <summary>
@@ -297,8 +290,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="block">Die neue Block-ID.</param>
-        public void SetBlock(Index3 index, ushort block)
-            => SetBlock(index.X, index.Y, index.Z, block);
+        public void SetBlock(Index3 index, ushort block) => SetBlock(index.X, index.Y, index.Z, block);
 
         /// <summary>
         /// Überschreibt den Block an der angegebenen Koordinate.
@@ -309,10 +301,9 @@ namespace OctoAwesome
         /// <param name="block">Die neue Block-ID</param>
         public void SetBlock(int x, int y, int z, ushort block)
         {
-            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+            var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
-            if (chunk != null)
-                chunk.SetBlock(x, y, z, block);
+            chunk?.SetBlock(x, y, z, block);
         }
 
         /// <summary>
@@ -324,12 +315,9 @@ namespace OctoAwesome
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
         public int GetBlockMeta(int x, int y, int z)
         {
-            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+            var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
-            if (chunk != null)
-                return chunk.GetBlockMeta(x, y, z);
-
-            return 0;
+            return chunk?.GetBlockMeta(x, y, z) ?? 0;
         }
 
         /// <summary>
@@ -337,8 +325,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
-        public int GetBlockMeta(Index3 index)
-            => GetBlockMeta(index.X, index.Y, index.Z);
+        public int GetBlockMeta(Index3 index) => GetBlockMeta(index.X, index.Y, index.Z);
 
         /// <summary>
         /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 
@@ -349,10 +336,8 @@ namespace OctoAwesome
         /// <param name="meta">Die neuen Metadaten</param>
         public void SetBlockMeta(int x, int y, int z, int meta)
         {
-            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
-
-            if (chunk != null)
-                chunk.SetBlockMeta(x, y, z, meta);
+            var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+            chunk?.SetBlockMeta(x, y, z, meta);
         }
 
         /// <summary>
@@ -360,20 +345,19 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="meta">Die neuen Metadaten</param>
-        public void SetBlockMeta(Index3 index, int meta)
-            => SetBlockMeta(index.X, index.Y, index.Z, meta);
+        public void SetBlockMeta(Index3 index, int meta) => SetBlockMeta(index.X, index.Y, index.Z, meta);
 
         /// <summary>
         /// Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
         /// </summary>
         public void Flush()
         {
-            for (int i = 0; i < chunkColumns.Length; i++)
+            for (var i = 0; i < chunkColumns.Length; i++)
             {
                 if (chunkColumns[i] == null)
                     continue;
 
-                IChunkColumn chunkColumn = chunkColumns[i];
+                var chunkColumn = chunkColumns[i];
 
                 globalCache.Release(chunkColumn.Index);
                 chunkColumns[i] = null;
@@ -386,8 +370,6 @@ namespace OctoAwesome
         /// <param name="x">Die X-Koordinate</param>
         /// <param name="y">Die Y-Koordinate</param>
         /// <returns>Der Abgeflachte index</returns>
-        private int FlatIndex(int x, int y)
-            => (((y & (mask)) << limit) | ((x & (mask))));
-
+        private int FlatIndex(int x, int y) => (((y & (mask)) << limit) | ((x & (mask))));
     }
 }

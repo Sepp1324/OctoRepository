@@ -7,6 +7,6 @@
 
         }
 
-        public override int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit) => volumePerHit / 5;
+        public override int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit) => volumePerHit  - material.Hardness / 20;
     }
 }

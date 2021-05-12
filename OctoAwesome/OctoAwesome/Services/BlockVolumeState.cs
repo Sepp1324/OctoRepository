@@ -1,10 +1,6 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Pooling;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Services
 {
@@ -25,15 +21,9 @@ namespace OctoAwesome.Services
             ValidUntil = validUntil;
         }
 
-        public void Init(IPool pool)
-        {
-            this.pool = pool;
-        }
+        public void Init(IPool pool) => this.pool = pool;
 
-        public void Release()
-        {
-            pool.Push(this);
-        }
+        public void Release() => pool.Push(this);
 
         internal bool TryReset()
         {
@@ -44,9 +34,6 @@ namespace OctoAwesome.Services
             return true;
         }
 
-        internal void RestoreTime()
-        {
-            ValidUntil = DateTimeOffset.Now.Add(BlockDefinition.TimeToVolumeReset);
-        }
+        internal void RestoreTime() => ValidUntil = DateTimeOffset.Now.Add(BlockDefinition.TimeToVolumeReset);
     }
 }

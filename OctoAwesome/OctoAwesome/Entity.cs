@@ -1,5 +1,4 @@
-﻿using engenious;
-using OctoAwesome.EntityComponents;
+﻿using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
@@ -27,14 +26,12 @@ namespace OctoAwesome
         /// </summary>
         public Simulation Simulation { get; internal set; }
 
-
         /// <summary>
         /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
         public Entity()
         {
-            Components = new ComponentList<EntityComponent>(
-                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+            Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
             Id = Guid.Empty;
         }
 
@@ -104,13 +101,9 @@ namespace OctoAwesome
             Components.Deserialize(reader);
         }
 
-        public virtual void RegisterDefault()
-        {
+        public virtual void RegisterDefault() { }
 
-        }
-
-        public override int GetHashCode()
-            => Id.GetHashCode();
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -120,9 +113,7 @@ namespace OctoAwesome
             return base.Equals(obj);
         }
 
-        public virtual void OnUpdate(SerializableNotification notification)
-        {
-        }
+        public virtual void OnUpdate(SerializableNotification notification) { }
 
 
         public virtual void Update(SerializableNotification notification)
@@ -130,6 +121,5 @@ namespace OctoAwesome
             foreach (var component in Components)
                 component?.OnUpdate(notification);
         }
-
     }
 }

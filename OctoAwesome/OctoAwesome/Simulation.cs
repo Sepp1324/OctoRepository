@@ -1,13 +1,10 @@
 ﻿using engenious;
 using OctoAwesome.Common;
-using OctoAwesome.Database;
 using OctoAwesome.EntityComponents;
-using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace OctoAwesome
@@ -67,11 +64,9 @@ namespace OctoAwesome
             UniverseId = Guid.Empty;
             Service = service;
 
-            Components = new ComponentList<SimulationComponent>(
-                ValidateAddComponent, ValidateRemoveComponent, null, null);
+            Components = new ComponentList<SimulationComponent>(ValidateAddComponent, ValidateRemoveComponent, null, null);
 
             extensionResolver.ExtendSimulation(this);
-
         }
 
         private void ValidateAddComponent(SimulationComponent component)
@@ -111,7 +106,7 @@ namespace OctoAwesome
             }
             
 
-            Guid guid = ResourceManager.NewUniverse(name, numericSeed);
+            var guid = ResourceManager.NewUniverse(name, numericSeed);
 
             Start();
 
@@ -274,10 +269,7 @@ namespace OctoAwesome
             }
         }
 
-        public void OnError(Exception error)
-        {
-            throw error;
-        }
+        public void OnError(Exception error) => throw error;
 
         public void OnCompleted()
         {
@@ -328,6 +320,5 @@ namespace OctoAwesome
             ResourceManager.UpdateHub.Push(newEntityNotification, DefaultChannels.Network);
             newEntityNotification.Release();
         }
-
     }
 }

@@ -19,16 +19,7 @@ namespace OctoAwesome
 
         private readonly Dictionary<Type, T> components = new Dictionary<Type, T>();
 
-        public T this[Type type]
-        {
-            get
-            {
-                if (components.TryGetValue(type, out T result))
-                    return result;
-
-                return null;
-            }
-        }
+        public T this[Type type] => components.TryGetValue(type, out T result) ? result : null;
 
         public ComponentList()
         {
@@ -42,23 +33,20 @@ namespace OctoAwesome
             this.onRemover = onRemover;
         }
 
-        public IEnumerator<T> GetEnumerator()
-            => components.Values.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => components.Values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-            => components.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => components.Values.GetEnumerator();
 
         /// <summary>
         /// Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
-        public void AddComponent<V>(V component) where V : T 
-            => AddComponent(component, false);
+        public void AddComponent<V>(V component) where V : T => AddComponent(component, false);
 
 
         public void AddComponent<V>(V component, bool replace) where V : T
         {
-            Type type = component.GetType();
+            var type = component.GetType();
 
             if (components.ContainsKey(type))
             {
@@ -82,8 +70,7 @@ namespace OctoAwesome
         /// </summary>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
-        public bool ContainsComponent<V>() 
-            => components.ContainsKey(typeof(V));
+        public bool ContainsComponent<V>() => components.ContainsKey(typeof(V));
 
         /// <summary>
         /// Returns the Component of the given Type or null
@@ -146,9 +133,7 @@ namespace OctoAwesome
 
                 var type = Type.GetType(name);
 
-                T component;
-
-                if (!components.TryGetValue(type, out component))
+                if (!components.TryGetValue(type, out var component))
                 {
                     component = (T)TypeContainer.GetUnregistered(type);
                     //components.Add(type, component);

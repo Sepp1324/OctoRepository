@@ -1,10 +1,7 @@
 ﻿using OctoAwesome.Threading;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Pooling
 {
@@ -33,10 +30,7 @@ namespace OctoAwesome.Pooling
 
             using (semaphoreExtended.Wait())
             {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = getInstance();
+                obj = internalStack.Count > 0 ? internalStack.Pop() : getInstance();
             }
 
             obj.Init(this);

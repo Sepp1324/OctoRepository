@@ -5,10 +5,7 @@ using OctoAwesome.Threading;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,9 +50,7 @@ namespace OctoAwesome
             get
             {
                 using (semaphore.Wait())
-                {
                     return cache.Count;
-                }
             }
         }
 
@@ -151,8 +146,7 @@ namespace OctoAwesome
             }
         }
 
-        public bool IsChunkLoaded(Index2 position)
-            => cache.ContainsKey(new Index3(position, Planet.Id));
+        public bool IsChunkLoaded(Index2 position) => cache.ContainsKey(new Index3(position, Planet.Id));
 
         private void ItemChanged(CacheItem obj, IChunkColumn chunkColumn)
         {
@@ -299,8 +293,7 @@ namespace OctoAwesome
 
         public void OnCompleted() { }
 
-        public void OnError(Exception error)
-            => throw error;
+        public void OnError(Exception error) => throw error;
 
         public void OnNext(Notification value)
         {
@@ -335,8 +328,7 @@ namespace OctoAwesome
             }
         }
 
-        public void InsertUpdateHub(IUpdateHub updateHub)
-            => this.updateHub = updateHub;
+        public void InsertUpdateHub(IUpdateHub updateHub) => this.updateHub = updateHub;
 
         public void Dispose()
         {
@@ -403,8 +395,7 @@ namespace OctoAwesome
 
             public CacheItem() => internalSemaphore = new LockSemaphore(1, 1);
 
-            public LockSemaphore.SemaphoreLock Wait()
-                => internalSemaphore.Wait();
+            public LockSemaphore.SemaphoreLock Wait() => internalSemaphore.Wait();
 
             public void Dispose()
             {
@@ -422,10 +413,7 @@ namespace OctoAwesome
                 Planet = null;
             }
 
-            private void OnChanged(IChunkColumn chunkColumn, IChunk chunk)
-                => Changed?.Invoke(this, chunkColumn);
-
+            private void OnChanged(IChunkColumn chunkColumn, IChunk chunk) => Changed?.Invoke(this, chunkColumn);
         }
-
     }
 }
