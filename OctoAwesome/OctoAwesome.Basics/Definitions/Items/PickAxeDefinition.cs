@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Definitions;
+using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
@@ -14,6 +15,6 @@ namespace OctoAwesome.Basics.Definitions.Items
         
         public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
 
-        public Pickaxe Create(IMaterialDefinition material) => new Pickaxe(this, material);
+        public Item Create(IMaterialDefinition material) => new Pickaxe(this, material);
     }
 }

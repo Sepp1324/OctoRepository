@@ -47,8 +47,6 @@ namespace OctoAwesome.Client.Components
 
         public PositionComponent Position { get; private set; }
 
-        // public ActorHost ActorHost { get; private set; }
-
         public Index3? SelectedBox { get; set; }
 
         public Vector2? SelectedPoint { get; set; }
@@ -59,8 +57,7 @@ namespace OctoAwesome.Client.Components
 
         public OrientationFlags SelectedCorner { get; set; }
 
-        public PlayerComponent(OctoGame game, IResourceManager resourceManager)
-            : base(game)
+        public PlayerComponent(OctoGame game, IResourceManager resourceManager) : base(game)
         {
             this.resourceManager = resourceManager;
             Game = game;
@@ -116,10 +113,6 @@ namespace OctoAwesome.Client.Components
             }
 
             ApplyInput = false;
-
-            //if (FlymodeInput)
-            //    ActorHost.Player.FlyMode = !ActorHost.Player.FlyMode;
-            //FlymodeInput = false;
 
             if (Toolbar.Tools != null && Toolbar.Tools.Length > 0)
             {
@@ -193,11 +186,8 @@ namespace OctoAwesome.Client.Components
 
             foreach (var itemDefinition in itemDefinitions)
             {
-                if (!(itemDefinition is PickaxeDefinition pickaxeDefinition))
-                    continue;
-
-                var woodItem = pickaxeDefinition.Create(wood);
-                var stoneItem = pickaxeDefinition.Create(stone);
+                var woodItem = itemDefinition.Create(wood);
+                var stoneItem = itemDefinition.Create(stone);
                 
                 inventory.AddUnit(woodItem.VolumePerUnit, woodItem);
                 inventory.AddUnit(stoneItem.VolumePerUnit, stoneItem);

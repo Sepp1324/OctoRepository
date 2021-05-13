@@ -13,8 +13,8 @@
         /// <summary>
         /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
         /// </summary>
-        public InventorySlot[] Tools { get; set; }
-
+        public InventorySlot[] Tools { get; set; } 
+        
         /// <summary>
         /// Derzeit aktives Werkzeug des Spielers
         /// </summary>
@@ -23,7 +23,11 @@
         /// <summary>
         /// Erzeugte eine neue ToolBarComponent
         /// </summary>
-        public ToolBarComponent() => Tools = new InventorySlot[TOOLCOUNT];
+        public ToolBarComponent()
+        {
+            Tools = new InventorySlot[TOOLCOUNT];
+            ActiveTool = Tools[0];
+        }
 
         /// <summary>
         /// Entfernt einen InventorySlot aus der Toolbar

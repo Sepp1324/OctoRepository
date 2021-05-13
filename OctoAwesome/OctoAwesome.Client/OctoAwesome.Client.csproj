@@ -45,13 +45,10 @@
     <Content Include="Content\GameFont.png" />
     <Content Include="Content\HeadlineFont.png" />
     <Content Include="Content\Hud.png" />
-    <Content Include="Copyright.txt" />
     <None Include="de\LoadingScreenQuotes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="FEEDBACK.txt" />
     <Content Include="octoawesome.ico" />
-    <Content Include="TODO.txt" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,45 +12,36 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class InventoryScreen : Screen
     {
-        private Dictionary<string, Texture2D> toolTextures = new Dictionary<string, Texture2D>();
-
-        private PlayerComponent player;
-
-        private AssetComponent assets;
-
-        private InventoryControl inventory;
-
-        private Label nameLabel;
-
-        private Label massLabel;
-
-        private Label volumeLabel;
-
-        private Image[] images;
-
-        private Brush backgroundBrush;
-
-        private Brush hoverBrush;
-
+        private Dictionary<string, Texture2D> _toolTextures = new Dictionary<string, Texture2D>();
+        private PlayerComponent _player;
+        private AssetComponent _assets;
+        private InventoryControl _inventory;
+        private Label _nameLabel;
+        private Label _massLabel;
+        private Label _volumeLabel;
+        private Image[] _images;
+        private Brush _backgroundBrush;
+        private Brush _hoverBrush;
+        
         public InventoryScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            _assets = manager.Game.Assets;
 
             foreach (var item in manager.Game.DefinitionManager.Definitions)
             {
                 var texture = manager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
-                toolTextures.Add(item.GetType().FullName, texture);
+                _toolTextures.Add(item.GetType().FullName, texture);
             }
 
-            player = manager.Player;
+            _player = manager.Player;
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.3f);
 
-            backgroundBrush = new BorderBrush(Color.Black);
-            hoverBrush = new BorderBrush(Color.Brown);
+            _backgroundBrush = new BorderBrush(Color.Black);
+            _hoverBrush = new BorderBrush(Color.Brown);
 
-            var panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            var panelBackground = _assets.LoadTexture(typeof(ScreenComponent), "panel");
 
             var grid = new Grid(manager)
             {
@@ -65,7 +56,7 @@ namespace OctoAwesome.Client.Screens
 
             Controls.Add(grid);
 
-            inventory = new InventoryControl(manager)
+            _inventory = new InventoryControl(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -73,7 +64,7 @@ namespace OctoAwesome.Client.Screens
                 Padding = Border.All(20),
             };
 
-            grid.AddControl(inventory, 0, 0);
+            grid.AddControl(_inventory, 0, 0);
 
             var infoPanel = new StackPanel(manager)
             {
@@ -84,12 +75,12 @@ namespace OctoAwesome.Client.Screens
                 Margin = Border.All(10, 0, 0, 0),
             };
 
-            nameLabel = new Label(manager);
-            infoPanel.Controls.Add(nameLabel);
-            massLabel = new Label(manager);
-            infoPanel.Controls.Add(massLabel);
-            volumeLabel = new Label(manager);
-            infoPanel.Controls.Add(volumeLabel);
+            _nameLabel = new Label(manager);
+            infoPanel.Controls.Add(_nameLabel);
+            _massLabel = new Label(manager);
+            infoPanel.Controls.Add(_massLabel);
+            _volumeLabel = new Label(manager);
+            infoPanel.Controls.Add(_volumeLabel);
             grid.AddControl(infoPanel, 1, 0);
 
             var toolbar = new Grid(manager)
@@ -107,14 +98,14 @@ namespace OctoAwesome.Client.Screens
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
             toolbar.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
 
-            images = new Image[ToolBarComponent.TOOLCOUNT];
+            _images = new Image[ToolBarComponent.TOOLCOUNT];
             for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
-                var image = images[i] = new Image(manager)
+                var image = _images[i] = new Image(manager)
                 {
                     Width = 42,
                     Height = 42,
-                    Background = backgroundBrush,
+                    Background = _backgroundBrush,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Tag = i,
                     Padding = Border.All(2),
@@ -122,18 +113,18 @@ namespace OctoAwesome.Client.Screens
 
                 image.StartDrag += (e) =>
                 {
-                    var slot = player.Toolbar.Tools[(int)image.Tag];
+                    var slot = _player.Toolbar.Tools[(int)image.Tag];
                     if (slot != null)
                     {
                         e.Handled = true;
-                        e.Icon = toolTextures[slot.Item.GetType().FullName];
+                        e.Icon = _toolTextures[slot.Definition.GetType().FullName];
                         e.Content = slot;
                         e.Sender = toolbar;
                     }
                 };
 
-                image.DropEnter += (e) => { image.Background = hoverBrush; };
-                image.DropLeave += (e) => { image.Background = backgroundBrush; };
+                image.DropEnter += (e) => { image.Background = _hoverBrush; };
+                image.DropLeave += (e) => { image.Background = _backgroundBrush; };
                 image.EndDrop += (e) =>
                 {
                     e.Handled = true;
@@ -141,20 +132,20 @@ namespace OctoAwesome.Client.Screens
                     if (e.Sender is Grid) // && ShiftPressed
                     {
                         // Swap
-                        int targetIndex = (int)image.Tag;
-                        InventorySlot targetSlot = player.Toolbar.Tools[targetIndex];
+                        var targetIndex = (int)image.Tag;
+                        var targetSlot = _player.Toolbar.Tools[targetIndex];
 
-                        InventorySlot sourceSlot = e.Content as InventorySlot;
-                        int sourceIndex = player.Toolbar.GetSlotIndex(sourceSlot);
+                        var sourceSlot = e.Content as InventorySlot;
+                        var sourceIndex = _player.Toolbar.GetSlotIndex(sourceSlot);
 
-                        player.Toolbar.SetTool(sourceSlot, targetIndex);
-                        player.Toolbar.SetTool(targetSlot, sourceIndex);
+                        _player.Toolbar.SetTool(sourceSlot, targetIndex);
+                        _player.Toolbar.SetTool(targetSlot, sourceIndex);
                     }
                     else
                     {
                         // Inventory Drop
                         InventorySlot slot = e.Content as InventorySlot;
-                        player.Toolbar.SetTool(slot, (int)image.Tag);
+                        _player.Toolbar.SetTool(slot, (int)image.Tag);
                     }
                 };
 
@@ -172,7 +163,7 @@ namespace OctoAwesome.Client.Screens
             if (args.Sender is Grid)
             {
                 var slot = args.Content as InventorySlot;
-                player.Toolbar.RemoveSlot(slot);
+                _player.Toolbar.RemoveSlot(slot);
             }
         }
 
@@ -182,7 +173,7 @@ namespace OctoAwesome.Client.Screens
             if ((int)args.Key >= (int)Keys.D0 && (int)args.Key <= (int)Keys.D9)
             {
                 var offset = (int)args.Key - (int)Keys.D0;
-                player.Toolbar.SetTool(inventory.HoveredSlot, offset);
+                _player.Toolbar.SetTool(_inventory.HoveredSlot, offset);
                 args.Handled = true;
             }
 
@@ -199,22 +190,22 @@ namespace OctoAwesome.Client.Screens
         {
             base.OnUpdate(gameTime);
 
-            nameLabel.Text = inventory.HoveredSlot?.Definition?.Name ?? "";
-            massLabel.Text = volumeLabel.Text = inventory.HoveredSlot?.Amount.ToString() ?? "";
+            _nameLabel.Text = _inventory.HoveredSlot?.Definition?.Name ?? "";
+            _massLabel.Text = _volumeLabel.Text = _inventory.HoveredSlot?.Amount.ToString() ?? "";
 
             // Aktualisierung des aktiven Buttons
             for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
             {
-                if (player.Toolbar.Tools != null &&
-                    player.Toolbar.Tools.Length > i &&
-                    player.Toolbar.Tools[i] != null &&
-                    player.Toolbar.Tools[i].Item != null)
+                if (_player.Toolbar.Tools != null &&
+                    _player.Toolbar.Tools.Length > i &&
+                    _player.Toolbar.Tools[i] != null &&
+                    _player.Toolbar.Tools[i].Item != null)
                 {
-                    images[i].Texture = toolTextures[player.Toolbar.Tools[i].Definition.GetType().FullName];
+                    _images[i].Texture = _toolTextures[_player.Toolbar.Tools[i].Definition.GetType().FullName];
                 }
                 else
                 {
-                    images[i].Texture = null;
+                    _images[i].Texture = null;
                 }
             }
         }
