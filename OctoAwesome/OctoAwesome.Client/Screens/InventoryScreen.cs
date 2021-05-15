@@ -94,13 +94,13 @@ namespace OctoAwesome.Client.Screens
             };
 
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
                 toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
             toolbar.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
             toolbar.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
 
-            _images = new Image[ToolBarComponent.TOOLCOUNT];
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            _images = new Image[ToolBarComponent.Toolcount];
+            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
             {
                 var image = _images[i] = new Image(manager)
                 {
@@ -200,7 +200,7 @@ namespace OctoAwesome.Client.Screens
             _massLabel.Text = _volumeLabel.Text = _inventory.HoveredSlot?.Amount.ToString() ?? "";
 
             // Aktualisierung des aktiven Buttons
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
             {
                 if (_player.Toolbar.Tools != null &&
                     _player.Toolbar.Tools.Length > i &&

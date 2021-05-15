@@ -1,7 +1,6 @@
 ﻿using OctoAwesome.EntityComponents;
 using engenious;
 using OctoAwesome.Services;
-using OctoAwesome.Definitions.Items;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.SimulationComponents
@@ -11,13 +10,11 @@ namespace OctoAwesome.Basics.SimulationComponents
     {
         private readonly Simulation _simulation;
         private readonly BlockCollectionService _service;
-        private readonly Hand _hand;
 
         public BlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
         {
             _simulation = simulation;
             _service = interactionService;
-            _hand = new Hand(new HandDefinition());
         }
 
         protected override bool AddEntity(Entity entity) => true;
@@ -38,18 +35,17 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 if (!lastBlock.IsEmpty)
                 {
-                    if (toolbar.ActiveTool is null || !(toolbar.ActiveTool.Item is IItem item))
-                        item = _hand;
-                    
-                    var blockHitInformation = _service.Hit(lastBlock, item, cache);
+                    if (toolbar.ActiveTool.Item is IItem item)
+                    {
+                        var blockHitInformation = _service.Hit(lastBlock, item, cache);
 
-                    if (blockHitInformation.Valid)
-                        foreach (var (Quantity, Definition) in blockHitInformation.List)
-                        {
-                            if (Definition is IInventoryable invDef)
-                                inventory.AddUnit(Quantity, invDef);
-                        }
-
+                        if (blockHitInformation.Valid)
+                            foreach (var (quantity, definition) in blockHitInformation.List)
+                            {
+                                if (definition is IInventoryable invDef)
+                                    inventory.AddUnit(quantity, invDef);
+                            }
+                    }
                 }
                 controller.InteractBlock = null;
             }

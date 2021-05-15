@@ -1,32 +1,44 @@
-﻿namespace OctoAwesome.EntityComponents
+﻿using OctoAwesome.Definitions.Items;
+
+namespace OctoAwesome.EntityComponents
 {
     /// <summary>
     /// EntityComponent, die eine Werkzeug-Toolbar für den Apieler bereitstellt.
     /// </summary>
     public class ToolBarComponent : EntityComponent
     {
+        private int _activeIndex;
+
+        private readonly InventorySlot _handSlot;
+        
         /// <summary>
         /// Gibt die Anzahl Tools in der Toolbar an.
         /// </summary>
-        public const int TOOLCOUNT = 10;
+        public const int Toolcount = 10;
 
         /// <summary>
         /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
         /// </summary>
-        public InventorySlot[] Tools { get; set; } 
-        
+        public InventorySlot[] Tools { get; set; }
+
         /// <summary>
         /// Derzeit aktives Werkzeug des Spielers
         /// </summary>
-        public InventorySlot ActiveTool { get; set; }
+        public InventorySlot ActiveTool => Tools[_activeIndex] ?? _handSlot;
+        
+        /// <summary>
+        /// Repräsentiert die Stelle des aktiven Werkzeuges des Spielers
+        /// </summary>
+        public int ActiveIndex { get => _activeIndex; set => _activeIndex = (value + Toolcount) % Toolcount; }
 
         /// <summary>
-        /// Erzeugte eine neue ToolBarComponent
+        /// Erzeugt eine neue ToolBarComponent
         /// </summary>
         public ToolBarComponent()
         {
-            Tools = new InventorySlot[TOOLCOUNT];
-            ActiveTool = Tools[0];
+            _handSlot = new InventorySlot {Item = new Hand(new HandDefinition())};
+            Tools = new InventorySlot[Toolcount];
+            ActiveIndex = 0;
         }
 
         /// <summary>
@@ -40,9 +52,6 @@
                 if (Tools[i] == slot)
                     Tools[i] = null;
             }
-            
-            if (ActiveTool == slot)
-                ActiveTool = null;
         }
 
         /// <summary>
@@ -64,7 +73,7 @@
         /// <returns>Den Index des Slots, falls nicht gefunden -1.</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
-            for (int j = 0; j < Tools.Length; j++)
+            for (var j = 0; j < Tools.Length; j++)
                 if (Tools[j] == slot)
                     return j;
 
