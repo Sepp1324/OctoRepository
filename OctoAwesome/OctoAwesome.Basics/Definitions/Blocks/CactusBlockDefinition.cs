@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -23,7 +18,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)
         {
-            OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
+            var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 
             switch (wall)
             {
@@ -201,9 +196,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override IMaterialDefinition Material { get; }
 
-        public CactusBlockDefinition(CactusMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public CactusBlockDefinition(CactusMaterialDefinition material) => Material = material;
     }
 }

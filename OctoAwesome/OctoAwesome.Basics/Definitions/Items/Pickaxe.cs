@@ -10,5 +10,10 @@ namespace OctoAwesome.Basics
         {
 
         }
+
+        public override int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit)
+        {
+            return base.Hit(material, blockVolumeVolumeRemaining, volumePerHit);
+        }
     }
 }

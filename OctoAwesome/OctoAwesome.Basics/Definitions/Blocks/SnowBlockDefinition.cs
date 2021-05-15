@@ -1,30 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class SnowBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get
-            {
-                return Languages.OctoBasics.Snow;
-            }
-        }
+        public override string Name => Languages.OctoBasics.Snow;
 
-        public override string Icon
-        {
-            get
-            {
-                return "snow"; 
-            }
-        }
+        public override string Icon => "snow";
 
         public override string[] Textures
         {
@@ -40,10 +23,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override IMaterialDefinition Material { get; }
 
-        public SnowBlockDefinition(SnowMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public SnowBlockDefinition(SnowMaterialDefinition material) => Material = material;
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {

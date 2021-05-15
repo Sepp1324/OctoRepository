@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -16,16 +14,8 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override IMaterialDefinition Material { get; }
 
 
-        public WaterBlockDefinition(WaterMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public WaterBlockDefinition(WaterMaterialDefinition material) => Material = material;
 
-        public override string[] Textures => new[] {
-                    "water"
-                };
-
-
-
+        public override string[] Textures => new[] { "water" };
     }
 }

@@ -1,10 +1,4 @@
-﻿using OctoAwesome.Basics.Properties;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Basics.Definitions.Materials;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -23,10 +17,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override IMaterialDefinition Material { get; }
 
-        public WoodBlockDefinition(WoodMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public WoodBlockDefinition(WoodMaterialDefinition material) => Material = material;
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {

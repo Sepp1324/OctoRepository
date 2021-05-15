@@ -9,16 +9,15 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(ControllableComponent), typeof(InventoryComponent))]
     public class BlockInteractionComponent : SimulationComponent<ControllableComponent, InventoryComponent>
     {
-        private readonly Simulation simulation;
-        private readonly BlockCollectionService service;
-
-        private readonly Hand hand;
+        private readonly Simulation _simulation;
+        private readonly BlockCollectionService _service;
+        private readonly Hand _hand;
 
         public BlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
         {
-            this.simulation = simulation;
-            service = interactionService;
-            hand = new Hand(new HandDefinition());
+            _simulation = simulation;
+            _service = interactionService;
+            _hand = new Hand(new HandDefinition());
         }
 
         protected override bool AddEntity(Entity entity) => true;
@@ -40,9 +39,9 @@ namespace OctoAwesome.Basics.SimulationComponents
                 if (!lastBlock.IsEmpty)
                 {
                     if (toolbar.ActiveTool is null || !(toolbar.ActiveTool.Item is IItem item))
-                        item = hand;
+                        item = _hand;
                     
-                    var blockHitInformation = service.Hit(lastBlock, item, cache);
+                    var blockHitInformation = _service.Hit(lastBlock, item, cache);
 
                     if (blockHitInformation.Valid)
                         foreach (var (Quantity, Definition) in blockHitInformation.List)
@@ -109,7 +108,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                         {
                             if (inventory.RemoveUnit(toolbar.ActiveTool))
                             {
-                                cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
+                                cache.SetBlock(idx, _simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 cache.SetBlockMeta(idx, (int)controller.ApplySide);
                                 if (toolbar.ActiveTool.Amount <= 0)
                                     toolbar.RemoveSlot(toolbar.ActiveTool);

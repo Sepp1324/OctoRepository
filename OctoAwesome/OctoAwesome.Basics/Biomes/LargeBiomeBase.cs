@@ -1,15 +1,10 @@
-﻿using OctoAwesome.Noise;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
     public abstract class LargeBiomeBase : BiomeBase
     {
-
-
         public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange)
             : base(planet, 0, 0, valueRangeOffset, valueRange)
         {
@@ -28,8 +23,9 @@ namespace OctoAwesome.Basics.Biomes
         protected IBiome ChooseBiome(float value, out IBiome secondBiome)
         {
             secondBiome = null;
-            bool betweenPossible = false;
-            for (int i = 0; i < SubBiomes.Count; i++)
+            var betweenPossible = false;
+            
+            for (var i = 0; i < SubBiomes.Count; i++)
             {
                 if (betweenPossible && value < SubBiomes[i].MinValue)
                 {
@@ -46,8 +42,8 @@ namespace OctoAwesome.Basics.Biomes
         protected int ChooseBiome(float value, out int secondBiome)
         {
             secondBiome = -1;
-            bool betweenPossible = false;
-            for (int i = 0; i < SubBiomes.Count; i++)
+            var betweenPossible = false;
+            for (var i = 0; i < SubBiomes.Count; i++)
             {
                 if (betweenPossible && value < SubBiomes[i].MinValue)
                 {

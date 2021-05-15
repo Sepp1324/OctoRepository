@@ -1,9 +1,5 @@
 ﻿using OctoAwesome.Noise;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Biomes
 {
@@ -35,15 +31,15 @@ namespace OctoAwesome.Basics.Biomes
 
         public virtual float[,] GetHeightmap(Index2 chunkIndex)
         {
-            float[,] values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
+            var values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
 
             chunkIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
 
-            float[,] heights = BiomeNoiseGenerator.GetTileableNoiseMap2D(chunkIndex.X, chunkIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
+            var heights = BiomeNoiseGenerator.GetTileableNoiseMap2D(chunkIndex.X, chunkIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
 
-            for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
+            for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
             {
-                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
                     values[x, y] = (heights[x, y] / 2 + 0.5f) * ValueRange + ValueRangeOffset;
                 }

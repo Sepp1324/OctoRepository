@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Basics.EntityComponents;
 
@@ -24,7 +21,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            PoweredEntity poweredEntity = new PoweredEntity()
+            var poweredEntity = new PoweredEntity()
             {
                 Entity = entity,
                 Moveable = entity.Components.GetComponent<MoveableComponent>(),

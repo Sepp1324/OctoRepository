@@ -1,11 +1,9 @@
-﻿using OctoAwesome.Basics.Definitions.Blocks;
-using OctoAwesome.Basics.Entities;
+﻿using OctoAwesome.Basics.Entities;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.Basics.SimulationComponents;
 using OctoAwesome.EntityComponents;
 using System.Reflection;
 using System.Linq;
-using System;
 using engenious;
 using OctoAwesome.Services;
 using OctoAwesome.Definitions;

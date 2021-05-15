@@ -1,12 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
-using OctoAwesome.Basics.Properties;
 using OctoAwesome.Definitions;
-using OctoAwesome.Information;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
