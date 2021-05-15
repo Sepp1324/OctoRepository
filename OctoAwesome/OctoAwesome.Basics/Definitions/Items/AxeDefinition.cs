@@ -15,7 +15,7 @@ namespace OctoAwesome.Basics.Definitions.Items
             Icon = "axe_iron";
         }
         
-        public bool CanMineMaterial(IMaterialDefinition material)=> material is ISolidMaterialDefinition solid;
+        public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
 
         public Item Create(IMaterialDefinition material) => new Axe(this, material);
     }

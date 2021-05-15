@@ -1,5 +1,4 @@
-﻿using System;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
@@ -15,8 +14,8 @@ namespace OctoAwesome.Basics.Definitions.Items
             Name = "Hoe";
             Icon = "hoe_iron";
         }
-        
-        public bool CanMineMaterial(IMaterialDefinition material)=> material is ISolidMaterialDefinition solid;
+
+        public bool CanMineMaterial(IMaterialDefinition material) => false;
 
         public Item Create(IMaterialDefinition material) => new Hoe(this, material);
     }

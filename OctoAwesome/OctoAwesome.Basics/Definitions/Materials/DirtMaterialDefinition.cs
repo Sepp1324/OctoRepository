@@ -1,9 +1,4 @@
 ﻿using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Materials
 {
@@ -13,7 +8,7 @@ namespace OctoAwesome.Basics.Definitions.Materials
 
         public int Density => 1400;
 
-        public int Granularity => 1;
+        public int Granularity => 50;
 
         public int FractureToughness => 50;
 

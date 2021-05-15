@@ -41,7 +41,7 @@
             if (material is ISolidMaterialDefinition solid)
             {
                 if (solid.Granularity > 1)
-                    return volumePerHit;
+                    return 0;
             }
 
             if (Material.Hardness * 1.2f < material.Hardness)
@@ -49,6 +49,5 @@
 
             return ((Material.Hardness - material.Hardness) * 3 + 100) * volumePerHit / 100;
         }
-
     }
 }
