@@ -1,12 +1,10 @@
 ﻿using OctoAwesome.Logging;
-using OctoAwesome.Network;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using OctoAwesome.Threading;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
@@ -112,9 +110,6 @@ namespace OctoAwesome.Network
             //hubSubscription.Dispose();
         }
 
-        void INotificationObserver.OnError(Exception error)
-        {
-            logger.Error(error.Message, error);
-        }
+        void INotificationObserver.OnError(Exception error) => logger.Error(error.Message, error);
     }
 }

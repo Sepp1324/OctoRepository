@@ -141,7 +141,5 @@ namespace OctoAwesome.Network
                     readPosition = 0;
                 }
         }
-
-
     }
 }
