@@ -2,8 +2,7 @@
 using OctoAwesome.Common;
 using OctoAwesome.Definitions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+
 namespace OctoAwesome.Runtime
 {
     // sealed -> prevent abuse of third party´s
@@ -15,20 +14,18 @@ namespace OctoAwesome.Runtime
         /// <summary>
         /// <see cref="IDefinitionManager"/> der lokalen Daten.
         /// </summary>
-        public IDefinitionManager DefinitionManager => manager.DefinitionManager;
+        public IDefinitionManager DefinitionManager => _manager.DefinitionManager;
         /// <summary>
         /// GAP.
         /// </summary>
         public const float GAP = 0.01f;
-        private readonly IResourceManager manager;
+        private readonly IResourceManager _manager;
         /// <summary>
         /// Standart Konstruktor.
         /// </summary>
         /// <param name="resourceManager">ResourceManger</param>
-        public GameService(IResourceManager resourceManager)
-        {
-            manager = resourceManager;
-        }
+        public GameService(IResourceManager resourceManager) => _manager = resourceManager;
+
         /// <summary>
         /// Gibt einen <see cref="ILocalChunkCache"/> zurück
         /// </summary>
@@ -36,11 +33,8 @@ namespace OctoAwesome.Runtime
         /// <param name="dimensions">Dimensionen des Caches</param>
         /// <param name="range">Ausdehnung des Caches</param>
         /// <returns></returns>
-        public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range)
-        {
-            //new LocalChunkCache(manager.GlobalChunkCache, false, 2, 1);
-            return null;
-        }
+        public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range) => null;
+
         /// <summary>
         /// Berechnet die Geschwindigkeit einer <see cref="Entity"/> nach der Kollision mit der Welt. (Original Lassi)
         /// </summary>
@@ -59,7 +53,7 @@ namespace OctoAwesome.Runtime
             if (cache == null)
                 throw new ArgumentNullException(nameof(cache));
 
-            Vector3 move = deltaPosition;
+            var move = deltaPosition;
 
             //Blocks finden die eine Kollision verursachen könnten
             int minx = (int) Math.Floor(Math.Min(

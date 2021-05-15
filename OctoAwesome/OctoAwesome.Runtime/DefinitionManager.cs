@@ -10,11 +10,11 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
-        private readonly IExtensionResolver extensionResolver;
+        private readonly IExtensionResolver _extensionResolver;
 
         public DefinitionManager(IExtensionResolver extensionResolver)
         {
-            this.extensionResolver = extensionResolver;
+            _extensionResolver = extensionResolver;
 
             Definitions = extensionResolver.GetDefinitions<IDefinition>().ToArray();
 
@@ -66,10 +66,7 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="definition">BlockDefinition</param>
         /// <returns>Index der Block Definition</returns>
-        public ushort GetDefinitionIndex(IDefinition definition)
-        {
-            return (ushort)(Array.IndexOf(Definitions, definition) + 1);
-        }
+        public ushort GetDefinitionIndex(IDefinition definition) => (ushort)(Array.IndexOf(Definitions, definition) + 1);
 
         /// <summary>
         /// Liefert den Index der angegebenen BlockDefinition.
@@ -78,7 +75,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex<T>() where T : IDefinition
         {
-            IDefinition definition = Definitions.SingleOrDefault(d => d.GetType() == typeof(T));
+            var definition = Definitions.SingleOrDefault(d => d.GetType() == typeof(T));
             return GetDefinitionIndex(definition);
         }
 
@@ -87,10 +84,6 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Typ der Definition</typeparam>
         /// <returns>Auflistung von Instanzen</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
-        {
-            // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary)
-            return extensionResolver.GetDefinitions<T>();
-        }
+        public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition => _extensionResolver.GetDefinitions<T>();
     }
 }
