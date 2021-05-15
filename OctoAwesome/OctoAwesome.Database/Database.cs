@@ -1,12 +1,8 @@
 ﻿using OctoAwesome.Database.Checks;
 using OctoAwesome.Database.Threading;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 
 namespace OctoAwesome.Database
@@ -15,10 +11,7 @@ namespace OctoAwesome.Database
     {
         public Type TagType { get; }
 
-        protected Database(Type tagType)
-        {
-            TagType = tagType;
-        }
+        protected Database(Type tagType) => TagType = tagType;
 
         public abstract void Open();
         public abstract void Close();
@@ -111,11 +104,9 @@ namespace OctoAwesome.Database
             valueStore.Close();
         }
 
-        public void Validate()
-            => ExecuteOperationOnKeyValueStore(fileCheck.Check);
+        public void Validate() => ExecuteOperationOnKeyValueStore(fileCheck.Check);
 
-        public void Defragmentation()
-            => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
+        public void Defragmentation() => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
 
         public Value GetValue(TTag tag)
         {

@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace OctoAwesome.Database.Checks
 {
     public sealed class ValueFileCheck<TTag> : ICheckable where TTag : ITag, new()
     {
-        private readonly FileInfo fileInfo;
+        private readonly FileInfo _fileInfo;
 
-        public ValueFileCheck(FileInfo fileInfo)
-        {
-            this.fileInfo = fileInfo;
-        }
+        public ValueFileCheck(FileInfo fileInfo) => this._fileInfo = fileInfo;
 
         public void Check()
         {
-            using (var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+            using (var fileStream = _fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
-                int length = 0;
+                var length = 0;
                 do
                 {
                     fileStream.Read(keyBuffer, 0, keyBuffer.Length);
