@@ -7,21 +7,22 @@ using OctoAwesome.Client.Controls;
 using engenious;
 using OctoAwesome.EntityComponents;
 using engenious.UI.Controls;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class InventoryScreen : Screen
     {
-        private Dictionary<string, Texture2D> _toolTextures = new Dictionary<string, Texture2D>();
-        private PlayerComponent _player;
-        private AssetComponent _assets;
-        private InventoryControl _inventory;
-        private Label _nameLabel;
-        private Label _massLabel;
-        private Label _volumeLabel;
-        private Image[] _images;
-        private Brush _backgroundBrush;
-        private Brush _hoverBrush;
+        private readonly Dictionary<string, Texture2D> _toolTextures = new Dictionary<string, Texture2D>();
+        private readonly PlayerComponent _player;
+        private readonly AssetComponent _assets;
+        private readonly InventoryControl _inventory;
+        private readonly Label _nameLabel;
+        private readonly Label _massLabel;
+        private readonly Label _volumeLabel;
+        private readonly Image[] _images;
+        private readonly Brush _backgroundBrush;
+        private readonly Brush _hoverBrush;
         
         public InventoryScreen(ScreenComponent manager) : base(manager)
         {
@@ -190,7 +191,12 @@ namespace OctoAwesome.Client.Screens
         {
             base.OnUpdate(gameTime);
 
-            _nameLabel.Text = _inventory.HoveredSlot?.Definition?.Name ?? "";
+            var name = _inventory.HoveredSlot?.Definition?.Name;
+
+            if (_inventory.HoveredSlot?.Item is IItem item)
+                name += " (" + item.Material.Name + ")";
+
+            _nameLabel.Text = name ?? "";
             _massLabel.Text = _volumeLabel.Text = _inventory.HoveredSlot?.Amount.ToString() ?? "";
 
             // Aktualisierung des aktiven Buttons
