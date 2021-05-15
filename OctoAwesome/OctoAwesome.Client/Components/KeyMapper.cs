@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using engenious.UI;
 using KeyEventArgs = engenious.UI.KeyEventArgs;
 using Keys = engenious.Input.Keys;
@@ -11,11 +9,11 @@ namespace OctoAwesome.Client.Components
 {
     internal class KeyMapper
     {
-        private Dictionary<string, Binding> bindings;
+        private readonly Dictionary<string, Binding> _bindings;
 
-        public Dictionary<string, Binding> Bindings { get { return bindings; } }
+        public Dictionary<string, Binding> Bindings { get { return _bindings; } }
 
-        private ISettings settings;
+        private readonly ISettings _settings;
 
         public KeyMapper(BaseScreenComponent manager, ISettings settings)
         {
@@ -23,9 +21,8 @@ namespace OctoAwesome.Client.Components
             manager.KeyUp += KeyUp;
             manager.KeyPress += KeyPressed;
 
-            this.settings = settings;
-
-            bindings = new Dictionary<string, Binding>();
+            _settings = settings;
+            _bindings = new Dictionary<string, Binding>();
         }
 
         /// <summary>
@@ -35,9 +32,10 @@ namespace OctoAwesome.Client.Components
         /// <param name="displayName">The Displayname</param>
         public void RegisterBinding(string id, string displayName)
         {
-            if (bindings.ContainsKey(id))
+            if (_bindings.ContainsKey(id))
                 return;
-            bindings.Add(id, new Binding() { Id = id, DisplayName = displayName });
+            
+            _bindings.Add(id, new Binding() { Id = id, DisplayName = displayName });
         }
 
         /// <summary>
@@ -46,8 +44,8 @@ namespace OctoAwesome.Client.Components
         /// <param name="id">The ID</param>
         public void UnregisterBinding(string id)
         {
-            if (bindings.ContainsKey(id))
-                bindings.Remove(id);
+            if (_bindings.ContainsKey(id))
+                _bindings.Remove(id);
         }
 
         /// <summary>
@@ -57,11 +55,8 @@ namespace OctoAwesome.Client.Components
         /// <param name="key">The Key</param>
         public void AddKey(string id, Keys key)
         {
-            Binding binding;
-            if (bindings.TryGetValue(id, out binding))
-            {
+            if (_bindings.TryGetValue(id, out var binding))
                 if (!binding.Keys.Contains(key)) binding.Keys.Add(key);
-            }
         }
 
         /// <summary>
@@ -71,11 +66,8 @@ namespace OctoAwesome.Client.Components
         /// <param name="key">The Key</param>
         public void RemoveKey(string id, Keys key)
         {
-            Binding binding;
-            if (bindings.TryGetValue(id, out binding))
-            {
+            if (_bindings.TryGetValue(id, out var binding))
                 if (binding.Keys.Contains(key)) binding.Keys.Remove(key);
-            }
         }
 
         /// <summary>
@@ -85,11 +77,8 @@ namespace OctoAwesome.Client.Components
         /// <param name="action">The Action</param>
         public void AddAction(string id, Action<KeyType> action)
         {
-            Binding binding;
-            if (bindings.TryGetValue(id, out binding))
-            {
+            if (_bindings.TryGetValue(id, out var binding))
                 if (!binding.Actions.Contains(action)) binding.Actions.Add(action);
-            }
         }
 
         /// <summary>
@@ -99,11 +88,8 @@ namespace OctoAwesome.Client.Components
         /// <param name="action">The Action</param>
         public void RemoveAction(string id, Action<KeyType> action)
         {
-            Binding binding;
-            if (bindings.TryGetValue(id, out binding))
-            {
+            if (_bindings.TryGetValue(id, out var binding))
                 if (binding.Actions.Contains(action)) binding.Actions.Remove(action);
-            }
         }
 
         /// <summary>
@@ -113,8 +99,7 @@ namespace OctoAwesome.Client.Components
         /// <param name="displayName">The new DisplayName</param>
         public void SetDisplayName(string id, string displayName)
         {
-            Binding binding;
-            if (bindings.TryGetValue(id, out binding))
+            if (_bindings.TryGetValue(id, out var binding))
                 binding.DisplayName = displayName;
         }
 
@@ -126,12 +111,12 @@ namespace OctoAwesome.Client.Components
         {
             foreach (var id in standardKeys.Keys)
             {
-                if (settings.KeyExists("KeyMapper-" + id))
+                if (_settings.KeyExists("KeyMapper-" + id))
                 {
                     try
                     {
-                        string val = settings.Get<string>("KeyMapper-" + id);
-                        Keys key = (Keys)Enum.Parse(typeof(Keys), val);
+                        var val = _settings.Get<string>("KeyMapper-" + id);
+                        var key = (Keys)Enum.Parse(typeof(Keys), val);
                         AddKey(id, key);
                     }
                     catch
@@ -144,20 +129,14 @@ namespace OctoAwesome.Client.Components
             }
         }
 
-        public List<Binding> GetBindings()
-        {
-            List<Binding> bindings = new List<Binding>();
-            foreach (var binding in Bindings)
-                bindings.Add(binding.Value);
-            return bindings;
-        }
+        public List<Binding> GetBindings() => Bindings.Select(binding => binding.Value).ToList();
 
 
         #region KeyEvents
 
         protected void KeyPressed(KeyEventArgs args)
         {
-            var result = bindings.Values.Where(b => b.Keys.Contains(args.Key));
+            var result = _bindings.Values.Where(b => b.Keys.Contains(args.Key));
             foreach (var binding in result)
             {
                 foreach (var action in binding.Actions)
@@ -169,7 +148,7 @@ namespace OctoAwesome.Client.Components
 
         protected void KeyDown(KeyEventArgs args)
         {
-            var result = bindings.Values.Where(b => b.Keys.Contains(args.Key));
+            var result = _bindings.Values.Where(b => b.Keys.Contains(args.Key));
             foreach (var binding in result)
             {
                 foreach (var action in binding.Actions)
@@ -181,7 +160,7 @@ namespace OctoAwesome.Client.Components
 
         protected void KeyUp(KeyEventArgs args)
         {
-            var result = bindings.Values.Where(b => b.Keys.Contains(args.Key));
+            var result = _bindings.Values.Where(b => b.Keys.Contains(args.Key));
             foreach (var binding in result)
             {
                 foreach (var action in binding.Actions)

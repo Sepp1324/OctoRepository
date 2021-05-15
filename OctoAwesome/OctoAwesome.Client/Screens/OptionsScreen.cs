@@ -1,50 +1,44 @@
 ﻿using engenious.UI;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using engenious.Graphics;
-using engenious;
-using engenious.Input;
 using engenious.UI.Controls;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class OptionsScreen : BaseScreen
     {
-        private AssetComponent assets;
-
-        private Button exitButton;
+        private readonly AssetComponent _assets;
+        private readonly Button _exitButton;
 
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            _assets = manager.Game.Assets;
 
             Padding = new Border(0, 0, 0, 0);
 
             Title = Languages.OctoClient.Options;
 
-            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            var panelBackground = _assets.LoadTexture(typeof(ScreenComponent), "panel");
 
             SetDefaultBackground();
 
-            TabControl tabs = new TabControl(manager)
+            var tabs = new TabControl(manager)
             {
                 Padding = new Border(20, 20, 20, 20),
                 Width = 700,
                 TabPageBackground = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
-                TabBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown"), 15, 15),
-                TabActiveBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "buttonLong_beige"), 15, 15),
+                TabBrush = NineTileBrush.FromSingleTexture(_assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown"), 15, 15),
+                TabActiveBrush = NineTileBrush.FromSingleTexture(_assets.LoadTexture(typeof(ScreenComponent), "buttonLong_beige"), 15, 15),
             };
             Controls.Add(tabs);
 
             #region OptionsPage
 
-            TabPage optionsPage = new TabPage(manager, Languages.OctoClient.Options);
+            var optionsPage = new TabPage(manager, Languages.OctoClient.Options);
             tabs.Pages.Add(optionsPage);
 
-            OptionsOptionControl optionsOptions = new OptionsOptionControl(manager, this)
+            var optionsOptions = new OptionsOptionControl(manager, this)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -55,11 +49,10 @@ namespace OctoAwesome.Client.Screens
 
             #region BindingsPage
 
-            TabPage bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings);
-            bindingsPage.Padding = Border.All(10);
+            var bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings) {Padding = Border.All(10)};
             tabs.Pages.Add(bindingsPage);
 
-            BindingsOptionControl bindingsOptions = new BindingsOptionControl(manager)
+            var bindingsOptions = new BindingsOptionControl(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -70,10 +63,10 @@ namespace OctoAwesome.Client.Screens
 
             #region TexturePackPage
 
-            TabPage resourcePackPage = new TabPage(manager, "Resource Packs");
+            var resourcePackPage = new TabPage(manager, "Resource Packs");
             tabs.Pages.Add(resourcePackPage);
 
-            ResourcePacksOptionControl resourcePacksOptions = new ResourcePacksOptionControl(manager)
+            var resourcePacksOptions = new ResourcePacksOptionControl(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -84,10 +77,10 @@ namespace OctoAwesome.Client.Screens
 
             #region ExtensionPage
 
-            TabPage extensionPage = new TabPage(manager, Languages.OctoClient.Extensions);
+            var extensionPage = new TabPage(manager, Languages.OctoClient.Extensions);
             tabs.Pages.Add(extensionPage);
 
-            ExtensionsOptionControl extensionOptions = new ExtensionsOptionControl(manager)
+            var extensionOptions = new ExtensionsOptionControl(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -97,20 +90,20 @@ namespace OctoAwesome.Client.Screens
             #endregion
 
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
-            exitButton = new TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
-            exitButton.VerticalAlignment = VerticalAlignment.Top;
-            exitButton.HorizontalAlignment = HorizontalAlignment.Right;
-            exitButton.Enabled = false;
-            exitButton.Visible = false;
-            exitButton.LeftMouseClick += (s, e) => Program.Restart();
-            exitButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(exitButton);
+            _exitButton = new TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
+            _exitButton.VerticalAlignment = VerticalAlignment.Top;
+            _exitButton.HorizontalAlignment = HorizontalAlignment.Right;
+            _exitButton.Enabled = false;
+            _exitButton.Visible = false;
+            _exitButton.LeftMouseClick += (s, e) => Program.Restart();
+            _exitButton.Margin = new Border(10, 10, 10, 10);
+            Controls.Add(_exitButton);
         }
 
         public void NeedRestart()
         {
-            exitButton.Visible = true;
-            exitButton.Enabled = true;
+            _exitButton.Visible = true;
+            _exitButton.Enabled = true;
         }        
     }
 }

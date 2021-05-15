@@ -106,10 +106,7 @@ namespace OctoAwesome.Client.Screens
             base.OnUpdate(gameTime);
         }
 
-        public void Unload()
-        {
-            scene.Dispose();
-        }
+        public void Unload() => scene.Dispose();
 
         #region Mouse Input
 

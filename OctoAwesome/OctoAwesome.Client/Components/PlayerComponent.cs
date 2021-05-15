@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using engenious;
-using OctoAwesome.Basics.Definitions.Items;
 using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class PlayerComponent : GameComponent
     {
-        private new OctoGame Game;
+        private new OctoGame _game;
 
-        private IResourceManager resourceManager;
+        private readonly IResourceManager _resourceManager;
 
         #region External Input
 
@@ -59,8 +58,8 @@ namespace OctoAwesome.Client.Components
 
         public PlayerComponent(OctoGame game, IResourceManager resourceManager) : base(game)
         {
-            this.resourceManager = resourceManager;
-            Game = game;
+            _resourceManager = resourceManager;
+            _game = game;
         }
 
         public void SetEntity(Entity entity)
@@ -175,14 +174,14 @@ namespace OctoAwesome.Client.Components
             if (inventory == null)
                 return;
 
-            var blockDefinitions = resourceManager.DefinitionManager.BlockDefinitions;
+            var blockDefinitions = _resourceManager.DefinitionManager.BlockDefinitions;
             
             foreach (var blockDefinition in blockDefinitions)
                 inventory.AddUnit(blockDefinition.VolumePerUnit, blockDefinition);
 
-            var itemDefinitions = resourceManager.DefinitionManager.ItemDefinitions;
-            var wood = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Wood");
-            var stone = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Stone");
+            var itemDefinitions = _resourceManager.DefinitionManager.ItemDefinitions;
+            var wood = _resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Wood");
+            var stone = _resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Stone");
 
             foreach (var itemDefinition in itemDefinitions)
             {

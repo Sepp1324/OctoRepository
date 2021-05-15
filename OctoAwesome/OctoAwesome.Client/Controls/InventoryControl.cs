@@ -3,7 +3,6 @@ using engenious.Graphics;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Controls
 {

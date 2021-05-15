@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
-using engenious.UI;
 using OctoAwesome.Client.Components;
 using System;
 
@@ -46,7 +45,7 @@ namespace OctoAwesome.Client.Crew
             {
                 try
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(List<CrewMember>));
+                    var serializer = new XmlSerializer(typeof(List<CrewMember>));
                     return (List<CrewMember>)serializer.Deserialize(stream);
                 }
                 catch (Exception)
@@ -56,10 +55,7 @@ namespace OctoAwesome.Client.Crew
             }
         }
 
-        public override string ToString()
-        {
-            return Username;
-        }
+        public override string ToString() => Username;
 
         public class Link
         {

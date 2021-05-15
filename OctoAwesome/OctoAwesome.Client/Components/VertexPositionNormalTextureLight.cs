@@ -1,9 +1,7 @@
 ﻿using engenious;
 using engenious.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 namespace OctoAwesome.Client.Components
 {
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential,Pack=1)]
@@ -18,15 +16,13 @@ namespace OctoAwesome.Client.Components
         }
         public VertexPositionNormalTextureLight(Vector3 position, Vector3 normal, Vector2 uv,byte layer,uint light)
         {
-            uint posX = (uint)position.X;
-            uint posY = (uint)position.Y;
-            uint posZ = (uint)position.Z;
-
-            int normalX = (int)normal.X;
-            int normalY = (int)normal.Y;
-            int normalZ = (int)normal.Z;
-
-            int normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+            var posX = (uint)position.X;
+            var posY = (uint)position.Y;
+            var posZ = (uint)position.Z;
+            var normalX = (int)normal.X;
+            var normalY = (int)normal.Y;
+            var normalZ = (int)normal.Z;
+            var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
 
             uint normalPacked;
             switch (normalExpanded)
@@ -47,12 +43,7 @@ namespace OctoAwesome.Client.Components
         }
         public uint PackedValue { get; private set; }
         public uint PackedValue2 { get; private set; }
-        VertexDeclaration IVertexType.VertexDeclaration
-        {
-            get
-            {
-                return VertexDeclaration;
-            }
-        }
+        
+        VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
     }
 }

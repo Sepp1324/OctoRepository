@@ -8,16 +8,16 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class PauseScreen : Screen
     {
-        private AssetComponent assets;
+        private readonly AssetComponent _assets;
 
         public PauseScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            _assets = manager.Game.Assets;
 
             // IsOverlay = true;
             // Background = new BorderBrush(new Color(Color.Black, 0.5f));
 
-            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
+            Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);

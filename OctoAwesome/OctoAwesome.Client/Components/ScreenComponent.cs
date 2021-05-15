@@ -9,7 +9,7 @@ namespace OctoAwesome.Client.Components
     {
         public new OctoGame Game { get; private set; }
 
-        public PlayerComponent Player { get { return Game.Player; } }
+        public PlayerComponent Player => Game.Player;
 
         public CameraComponent Camera => Game.Camera;
 
@@ -34,10 +34,7 @@ namespace OctoAwesome.Client.Components
 
         }
 
-        public void Exit()
-        {
-            Game.Exit();
-        }
+        public void Exit() => Game.Exit();
 
         public void UnloadAssets()
         {

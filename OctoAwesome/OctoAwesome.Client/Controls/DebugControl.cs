@@ -10,11 +10,11 @@ namespace OctoAwesome.Client.Controls
 {
     internal class DebugControl : Panel
     {
-        private int buffersize = 10;
-        private float[] framebuffer;
-        private int bufferindex = 0;
+        private readonly int _buffersize = 10;
+        private readonly float[] _framebuffer;
+        private int _bufferindex = 0;
 
-        private int framecount = 0;
+        private int _framecount = 0;
         private double seconds = 0;
         private double lastfps = 0f;
 
@@ -30,7 +30,7 @@ namespace OctoAwesome.Client.Controls
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
         {
-            framebuffer = new float[buffersize];
+            _framebuffer = new float[_buffersize];
             Player = screenManager.Player;
             manager = screenManager;
             assets = screenManager.Game.Assets;
@@ -134,17 +134,17 @@ namespace OctoAwesome.Client.Controls
                 return;
 
             //Calculate FPS
-            framecount++;
+            _framecount++;
             seconds += gameTime.ElapsedGameTime.TotalSeconds;
-            if (framecount == 10)
+            if (_framecount == 10)
             {
-                lastfps = seconds / framecount;
-                framecount = 0;
+                lastfps = seconds / _framecount;
+                _framecount = 0;
                 seconds = 0;
             }
 
-            framebuffer[bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            bufferindex %= buffersize;
+            _framebuffer[_bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _bufferindex %= _buffersize;
 
             //Draw Control Info
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;

@@ -6,18 +6,17 @@ using engenious;
 using System;
 using System.Windows.Threading;
 using System.Threading;
-using OctoAwesome.Threading;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class ChunkRenderer : IDisposable
     {
-        private Effect simple;
-        private GraphicsDevice graphicsDevice;
+        private readonly Effect _simple;
+        private readonly GraphicsDevice _graphicsDevice;
 
-        private Texture2DArray textures;
-        private readonly Dispatcher dispatcher;
+        private readonly Texture2DArray _textures;
+        private readonly Dispatcher _dispatcher;
 
         public static float OverrideLightLevel { get; set; }
         public static bool WireFrame { get; set; }
@@ -25,17 +24,17 @@ namespace OctoAwesome.Client.Components
         /// <summary>
         /// Referenz auf den aktuellen Chunk (falls vorhanden)
         /// </summary>
-        private IChunk chunk;
-        private bool loaded = false;
+        private IChunk _chunk;
+        private bool _loaded = false;
 
-        private VertexBuffer vb;
+        private VertexBuffer _vb;
         private static IndexBuffer ib;
-        private int vertexCount;
-        private int indexCount;
+        private int _vertexCount;
+        private int _indexCount;
         private ILocalChunkCache _manager;
 
         private readonly SceneControl _sceneControl;
-        private IDefinitionManager definitionManager;
+        private readonly IDefinitionManager _definitionManager;
         private static RasterizerState wireFrameState;
 
         /// <summary>
@@ -43,10 +42,7 @@ namespace OctoAwesome.Client.Components
         /// </summary>
         public Index3? ChunkPosition
         {
-            get
-            {
-                return _chunkPosition;
-            }
+            get => _chunkPosition;
             private set
             {
                 _chunkPosition = value;
@@ -54,7 +50,7 @@ namespace OctoAwesome.Client.Components
             }
         }
 
-        public bool DispatchRequired => Thread.CurrentThread.ManagedThreadId != dispatcher.Thread.ManagedThreadId;
+        public bool DispatchRequired => Thread.CurrentThread.ManagedThreadId != _dispatcher.Thread.ManagedThreadId;
 
         static ChunkRenderer()
         {
@@ -66,11 +62,11 @@ namespace OctoAwesome.Client.Components
         public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, Effect simpleShader, GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
         {
             _sceneControl = sceneControl;
-            this.definitionManager = definitionManager;
-            this.graphicsDevice = graphicsDevice;
-            this.textures = textures;
-            dispatcher = Dispatcher.CurrentDispatcher;
-            simple = simpleShader;
+            this._definitionManager = definitionManager;
+            this._graphicsDevice = graphicsDevice;
+            this._textures = textures;
+            _dispatcher = Dispatcher.CurrentDispatcher;
+            _simple = simpleShader;
             GenerateIndexBuffer();
         }
 
@@ -80,25 +76,24 @@ namespace OctoAwesome.Client.Components
 
             if (_manager == manager && newPosition == ChunkPosition)
             {
-                NeedsUpdate = !loaded;
+                NeedsUpdate = !_loaded;
                 return;
             }
 
             _manager = manager;
             ChunkPosition = newPosition;
 
-            if (chunk != null)
+            if (_chunk != null)
             {
-                chunk.Changed -= OnChunkChanged;
-                chunk = null;
+                _chunk.Changed -= OnChunkChanged;
+                _chunk = null;
             }
 
-            loaded = false;
+            _loaded = false;
             NeedsUpdate = true;
         }
 
         public bool NeedsUpdate = false;
-
 
         private void OnChunkChanged(IChunk c)
         {
@@ -108,7 +103,7 @@ namespace OctoAwesome.Client.Components
 
         public void Draw(Matrix view, Matrix projection, Index3 shift)
         {
-            if (!loaded)
+            if (!_loaded)
                 return;
 
             Matrix worldViewProj = projection * view * Matrix.CreateTranslation(
@@ -116,26 +111,26 @@ namespace OctoAwesome.Client.Components
                 shift.Y * Chunk.CHUNKSIZE_Y,
                 shift.Z * Chunk.CHUNKSIZE_Z);
 
-            simple.Parameters["OverrideLightLevel"].SetValue(OverrideLightLevel);
-            simple.Parameters["WorldViewProj"].SetValue(worldViewProj);
-            simple.Parameters["BlockTextures"].SetValue(textures);
+            _simple.Parameters["OverrideLightLevel"].SetValue(OverrideLightLevel);
+            _simple.Parameters["WorldViewProj"].SetValue(worldViewProj);
+            _simple.Parameters["BlockTextures"].SetValue(_textures);
 
-            simple.Parameters["AmbientIntensity"].SetValue(0.4f);
-            simple.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
+            _simple.Parameters["AmbientIntensity"].SetValue(0.4f);
+            _simple.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
 
             lock (this)
             {
-                if (vb == null)
+                if (_vb == null)
                     return;
 
-                graphicsDevice.RasterizerState = WireFrame ? wireFrameState : RasterizerState.CullCounterClockwise;
-                graphicsDevice.VertexBuffer = vb;
-                graphicsDevice.IndexBuffer = ib;
+                _graphicsDevice.RasterizerState = WireFrame ? wireFrameState : RasterizerState.CullCounterClockwise;
+                _graphicsDevice.VertexBuffer = _vb;
+                _graphicsDevice.IndexBuffer = ib;
 
-                foreach (var pass in simple.CurrentTechnique.Passes)
+                foreach (var pass in _simple.CurrentTechnique.Passes)
                 {
                     pass.Apply();
-                    graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, vertexCount, 0, indexCount / 3);
+                    _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, _vertexCount, 0, _indexCount / 3);
                 }
             }
         }
@@ -149,7 +144,7 @@ namespace OctoAwesome.Client.Components
                 if (ib != null)
                     return;
 
-                ib = new IndexBuffer(graphicsDevice, DrawElementsType.UnsignedInt, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Z * 6 * 6);
+                ib = new IndexBuffer(_graphicsDevice, DrawElementsType.UnsignedInt, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Z * 6 * 6);
                 List<int> indices = new List<int>(ib.IndexCount);
                 for (int i = 0; i < ib.IndexCount * 2 / 3; i += 4)
                 {
@@ -176,10 +171,10 @@ namespace OctoAwesome.Client.Components
 
 
             // Chunk nachladen
-            if (this.chunk == null)
+            if (this._chunk == null)
             {
-                this.chunk = _manager.GetChunk(ChunkPosition.Value);
-                if (this.chunk == null)
+                this._chunk = _manager.GetChunk(ChunkPosition.Value);
+                if (this._chunk == null)
                 {
                     //Thread.Sleep(10);
                     //RegenerateVertexBuffer();
@@ -187,11 +182,11 @@ namespace OctoAwesome.Client.Components
                     return false;
                 }
 
-                this.chunk.Changed += OnChunkChanged;
+                this._chunk.Changed += OnChunkChanged;
             }
-            var chunk = this.chunk;
+            var chunk = this._chunk;
             List<VertexPositionNormalTextureLight> vertices = new List<VertexPositionNormalTextureLight>();
-            int textureColumns = textures.Width / SceneControl.TEXTURESIZE;
+            int textureColumns = _textures.Width / SceneControl.TEXTURESIZE;
             float textureWidth = 1f / textureColumns;
             float texelSize = 1f / SceneControl.TEXTURESIZE;
             float textureSizeGap = texelSize;
@@ -200,7 +195,7 @@ namespace OctoAwesome.Client.Components
             Dictionary<IBlockDefinition, int> textureOffsets = new Dictionary<IBlockDefinition, int>();
             // Dictionary<Type, BlockDefinition> definitionMapping = new Dictionary<Type, BlockDefinition>();
             int definitionIndex = 0;
-            foreach (var definition in definitionManager.BlockDefinitions)
+            foreach (var definition in _definitionManager.BlockDefinitions)
             {
                 int textureCount = definition.Textures.Count();
                 textureOffsets.Add(definition, definitionIndex);
@@ -234,7 +229,7 @@ namespace OctoAwesome.Client.Components
                         if (block == 0)
                             continue;
 
-                        IBlockDefinition blockDefinition = (IBlockDefinition)definitionManager.GetBlockDefinitionByIndex(block);
+                        IBlockDefinition blockDefinition = (IBlockDefinition)_definitionManager.GetBlockDefinitionByIndex(block);
 
                         if (blockDefinition == null)
                             continue;
@@ -249,7 +244,7 @@ namespace OctoAwesome.Client.Components
                                 {
                                     blocks[GetIndex(zOffset, yOffset, xOffset)] = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x + xOffset, y + yOffset, z + zOffset));
                                     blockDefinitions[GetIndex(zOffset, yOffset, xOffset)] =
-                                        (IBlockDefinition)definitionManager.GetBlockDefinitionByIndex(blocks[GetIndex(zOffset, yOffset, xOffset)]);
+                                        (IBlockDefinition)_definitionManager.GetBlockDefinitionByIndex(blocks[GetIndex(zOffset, yOffset, xOffset)]);
                                 }
 
                         ushort topBlock = blocks[GetIndex(1, 0, 0)];
@@ -512,22 +507,22 @@ namespace OctoAwesome.Client.Components
                 }
             }
 
-            vertexCount = vertices.Count;
-            indexCount = vertices.Count * 6 / 4;
+            _vertexCount = vertices.Count;
+            _indexCount = vertices.Count * 6 / 4;
 
-            if (vertexCount > 0)
+            if (_vertexCount > 0)
             {
                 Dispatch(() =>
                 {
-                    if (vb == null || ib == null)
+                    if (_vb == null || ib == null)
                     {
-                        vb = new VertexBuffer(graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, vertexCount);
+                        _vb = new VertexBuffer(_graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, _vertexCount);
                     }
-                    if (vertexCount > vb.VertexCount)
-                        vb.Resize(vertexCount);
+                    if (_vertexCount > _vb.VertexCount)
+                        _vb.Resize(_vertexCount);
 
 
-                    vb.SetData(vertices.ToArray());
+                    _vb.SetData(vertices.ToArray());
                 });
             }
 
@@ -535,11 +530,11 @@ namespace OctoAwesome.Client.Components
             {
                 if (chunk != null && chunk.Index != ChunkPosition)
                 {
-                    return loaded;
+                    return _loaded;
                 }
 
-                loaded = true;
-                NeedsUpdate |= chunk != this.chunk;
+                _loaded = true;
+                NeedsUpdate |= chunk != this._chunk;
                 return !NeedsUpdate;
             }
         }
@@ -569,16 +564,16 @@ namespace OctoAwesome.Client.Components
 
         public void Dispose()
         {
-            if (vb != null)
+            if (_vb != null)
             {
-                vb.Dispose();
-                vb = null;
+                _vb.Dispose();
+                _vb = null;
             }
 
-            if (chunk != null)
+            if (_chunk != null)
             {
-                chunk.Changed -= OnChunkChanged;
-                chunk = null;
+                _chunk.Changed -= OnChunkChanged;
+                _chunk = null;
             }
 
         }
@@ -586,7 +581,7 @@ namespace OctoAwesome.Client.Components
         private void Dispatch(Action action)
         {
             if (DispatchRequired)
-                dispatcher.Invoke(action);
+                _dispatcher.Invoke(action);
             else
                 action();
         }

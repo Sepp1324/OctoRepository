@@ -1,11 +1,7 @@
-﻿using OctoAwesome;
-using OctoAwesome.Client.Components;
+﻿using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Runtime;
 using System;
-using System.Configuration;
-using System.Linq;
-using engenious.UI;
 using EventArgs = System.EventArgs;
 using engenious;
 using engenious.Input;
@@ -243,9 +239,6 @@ namespace OctoAwesome.Client
         }
 
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
+        public override void Dispose() => base.Dispose();
     }
 }

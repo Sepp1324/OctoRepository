@@ -8,39 +8,39 @@ namespace OctoAwesome.Client.Controls
 {
     internal class CompassControl : Control
     {
-        private Texture2D compassTexture;
+        private readonly Texture2D _compassTexture;
 
-        private AssetComponent assets;
+        private readonly AssetComponent _assets;
 
         public PlayerComponent Player { get; set; }
 
         public CompassControl(ScreenComponent screenManager) : base(screenManager)
         {
-            assets = screenManager.Game.Assets;
+            _assets = screenManager.Game.Assets;
 
             Player = screenManager.Player;
             Padding = Border.All(7);
 
-            Texture2D background = assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown_pressed");
+            var background = _assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown_pressed");
             Background = NineTileBrush.FromSingleTexture(background, 7, 7);
-            compassTexture = assets.LoadTexture(GetType(), "compass");
+            _compassTexture = _assets.LoadTexture(GetType(), "compass");
         }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (Player == null || Player.CurrentEntity == null || !assets.Ready)
+            if (Player?.CurrentEntity == null || !_assets.Ready)
                 return;
 
-            float compassValue = Player.CurrentEntityHead.Angle / (float)(2 * Math.PI);
+            var compassValue = Player.CurrentEntityHead.Angle / (float)(2 * Math.PI);
             compassValue %= 1f;
             if (compassValue < 0)
                 compassValue += 1f;
 
-            int offset = (int)(compassTexture.Width * compassValue);
+            var offset = (int)(_compassTexture.Width * compassValue);
             offset -= contentArea.Width / 2;
-            int offsetY = (compassTexture.Height -contentArea.Height) / 2;
+            var offsetY = (_compassTexture.Height -contentArea.Height) / 2;
 
-            batch.Draw(compassTexture, new Rectangle(contentArea.X,contentArea.Y-offsetY,contentArea.Width,contentArea.Height), new Rectangle(offset, 0, contentArea.Width, contentArea.Height+offsetY), Color.White * alpha);
+            batch.Draw(_compassTexture, new Rectangle(contentArea.X,contentArea.Y-offsetY,contentArea.Width,contentArea.Height), new Rectangle(offset, 0, contentArea.Width, contentArea.Height+offsetY), Color.White * alpha);
         }
     }
 }

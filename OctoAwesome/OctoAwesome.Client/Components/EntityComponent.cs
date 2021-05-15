@@ -2,12 +2,9 @@
 using engenious.Graphics;
 using engenious.Helper;
 using OctoAwesome.EntityComponents;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -19,13 +16,12 @@ namespace OctoAwesome.Client.Components
             public Texture2D texture;
             public Model model;
         }
-        private GraphicsDevice graphicsDevice;
-        private BasicEffect effect;
+        private readonly GraphicsDevice _graphicsDevice;
+        private readonly BasicEffect _effect;
+        
         public SimulationComponent Simulation { get; private set; }
 
-
-        private Dictionary<string, ModelInfo> models = new Dictionary<string, ModelInfo>();
-
+        private readonly Dictionary<string, ModelInfo> _models = new Dictionary<string, ModelInfo>();
 
         public List<Entity> Entities { get; set; }
 
@@ -34,20 +30,20 @@ namespace OctoAwesome.Client.Components
             Simulation = simulation;
 
             Entities = new List<Entity>();
-            graphicsDevice = game.GraphicsDevice;
+            _graphicsDevice = game.GraphicsDevice;
 
-            effect = new BasicEffect(graphicsDevice);
+            _effect = new BasicEffect(_graphicsDevice);
         }
 
         private int i = 0;
         public void Draw(Matrix view, Matrix projection, Index3 chunkOffset, Index2 planetSize)
         {
-            effect.Projection = projection;
-            effect.View = view;
-            effect.TextureEnabled = true;
-            graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
+            _effect.Projection = projection;
+            _effect.View = view;
+            _effect.TextureEnabled = true;
+            _graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
             using (var writer = File.AppendText(Path.Combine(".", "render.log")))
-                foreach (var pass in effect.CurrentTechnique.Passes)
+                foreach (var pass in _effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                     i++;
@@ -60,8 +56,7 @@ namespace OctoAwesome.Client.Components
 
                         var rendercomp = entity.Components.GetComponent<RenderComponent>();
 
-
-                        if (!models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
+                        if (!_models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
                         {
                             modelinfo = new ModelInfo()
                             {
@@ -91,10 +86,10 @@ namespace OctoAwesome.Client.Components
                             shift.X * Chunk.CHUNKSIZE_X + position.LocalPosition.X,
                             shift.Y * Chunk.CHUNKSIZE_Y + position.LocalPosition.Y,
                             shift.Z * Chunk.CHUNKSIZE_Z + position.LocalPosition.Z) * Matrix.CreateScaling(body.Radius * 2, body.Radius * 2, body.Height) * Matrix.CreateRotationZ(rotation);
-                        effect.World = world;
+                        _effect.World = world;
                         modelinfo.model.Transform = world;
 
-                        modelinfo.model.Draw(effect, modelinfo.texture);
+                        modelinfo.model.Draw(_effect, modelinfo.texture);
                     }
                 }
         }

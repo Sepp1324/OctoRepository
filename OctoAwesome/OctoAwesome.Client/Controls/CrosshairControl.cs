@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using engenious.UI;
+﻿using engenious.UI;
 using OctoAwesome.Client.Components;
 using engenious;
 using engenious.Graphics;
@@ -11,28 +7,28 @@ namespace OctoAwesome.Client.Controls
 {
     class CrosshairControl : Control
     {
-        public Texture2D Texture;
-        public float Transparency;
-        public Color Color;
+        public Texture2D TEXTURE;
+        public float TRANSPARENCY;
+        public Color COLOR;
 
-        AssetComponent assets;
+        readonly AssetComponent _assets;
 
         public CrosshairControl(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            _assets = manager.Game.Assets;
 
-            Transparency = 0.5f;
-            Color = Color.White;
+            TRANSPARENCY = 0.5f;
+            COLOR = Color.White;
 
-            Texture = assets.LoadTexture(GetType(), "octocross");
+            TEXTURE = _assets.LoadTexture(GetType(), "octocross");
         }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (!assets.Ready)
+            if (!_assets.Ready)
                 return;
 
-            batch.Draw(Texture, contentArea, Color * Transparency);
+            batch.Draw(TEXTURE, contentArea, COLOR * TRANSPARENCY);
         }
     }
 }
