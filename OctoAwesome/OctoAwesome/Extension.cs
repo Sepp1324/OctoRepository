@@ -3,14 +3,28 @@ using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome
 {
-    //TODO:Eventuell auslagern
+    //TODO: Outsource
 
+    /// <summary>
+    /// Extension for the Main-Game
+    /// </summary>
     public sealed class Extension : IExtension
     {
+        /// <summary>
+        /// Description of the Extension
+        /// </summary>
         public string Description => "OctoAwesome";
 
+        /// <summary>
+        /// Name of the Extension
+        /// </summary>
         public string Name => "OctoAwesome";
 
+        /// <summary>
+        /// Register the Extension
+        /// </summary>
+        /// <param name="extensionLoader"></param>
+        /// <param name="typeContainer"></param>
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {
             extensionLoader.RegisterEntityExtender<Player>((p) =>

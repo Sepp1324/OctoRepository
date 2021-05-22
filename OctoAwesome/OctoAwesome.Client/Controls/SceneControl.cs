@@ -284,11 +284,11 @@ namespace OctoAwesome.Client.Controls
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
-            for (int z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
+            for (int z = -Player.SelectionRange; z < Player.SelectionRange; z++)
             {
-                for (int y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
+                for (int y = -Player.SelectionRange; y < Player.SelectionRange; y++)
                 {
-                    for (int x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
+                    for (int x = -Player.SelectionRange; x < Player.SelectionRange; x++)
                     {
                         Index3 range = new Index3(x, y, z);
                         Index3 pos = range + centerblock;

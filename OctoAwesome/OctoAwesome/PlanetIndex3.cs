@@ -8,12 +8,12 @@
         /// <summary>
         /// Die Planeten-ID
         /// </summary>
-        public int Planet;
+        public readonly int PLANET;
 
         /// <summary>
         /// Die Position des Chunks
         /// </summary>
-        public Index3 ChunkIndex;
+        public readonly Index3 CHUNK_INDEX;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse PlanetIndex3
@@ -22,8 +22,8 @@
         /// <param name="chunkIndex">Der <see cref="Index3"/> des Chunks</param>
         public PlanetIndex3(int planet, Index3 chunkIndex)
         {
-            Planet = planet;
-            ChunkIndex = chunkIndex;
+            PLANET = planet;
+            CHUNK_INDEX = chunkIndex;
         }
 
         /// <summary>
@@ -59,10 +59,7 @@
         public override bool Equals(object obj)
         {
             if (obj is PlanetIndex3 other)
-                return other.Planet == Planet &&
-                    other.ChunkIndex.X == ChunkIndex.X &&
-                    other.ChunkIndex.Y == ChunkIndex.Y && 
-                    other.ChunkIndex.Z == ChunkIndex.Z;
+                return other.PLANET == PLANET && other.CHUNK_INDEX.X == CHUNK_INDEX.X && other.CHUNK_INDEX.Y == CHUNK_INDEX.Y && other.CHUNK_INDEX.Z == CHUNK_INDEX.Z;
 
             return false;
         }
@@ -71,10 +68,6 @@
         /// Erzeugt einen möglichst eindeutigen Hashcode des PlanetIndex3s
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode() 
-            => (Planet << 24) +
-               (ChunkIndex.X << 16) +
-               (ChunkIndex.Y << 8) +
-               ChunkIndex.Z;
+        public override int GetHashCode() => (PLANET << 24) + (CHUNK_INDEX.X << 16) + (CHUNK_INDEX.Y << 8) + CHUNK_INDEX.Z;
     }
 }

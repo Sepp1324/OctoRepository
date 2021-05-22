@@ -9,6 +9,11 @@ namespace OctoAwesome
     /// </summary>
     public class Planet : IPlanet
     {
+        private IUpdateHub _updateHub;
+        private IDisposable _chunkSubscription;
+
+        private bool _disposed;
+
         /// <summary>
         /// ID des Planeten.
         /// </summary>
@@ -47,20 +52,15 @@ namespace OctoAwesome
         public IGlobalChunkCache GlobalChunkCache { get; set; }
         public IUpdateHub UpdateHub
         {
-            get => updateHub; set
+            get => _updateHub; set
             {
 
-                chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
+                _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
                 GlobalChunkCache.InsertUpdateHub(value);
-                updateHub = value;
+                _updateHub = value;
             }
         }
-
-        private IUpdateHub updateHub;
-        private IDisposable chunkSubscription;
-
-        private bool disposed;
-
+        
         /// <summary>
         /// Initialisierung des Planeten.
         /// </summary>
@@ -73,20 +73,14 @@ namespace OctoAwesome
 
             Id = id;
             Universe = universe;
-            Size = new Index3(
-                (int)Math.Pow(2, size.X),
-                (int)Math.Pow(2, size.Y),
-                (int)Math.Pow(2, size.Z));
+            Size = new Index3((int)Math.Pow(2, size.X), (int)Math.Pow(2, size.Y), (int)Math.Pow(2, size.Z));
             Seed = seed;
         }
 
         /// <summary>
         /// Erzeugt eine neue Instanz eines Planeten.
         /// </summary>
-        public Planet()
-        {
-            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
-        }
+        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
 
         /// <summary>
         /// Serialisiert den Planeten in den angegebenen Stream.
@@ -118,17 +112,17 @@ namespace OctoAwesome
 
         public void Dispose()
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
-            disposed = true;
+            _disposed = true;
 
-            chunkSubscription.Dispose();
+            _chunkSubscription.Dispose();
 
             if (GlobalChunkCache is IDisposable disposable)
                 disposable.Dispose();
 
-            chunkSubscription = null;
+            _chunkSubscription = null;
             GlobalChunkCache = null;
         }
     }

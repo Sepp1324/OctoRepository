@@ -7,27 +7,31 @@ namespace OctoAwesome.Services
 {
     public sealed class BlockCollectionService
     {
-        private readonly IPool<BlockVolumeState> blockCollectionPool;
-        private readonly IDefinitionManager definitionManager;
+        private readonly IPool<BlockVolumeState> _blockCollectionPool;
+        private readonly IDefinitionManager _definitionManager;
 
-        private readonly Dictionary<BlockInfo, BlockVolumeState> blockCollectionInformations;
+        private readonly Dictionary<BlockInfo, BlockVolumeState> _blockCollectionInformations;
 
+        /// <summary>
+        /// TBD
+        /// </summary>
+        /// <param name="blockCollectionPool"></param>
+        /// <param name="definitionManager"></param>
         public BlockCollectionService(IPool<BlockVolumeState> blockCollectionPool, IDefinitionManager definitionManager)
         {
-            this.blockCollectionPool = blockCollectionPool;
-            this.definitionManager = definitionManager;
-            blockCollectionInformations = new Dictionary<BlockInfo, BlockVolumeState>();
+            _blockCollectionPool = blockCollectionPool;
+            _definitionManager = definitionManager;
+            _blockCollectionInformations = new Dictionary<BlockInfo, BlockVolumeState>();
         }
 
         public (bool Valid, IReadOnlyList<(int Quantity, IDefinition Definition)> List) Hit(BlockInfo block, IItem item, ILocalChunkCache cache)
         {
-            BlockVolumeState volumeState;
-            if (!blockCollectionInformations.TryGetValue(block, out volumeState))
+            if (!_blockCollectionInformations.TryGetValue(block, out var volumeState))
             {
-                var definition = definitionManager.GetBlockDefinitionByIndex(block.Block);
-                volumeState = blockCollectionPool.Get();
+                var definition = _definitionManager.GetBlockDefinitionByIndex(block.Block);
+                volumeState = _blockCollectionPool.Get();
                 volumeState.Initialize(block, definition, DateTimeOffset.Now);
-                blockCollectionInformations.Add(block, volumeState);
+                _blockCollectionInformations.Add(block, volumeState);
             }
 
             volumeState.TryReset();
@@ -42,7 +46,7 @@ namespace OctoAwesome.Services
 
             if (volumeState.VolumeRemaining < 1)
             {
-                blockCollectionInformations.Remove(block);
+                _blockCollectionInformations.Remove(block);
                 volumeState.Release();
                 cache.SetBlock(block.Position, 0);
                 return (true, blockHitInformation.Definitions);
