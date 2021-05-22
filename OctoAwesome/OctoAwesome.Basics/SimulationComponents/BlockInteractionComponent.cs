@@ -35,17 +35,21 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 if (!lastBlock.IsEmpty)
                 {
-                    if (toolbar.ActiveTool.Item is IItem item)
-                    {
-                        var blockHitInformation = _service.Hit(lastBlock, item, cache);
+                    IItem activeItem;
 
-                        if (blockHitInformation.Valid)
-                            foreach (var (quantity, definition) in blockHitInformation.List)
-                            {
-                                if (definition is IInventoryable invDef)
-                                    inventory.AddUnit(quantity, invDef);
-                            }
-                    }
+                    if (toolbar.ActiveTool.Item is IItem item)
+                        activeItem = item;
+                    else
+                        activeItem = toolbar.HandSlot.Item as IItem;
+
+                    var blockHitInformation = _service.Hit(lastBlock, activeItem, cache);
+
+                    if (blockHitInformation.Valid)
+                        foreach (var (quantity, definition) in blockHitInformation.List)
+                        {
+                            if (definition is IInventoryable invDef)
+                                inventory.AddUnit(quantity, invDef);
+                        }
                 }
                 controller.InteractBlock = null;
             }

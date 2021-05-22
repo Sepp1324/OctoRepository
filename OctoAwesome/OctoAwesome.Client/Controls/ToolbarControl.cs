@@ -16,9 +16,11 @@ namespace OctoAwesome.Client.Controls
         private readonly Brush _buttonBackgroud;
         private readonly Brush _activeBackground;
 
+        private int _lastActiveIndex;
+
         public PlayerComponent Player { get; set; }
 
-        public Label activeToolLabel;
+        public Label ACTIVE_TOOL_LABEL;
 
         public ToolbarControl(ScreenComponent screenManager) : base(screenManager)
         {
@@ -48,8 +50,8 @@ namespace OctoAwesome.Client.Controls
             for (var i = 0; i < ToolBarComponent.Toolcount; i++)
                 grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
 
-            activeToolLabel = new Label(screenManager) {VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Center, Background = new BorderBrush(Color.Black * 0.3f), TextColor = Color.White};
-            grid.AddControl(activeToolLabel, 0, 0, ToolBarComponent.Toolcount);
+            ACTIVE_TOOL_LABEL = new Label(screenManager) {VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Center, Background = new BorderBrush(Color.Black * 0.3f), TextColor = Color.White};
+            grid.AddControl(ACTIVE_TOOL_LABEL, 0, 0, ToolBarComponent.Toolcount);
 
             for (var i = 0; i < ToolBarComponent.Toolcount; i++)
             {
@@ -68,34 +70,28 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (!Visible || !Enabled)
-                return;
+            if (!Visible || !Enabled) return;
 
             if (Player.CurrentEntity == null) return;
 
-           // Aktualisierung des aktiven Buttons
-            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
+            if (Player.Toolbar.ActiveIndex != _lastActiveIndex)
             {
-                if (Player.Toolbar.Tools != null &&
-                    Player.Toolbar.Tools.Length > i &&
-                    Player.Toolbar.Tools[i] != null &&
-                    Player.Toolbar.Tools[i].Item != null)
-                {
-                    _images[i].Texture = _toolTextures[Player.Toolbar.Tools[i].Definition.GetType().FullName];
-                    _buttons[i].Background = Player.Toolbar.ActiveTool == Player.Toolbar.Tools[i] ? _activeBackground : _buttonBackgroud;
-                }
-                else
-                {
-                    _images[i].Texture = null;
-                    _buttons[i].Background = _buttonBackgroud;
-                }
+                _buttons[_lastActiveIndex].Background = _buttonBackgroud;
+                _lastActiveIndex = Player.Toolbar.ActiveIndex;
             }
+            
+            _buttons[Player.Toolbar.ActiveIndex].Background = _activeBackground;
+
+            var definitionName = Player.Toolbar.ActiveTool.Definition.GetType().FullName;
+
+            if (_toolTextures.TryGetValue(definitionName, out var texture))
+                _images[Player.Toolbar.ActiveIndex].Texture = texture;
 
             // Aktualisierung des ActiveTool Labels
-            activeToolLabel.Text = Player.Toolbar.ActiveTool != null ? $"{Player.Toolbar.ActiveTool.Definition.Name} ({Player.Toolbar.ActiveTool.Amount})"
+            ACTIVE_TOOL_LABEL.Text = Player.Toolbar.ActiveTool != null ? $"{Player.Toolbar.ActiveTool.Definition.Name} ({Player.Toolbar.ActiveTool.Amount})"
                 : string.Empty;
 
-            activeToolLabel.Visible = activeToolLabel.Text != string.Empty;
+            ACTIVE_TOOL_LABEL.Visible = ACTIVE_TOOL_LABEL.Text != string.Empty;
 
             base.OnUpdate(gameTime);
         }
