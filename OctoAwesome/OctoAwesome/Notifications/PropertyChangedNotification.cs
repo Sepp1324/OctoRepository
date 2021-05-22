@@ -5,6 +5,7 @@ namespace OctoAwesome.Notifications
     public class PropertyChangedNotification : SerializableNotification
     {
         public string Issuer { get; set; }
+        
         public string Property { get; set; }
 
         public byte[] Value { get; set; }

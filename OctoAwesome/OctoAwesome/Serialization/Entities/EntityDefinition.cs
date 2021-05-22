@@ -9,14 +9,18 @@ namespace OctoAwesome.Serialization.Entities
     public sealed class EntityDefinition : ISerializable
     {
         public Type Type { get;  set; }
+        
         public Guid Id { get;  set; }
+        
         public int ComponentsCount { get;  set; }
+        
         public IEnumerable<Type> Components { get;  set; }
 
         public EntityDefinition()
         {
 
         }
+        
         public EntityDefinition(Entity entity)
         {
             Type = entity.GetType();
@@ -55,13 +59,11 @@ namespace OctoAwesome.Serialization.Entities
             {
             }
 
-            public override void AddOrUpdate(EntityDefinition value)
-                => InternalAddOrUpdate(new GuidTag<EntityDefinition>(value.Id), value);
+            public override void AddOrUpdate(EntityDefinition value) => InternalAddOrUpdate(new GuidTag<EntityDefinition>(value.Id), value);
 
             public IEnumerable<GuidTag<EntityDefinition>> GetAllKeys() => Database.Keys;
 
-            public override void Remove(EntityDefinition value)
-                => InternalRemove(new GuidTag<EntityDefinition>(value.Id));
+            public override void Remove(EntityDefinition value) => InternalRemove(new GuidTag<EntityDefinition>(value.Id));
         }
     }
 }

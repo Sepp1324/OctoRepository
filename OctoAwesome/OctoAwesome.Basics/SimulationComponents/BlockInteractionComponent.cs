@@ -49,6 +49,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                         {
                             if (definition is IInventoryable invDef)
                                 inventory.AddUnit(quantity, invDef);
+                            else if (activeItem is IFluidInventory fluidInventory && definition is IFluidMaterialDefinition fluid)
+                                fluidInventory.AddFluid(quantity, fluid);
                         }
                 }
                 controller.InteractBlock = null;

@@ -4,7 +4,7 @@ namespace OctoAwesome.Serialization
 {
     public abstract class SerializableDatabaseContext<TTag, TObject> : DatabaseContext<TTag, TObject> where TTag : ITag, new() where TObject : ISerializable, new()
     {
-        public SerializableDatabaseContext(Database<TTag> database) : base(database) { }
+        protected SerializableDatabaseContext(Database<TTag> database) : base(database) { }
 
         public override TObject Get(TTag key) => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
 

@@ -4,15 +4,15 @@ namespace OctoAwesome.Notifications
 {
     public abstract class Notification : IPoolElement
     {
+        private IPool _pool;
+        
         public uint SenderId { get; set; }
-
-        private IPool pool;
 
         public virtual bool Match<T>(T filter) => true;
 
         public void Init(IPool pool)
         {
-            this.pool = pool;
+            _pool = pool;
             OnInit();
         }
 
@@ -20,23 +20,17 @@ namespace OctoAwesome.Notifications
         {
             SenderId = 0;
             OnRelease();
-            pool.Push(this);
+            _pool.Push(this);
         }
 
         /// <summary>
         /// This method is called from the Init method. It's not needed to hold an seperate pool
         /// </summary>
-        protected virtual void OnInit()
-        {
-
-        }
+        protected virtual void OnInit() { }
 
         /// <summary>
         /// This is called from the Release method. Do not push this instance manualy to any pool 
         /// </summary>
-        protected virtual void OnRelease()
-        {
-
-        }
+        protected virtual void OnRelease() { }
     }
 }
