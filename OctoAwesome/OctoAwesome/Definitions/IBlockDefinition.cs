@@ -26,6 +26,8 @@ namespace OctoAwesome.Definitions
         /// Zeigt, ob der Block-Typ Metadaten besitzt
         /// </summary>
         bool HasMetaData { get; }
+        
+        IMaterialDefinition Material { get; }
 
         /// <summary>
         /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die

@@ -119,13 +119,13 @@ namespace OctoAwesome.Runtime
 
         public void Dispose()
         {
-            foreach (KeyValuePair<(Type Type, Guid Universe, int PlanetId), Database.Database> database in _planetDatabaseRegister)
+            foreach (var database in _planetDatabaseRegister)
                 database.Value.Dispose();
 
-            foreach (KeyValuePair<(Type Type, Guid Universe), Database.Database> database in _universeDatabaseRegister)
+            foreach (var database in _universeDatabaseRegister)
                 database.Value.Dispose();
 
-            foreach (KeyValuePair<Type, Database.Database> database in _globalDatabaseRegister)
+            foreach (var database in _globalDatabaseRegister)
                 database.Value.Dispose();
 
             _planetDatabaseRegister.Clear();

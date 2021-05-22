@@ -19,10 +19,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity) => true;
 
-        protected override void RemoveEntity(Entity entity)
-        {
-
-        }
+        protected override void RemoveEntity(Entity entity) { }
 
         protected override void UpdateEntity(GameTime gameTime, Entity entity, ControllableComponent controller, InventoryComponent inventory)
         {
@@ -47,10 +44,10 @@ namespace OctoAwesome.Basics.SimulationComponents
                     if (blockHitInformation.Valid)
                         foreach (var (quantity, definition) in blockHitInformation.List)
                         {
-                            if (definition is IInventoryable invDef)
+                            if(activeItem is IFluidInventory fluidInventory && definition is IBlockDefinition fluidBlock && fluidBlock.Material is IFluidMaterialDefinition)
+                                fluidInventory.AddFluid(quantity, fluidBlock);
+                            else if(definition is IInventoryable invDef) 
                                 inventory.AddUnit(quantity, invDef);
-                            else if (activeItem is IFluidInventory fluidInventory && definition is IFluidMaterialDefinition fluid)
-                                fluidInventory.AddFluid(quantity, fluid);
                         }
                 }
                 controller.InteractBlock = null;
@@ -82,7 +79,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                         if (positionComponent != null && bodyComponent != null)
                         {
-                            var gap = 0.01f;
+                            const float gap = 0.01f;
                             var playerBox = new BoundingBox(
                                 new Vector3(
                                     positionComponent.Position.GlobalBlockIndex.X + positionComponent.Position.BlockPosition.X - bodyComponent.Radius + gap,
@@ -95,10 +92,10 @@ namespace OctoAwesome.Basics.SimulationComponents
                                 );
 
                             // Nicht in sich selbst reinbauen
-                            for (var i = 0; i < boxes.Length; i++)
+                            foreach (var box in boxes)
                             {
-                                var box = boxes[i];
                                 var newBox = new BoundingBox(idx + box.Min, idx + box.Max);
+                                
                                 if (newBox.Min.X < playerBox.Max.X && newBox.Max.X > playerBox.Min.X &&
                                     newBox.Min.Y < playerBox.Max.Y && newBox.Max.X > playerBox.Min.Y &&
                                     newBox.Min.Z < playerBox.Max.Z && newBox.Max.X > playerBox.Min.Z)
@@ -112,6 +109,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                             {
                                 cache.SetBlock(idx, _simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 cache.SetBlockMeta(idx, (int)controller.ApplySide);
+                                
                                 if (toolbar.ActiveTool.Amount <= 0)
                                     toolbar.RemoveSlot(toolbar.ActiveTool);
                             }
