@@ -9,16 +9,10 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "gravel";
 
-
-        public override string[] Textures
-        {
-            get
-            {
-                return new[] {
-                    "gravel",
-                };
-            }
-        }
+        public override string[] Textures =>
+            new[] {
+                "gravel",
+            };
 
         public override IMaterialDefinition Material { get; }
 

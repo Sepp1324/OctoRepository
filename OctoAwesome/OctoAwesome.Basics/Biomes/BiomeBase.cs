@@ -44,7 +44,6 @@ namespace OctoAwesome.Basics.Biomes
                     values[x, y] = (heights[x, y] / 2 + 0.5f) * ValueRange + ValueRangeOffset;
                 }
             }
-
             return values;
         }
     }

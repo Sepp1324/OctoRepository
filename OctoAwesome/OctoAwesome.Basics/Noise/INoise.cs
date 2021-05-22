@@ -14,6 +14,7 @@
         /// <param name="width">Anzahl der gewollten Noise-Werte</param>
         /// <returns>Gibt ein float-Array einer 1D Noise zurück</returns>
         float[] GetNoiseMap(int startX, int width);
+        
         /// <summary>
         /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück
         /// </summary>
@@ -23,6 +24,7 @@
         /// <param name="height">Höhe der Noise-Map</param>
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück</returns>
         float[,] GetNoiseMap2D(int startX, int startY, int width, int height);
+        
         /// <summary>
         /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück, welche kachelbar ist
         /// </summary>
@@ -106,6 +108,7 @@
         /// <param name="z">Z-Position, für welche die Noise ausgegeben wird</param>
         /// <returns>Gibt ein float-Wert einer 3D Noise zurück</returns>
         float GetNoise3D(int x, int y, int z);
+        
         /// <summary>
         /// Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>

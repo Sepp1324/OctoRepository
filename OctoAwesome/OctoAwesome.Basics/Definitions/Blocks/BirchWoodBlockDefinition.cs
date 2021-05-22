@@ -18,10 +18,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override IMaterialDefinition Material { get; }
 
 
-        public BirchWoodBlockDefinition(WoodMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public BirchWoodBlockDefinition(WoodMaterialDefinition material) => Material = material;
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)

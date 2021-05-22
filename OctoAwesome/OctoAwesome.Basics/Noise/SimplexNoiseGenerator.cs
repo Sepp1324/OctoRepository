@@ -9,7 +9,7 @@ namespace OctoAwesome.Noise
         #region Props & Fields
 
         private byte[] _permutations;
-        private static byte[] range = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
+        private static readonly byte[] range = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
         private int _octaves;
         private float _persistance;
 
@@ -86,12 +86,12 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein float-Array einer 1D Noise zurück</returns>
         public float[] GetNoiseMap(int startX, int width)
         {
-            float[] noise = new float[width];
-            for (int x = 0; x < width; x++)
+            var noise = new float[width];
+            for (var x = 0; x < width; x++)
             {
-                float frequencyX = FrequencyX;
-                float amplitude = 1f;
-                for (int i = 0; i < Octaves; i++)
+                var frequencyX = FrequencyX;
+                var amplitude = 1f;
+                for (var i = 0; i < Octaves; i++)
                 {
                     noise[x] += Noise((x + startX) * frequencyX) * amplitude;
                     amplitude *= Persistance;
@@ -112,16 +112,16 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück</returns>
         public float[,] GetNoiseMap2D(int startX, int startY, int width, int height)
         {
-            float[,] noise = new float[width, height];
+            var noise = new float[width, height];
 
             Parallel.For(0, width, x =>
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    float frequencyX = FrequencyX;
-                    float frequencyZ = FrequencyZ;
-                    float amplitude = 1f;
-                    for (int i = 0; i < Octaves; i++)
+                    var frequencyX = FrequencyX;
+                    var frequencyZ = FrequencyZ;
+                    var amplitude = 1f;
+                    for (var i = 0; i < Octaves; i++)
                     {
                         noise[x, y] += Noise2D((x + startX) * frequencyX, (y + startY) * frequencyZ) * amplitude;
                         amplitude *= Persistance;
@@ -146,25 +146,25 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück, welche kachelbar ist</returns>
         public float[,] GetTileableNoiseMap2D(int startX, int startY, int sizeX, int sizeY, int tileSizeX, int tileSizeY)
         {
-            float[,] noise = new float[sizeX, sizeY];
+            var noise = new float[sizeX, sizeY];
 
             Parallel.For(0, sizeX, x =>
             {
-                for (int y = 0; y < sizeY; y++)
+                for (var y = 0; y < sizeY; y++)
                 {
-                    float frequencyX = FrequencyX;
-                    float frequencyY = FrequencyY;
+                    var frequencyX = FrequencyX;
+                    var frequencyY = FrequencyY;
                     float amplitude = 1;
 
-                    float u = (float)(x + startX) / tileSizeX;
-                    float v = (float)(y + startY) / tileSizeY;
+                    var u = (float)(x + startX) / tileSizeX;
+                    var v = (float)(y + startY) / tileSizeY;
 
-                    float nx = (float)(Math.Cos(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
-                    float ny = (float)(Math.Cos(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
-                    float nz = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
-                    float nw = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
+                    var nx = (float)(Math.Cos(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
+                    var ny = (float)(Math.Cos(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
+                    var nz = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
+                    var nw = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
 
-                    for (int i = 0; i < Octaves; i++)
+                    for (var i = 0; i < Octaves; i++)
                     {
                         noise[x, y] += Noise4D(nx * frequencyX, ny * frequencyY, nz * frequencyX, nw * frequencyY) * amplitude;
 
@@ -190,23 +190,22 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück</returns>
         public float[, ,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth)
         {
-            float[, ,] noise = new float[width, height, depth];
-
+            var noise = new float[width, height, depth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    for (int z = 0; z < depth; z++)
+                    for (var z = 0; z < depth; z++)
                     {
-                        float frequencyX = FrequencyX;
-                        float frequencyY = FrequencyY;
-                        float frequencyZ = FrequencyZ;
-                        float amplitude = 1f;
-                        for (int i = 0; i < Octaves; i++)
+                        var frequencyX = FrequencyX;
+                        var frequencyY = FrequencyY;
+                        var frequencyZ = FrequencyZ;
+                        var amplitude = 1f;
+                        
+                        for (var i = 0; i < Octaves; i++)
                         {
-
                             noise[x, y, z] += Noise3D((x + startX) * frequencyX, (y + startY) * frequencyY, (z + startZ) * frequencyZ) * amplitude;
                             amplitude *= Persistance;
                             frequencyX *= 2;
@@ -235,30 +234,30 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück, welche in X und Y Richtung kachelbar ist</returns>
         public float[, ,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY)
         {
-            float[, ,] noise = new float[width, height, depth];
+            var noise = new float[width, height, depth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    for (int z = 0; z < depth; z++)
+                    for (var z = 0; z < depth; z++)
                     {
 
-                        float frequencyX = FrequencyX;
-                        float frequencyY = FrequencyY;
-                        float frequencyZ = FrequencyZ;
+                        var frequencyX = FrequencyX;
+                        var frequencyY = FrequencyY;
+                        var frequencyZ = FrequencyZ;
                         float amplitude = 1;
 
-                        float u = (float)(x + startX) / tileSizeX;
-                        float v = (float)(y + startY) / tileSizeY;
+                        var u = (float)(x + startX) / tileSizeX;
+                        var v = (float)(y + startY) / tileSizeY;
 
-                        float nx = (float)(Math.Cos(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
-                        float ny = (float)(Math.Cos(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
-                        float nw = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
-                        float nv = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
+                        var nx = (float)(Math.Cos(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
+                        var ny = (float)(Math.Cos(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
+                        var nw = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
+                        var nv = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
 
-                        for (int i = 0; i < Octaves; i++)
+                        for (var i = 0; i < Octaves; i++)
                         {
                             noise[x, y, z] += Noise5D(nx * frequencyX, ny * frequencyY, z * frequencyZ, nw * frequencyX, nv * frequencyY) * amplitude;
 
@@ -290,23 +289,24 @@ namespace OctoAwesome.Noise
         /// <returns>Gibt ein 4D-float-Array einer 4D-Noise zurück</returns>
         public float[, , ,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int wDepth)
         {
-            float[, , ,] noise = new float[width, height, depth, wDepth];
+            var noise = new float[width, height, depth, wDepth];
 
             Parallel.For(0, width, x =>
             //for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    for (int z = 0; z < depth; z++)
+                    for (var z = 0; z < depth; z++)
                     {
-                        for (int w = 0; w < wDepth; w++)
+                        for (var w = 0; w < wDepth; w++)
                         {
-                            float frequencyX = FrequencyX;
-                            float frequencyY = FrequencyY;
-                            float frequencyZ = FrequencyZ;
-                            float frequencyW = FrequencyW;
-                            float amplitude = 1f;
-                            for (int i = 0; i < Octaves; i++)
+                            var frequencyX = FrequencyX;
+                            var frequencyY = FrequencyY;
+                            var frequencyZ = FrequencyZ;
+                            var frequencyW = FrequencyW;
+                            var amplitude = 1f;
+                            
+                            for (var i = 0; i < Octaves; i++)
                             {
                                 noise[x, y, z, w] += Noise4D((x + startX) * frequencyX, (y + startY) * frequencyY, (z + startZ) * frequencyZ, (w + startW) * frequencyW) * amplitude;
                                 amplitude *= Persistance;
@@ -335,9 +335,10 @@ namespace OctoAwesome.Noise
         public float GetNoise(int x)
         {
             float noise = 0;
-            float frequencyX = FrequencyX;
-            float amplitude = 1f;
-            for (int i = 0; i < Octaves; i++)
+            var frequencyX = FrequencyX;
+            var amplitude = 1f;
+            
+            for (var i = 0; i < Octaves; i++)
             {
                 noise += Noise(x * frequencyX) * amplitude;
                 amplitude *= Persistance;
@@ -356,10 +357,11 @@ namespace OctoAwesome.Noise
         public float GetNoise2D(int x, int y)
         {
             float noise = 0;
-            float frequencyX = FrequencyX;
-            float frequencyY = FrequencyY;
+            var frequencyX = FrequencyX;
+            var frequencyY = FrequencyY;
             float amplitude = 1;
-            for (int i = 0; i < Octaves; i++)
+            
+            for (var i = 0; i < Octaves; i++)
             {
                 noise += Noise2D(x * frequencyX, y * frequencyY) * amplitude;
                 amplitude *= Persistance;
@@ -380,19 +382,19 @@ namespace OctoAwesome.Noise
         public float GetTileableNoise2D(int x, int y, int tileSizeX, int tileSizeY)
         {
             float noise = 0;
-            float frequencyX = FrequencyX;
-            float frequencyY = FrequencyY;
+            var frequencyX = FrequencyX;
+            var frequencyY = FrequencyY;
             float amplitude = 1;
 
-            float u = (float)(x) / tileSizeX;
-            float v = (float)(y) / tileSizeY;
+            var u = (float)(x) / tileSizeX;
+            var v = (float)(y) / tileSizeY;
 
-            float nx = (float)(Math.Cos(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
-            float ny = (float)(Math.Cos(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
-            float nz = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
-            float nw = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
+            var nx = (float)(Math.Cos(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
+            var ny = (float)(Math.Cos(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
+            var nz = (float)(Math.Sin(u * 2 * Math.PI) * tileSizeX / (2 * Math.PI));
+            var nw = (float)(Math.Sin(v * 2 * Math.PI) * tileSizeY / (2 * Math.PI));
 
-            for (int i = 0; i < Octaves; i++)
+            for (var i = 0; i < Octaves; i++)
             {
                 noise += Noise4D(nx * frequencyX, ny * frequencyY, nz * frequencyX, nw * frequencyY) * amplitude;
 

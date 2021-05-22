@@ -10,15 +10,10 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override string Icon => "cotton_blue";
 
 
-        public override string[] Textures
-        {
-            get
-            {
-                return new[] {
-                    "cotton_blue"
-                };
-            }
-        }
+        public override string[] Textures =>
+            new[] {
+                "cotton_blue"
+            };
 
         public override IMaterialDefinition Material { get; }
 

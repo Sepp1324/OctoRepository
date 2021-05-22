@@ -9,19 +9,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "grass_top";
 
-        public override string[] Textures
-        {
-            get
-            {
-                
-
-                return new[] {
-                    "grass_top",
-                    "dirt",
-                    "dirt_grass",
-                };
-            }
-        }
+        public override string[] Textures =>
+            new[] {
+                "grass_top",
+                "dirt",
+                "dirt_grass",
+            };
 
         public override IMaterialDefinition Material { get; }
 
@@ -29,16 +22,14 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            if (wall == Wall.Top)
+            switch (wall)
             {
-                return 0;
-            } else if (wall == Wall.Bottom)
-            {
-                return 1;
-            }
-            else
-            {
-                return 2;
+                case Wall.Top:
+                    return 0;
+                case Wall.Bottom:
+                    return 1;
+                default:
+                    return 2;
             }
         }
     }

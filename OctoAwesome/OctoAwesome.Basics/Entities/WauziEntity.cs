@@ -19,8 +19,8 @@ namespace OctoAwesome.Basics.Entities
 
         public override void Update(GameTime gameTime)
         {
-            BodyPowerComponent body = Components.GetComponent<BodyPowerComponent>();
-            ControllableComponent controller = Components.GetComponent<ControllableComponent>();
+            var body = Components.GetComponent<BodyPowerComponent>();
+            var controller = Components.GetComponent<ControllableComponent>();
             controller.MoveInput = new Vector2(0.5f, 0.5f) ;
             
             if (JumpTime <= 0)

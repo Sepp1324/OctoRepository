@@ -7,6 +7,10 @@ namespace OctoAwesome
     /// </summary>
     public interface IFluidInventory
     {
+        int Quantity { get; }
+        
+        IFluidMaterialDefinition Fluid { get; }
+        
         /// <summary>
         /// Adds Fluid to the Fluid Inventory
         /// </summary>

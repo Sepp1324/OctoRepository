@@ -5,11 +5,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public class SurfaceBiomeGenerator : LargeBiomeBase
     {
-        public int SeaLevel
-        {
-            get;
-            private set;
-        }
+        public int SeaLevel { get; }
 
         public SurfaceBiomeGenerator(IPlanet planet, int seaLevel) : base(planet, 0f, 1f)
         {
@@ -25,15 +21,12 @@ namespace OctoAwesome.Basics.Biomes
             SortSubBiomes();
         }
 
-        protected override float CurveFunction(float inputValue)
-        {
-            return CurveFunction(inputValue, -0.08f, 200);
-        }
+        protected override float CurveFunction(float inputValue) => CurveFunction(inputValue, -0.08f, 200);
 
         private float CurveFunction(float inputValue, float brightness, int contrast)
         {
             inputValue += brightness;
-            float factor = 259f / 255f * (contrast + 255) / (259 - contrast);
+            var factor = 259f / 255f * (contrast + 255) / (259 - contrast);
             inputValue = factor * (inputValue - 0.5f) + 0.5f;
             return Math.Min(Math.Max(inputValue, 0f), 1f);
         }
@@ -54,13 +47,11 @@ namespace OctoAwesome.Basics.Biomes
                 {
                     var region = regions[x, y] / 2 + 0.5f;
 
-                    int biome2;
-                    var biome1 = ChooseBiome(region, out biome2);
+                    var biome1 = ChooseBiome(region, out int biome2);
 
-                    var interpolationValue = 0f;
                     if (biome2 != -1)
                     {
-                        interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
+                        var interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
                         values[x, y] = (biomeValues[biome2][x, y] * interpolationValue) + (biomeValues[biome1][x, y] * (1 - interpolationValue));
                     }
                     else

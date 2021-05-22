@@ -58,13 +58,13 @@ namespace OctoAwesome.Noise
         {
             unchecked
             {
-                int n = x + (y * 57) * Seed;
+                var n = x + (y * 57) * Seed;
                 n = (n << 13) ^ n;
                 n *= n * 15731;
                 n += 789221;
                 n *= n;
                 n += 1376312589;
-                n = n & 0x7fffffff;
+                n &= 0x7fffffff;
 
                 return (float)(1.0 - n / 1073741824.0);
             }
@@ -74,13 +74,13 @@ namespace OctoAwesome.Noise
         {
             unchecked
             {
-                int n = x + (y * 29 + (z * 37 * Seed));
+                var n = x + (y * 29 + (z * 37 * Seed));
                 n = (n << 13) ^ n;
                 n *= n * 15731;
                 n += 789221;
                 n *= n;
                 n += 1376312589;
-                n = n & 0x7fffffff;
+                n &= 0x7fffffff;
 
                 return (float)(1.0 - n / 1073741824.0);
             }
@@ -393,51 +393,6 @@ namespace OctoAwesome.Noise
             }
             return total;
         }
-
-
-        //public float[,,] PerlinNoiseTest2(float persistance, int octaves, int sizefactor, int width, int heigth)
-        //{
-
-        //    float[, ,] noiseLayers = new float[octaves + 1, width, heigth];
-
-        //    if (sizefactor < 1) sizefactor = 1;
-
-
-        //    for (int i = 0; i < octaves; i++)
-        //    {
-
-        //        int frequency = (int)Math.Pow(2, i);
-        //        float amplitude = (float)Math.Pow(persistance, octaves - i);
-
-        //        for (int x = 0; x < width; x++)
-        //        {
-        //            for (int y = 0; y < heigth; y++)
-        //            {
-
-        //                noiseLayers[i, x, y] = InterpolatedSNoise2(((float)x) / frequency / sizefactor, ((float)y) / frequency / sizefactor) * amplitude;
-
-        //            }
-        //        }
-        //    }
-
-        //    //float[,] finishLayer = new float[width, heigth];
-
-        //    for (int x = 0; x < width; x++)
-        //    {
-        //        for (int y = 0; y < heigth; y++)
-        //        {
-        //            for (int i = 0; i < octaves; i++)
-        //            {
-
-
-        //                noiseLayers[octaves, x, y] += noiseLayers[i, x, y];
-
-        //            }
-        //        }
-        //    }
-
-        //    return noiseLayers;
-        //}
 
         #endregion
 

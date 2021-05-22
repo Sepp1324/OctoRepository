@@ -2,8 +2,7 @@
 {
     public class OceanBiomeGenerator : LargeBiomeBase
     {
-        public OceanBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange)
-            :base(planet, valueRangeOffset, valueRange)
+        public OceanBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange) : base(planet, valueRangeOffset, valueRange)
         {
             MinValue = minVal;
             MaxValue = maxVal;

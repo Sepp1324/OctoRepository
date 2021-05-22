@@ -4,8 +4,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public class LandBiomeGenerator : LargeBiomeBase
     {
-        public LandBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange)
-            : base(planet, valueRangeOffset, valueRange)
+        public LandBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange) : base(planet, valueRangeOffset, valueRange)
         {
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 1) { FrequencyX = 1f / 1000, FrequencyY = 1f / 1000, Persistance = 0.25f, Octaves = 5, Factor = 1f };
 
@@ -35,14 +34,11 @@ namespace OctoAwesome.Basics.Biomes
                 {
                     var region = regions[x, y] / 2 + 0.5f;
 
-                    int biome2;
-                    var biome1 = ChooseBiome(region, out biome2);
-
-                    var interpolationValue = 0f;
+                    var biome1 = ChooseBiome(region, out int biome2);
 
                     if (biome2 != -1)
                     {
-                        interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
+                        var interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
                         values[x, y] = (biomeValues[biome2][x, y] * interpolationValue) + (biomeValues[biome1][x, y] * (1 - interpolationValue));
                     }
                     else

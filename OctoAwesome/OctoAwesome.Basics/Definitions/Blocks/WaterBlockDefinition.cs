@@ -13,7 +13,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override IMaterialDefinition Material { get; }
 
-
         public WaterBlockDefinition(WaterMaterialDefinition material) => Material = material;
 
         public override string[] Textures => new[] { "water" };
