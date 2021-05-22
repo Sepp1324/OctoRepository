@@ -1,38 +1,41 @@
-﻿using OctoAwesome.Definitions.Items;
+﻿using System;
+using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// EntityComponent, die eine Werkzeug-Toolbar für den Apieler bereitstellt.
+    /// Provides the Toolbar for a Player
     /// </summary>
     public class ToolBarComponent : EntityComponent
     {
         private int _activeIndex;
         
         /// <summary>
-        /// Gibt die Anzahl Tools in der Toolbar an.
+        /// Count of the Tools in the Toolbar
         /// </summary>
         public const int Toolcount = 10;
 
         /// <summary>
-        /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
+        /// Stores all of the Tools of a Player
         /// </summary>
         public InventorySlot[] Tools { get; set; }
 
         /// <summary>
-        /// Derzeit aktives Werkzeug des Spielers
+        /// Active Tool of the Player
         /// </summary>
         public InventorySlot ActiveTool => Tools[_activeIndex] ?? HandSlot;
         
         public InventorySlot HandSlot { get; }
         
         /// <summary>
-        /// Repräsentiert die Stelle des aktiven Werkzeuges des Spielers
+        /// Represents the Index of the selected Item
         /// </summary>
         public int ActiveIndex { get => _activeIndex; set => _activeIndex = (value + Toolcount) % Toolcount; }
 
+        public event Action<InventorySlot, int> OnChanged;
+
         /// <summary>
-        /// Erzeugt eine neue ToolBarComponent
+        /// Creates a new ToolBarComponent Instance
         /// </summary>
         public ToolBarComponent()
         {
@@ -42,7 +45,7 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Entfernt einen InventorySlot aus der Toolbar
+        /// Removes an InventorySlot from the Toolbar
         /// </summary>
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
@@ -50,12 +53,16 @@ namespace OctoAwesome.EntityComponents
             for (var i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == slot)
+                {
                     Tools[i] = null;
+                    OnChanged?.Invoke(HandSlot, i);
+                    break;
+                }
             }
         }
 
         /// <summary>
-        /// Setzt einen InventorySlot an eine Stelle in der Toolbar und löscht ggf. vorher den Slot aus alten Positionen.
+        /// Sets a Tool to a certain Slot
         /// </summary>
         /// <param name="slot"></param>
         /// <param name="index"></param>
@@ -64,13 +71,14 @@ namespace OctoAwesome.EntityComponents
             RemoveSlot(slot);
 
             Tools[index] = slot;
+            OnChanged?.Invoke(slot, index);
         }
 
         /// <summary>
-        /// Gibt den Index eines InventorySlots in der Toolbar zurück.
+        /// Returns the Index of an InventorySlot
         /// </summary>
         /// <param name="slot"></param>
-        /// <returns>Den Index des Slots, falls nicht gefunden -1.</returns>
+        /// <returns>Index of InventorySlot; 404: -1</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
             for (var j = 0; j < Tools.Length; j++)
@@ -81,7 +89,7 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Fügt einen neuen InventorySlot an der ersten freien Stelle hinzu.
+        /// Adds a new InventorySlot to the first possible place
         /// </summary>
         /// <param name="slot"></param>
         public void AddNewSlot(InventorySlot slot)
@@ -91,6 +99,7 @@ namespace OctoAwesome.EntityComponents
                 if (Tools[i] == null)
                 {
                     Tools[i] = slot;
+                    OnChanged?.Invoke(slot, i);
                     break;
                 }
             }

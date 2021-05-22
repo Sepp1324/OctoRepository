@@ -25,6 +25,8 @@ namespace OctoAwesome.Client.Controls
         public ToolbarControl(ScreenComponent screenManager) : base(screenManager)
         {
             Player = screenManager.Player;
+            Player.Toolbar.OnChanged += SetTexture;
+            
             _toolTextures = new Dictionary<string, Texture2D>();
 
             _buttonBackground = new BorderBrush(Color.Black);
@@ -82,18 +84,37 @@ namespace OctoAwesome.Client.Controls
             
             _buttons[Player.Toolbar.ActiveIndex].Background = _activeBackground;
 
-            var definitionName = Player.Toolbar.ActiveTool.Definition.GetType().FullName;
+            SetTexture(Player.Toolbar.ActiveTool, Player.Toolbar.ActiveIndex);
 
-            if (_toolTextures.TryGetValue(definitionName, out var texture))
-                _images[Player.Toolbar.ActiveIndex].Texture = texture;
+            var newText = "";
 
             // Aktualisierung des ActiveTool Labels
-            _activeToolLabel.Text = Player.Toolbar.ActiveTool != null ? $"{Player.Toolbar.ActiveTool.Definition.Name} ({Player.Toolbar.ActiveTool.Amount})"
-                : string.Empty;
+            if (Player.Toolbar.ActiveTool != null)
+            {
+                newText = Player.Toolbar.ActiveTool.Definition.Name;
+
+                if (Player.Toolbar.ActiveTool.Amount > 1)
+                    newText += $" ({Player.Toolbar.ActiveTool.Amount})";
+            }
+
+            _activeToolLabel.Text = newText;
 
             _activeToolLabel.Visible = _activeToolLabel.Text != string.Empty;
 
             base.OnUpdate(gameTime);
+        }
+
+        private void SetTexture(InventorySlot inventorySlot, int index)
+        {
+            if (inventorySlot is null)
+            {
+                _images[index].Texture = null;
+                return;
+            }
+
+            var definitionName = inventorySlot.Definition.GetType().FullName;
+
+            _images[index].Texture = _toolTextures.TryGetValue(definitionName, out var texture) ? texture : null;
         }
     }
 }
