@@ -7,14 +7,14 @@ namespace OctoAwesome
     /// </summary>
     public class InventorySlot
     {
-        private IInventoryable item;
+        private IInventoryable _item;
         
         /// <summary>
         /// Das Item das in dem Slot ist.
         /// </summary>
         public IInventoryable Item
         {
-            get => item;
+            get => _item;
             set
             {
                 switch (value)
@@ -30,7 +30,7 @@ namespace OctoAwesome
                         break;
                 }
 
-                item = value;
+                _item = value;
             }
         }
 

@@ -71,10 +71,7 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager mananger)
-        {
-            OnInitialize(mananger);
-        }
+        public void Initialize(IResourceManager mananger) => OnInitialize(mananger);
 
         protected virtual void OnInitialize(IResourceManager manager)
         {
