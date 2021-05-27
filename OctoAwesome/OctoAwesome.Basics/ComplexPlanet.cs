@@ -1,6 +1,6 @@
-﻿using OctoAwesome.Basics.Biomes;
-using System;
+﻿using System;
 using System.IO;
+using OctoAwesome.Basics.Biomes;
 
 namespace OctoAwesome.Basics
 {
@@ -11,12 +11,6 @@ namespace OctoAwesome.Basics
 
         public int HEIGHTMAPDETAILS = 8;
 
-        public float[,] Heightmap { get; private set; }
-
-        public float[,,] CloudMap { get; private set; }
-
-        public SurfaceBiomeGenerator BiomeGenerator { get; private set; }
-        
         /// <summary>
         /// Konstruktor des komplexen Map-Generators
         /// </summary>
@@ -34,7 +28,7 @@ namespace OctoAwesome.Basics
             // Berechnung der Gravitation auf Basis des Newton'schen Grundgesetzes und
             // der Annahme einer Kugel mit gleicher Oberfläche wie der rechteckige Planet.
             var radius = Math.Sqrt((Size.X * Size.Y) / (16 * Math.PI));
-            Gravity = (float)((4f / 3f) * Math.PI * GravitationalConstant * averageDensity * radius);
+            Gravity = (float) ((4f / 3f) * Math.PI * GravitationalConstant * averageDensity * radius);
             Initalize();
         }
 
@@ -42,6 +36,12 @@ namespace OctoAwesome.Basics
         {
             //Initalize();
         }
+
+        public float[,] Heightmap { get; private set; }
+
+        public float[,,] CloudMap { get; private set; }
+
+        public SurfaceBiomeGenerator BiomeGenerator { get; private set; }
 
         public override void Deserialize(BinaryReader reader)
         {

@@ -1,26 +1,21 @@
-﻿using CommandManagementSystem;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using CommandManagementSystem;
 using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using OctoAwesome.Threading;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
     public class ServerHandler : IAsyncObserver<Package>
     {
-        public SimulationManager SimulationManager { get; set; }
-        public IUpdateHub UpdateHub { get; private set; }
+        private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
 
         private readonly ILogger logger;
         private readonly Server server;
-        private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
 
         public ServerHandler()
         {
@@ -38,19 +33,8 @@ namespace OctoAwesome.GameServer
             defaultManager = new DefaultCommandManager<ushort, CommandParameter, byte[]>(typeof(ServerHandler).Namespace + ".Commands");
         }
 
-        public void Start()
-        {
-            SimulationManager.Start(); //Temp
-            server.Start(new IPEndPoint(IPAddress.Any, 8888), new IPEndPoint(IPAddress.IPv6Any, 8888));
-            server.OnClientConnected += ServerOnClientConnected;
-        }
-
-        private void ServerOnClientConnected(object sender, ConnectedClient e)
-        {
-            logger.Debug("Hurra ein neuer Spieler");
-            e.ServerSubscription = e.Subscribe(this);
-            e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.Network);
-        }
+        public SimulationManager SimulationManager { get; set; }
+        public IUpdateHub UpdateHub { get; private set; }
 
         public async Task OnNext(Package value)
         {
@@ -59,6 +43,7 @@ namespace OctoAwesome.GameServer
                 logger.Debug("Received null package");
                 return;
             }
+
             logger.Trace("Received a new Package with ID: " + value.UId);
             try
             {
@@ -78,7 +63,7 @@ namespace OctoAwesome.GameServer
                 return;
             }
 
-           await value.BaseClient.SendPackageAsync(value);
+            await value.BaseClient.SendPackageAsync(value);
         }
 
         public Task OnError(Exception error)
@@ -90,6 +75,20 @@ namespace OctoAwesome.GameServer
         public Task OnCompleted()
         {
             return Task.CompletedTask;
+        }
+
+        public void Start()
+        {
+            SimulationManager.Start(); //Temp
+            server.Start(new IPEndPoint(IPAddress.Any, 8888), new IPEndPoint(IPAddress.IPv6Any, 8888));
+            server.OnClientConnected += ServerOnClientConnected;
+        }
+
+        private void ServerOnClientConnected(object sender, ConnectedClient e)
+        {
+            logger.Debug("Hurra ein neuer Spieler");
+            e.ServerSubscription = e.Subscribe(this);
+            e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.Network);
         }
     }
 }

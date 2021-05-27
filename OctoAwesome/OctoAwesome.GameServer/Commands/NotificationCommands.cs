@@ -1,13 +1,9 @@
-﻿using CommandManagementSystem.Attributes;
+﻿using System;
+using CommandManagementSystem.Attributes;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -26,7 +22,7 @@ namespace OctoAwesome.GameServer.Commands
             blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
         }
 
-        [Command((ushort)OfficialCommand.EntityNotification)]
+        [Command((ushort) OfficialCommand.EntityNotification)]
         public static byte[] EntityNotification(CommandParameter parameter)
         {
             var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, parameter.Data);
@@ -37,10 +33,10 @@ namespace OctoAwesome.GameServer.Commands
             return null;
         }
 
-        [Command((ushort)OfficialCommand.ChunkNotification)]
+        [Command((ushort) OfficialCommand.ChunkNotification)]
         public static byte[] ChunkNotification(CommandParameter parameter)
         {
-            var notificationType = (BlockNotificationType)parameter.Data[0];
+            var notificationType = (BlockNotificationType) parameter.Data[0];
             Notification chunkNotification;
             switch (notificationType)
             {

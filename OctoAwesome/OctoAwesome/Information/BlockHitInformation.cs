@@ -1,21 +1,21 @@
-﻿using OctoAwesome.Definitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Information
 {
     public readonly struct BlockHitInformation : IEquatable<BlockHitInformation>
     {
         private readonly (int Quantity, IDefinition Definition)[] _definitions;
-        
+
         public static BlockHitInformation Empty = default;
 
         public bool IsEmpty => !IsHitValid && Quantity == 0 && _definitions == null;
 
-        public bool IsHitValid { get;  }
-        
+        public bool IsHitValid { get; }
+
         public int Quantity { get; }
-       
+
         public IReadOnlyList<(int Quantity, IDefinition Definition)> Definitions => _definitions ?? Array.Empty<(int Quantity, IDefinition Definition)>();
 
         public BlockHitInformation(bool isHitValid, int quantity, (int Quantity, IDefinition Definition)[] definitions)
@@ -25,12 +25,17 @@ namespace OctoAwesome.Information
             _definitions = definitions;
         }
 
-        public override bool Equals(object obj) => obj is BlockHitInformation information && Equals(information);
-        
-        public bool Equals(BlockHitInformation other) 
-            => IsHitValid == other.IsHitValid 
-                && Quantity == other.Quantity 
-                && EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.Equals(_definitions, other._definitions);
+        public override bool Equals(object obj)
+        {
+            return obj is BlockHitInformation information && Equals(information);
+        }
+
+        public bool Equals(BlockHitInformation other)
+        {
+            return IsHitValid == other.IsHitValid
+                   && Quantity == other.Quantity
+                   && EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.Equals(_definitions, other._definitions);
+        }
 
         public override int GetHashCode()
         {
@@ -41,8 +46,14 @@ namespace OctoAwesome.Information
             return hashCode;
         }
 
-        public static bool operator ==(BlockHitInformation left, BlockHitInformation right) => left.Equals(right);
-        
-        public static bool operator !=(BlockHitInformation left, BlockHitInformation right) => !(left == right);
+        public static bool operator ==(BlockHitInformation left, BlockHitInformation right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(BlockHitInformation left, BlockHitInformation right)
+        {
+            return !(left == right);
+        }
     }
 }

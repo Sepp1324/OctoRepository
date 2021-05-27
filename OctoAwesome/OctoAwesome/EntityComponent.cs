@@ -1,5 +1,5 @@
-﻿using OctoAwesome.Notifications;
-using System;
+﻿using System;
+using OctoAwesome.Notifications;
 
 namespace OctoAwesome
 {
@@ -8,14 +8,14 @@ namespace OctoAwesome
     /// </summary>
     public abstract class EntityComponent : Component
     {
+        public EntityComponent()
+        {
+        }
+
         /// <summary>
         /// Reference to the Entity.
         /// </summary>
         public Entity Entity { get; private set; }
-
-        public EntityComponent()
-        {
-        }
 
         public void SetEntity(Entity entity)
         {
@@ -28,18 +28,15 @@ namespace OctoAwesome
 
         public virtual void OnUpdate(SerializableNotification notification)
         {
-
         }
 
         protected virtual void OnSetEntity()
         {
-
         }
 
         protected virtual void Update(SerializableNotification notification)
         {
             Entity?.OnUpdate(notification);
         }
-        
     }
 }

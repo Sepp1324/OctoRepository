@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace OctoAwesome.Noise
+﻿namespace OctoAwesome.Noise
 {
     public interface INoise
     {
@@ -19,6 +14,7 @@ namespace OctoAwesome.Noise
         /// <param name="width">Anzahl der gewollten Noise-Werte</param>
         /// <returns>Gibt ein float-Array einer 1D Noise zurück</returns>
         float[] GetNoiseMap(int startX, int width);
+
         /// <summary>
         /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück
         /// </summary>
@@ -28,6 +24,7 @@ namespace OctoAwesome.Noise
         /// <param name="height">Höhe der Noise-Map</param>
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück</returns>
         float[,] GetNoiseMap2D(int startX, int startY, int width, int height);
+
         /// <summary>
         /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück, welche kachelbar ist
         /// </summary>
@@ -52,6 +49,7 @@ namespace OctoAwesome.Noise
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück</returns>
         float[,,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth);
+
         /// <summary>
         /// Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>
@@ -94,6 +92,7 @@ namespace OctoAwesome.Noise
         /// <param name="y">Y-Position, für welche die Noise ausgegeben wird</param>
         /// <returns>Gibt ein float-Wert einer 2D Noise zurück</returns>
         float GetNoise2D(int x, int y);
+
         /// <summary>
         /// Gibt ein float-Wert einer 2D-Noise an gegebener Position zurück, welche kachelbar ist
         /// </summary>
@@ -112,6 +111,7 @@ namespace OctoAwesome.Noise
         /// <param name="z">Z-Position, für welche die Noise ausgegeben wird</param>
         /// <returns>Gibt ein float-Wert einer 3D Noise zurück</returns>
         float GetNoise3D(int x, int y, int z);
+
         /// <summary>
         /// Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>

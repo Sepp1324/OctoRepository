@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+using engenious.Input;
 using engenious.UI;
-using KeyEventArgs = engenious.UI.KeyEventArgs;
-using Keys = engenious.Input.Keys;
 
 namespace OctoAwesome.Client.Components
 {
     internal class KeyMapper
     {
-        private Dictionary<string, Binding> bindings;
+        public enum KeyType
+        {
+            Down,
+            Up,
+            Pressed
+        }
 
-        public Dictionary<string, Binding> Bindings { get { return bindings; } }
+        private readonly Dictionary<string, Binding> bindings;
 
-        private ISettings settings;
+        private readonly ISettings settings;
 
         public KeyMapper(BaseScreenComponent manager, ISettings settings)
         {
@@ -28,6 +30,8 @@ namespace OctoAwesome.Client.Components
             bindings = new Dictionary<string, Binding>();
         }
 
+        public Dictionary<string, Binding> Bindings => bindings;
+
         /// <summary>
         /// Registers a new Binding
         /// </summary>
@@ -37,7 +41,7 @@ namespace OctoAwesome.Client.Components
         {
             if (bindings.ContainsKey(id))
                 return;
-            bindings.Add(id, new Binding() { Id = id, DisplayName = displayName });
+            bindings.Add(id, new Binding() {Id = id, DisplayName = displayName});
         }
 
         /// <summary>
@@ -59,9 +63,8 @@ namespace OctoAwesome.Client.Components
         {
             Binding binding;
             if (bindings.TryGetValue(id, out binding))
-            {
-                if (!binding.Keys.Contains(key)) binding.Keys.Add(key);
-            }
+                if (!binding.Keys.Contains(key))
+                    binding.Keys.Add(key);
         }
 
         /// <summary>
@@ -73,9 +76,8 @@ namespace OctoAwesome.Client.Components
         {
             Binding binding;
             if (bindings.TryGetValue(id, out binding))
-            {
-                if (binding.Keys.Contains(key)) binding.Keys.Remove(key);
-            }
+                if (binding.Keys.Contains(key))
+                    binding.Keys.Remove(key);
         }
 
         /// <summary>
@@ -87,9 +89,8 @@ namespace OctoAwesome.Client.Components
         {
             Binding binding;
             if (bindings.TryGetValue(id, out binding))
-            {
-                if (!binding.Actions.Contains(action)) binding.Actions.Add(action);
-            }
+                if (!binding.Actions.Contains(action))
+                    binding.Actions.Add(action);
         }
 
         /// <summary>
@@ -101,9 +102,8 @@ namespace OctoAwesome.Client.Components
         {
             Binding binding;
             if (bindings.TryGetValue(id, out binding))
-            {
-                if (binding.Actions.Contains(action)) binding.Actions.Remove(action);
-            }
+                if (binding.Actions.Contains(action))
+                    binding.Actions.Remove(action);
         }
 
         /// <summary>
@@ -125,31 +125,44 @@ namespace OctoAwesome.Client.Components
         public void LoadFromConfig(Dictionary<string, Keys> standardKeys)
         {
             foreach (var id in standardKeys.Keys)
-            {
                 if (settings.KeyExists("KeyMapper-" + id))
-                {
                     try
                     {
-                        string val = settings.Get<string>("KeyMapper-" + id);
-                        Keys key = (Keys)Enum.Parse(typeof(Keys), val);
+                        var val = settings.Get<string>("KeyMapper-" + id);
+                        var key = (Keys) Enum.Parse(typeof(Keys), val);
                         AddKey(id, key);
                     }
                     catch
                     {
                         AddKey(id, standardKeys[id]);
                     }
-                }
                 else
                     AddKey(id, standardKeys[id]);
-            }
         }
 
         public List<Binding> GetBindings()
         {
-            List<Binding> bindings = new List<Binding>();
+            var bindings = new List<Binding>();
             foreach (var binding in Bindings)
                 bindings.Add(binding.Value);
             return bindings;
+        }
+
+        public class Binding
+        {
+            public Binding()
+            {
+                Keys = new List<Keys>();
+                Actions = new List<Action<KeyType>>();
+            }
+
+            public string Id { get; set; }
+
+            public string DisplayName { get; set; }
+
+            public List<Keys> Keys { get; set; }
+
+            public List<Action<KeyType>> Actions { get; set; }
         }
 
 
@@ -159,62 +172,26 @@ namespace OctoAwesome.Client.Components
         {
             var result = bindings.Values.Where(b => b.Keys.Contains(args.Key));
             foreach (var binding in result)
-            {
-                foreach (var action in binding.Actions)
-                {
-                    action(KeyType.Pressed);
-                }
-            }
+            foreach (var action in binding.Actions)
+                action(KeyType.Pressed);
         }
 
         protected void KeyDown(KeyEventArgs args)
         {
             var result = bindings.Values.Where(b => b.Keys.Contains(args.Key));
             foreach (var binding in result)
-            {
-                foreach (var action in binding.Actions)
-                {
-                    action(KeyType.Down);
-                }
-            }
+            foreach (var action in binding.Actions)
+                action(KeyType.Down);
         }
 
         protected void KeyUp(KeyEventArgs args)
         {
             var result = bindings.Values.Where(b => b.Keys.Contains(args.Key));
             foreach (var binding in result)
-            {
-                foreach (var action in binding.Actions)
-                {
-                    action(KeyType.Up);
-                }
-            }
+            foreach (var action in binding.Actions)
+                action(KeyType.Up);
         }
 
         #endregion
-
-        public class Binding
-        {
-            public string Id { get; set; }
-
-            public string DisplayName { get; set; }
-
-            public List<Keys> Keys { get; set; }
-
-            public List<Action<KeyType>> Actions { get; set; }
-
-            public Binding()
-            {
-                Keys = new List<Keys>();
-                Actions = new List<Action<KeyType>>();
-            }
-        }
-
-        public enum KeyType
-        {
-            Down,
-            Up,
-            Pressed,
-        }
     }
 }

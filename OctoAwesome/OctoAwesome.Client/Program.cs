@@ -1,10 +1,9 @@
 ﻿#region Using Statements
-using OctoAwesome.Client.Cache;
-using OctoAwesome.Logging;
+
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using OctoAwesome.Logging;
+
 #endregion
 
 namespace OctoAwesome.Client
@@ -15,6 +14,7 @@ namespace OctoAwesome.Client
     public static class Program
     {
         static OctoGame game;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -39,7 +39,9 @@ namespace OctoAwesome.Client
                 };
 
                 using (game = new OctoGame())
+                {
                     game.Run(60, 60);
+                }
             }
         }
 
@@ -47,7 +49,9 @@ namespace OctoAwesome.Client
         {
             game.Exit();
             using (game = new OctoGame())
+            {
                 game.Run(60, 60);
+            }
         }
     }
 }

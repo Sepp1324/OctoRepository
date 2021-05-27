@@ -1,5 +1,5 @@
-﻿using OctoAwesome.Definitions.Items;
-using System;
+﻿using System;
+using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -8,12 +8,22 @@ namespace OctoAwesome.EntityComponents
     /// </summary>
     public class ToolBarComponent : EntityComponent
     {
-        private int _activeIndex;
-        
         /// <summary>
         /// Gibt die Anzahl Tools in der Toolbar an.
         /// </summary>
         public const int TOOLCOUNT = 10;
+
+        private int _activeIndex;
+
+        /// <summary>
+        /// Erzeugte eine neue ToolBarComponent
+        /// </summary>
+        public ToolBarComponent()
+        {
+            HandSlot = new InventorySlot {Item = new Hand(new HandDefinition())};
+            Tools = new InventorySlot[TOOLCOUNT];
+            ActiveIndex = 0;
+        }
 
         /// <summary>
         /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
@@ -36,30 +46,18 @@ namespace OctoAwesome.EntityComponents
         public event Action<InventorySlot, int> OnChanged;
 
         /// <summary>
-        /// Erzeugte eine neue ToolBarComponent
-        /// </summary>
-        public ToolBarComponent()
-        {
-            HandSlot = new InventorySlot { Item = new Hand(new HandDefinition()) };
-            Tools = new InventorySlot[TOOLCOUNT];
-            ActiveIndex = 0;
-        }
-
-        /// <summary>
         /// Entfernt einen InventorySlot aus der Toolbar
         /// </summary>
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
         {
             for (var i = 0; i < Tools.Length; i++)
-            {
                 if (Tools[i] == slot)
                 {
                     Tools[i] = null;
                     OnChanged?.Invoke(HandSlot, i);
                     break;
                 }
-            }
         }
 
         /// <summary>
@@ -96,14 +94,12 @@ namespace OctoAwesome.EntityComponents
         public void AddNewSlot(InventorySlot slot)
         {
             for (var i = 0; i < Tools.Length; i++)
-            {
                 if (Tools[i] == null)
                 {
                     Tools[i] = slot;
                     OnChanged?.Invoke(slot, i);
                     break;
                 }
-            }
         }
     }
 }

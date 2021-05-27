@@ -1,20 +1,13 @@
-﻿using OctoAwesome.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Threading;
 using NUnit.Framework;
+using OctoAwesome.Runtime;
 
 namespace OctoAwesome.Network.Tests
 {
     [TestOf(typeof(SimulationManager))]
     public class SimulationManagerTests
     {
-        private SimulationManager simulationManager;
+        private readonly SimulationManager simulationManager;
 
         public SimulationManagerTests()
         {
@@ -46,7 +39,6 @@ namespace OctoAwesome.Network.Tests
             reset.WaitOne();
 
             simulationManager.Stop();
-            
         }
     }
 }

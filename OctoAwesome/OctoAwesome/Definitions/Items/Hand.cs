@@ -4,7 +4,6 @@
     {
         public Hand(HandDefinition handDefinition) : base(handDefinition, null)
         {
-
         }
 
         public override int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit)

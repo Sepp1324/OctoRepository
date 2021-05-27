@@ -1,18 +1,21 @@
-﻿using OctoAwesome.Definitions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.EntityComponents
 {
     public class InventoryComponent : EntityComponent
     {
+        public InventoryComponent()
+        {
+            Inventory = new List<InventorySlot>();
+        }
+
         /// <summary>
         /// Das Inventar der Entity
         /// </summary>
         public List<InventorySlot> Inventory { get; set; }
-
-        public InventoryComponent() => Inventory = new List<InventorySlot>();
 
         public override void Deserialize(BinaryReader reader)
         {
@@ -22,7 +25,7 @@ namespace OctoAwesome.EntityComponents
             base.Deserialize(reader);
 
             var count = reader.ReadInt32();
-            
+
             for (var i = 0; i < count; i++)
             {
                 var name = reader.ReadString();
@@ -35,7 +38,7 @@ namespace OctoAwesome.EntityComponents
                 var slot = new InventorySlot()
                 {
                     Amount = amount,
-                    Item = (IInventoryable)definition,
+                    Item = (IInventoryable) definition
                 };
 
                 Inventory.Add(slot);
@@ -61,7 +64,7 @@ namespace OctoAwesome.EntityComponents
         public void AddUnit(int quantity, IInventoryable item)
         {
             var slot = Inventory.FirstOrDefault(s => s.Item == item &&
-                s.Amount < item.VolumePerUnit * item.StackLimit);
+                                                     s.Amount < item.VolumePerUnit * item.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
@@ -69,7 +72,7 @@ namespace OctoAwesome.EntityComponents
                 slot = new InventorySlot()
                 {
                     Item = item,
-                    Amount = quantity,
+                    Amount = quantity
                 };
                 Inventory.Add(slot);
             }
@@ -77,7 +80,6 @@ namespace OctoAwesome.EntityComponents
             {
                 slot.Amount += quantity;
             }
-            
         }
 
         /// <summary>
@@ -97,6 +99,7 @@ namespace OctoAwesome.EntityComponents
                     Inventory.Remove(slot);
                 return true;
             }
+
             return false;
         }
     }

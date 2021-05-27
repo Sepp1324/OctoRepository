@@ -1,9 +1,7 @@
-﻿using engenious;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using engenious;
 
 namespace OctoAwesome
 {
@@ -12,12 +10,12 @@ namespace OctoAwesome
     /// </summary>
     public abstract class SimulationComponent : Component
     {
+        private readonly List<Type[]> componentFilter = new List<Type[]>();
+
         /// <summary>
         /// Entities die durch diese Simulationkomponete simuliert werden
         /// </summary>
         protected List<Entity> entities = new List<Entity>();
-
-        private List<Type[]> componentFilter = new List<Type[]>();
 
         /// <summary>
         /// Konstruktor
@@ -26,14 +24,12 @@ namespace OctoAwesome
         {
             // TODO: Refelct Attributes
             foreach (EntityFilterAttribute attribute in GetType().GetCustomAttributes(typeof(EntityFilterAttribute), false))
+            foreach (var entityComponentType in attribute.EntityComponentTypes)
             {
-                foreach (var entityComponentType in attribute.EntityComponentTypes)
-                {
-                    if (!typeof(EntityComponent).IsAssignableFrom(entityComponentType))
-                        throw new NotSupportedException();
+                if (!typeof(EntityComponent).IsAssignableFrom(entityComponentType))
+                    throw new NotSupportedException();
 
-                    componentFilter.Add(attribute.EntityComponentTypes);
-                }
+                componentFilter.Add(attribute.EntityComponentTypes);
             }
         }
 
@@ -43,10 +39,7 @@ namespace OctoAwesome
         /// <param name="entity">Neue Entity</param>
         public void Add(Entity entity)
         {
-            if (Match(entity) && AddEntity(entity))
-            {
-                entities.Add(entity);
-            }
+            if (Match(entity) && AddEntity(entity)) entities.Add(entity);
         }
 
         /// <summary>
@@ -109,8 +102,10 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) 
-            => entity.Components.ContainsComponent<C1>();
+        protected override bool Match(Entity entity)
+        {
+            return entity.Components.ContainsComponent<C1>();
+        }
 
         /// <summary>
         /// Updatemethode der Entity
@@ -138,15 +133,16 @@ namespace OctoAwesome
         where C1 : EntityComponent
         where C2 : EntityComponent
     {
-
         /// <summary>
         /// Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) 
-            => entity.Components.ContainsComponent<C1>()
-                && entity.Components.ContainsComponent<C2>();
+        protected override bool Match(Entity entity)
+        {
+            return entity.Components.ContainsComponent<C1>()
+                   && entity.Components.ContainsComponent<C2>();
+        }
 
         /// <summary>
         /// Updatemethode der Entity
@@ -168,6 +164,7 @@ namespace OctoAwesome
         /// <param name="component2">Komponente 2</param>
         protected abstract void UpdateEntity(GameTime gameTime, Entity entity, C1 component1, C2 component2);
     }
+
     /// <summary>
     /// Basisklasse für Simulationskomponenten
     /// </summary>
@@ -176,16 +173,17 @@ namespace OctoAwesome
         where C2 : EntityComponent
         where C3 : EntityComponent
     {
-
         /// <summary>
         /// Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected override bool Match(Entity entity) 
-            => entity.Components.ContainsComponent<C1>()
-                && entity.Components.ContainsComponent<C2>()
-                && entity.Components.ContainsComponent<C3>();
+        protected override bool Match(Entity entity)
+        {
+            return entity.Components.ContainsComponent<C1>()
+                   && entity.Components.ContainsComponent<C2>()
+                   && entity.Components.ContainsComponent<C3>();
+        }
 
         /// <summary>
         /// Updatemethode der Entity

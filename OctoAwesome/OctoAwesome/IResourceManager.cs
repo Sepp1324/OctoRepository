@@ -1,8 +1,8 @@
-using OctoAwesome.Definitions;
-using OctoAwesome.Notifications;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using OctoAwesome.Definitions;
+using OctoAwesome.Notifications;
 
 namespace OctoAwesome
 {
@@ -12,6 +12,17 @@ namespace OctoAwesome
     public interface IResourceManager
     {
         IDefinitionManager DefinitionManager { get; }
+
+        /// <summary>
+        /// Das aktuell geladene Universum.
+        /// </summary>
+        IUniverse CurrentUniverse { get; }
+
+        ConcurrentDictionary<int, IPlanet> Planets { get; }
+
+        IUpdateHub UpdateHub { get; }
+
+        Player CurrentPlayer { get; }
 
         /// <summary>
         /// Erzuegt ein neues Universum.
@@ -26,11 +37,6 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="universeId">Die Guid des Universums.</param>
         bool TryLoadUniverse(Guid universeId);
-
-        /// <summary>
-        /// Das aktuell geladene Universum.
-        /// </summary>
-        IUniverse CurrentUniverse { get; }
 
         /// <summary>
         /// Entlädt das aktuelle Universum.
@@ -74,11 +80,6 @@ namespace OctoAwesome
         /// <param name="planetId">Die Planteten-ID des gewünschten Planeten</param>
         /// <returns>Der gewünschte Planet, falls er existiert</returns>
         IPlanet GetPlanet(int planetId);
-        ConcurrentDictionary<int, IPlanet> Planets { get; }
-
-        IUpdateHub UpdateHub { get; }
-
-        Player CurrentPlayer { get; }
 
         void SaveEntity(Entity entity);
         void SaveChunkColumn(IChunkColumn value);

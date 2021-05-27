@@ -3,7 +3,7 @@
     public interface IChunkNotification
     {
         Index3 ChunkPos { get; }
-        
+
         int Planet { get; }
     }
 }

@@ -6,6 +6,20 @@
     public abstract class Item : IItem, IInventoryable
     {
         /// <summary>
+        /// Erzeugt eine neue Instanz der Klasse Item.
+        /// </summary>
+        protected Item(IItemDefinition definition, IMaterialDefinition material)
+        {
+            Definition = definition;
+            Material = material;
+            Condition = 99;
+        }
+
+        public virtual int VolumePerUnit => 1;
+
+        public virtual int StackLimit => 1;
+
+        /// <summary>
         /// Der Zustand des Items
         /// </summary>
         public int Condition { get; set; }
@@ -19,20 +33,6 @@
 
         public IMaterialDefinition Material { get; set; }
 
-        public virtual int VolumePerUnit => 1;
-
-        public virtual int StackLimit => 1;
-
-        /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse Item.
-        /// </summary>
-        protected Item(IItemDefinition definition, IMaterialDefinition material)
-        {
-            Definition = definition;
-            Material = material;
-            Condition = 99;
-        }
-
         public virtual int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit)
         {
             //TODO Condition Berechnung
@@ -41,10 +41,8 @@
                 return 0;
 
             if (material is ISolidMaterialDefinition solid)
-            {
                 if (solid.Granularity > 1)
                     return 0;
-            }
 
             if (Material.Hardness * 1.2f < material.Hardness)
                 return 0;

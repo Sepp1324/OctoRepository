@@ -7,10 +7,10 @@ namespace OctoAwesome.Expressions
     public static class ArrayOfList<T>
     {
         public static readonly Func<List<T>, T[]> GetArray;
-        
+
         static ArrayOfList()
         {
-            ParameterExpression input = Expression.Parameter(typeof(List<T>), "list");
+            var input = Expression.Parameter(typeof(List<T>), "list");
             //ParameterExpression result = Expression.Parameter(typeof(T[]), "list");
 
             var body = Expression.Field(input, "_items");

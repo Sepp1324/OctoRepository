@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using engenious;
+using engenious.Graphics;
 using engenious.UI;
 using OctoAwesome.Client.Components;
-using engenious;
-using engenious.Graphics;
 
 namespace OctoAwesome.Client.Controls
 {
     class CrosshairControl : Control
     {
+        readonly AssetComponent assets;
+        public Color Color;
         public Texture2D Texture;
         public float Transparency;
-        public Color Color;
-
-        AssetComponent assets;
 
         public CrosshairControl(ScreenComponent manager) : base(manager)
         {

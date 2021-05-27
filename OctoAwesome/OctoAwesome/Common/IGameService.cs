@@ -1,6 +1,6 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using OctoAwesome.Definitions;
-using System;
 
 namespace OctoAwesome.Common
 {
@@ -13,7 +13,7 @@ namespace OctoAwesome.Common
         /// <see cref="IDefinitionManager"/> der lokalen Daten.
         /// </summary>
         IDefinitionManager DefinitionManager { get; }
-        
+
         /// <summary>
         /// Berechnet die Geschwindigkeit einer <see cref="Entity"/> nach der Kollision mit der Welt.
         /// </summary>

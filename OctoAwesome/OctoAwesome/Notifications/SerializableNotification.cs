@@ -1,5 +1,5 @@
-﻿using OctoAwesome.Serialization;
-using System.IO;
+﻿using System.IO;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Notifications
 {

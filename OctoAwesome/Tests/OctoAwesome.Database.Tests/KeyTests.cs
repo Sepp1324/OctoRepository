@@ -1,9 +1,5 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using NUnit.Framework;
 
 namespace OctoAwesome.Database.Tests
 {
@@ -25,7 +21,10 @@ namespace OctoAwesome.Database.Tests
             {
             }
 
-            public byte[] GetBytes() => Array.Empty<byte>();
+            public byte[] GetBytes()
+            {
+                return Array.Empty<byte>();
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace OctoAwesome.Definitions
     public interface IItemDefinition : IDefinition
     {
         bool CanMineMaterial(IMaterialDefinition material);
-        
+
         Item Create(IMaterialDefinition material);
     }
 }
