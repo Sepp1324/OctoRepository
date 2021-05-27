@@ -1,7 +1,6 @@
-﻿using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome
 {

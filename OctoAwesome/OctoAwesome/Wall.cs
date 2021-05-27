@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OctoAwesome
+﻿namespace OctoAwesome
 {
     public enum Wall
     {
@@ -8,25 +6,30 @@ namespace OctoAwesome
         /// Top +Z
         /// </summary>
         Top,
+
         /// <summary>
         /// Bottom -Z
         /// </summary>
         Bottom,
+
         /// <summary>
         /// West -X
         /// </summary>
         Left,
+
         /// <summary>
         /// East +X
         /// </summary>
         Right,
+
         /// <summary>
         /// North +Y
         /// </summary>
         Back,
+
         /// <summary>
         /// South -Y
         /// </summary>
-        Front 
+        Front
     }
 }

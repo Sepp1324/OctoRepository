@@ -1,7 +1,7 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
-using System;
 
 namespace OctoAwesome.Definitions
 {
@@ -11,13 +11,6 @@ namespace OctoAwesome.Definitions
     public interface IBlockDefinition : IInventoryable, IDefinition
     {
         /// <summary>
-        /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
-        /// </summary>
-        /// <param name="block">Der Block-Typ des interagierenden Elements</param>
-        /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
-        BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition);
-
-        /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
         /// </summary>
         string[] Textures { get; }
@@ -26,6 +19,19 @@ namespace OctoAwesome.Definitions
         /// Zeigt, ob der Block-Typ Metadaten besitzt
         /// </summary>
         bool HasMetaData { get; }
+
+        uint SolidWall { get; }
+
+        TimeSpan TimeToVolumeReset { get; }
+
+        IMaterialDefinition Material { get; }
+
+        /// <summary>
+        /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
+        /// </summary>
+        /// <param name="block">Der Block-Typ des interagierenden Elements</param>
+        /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
+        BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition);
 
         /// <summary>
         /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die
@@ -58,10 +64,6 @@ namespace OctoAwesome.Definitions
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
-
-        uint SolidWall { get; }
-        TimeSpan TimeToVolumeReset { get; }
-        IMaterialDefinition Material { get; }
 
         bool IsSolidWall(Wall wall);
     }

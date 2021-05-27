@@ -1,5 +1,5 @@
-﻿using OctoAwesome.Definitions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome.Client.Components
+﻿namespace OctoAwesome.Client.Components
 {
     /// <summary>
     /// Interface für alle Componenten, die mit Assets aus dem Asset 

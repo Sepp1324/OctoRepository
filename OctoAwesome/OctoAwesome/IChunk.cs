@@ -1,6 +1,5 @@
-﻿using OctoAwesome.Pooling;
-
-using System;
+﻿using System;
+using OctoAwesome.Pooling;
 
 namespace OctoAwesome
 {

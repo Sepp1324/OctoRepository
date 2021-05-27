@@ -1,6 +1,6 @@
-﻿using OctoAwesome.Serialization;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.CompilerServices;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome
 {
@@ -9,14 +9,14 @@ namespace OctoAwesome
     /// </summary>
     public abstract class Component : ISerializable
     {
-        public bool Enabled { get; set; }
-        public bool Sendable { get; set; }
-
         public Component()
         {
             Enabled = true;
             Sendable = false;
         }
+
+        public bool Enabled { get; set; }
+        public bool Sendable { get; set; }
 
         /// <summary>
         /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
@@ -24,7 +24,7 @@ namespace OctoAwesome
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
         public virtual void Serialize(BinaryWriter writer)
         {
-            writer.Write(Enabled); 
+            writer.Write(Enabled);
         }
 
         /// <summary>
@@ -38,16 +38,13 @@ namespace OctoAwesome
 
         protected virtual void OnPropertyChanged<T>(T value, string callerName)
         {
-
         }
 
-        protected void SetValue<T>(ref T field, T value, [CallerMemberName]string callerName = "")
+        protected void SetValue<T>(ref T field, T value, [CallerMemberName] string callerName = "")
         {
             if (field != null)
-            {
                 if (field.Equals(value))
                     return;
-            }
 
             field = value;
 

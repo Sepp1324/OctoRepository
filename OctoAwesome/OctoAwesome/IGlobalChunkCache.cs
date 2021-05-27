@@ -1,5 +1,5 @@
-﻿using OctoAwesome.Notifications;
-using System;
+﻿using System;
+using OctoAwesome.Notifications;
 
 namespace OctoAwesome
 {
@@ -8,8 +8,6 @@ namespace OctoAwesome
     /// </summary>
     public interface IGlobalChunkCache : INotificationObserver
     {
-        event EventHandler<IChunkColumn> ChunkColumnChanged;
-
         /// <summary>
         /// Die Zahl der geladenen Chunks zurück
         /// </summary>
@@ -19,7 +17,9 @@ namespace OctoAwesome
         /// Anzahl der noch nicht gespeicherten ChunkColumns.
         /// </summary>
         int DirtyChunkColumn { get; }
+
         IPlanet Planet { get; }
+        event EventHandler<IChunkColumn> ChunkColumnChanged;
 
         /// <summary>
         /// Abonniert einen Chunk.
@@ -27,7 +27,7 @@ namespace OctoAwesome
         /// <param name="position">Position des Chunks</param>
         /// <returns>Den neu abonnierten Chunk</returns>
         IChunkColumn Subscribe(Index2 position);
-        
+
         bool IsChunkLoaded(Index2 position);
 
         /// <summary>
@@ -37,13 +37,13 @@ namespace OctoAwesome
         /// <param name="position">Die Position des zurückzugebenden Chunks</param>
         /// <returns>Chunk Instanz oder null, falls nicht geladen</returns>
         IChunkColumn Peek(Index2 position);
-        
+
         /// <summary>
         /// Gibt einen abonnierten Chunk wieder frei.
         /// </summary>
         /// <param name="position">Die Position des freizugebenden Chunks</param>
         void Release(Index2 position);
-        
+
         /// <summary>
         /// Löscht den gesamten Inhalt des Caches.
         /// </summary>

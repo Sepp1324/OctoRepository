@@ -24,6 +24,7 @@ namespace OctoAwesome.Definitions
         /// </summary>
         /// <returns></returns>
         IBlockDefinition[] BlockDefinitions { get; }
+
         IMaterialDefinition[] MaterialDefinitions { get; }
 
         /// <summary>

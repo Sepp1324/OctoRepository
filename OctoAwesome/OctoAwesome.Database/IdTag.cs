@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -16,20 +14,28 @@ namespace OctoAwesome.Database
         }
 
         public byte[] GetBytes()
-            => BitConverter.GetBytes(Tag);
+        {
+            return BitConverter.GetBytes(Tag);
+        }
 
         public void FromBytes(byte[] array, int startIndex)
-            => Tag = BitConverter.ToInt32(array, startIndex);
+        {
+            Tag = BitConverter.ToInt32(array, startIndex);
+        }
 
         public override bool Equals(object obj)
-            => obj is IdTag<T> tag && Equals(tag);
+        {
+            return obj is IdTag<T> tag && Equals(tag);
+        }
 
         public bool Equals(IdTag<T> other)
-            => Length == other.Length && Tag == other.Tag;
+        {
+            return Length == other.Length && Tag == other.Tag;
+        }
 
         public override int GetHashCode()
         {
-            int hashCode = 139101280;
+            var hashCode = 139101280;
             hashCode = hashCode * -1521134295 + Tag.GetHashCode();
             hashCode = hashCode * -1521134295 + Length.GetHashCode();
             return hashCode;

@@ -1,9 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
 using engenious;
-using System.Collections.Generic;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
-using System;
 
 namespace OctoAwesome.Definitions
 {
@@ -12,6 +10,7 @@ namespace OctoAwesome.Definitions
     /// </summary>
     public abstract class BlockDefinition : IBlockDefinition
     {
+        public virtual int VolumePerHit => 25;
         public virtual uint SolidWall => 0x3f;
 
         /// <summary>
@@ -33,8 +32,6 @@ namespace OctoAwesome.Definitions
         /// Gibt das Volumen für eine Einheit an.
         /// </summary>
         public virtual int VolumePerUnit => 125;
-
-        public virtual int VolumePerHit => 25;
 
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
@@ -63,7 +60,7 @@ namespace OctoAwesome.Definitions
         {
             //item.Definition.Hit(item, volumeState.BlockDefinition, blockHitInformation);
             var valueMined = item.Hit(Material, blockVolume.VolumeRemaining, VolumePerHit);
-            return new BlockHitInformation(valueMined != 0, valueMined, new[] { (VolumePerUnit, (IDefinition)this)});
+            return new BlockHitInformation(valueMined != 0, valueMined, new[] {(VolumePerUnit, (IDefinition) this)});
         }
 
         /// <summary>
@@ -75,13 +72,23 @@ namespace OctoAwesome.Definitions
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
         public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
-            => new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
+        {
+            return new[] {new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1))};
+        }
 
-        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
+        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        {
+            return 0;
+        }
 
-        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
-        
-        public bool IsSolidWall(Wall wall) => (SolidWall& (1 << (int)wall)) != 0;
-        
+        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
+        {
+            return 0;
+        }
+
+        public bool IsSolidWall(Wall wall)
+        {
+            return (SolidWall & (1 << (int) wall)) != 0;
+        }
     }
 }

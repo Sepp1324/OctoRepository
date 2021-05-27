@@ -1,6 +1,5 @@
-﻿using OctoAwesome.Serialization;
-using System;
-using System.IO;
+﻿using System;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome
 {

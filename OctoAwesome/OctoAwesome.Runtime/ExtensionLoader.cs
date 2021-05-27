@@ -1,9 +1,9 @@
-﻿using OctoAwesome.Definitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Runtime
 {
@@ -14,31 +14,21 @@ namespace OctoAwesome.Runtime
     {
         private const string SETTINGSKEY = "DisabledExtensions";
 
-        private List<Type> entities;
-
-        private Dictionary<Type, List<Action<Entity>>> entityExtender;
-
-        private List<Action<Simulation>> simulationExtender;
-
-        private List<IMapGenerator> mapGenerators;
-
-        private List<IMapPopulator> mapPopulators;
-
-        /// <summary>
-        /// List of Loaded Extensions
-        /// </summary>
-        public List<IExtension> LoadedExtensions { get; private set; }
-
-        /// <summary>
-        /// List of active Extensions
-        /// </summary>
-        public List<IExtension> ActiveExtensions { get; private set; }
-
         private readonly Dictionary<Type, List<Type>> definitionsLookup;
+        private readonly ITypeContainer definitionTypeContainer;
+
+        private readonly List<Type> entities;
+
+        private readonly Dictionary<Type, List<Action<Entity>>> entityExtender;
+
+        private readonly List<IMapGenerator> mapGenerators;
+
+        private readonly List<IMapPopulator> mapPopulators;
 
         private readonly ISettings settings;
+
+        private readonly List<Action<Simulation>> simulationExtender;
         private readonly ITypeContainer typeContainer;
-        private readonly ITypeContainer definitionTypeContainer;
 
         /// <summary>
         /// Constructor
@@ -57,7 +47,26 @@ namespace OctoAwesome.Runtime
             mapPopulators = new List<IMapPopulator>();
             LoadedExtensions = new List<IExtension>();
             ActiveExtensions = new List<IExtension>();
+        }
 
+        /// <summary>
+        /// List of Loaded Extensions
+        /// </summary>
+        public List<IExtension> LoadedExtensions { get; private set; }
+
+        /// <summary>
+        /// List of active Extensions
+        /// </summary>
+        public List<IExtension> ActiveExtensions { get; private set; }
+
+        /// <summary>
+        /// Activate the Extenisons
+        /// </summary>
+        /// <param name="disabledExtensions">List of Extensions</param>
+        public void ApplyExtensions(IList<IExtension> disabledExtensions)
+        {
+            var types = disabledExtensions.Select(e => e.GetType().FullName).ToArray();
+            settings.Set(SETTINGSKEY, types);
         }
 
         /// <summary>
@@ -65,16 +74,16 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void LoadExtensions()
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
             var tempAssembly = Assembly.GetEntryAssembly();
 
             if (tempAssembly == null)
                 tempAssembly = Assembly.GetAssembly(GetType());
 
-            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
+            var dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
             assemblies.AddRange(LoadAssemblies(dir));
 
-            DirectoryInfo plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
+            var plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
             if (plugins.Exists)
                 assemblies.AddRange(LoadAssemblies(plugins));
 
@@ -87,12 +96,10 @@ namespace OctoAwesome.Runtime
                     .GetTypes();
 
                 foreach (var type in types)
-                {
                     if (typeof(IExtension).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
-                    {
                         try
                         {
-                            IExtension extension = (IExtension)Activator.CreateInstance(type);
+                            var extension = (IExtension) Activator.CreateInstance(type);
                             extension.Register(typeContainer);
                             extension.Register(this, typeContainer);
 
@@ -105,16 +112,13 @@ namespace OctoAwesome.Runtime
                         {
                             // TODO: Logging
                         }
-                    }
-                }
             }
         }
 
         private IEnumerable<Assembly> LoadAssemblies(DirectoryInfo directory)
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
             foreach (var file in directory.GetFiles("*.dll"))
-            {
                 try
                 {
                     var assembly = Assembly.LoadFile(file.FullName);
@@ -124,18 +128,8 @@ namespace OctoAwesome.Runtime
                 {
                     // TODO: Error Handling
                 }
-            }
-            return assemblies;
-        }
 
-        /// <summary>
-        /// Activate the Extenisons
-        /// </summary>
-        /// <param name="disabledExtensions">List of Extensions</param>
-        public void ApplyExtensions(IList<IExtension> disabledExtensions)
-        {
-            var types = disabledExtensions.Select(e => e.GetType().FullName).ToArray();
-            settings.Set(SETTINGSKEY, types);
+            return assemblies;
         }
 
         #region Loader Methods
@@ -152,16 +146,10 @@ namespace OctoAwesome.Runtime
             var interfaceTypes = definition.GetInterfaces();
 
             foreach (var interfaceType in interfaceTypes)
-            {
                 if (definitionsLookup.TryGetValue(interfaceType, out var typeList))
-                {
                     typeList.Add(definition);
-                }
                 else
-                {
-                    definitionsLookup.Add(interfaceType, new List<Type> { definition });
-                }
-            }
+                    definitionsLookup.Add(interfaceType, new List<Type> {definition});
 
             definitionTypeContainer.Register(definition, definition, InstanceBehaviour.Singleton);
         }
@@ -181,7 +169,7 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Entity Type</typeparam>
         public void RegisterEntity<T>() where T : Entity
         {
-            Type type = typeof(T);
+            var type = typeof(T);
             if (entities.Contains(type))
                 throw new ArgumentException("Already registered");
 
@@ -195,18 +183,21 @@ namespace OctoAwesome.Runtime
         /// <param name="extenderDelegate">Extender Delegate</param>
         public void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity
         {
-            Type type = typeof(T);
+            var type = typeof(T);
             List<Action<Entity>> list;
             if (!entityExtender.TryGetValue(type, out list))
             {
                 list = new List<Action<Entity>>();
                 entityExtender.Add(type, list);
             }
+
             list.Add(extenderDelegate);
         }
 
         public void RegisterDefaultEntityExtender<T>() where T : Entity
-            => RegisterEntityExtender<T>((e) => e.RegisterDefault());
+        {
+            RegisterEntityExtender<T>((e) => e.RegisterDefault());
+        }
 
         /// <summary>
         /// Adds a new Extender for the simulation.
@@ -230,7 +221,6 @@ namespace OctoAwesome.Runtime
         {
             mapPopulators.Add(populator);
         }
-
 
 
         /// <summary>
@@ -276,15 +266,15 @@ namespace OctoAwesome.Runtime
         /// <param name="entity">Entity</param>
         public void ExtendEntity(Entity entity)
         {
-            List<Type> stack = new List<Type>();
-            Type t = entity.GetType();
+            var stack = new List<Type>();
+            var t = entity.GetType();
             stack.Add(t);
             do
             {
                 t = t.BaseType;
                 stack.Add(t);
-            }
-            while (t != typeof(Entity));
+            } while (t != typeof(Entity));
+
             stack.Reverse();
 
             foreach (var type in stack)
@@ -306,10 +296,8 @@ namespace OctoAwesome.Runtime
         public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
         {
             if (definitionsLookup.TryGetValue(typeof(T), out var definitionTypes))
-            {
                 foreach (var type in definitionTypes)
-                    yield return (T)definitionTypeContainer.Get(type);
-            }
+                    yield return (T) definitionTypeContainer.Get(type);
         }
 
         /// <summary>

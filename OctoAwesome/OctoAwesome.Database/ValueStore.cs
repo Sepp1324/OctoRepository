@@ -1,29 +1,31 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
     internal class ValueStore : IDisposable
     {
-        public bool FixedValueLength { get;  }
+        private readonly Reader reader;
 
         private readonly Writer writer;
-        private readonly Reader reader;
 
         public ValueStore(Writer writer, Reader reader, bool fixedValueLength)
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            this.reader = reader ?? throw new ArgumentNullException(nameof(reader)); 
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
             FixedValueLength = fixedValueLength;
         }
+
         public ValueStore(Writer writer, Reader reader) : this(writer, reader, false)
         {
-
         }
-        
+
+        public bool FixedValueLength { get; }
+
+        public void Dispose()
+        {
+            writer.Dispose(); //TODO: Move to owner
+        }
+
         public Value GetValue<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
             var byteArray = reader.Read(key.Index + Key<TTag>.KEY_SIZE, key.ValueLength);
@@ -69,11 +71,5 @@ namespace OctoAwesome.Database
         {
             writer.Close();
         }
-
-        public void Dispose()
-        {
-            writer.Dispose(); //TODO: Move to owner
-        }
-        
     }
 }

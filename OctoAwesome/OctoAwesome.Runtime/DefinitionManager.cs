@@ -1,7 +1,7 @@
-﻿using OctoAwesome.Definitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Runtime
 {
@@ -20,7 +20,7 @@ namespace OctoAwesome.Runtime
 
             // collect items
             ItemDefinitions = Definitions.OfType<IItemDefinition>().ToArray();
-            
+
             // collect blocks
             BlockDefinitions = Definitions.OfType<IBlockDefinition>().ToArray();
 
@@ -58,7 +58,7 @@ namespace OctoAwesome.Runtime
             if (index == 0)
                 return null;
 
-            return (IBlockDefinition)Definitions[(index & Blocks.TypeMask) - 1];
+            return (IBlockDefinition) Definitions[(index & Blocks.TypeMask) - 1];
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex(IDefinition definition)
         {
-            return (ushort)(Array.IndexOf(Definitions, definition) + 1);
+            return (ushort) (Array.IndexOf(Definitions, definition) + 1);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace OctoAwesome.Runtime
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex<T>() where T : IDefinition
         {
-            IDefinition definition = Definitions.SingleOrDefault(d => d.GetType() == typeof(T));
+            var definition = Definitions.SingleOrDefault(d => d.GetType() == typeof(T));
             return GetDefinitionIndex(definition);
         }
 
