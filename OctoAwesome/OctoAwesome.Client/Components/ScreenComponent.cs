@@ -13,7 +13,7 @@ namespace OctoAwesome.Client.Components
             TitlePrefix = "OctoAwesome";
         }
 
-        public new OctoGame Game { get; private set; }
+        public new OctoGame Game { get; }
 
         public PlayerComponent Player => Game.Player;
 

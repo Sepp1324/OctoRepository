@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,12 +11,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.Gravel;
+        public override string Name => OctoBasics.Gravel;
 
         public override string Icon => "gravel";
 
 
-        public override string[] Textures { get; } = new[] {"gravel"};
+        public override string[] Textures { get; } = {"gravel"};
 
         public override IMaterialDefinition Material { get; }
     }

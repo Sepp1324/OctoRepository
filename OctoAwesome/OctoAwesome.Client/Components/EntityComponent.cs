@@ -15,7 +15,7 @@ namespace OctoAwesome.Client.Components
 
         private readonly Dictionary<string, ModelInfo> models = new Dictionary<string, ModelInfo>();
 
-        private int i = 0;
+        private int i;
 
         public EntityComponent(OctoGame game, SimulationComponent simulation) : base(game)
         {
@@ -27,7 +27,7 @@ namespace OctoAwesome.Client.Components
             effect = new BasicEffect(graphicsDevice);
         }
 
-        public SimulationComponent Simulation { get; private set; }
+        public SimulationComponent Simulation { get; }
 
 
         public List<Entity> Entities { get; set; }
@@ -52,7 +52,7 @@ namespace OctoAwesome.Client.Components
 
 
                         if (!models.TryGetValue(rendercomp.Name, out var modelinfo))
-                            modelinfo = new ModelInfo()
+                            modelinfo = new ModelInfo
                             {
                                 render = true,
                                 model = Game.Content.Load<Model>(rendercomp.ModelName),

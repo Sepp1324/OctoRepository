@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using NUnit.Framework;
 using OctoAwesome.Runtime;
+using Timer = System.Timers.Timer;
 
 namespace OctoAwesome.Network.Tests
 {
@@ -25,7 +26,7 @@ namespace OctoAwesome.Network.Tests
         public void RuntimeTest()
         {
             var reset = new ManualResetEvent(false);
-            var timer = new System.Timers.Timer
+            var timer = new Timer
             {
                 Interval = 30000
             };

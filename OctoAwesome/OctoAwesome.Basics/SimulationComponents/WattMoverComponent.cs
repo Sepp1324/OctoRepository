@@ -28,11 +28,11 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 var lookX = (float) Math.Cos(head.Angle);
                 var lookY = -(float) Math.Sin(head.Angle);
-                var velocitydirection = new Vector3(lookX, lookY, 0) * controller.MoveInput.Y;
+                var velocitydirection = new Vector3(lookX, lookY) * controller.MoveInput.Y;
 
                 var stafeX = (float) Math.Cos(head.Angle + MathHelper.PiOver2);
                 var stafeY = -(float) Math.Sin(head.Angle + MathHelper.PiOver2);
-                velocitydirection += new Vector3(stafeX, stafeY, 0) * controller.MoveInput.X;
+                velocitydirection += new Vector3(stafeX, stafeY) * controller.MoveInput.X;
 
                 powercomp.Direction = velocitydirection;
             }

@@ -136,7 +136,7 @@ namespace OctoAwesome.Network
             {
                 if (readPosition > maxReadCount)
                     throw new IndexOutOfRangeException("ReadPositin is greater than MaxReadCount in OctoNetworkStream");
-                else if (readPosition < maxReadCount)
+                if (readPosition < maxReadCount)
                     return;
 
                 var refBuf = writeBuffer;

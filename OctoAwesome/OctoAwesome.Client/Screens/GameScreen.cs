@@ -5,6 +5,7 @@ using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -77,12 +78,12 @@ namespace OctoAwesome.Client.Screens
             crosshair.Height = 8;
             Controls.Add(crosshair);
 
-            Title = Languages.OctoClient.Game;
+            Title = OctoClient.Game;
 
             RegisterKeyActions();
         }
 
-        private new ScreenComponent Manager { get; set; }
+        private new ScreenComponent Manager { get; }
 
         public event EventHandler OnCenterChanged
         {
@@ -169,14 +170,14 @@ namespace OctoAwesome.Client.Screens
 
         #region Keyboard Input
 
-        private bool pressedMoveUp = false;
-        private bool pressedMoveLeft = false;
-        private bool pressedMoveDown = false;
-        private bool pressedMoveRight = false;
-        private bool pressedHeadUp = false;
-        private bool pressedHeadDown = false;
-        private bool pressedHeadLeft = false;
-        private bool pressedHeadRight = false;
+        private bool pressedMoveUp;
+        private bool pressedMoveLeft;
+        private bool pressedMoveDown;
+        private bool pressedMoveRight;
+        private bool pressedHeadUp;
+        private bool pressedHeadDown;
+        private bool pressedHeadLeft;
+        private bool pressedHeadRight;
 
         private void RegisterKeyActions()
         {
@@ -324,13 +325,13 @@ namespace OctoAwesome.Client.Screens
 
         #region GamePad Input
 
-        private bool pressedGamepadInventory = false;
-        private bool pressedGamepadInteract = false;
-        private bool pressedGamepadApply = false;
-        private bool pressedGamepadJump = false;
-        private bool pressedGamepadFlymode = false;
-        private bool pressedGamepadSlotLeft = false;
-        private bool pressedGamepadSlotRight = false;
+        private bool pressedGamepadInventory;
+        private bool pressedGamepadInteract;
+        private bool pressedGamepadApply;
+        private bool pressedGamepadJump;
+        private bool pressedGamepadFlymode;
+        private bool pressedGamepadSlotLeft;
+        private bool pressedGamepadSlotRight;
         private bool disposedValue;
 
         private void HandleGamePad()
@@ -341,7 +342,7 @@ namespace OctoAwesome.Client.Screens
             var gamePadState = new GamePadState();
             try
             {
-                gamePadState = GamePad.GetState(0);
+                gamePadState = GamePad.GetState();
                 succeeded = true;
             }
             catch (Exception)

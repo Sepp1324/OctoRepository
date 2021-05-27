@@ -3,6 +3,7 @@ using engenious;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -15,7 +16,7 @@ namespace OctoAwesome.Client.Screens
             game = Manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
-            Title = Languages.OctoClient.CreateUniverse;
+            Title = OctoClient.CreateUniverse;
 
             SetDefaultBackground();
 
@@ -37,8 +38,8 @@ namespace OctoAwesome.Client.Screens
 
             panel.Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Auto});
-            grid.Columns.Add(new ColumnDefinition() {Width = 1, ResizeMode = ResizeMode.Parts});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Auto});
+            grid.Columns.Add(new ColumnDefinition {Width = 1, ResizeMode = ResizeMode.Parts});
 
             var serverNameInput = new Textbox(manager)
             {
@@ -56,7 +57,7 @@ namespace OctoAwesome.Client.Screens
             };
             AddLabeledControl(grid, "Username:", playerNameInput);
 
-            var createButton = new TextButton(manager, Languages.OctoClient.Connect);
+            var createButton = new TextButton(manager, OctoClient.Connect);
             createButton.HorizontalAlignment = HorizontalAlignment.Center;
             createButton.VerticalAlignment = VerticalAlignment.Center;
             createButton.Visible = true;
@@ -71,7 +72,7 @@ namespace OctoAwesome.Client.Screens
                 PlayMultiplayer(manager, playerNameInput.Text);
             };
 
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Auto});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Auto});
             grid.AddControl(createButton, 1, grid.Rows.Count - 1);
         }
 

@@ -7,6 +7,8 @@ using engenious;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Languages;
+using EventArgs = System.EventArgs;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -35,8 +37,8 @@ namespace OctoAwesome.Client.Screens
 
             //Main Panel
             var mainStack = new Grid(manager);
-            mainStack.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 4});
-            mainStack.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 1});
+            mainStack.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 4});
+            mainStack.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
             mainStack.Margin = Border.All(50);
             mainStack.HorizontalAlignment = HorizontalAlignment.Stretch;
             mainStack.VerticalAlignment = VerticalAlignment.Stretch;
@@ -50,7 +52,7 @@ namespace OctoAwesome.Client.Screens
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Margin = Border.All(10)
             };
-            mainStack.AddControl(backgroundStack, 0, 0, 1, 1);
+            mainStack.AddControl(backgroundStack, 0, 0);
 
             var mainGrid = new Grid(manager)
             {
@@ -58,13 +60,13 @@ namespace OctoAwesome.Client.Screens
                 VerticalAlignment = VerticalAlignment.Stretch
             };
 
-            mainGrid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
-            mainGrid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 3});
-            mainGrid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
-            mainGrid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 4});
-            mainGrid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 1});
-            mainGrid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 1});
-            mainGrid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 4});
+            mainGrid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            mainGrid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 3});
+            mainGrid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            mainGrid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 4});
+            mainGrid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
+            mainGrid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
+            mainGrid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 4});
 
             backgroundStack.Controls.Add(mainGrid);
 
@@ -89,7 +91,7 @@ namespace OctoAwesome.Client.Screens
             };
             mainGrid.AddControl(buttonStack, 1, 2);
 
-            var cancelButton = GetButton(Languages.OctoClient.Cancel);
+            var cancelButton = GetButton(OctoClient.Cancel);
             buttonStack.Controls.Add(cancelButton);
 
             Debug.WriteLine("Create GameScreen");
@@ -108,7 +110,7 @@ namespace OctoAwesome.Client.Screens
             };
         }
 
-        private void SwitchToGame(object sender, System.EventArgs args)
+        private void SwitchToGame(object sender, EventArgs args)
         {
             Manager.Invoke(() =>
             {

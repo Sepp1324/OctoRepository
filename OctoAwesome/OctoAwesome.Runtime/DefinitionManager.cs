@@ -6,7 +6,7 @@ using OctoAwesome.Definitions;
 namespace OctoAwesome.Runtime
 {
     /// <summary>
-    /// Definition Manager, der Typen aus Erweiterungen nachlädt.
+    ///     Definition Manager, der Typen aus Erweiterungen nachlädt.
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
@@ -29,19 +29,19 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Liefert eine Liste von Defintions.
+        ///     Liefert eine Liste von Defintions.
         /// </summary>
         /// <returns></returns>
         public IDefinition[] Definitions { get; }
 
         /// <summary>
-        /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
+        ///     Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
         public IItemDefinition[] ItemDefinitions { get; }
 
         /// <summary>
-        /// Liefert eine Liste der bekannten Blocktypen.
+        ///     Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>
         public IBlockDefinition[] BlockDefinitions { get; }
@@ -49,7 +49,7 @@ namespace OctoAwesome.Runtime
         public IMaterialDefinition[] MaterialDefinitions { get; }
 
         /// <summary>
-        /// Liefert die BlockDefinition zum angegebenen Index.
+        ///     Liefert die BlockDefinition zum angegebenen Index.
         /// </summary>
         /// <param name="index">Index der BlockDefinition</param>
         /// <returns>BlockDefinition</returns>
@@ -62,7 +62,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Liefert den Index der angegebenen BlockDefinition.
+        ///     Liefert den Index der angegebenen BlockDefinition.
         /// </summary>
         /// <param name="definition">BlockDefinition</param>
         /// <returns>Index der Block Definition</returns>
@@ -72,7 +72,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Liefert den Index der angegebenen BlockDefinition.
+        ///     Liefert den Index der angegebenen BlockDefinition.
         /// </summary>
         /// <typeparam name="T">BlockDefinition Type</typeparam>
         /// <returns>Index der Block Definition</returns>
@@ -83,7 +83,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Gibt die Liste von Instanzen des angegebenen Definition Interfaces zurück.
+        ///     Gibt die Liste von Instanzen des angegebenen Definition Interfaces zurück.
         /// </summary>
         /// <typeparam name="T">Typ der Definition</typeparam>
         /// <returns>Auflistung von Instanzen</returns>

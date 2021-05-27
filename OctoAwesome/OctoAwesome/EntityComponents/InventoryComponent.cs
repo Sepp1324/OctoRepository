@@ -13,7 +13,7 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Das Inventar der Entity
+        ///     Das Inventar der Entity
         /// </summary>
         public List<InventorySlot> Inventory { get; set; }
 
@@ -35,7 +35,7 @@ namespace OctoAwesome.EntityComponents
                 if (definition == null || !(definition is IInventoryable))
                     continue;
 
-                var slot = new InventorySlot()
+                var slot = new InventorySlot
                 {
                     Amount = amount,
                     Item = (IInventoryable) definition
@@ -58,7 +58,7 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Fügt ein Element des angegebenen Definitionstyps hinzu.
+        ///     Fügt ein Element des angegebenen Definitionstyps hinzu.
         /// </summary>
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
@@ -69,7 +69,7 @@ namespace OctoAwesome.EntityComponents
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
             {
-                slot = new InventorySlot()
+                slot = new InventorySlot
                 {
                     Item = item,
                     Amount = quantity
@@ -83,10 +83,13 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Entfernt eine Einheit vom angegebenen Slot.
+        ///     Entfernt eine Einheit vom angegebenen Slot.
         /// </summary>
         /// <param name="slot">Der Slot, aus dem entfernt werden soll.</param>
-        /// <returns>Gibt an, ob das entfernen der Einheit aus dem Inventar funktioniert hat. False, z.B. wenn nicht genügend Volumen (weniger als VolumePerUnit) übrig ist-</returns>
+        /// <returns>
+        ///     Gibt an, ob das entfernen der Einheit aus dem Inventar funktioniert hat. False, z.B. wenn nicht genügend
+        ///     Volumen (weniger als VolumePerUnit) übrig ist-
+        /// </returns>
         public bool RemoveUnit(InventorySlot slot)
         {
             if (!(slot.Item is IInventoryable definition))

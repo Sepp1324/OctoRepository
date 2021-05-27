@@ -3,7 +3,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class HammerDefinition : IItemDefinition
+    internal class HammerDefinition : IItemDefinition
     {
         public HammerDefinition()
         {

@@ -24,10 +24,10 @@ namespace OctoAwesome.Database.Checks
                     var key = Key<TTag>.FromBytes(keyBuffer, 0);
 
                     if (!key.Validate())
-                        throw new KeyInvalidException($"Key is not valid", fileStream.Position);
+                        throw new KeyInvalidException("Key is not valid", fileStream.Position);
 
                     if (key.Index != fileStream.Position - Key<TTag>.KEY_SIZE)
-                        throw new KeyInvalidException($"Key is on the wrong Position", fileStream.Position);
+                        throw new KeyInvalidException("Key is on the wrong Position", fileStream.Position);
 
                     if (key.IsEmpty)
                     {

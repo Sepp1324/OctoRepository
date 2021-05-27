@@ -4,12 +4,12 @@ using engenious;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Helferklasse für die Kollisionserkennung mit Blöcken.
+    ///     Helferklasse für die Kollisionserkennung mit Blöcken.
     /// </summary>
     public static class Block
     {
         /// <summary>
-        /// Kollisionsmethode, in der die Selektion der Blöcke vom Spieler aus geprüft wird
+        ///     Kollisionsmethode, in der die Selektion der Blöcke vom Spieler aus geprüft wird
         /// </summary>
         /// <param name="collisionBoxes">Kollisionsboxen des Blocks</param>
         /// <param name="boxPosition">Die Position, wo sich die BoundingBox befindet</param>
@@ -84,7 +84,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Prüft, ob die Kollisionsbox einer Entität mit den Kollisionsboxen eines Blocks kollidieren
+        ///     Prüft, ob die Kollisionsbox einer Entität mit den Kollisionsboxen eines Blocks kollidieren
         /// </summary>
         /// <param name="collisionBoxes">Kollisionsboxen des Blocks</param>
         /// <param name="boxPosition">Die Position, wo sich der Block befindet</param>
@@ -95,9 +95,9 @@ namespace OctoAwesome
         public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, BoundingBox player, Vector3 move, out Axis? collisionAxis)
         {
             var playerCorner = new Vector3(
-                (move.X > 0 ? player.Max.X : player.Min.X),
-                (move.Y > 0 ? player.Max.Y : player.Min.Y),
-                (move.Z > 0 ? player.Max.Z : player.Min.Z));
+                move.X > 0 ? player.Max.X : player.Min.X,
+                move.Y > 0 ? player.Max.Y : player.Min.Y,
+                move.Z > 0 ? player.Max.Z : player.Min.Z);
 
             var targetPosition = playerCorner + move;
 

@@ -1,17 +1,17 @@
 ﻿namespace OctoAwesome
 {
     /// <summary>
-    /// Basisinterface für MapPopulators (diese erzeugen Dinge in der Welt)
+    ///     Basisinterface für MapPopulators (diese erzeugen Dinge in der Welt)
     /// </summary>
     public interface IMapPopulator
     {
         /// <summary>
-        /// Gibt die Rangposition des Populators an [0...99]
+        ///     Gibt die Rangposition des Populators an [0...99]
         /// </summary>
         int Order { get; }
 
         /// <summary>
-        /// Versieht einen Chunk mit Items
+        ///     Versieht einen Chunk mit Items
         /// </summary>
         /// <param name="resourceManager">Definition Manager</param>
         /// <param name="planet">Index des Planeten</param>

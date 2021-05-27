@@ -65,7 +65,7 @@ namespace OctoAwesome.Client.Components
                 if (Toolbar == null) Toolbar = new ToolBarComponent();
 
                 Position = CurrentEntity.Components.GetComponent<PositionComponent>();
-                if (Position == null) Position = new PositionComponent() {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0))};
+                if (Position == null) Position = new PositionComponent {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0))};
             }
         }
 
@@ -123,7 +123,7 @@ namespace OctoAwesome.Client.Components
         }
 
         /// <summary>
-        /// DEBUG METHODE: NICHT FÜR VERWENDUNG IM SPIEL!
+        ///     DEBUG METHODE: NICHT FÜR VERWENDUNG IM SPIEL!
         /// </summary>
         internal void AllBlocksDebug()
         {
@@ -161,7 +161,7 @@ namespace OctoAwesome.Client.Components
 
         public bool FlymodeInput { get; set; }
 
-        public bool[] SlotInput { get; private set; } = new bool[10];
+        public bool[] SlotInput { get; } = new bool[10];
 
         public bool SlotLeftInput { get; set; }
 

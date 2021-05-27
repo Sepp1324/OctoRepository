@@ -79,7 +79,7 @@ namespace OctoAwesome.Client.Components
                 throw new NotSupportedException();
 
             var player = resourceManager.LoadPlayer(playerName);
-            player.Components.AddComponent(new RenderComponent() {Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90}, true);
+            player.Components.AddComponent(new RenderComponent {Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90}, true);
             Simulation.AddEntity(player);
 
 

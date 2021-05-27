@@ -12,13 +12,13 @@ namespace OctoAwesome.Threading
         Task OnNext(T value);
 
         /// <summary>
-        ///  Benachrichtigt den Beobachter, dass beim Anbieter ein Fehlerzustand aufgetreten ist.
+        ///     Benachrichtigt den Beobachter, dass beim Anbieter ein Fehlerzustand aufgetreten ist.
         /// </summary>
         /// <param name="error">Ein Objekt, das zusätzliche Informationen zum Fehler bereitstellt.</param>
         Task OnError(Exception error);
 
         /// <summary>
-        /// Benachrichtigt den Beobachter, dass der Anbieter aufgehört hat, Pushbenachrichtigungen zu senden.
+        ///     Benachrichtigt den Beobachter, dass der Anbieter aufgehört hat, Pushbenachrichtigungen zu senden.
         /// </summary>
         Task OnCompleted();
     }

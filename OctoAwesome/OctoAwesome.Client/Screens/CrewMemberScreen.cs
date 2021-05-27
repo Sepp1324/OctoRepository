@@ -6,6 +6,7 @@ using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Crew;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -20,7 +21,7 @@ namespace OctoAwesome.Client.Screens
             VerticalAlignment = VerticalAlignment.Stretch;
             HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            Title = Languages.OctoClient.CreditsCrew + ": " + member.Username;
+            Title = OctoClient.CreditsCrew + ": " + member.Username;
 
             var boldFont = manager.Content.Load<SpriteFont>("Fonts/BoldFont");
 
@@ -92,7 +93,7 @@ namespace OctoAwesome.Client.Screens
             };
             textStack.Controls.Add(achievementStack);
 
-            var achievementsTitle = new Label(manager) {Text = Languages.OctoClient.Achievements + ": ", Font = boldFont, HorizontalAlignment = HorizontalAlignment.Left};
+            var achievementsTitle = new Label(manager) {Text = OctoClient.Achievements + ": ", Font = boldFont, HorizontalAlignment = HorizontalAlignment.Left};
             achievementStack.Controls.Add(achievementsTitle);
             var achievements = new Label(manager) {Text = achievementString, HorizontalAlignment = HorizontalAlignment.Left};
             achievementStack.Controls.Add(achievements);
@@ -108,7 +109,7 @@ namespace OctoAwesome.Client.Screens
             };
             textStack.Controls.Add(linkStack);
 
-            var linkTitle = new Label(manager) {Text = Languages.OctoClient.Links + ": ", Font = boldFont, HorizontalAlignment = HorizontalAlignment.Left};
+            var linkTitle = new Label(manager) {Text = OctoClient.Links + ": ", Font = boldFont, HorizontalAlignment = HorizontalAlignment.Left};
             linkStack.Controls.Add(linkTitle);
 
             foreach (var link in member.Links)

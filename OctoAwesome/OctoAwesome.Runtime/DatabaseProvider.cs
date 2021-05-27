@@ -40,24 +40,22 @@ namespace OctoAwesome.Runtime
                 {
                     return database as Database<T>;
                 }
-                else
+
+                var tmpDatabase = CreateDatabase<T>(rootPath, fixedValueSize);
+
+                try
                 {
-                    var tmpDatabase = CreateDatabase<T>(rootPath, fixedValueSize);
-
-                    try
-                    {
-                        tmpDatabase.Open();
-                    }
-                    catch (Exception ex)
-                    {
-                        tmpDatabase.Dispose();
-                        logger.Error($"Can not Open Database for global, {typeof(T).Name}", ex);
-                        throw ex;
-                    }
-
-                    globalDatabaseRegister.Add(key, tmpDatabase);
-                    return tmpDatabase;
+                    tmpDatabase.Open();
                 }
+                catch (Exception ex)
+                {
+                    tmpDatabase.Dispose();
+                    logger.Error($"Can not Open Database for global, {typeof(T).Name}", ex);
+                    throw ex;
+                }
+
+                globalDatabaseRegister.Add(key, tmpDatabase);
+                return tmpDatabase;
             }
         }
 
@@ -70,24 +68,22 @@ namespace OctoAwesome.Runtime
                 {
                     return database as Database<T>;
                 }
-                else
+
+                var tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString()), fixedValueSize);
+
+                try
                 {
-                    var tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString()), fixedValueSize);
-
-                    try
-                    {
-                        tmpDatabase.Open();
-                    }
-                    catch (Exception ex)
-                    {
-                        tmpDatabase.Dispose();
-                        logger.Error($"Can not Open Database for [{universeGuid}], {typeof(T).Name}", ex);
-                        throw ex;
-                    }
-
-                    universeDatabaseRegister.Add(key, tmpDatabase);
-                    return tmpDatabase;
+                    tmpDatabase.Open();
                 }
+                catch (Exception ex)
+                {
+                    tmpDatabase.Dispose();
+                    logger.Error($"Can not Open Database for [{universeGuid}], {typeof(T).Name}", ex);
+                    throw ex;
+                }
+
+                universeDatabaseRegister.Add(key, tmpDatabase);
+                return tmpDatabase;
             }
         }
 
@@ -100,23 +96,21 @@ namespace OctoAwesome.Runtime
                 {
                     return database as Database<T>;
                 }
-                else
-                {
-                    var tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString(), planetId.ToString()), fixedValueSize);
-                    try
-                    {
-                        tmpDatabase.Open();
-                    }
-                    catch (Exception ex)
-                    {
-                        tmpDatabase.Dispose();
-                        logger.Error($"Can not Open Database for [{universeGuid}]{planetId}, {typeof(T).Name}", ex);
-                        throw ex;
-                    }
 
-                    planetDatabaseRegister.Add(key, tmpDatabase);
-                    return tmpDatabase;
+                var tmpDatabase = CreateDatabase<T>(Path.Combine(rootPath, universeGuid.ToString(), planetId.ToString()), fixedValueSize);
+                try
+                {
+                    tmpDatabase.Open();
                 }
+                catch (Exception ex)
+                {
+                    tmpDatabase.Dispose();
+                    logger.Error($"Can not Open Database for [{universeGuid}]{planetId}, {typeof(T).Name}", ex);
+                    throw ex;
+                }
+
+                planetDatabaseRegister.Add(key, tmpDatabase);
+                return tmpDatabase;
             }
         }
 

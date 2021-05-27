@@ -34,7 +34,7 @@ namespace OctoAwesome.GameServer
         }
 
         public SimulationManager SimulationManager { get; set; }
-        public IUpdateHub UpdateHub { get; private set; }
+        public IUpdateHub UpdateHub { get; }
 
         public async Task OnNext(Package value)
         {

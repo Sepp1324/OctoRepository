@@ -28,7 +28,8 @@ namespace OctoAwesome.Basics.Biomes
                     secondBiome = SubBiomes[i];
                     return SubBiomes[i - 1];
                 }
-                else if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
+
+                if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
                 {
                     return SubBiomes[i];
                 }
@@ -50,7 +51,8 @@ namespace OctoAwesome.Basics.Biomes
                     secondBiome = i;
                     return i - 1;
                 }
-                else if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
+
+                if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
                 {
                     return i;
                 }
@@ -77,7 +79,8 @@ namespace OctoAwesome.Basics.Biomes
                 region /= diff;
                 return CurveFunction(region);
             }
-            else if (biome1 != null)
+
+            if (biome1 != null)
             {
                 return 0f;
             }

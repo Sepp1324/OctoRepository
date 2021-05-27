@@ -31,7 +31,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            entities.Add(new GravityEntity()
+            entities.Add(new GravityEntity
             {
                 Entity = entity,
                 GravityComponent = entity.Components.GetComponent<GravityComponent>(),
@@ -48,7 +48,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                 entities.Remove(gravityentity);
         }
 
-        class GravityEntity
+        private class GravityEntity
         {
             public Entity Entity { get; set; }
             public GravityComponent GravityComponent { get; set; }

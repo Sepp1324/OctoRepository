@@ -3,7 +3,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class SwordDefinition : IItemDefinition
+    internal class SwordDefinition : IItemDefinition
     {
         public SwordDefinition()
         {

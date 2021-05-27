@@ -4,32 +4,32 @@ using engenious;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Stellt eine Fläche dar, welche mit anderen Flächen Kollidieren kann
+    ///     Stellt eine Fläche dar, welche mit anderen Flächen Kollidieren kann
     /// </summary>
     public struct CollisionPlane
     {
         /// <summary>
-        /// Normalenvector der Fläche
+        ///     Normalenvector der Fläche
         /// </summary>
         public Vector3 normal;
 
         /// <summary>
-        /// Mittelpunkt der Fläche
+        ///     Mittelpunkt der Fläche
         /// </summary>
         public Vector3 pos;
 
         /// <summary>
-        /// Erste Ecke der Fläche
+        ///     Erste Ecke der Fläche
         /// </summary>
         public Vector3 edgepos1;
 
         /// <summary>
-        /// Zweite Ecke der Fläche
+        ///     Zweite Ecke der Fläche
         /// </summary>
         public Vector3 edgepos2;
 
         /// <summary>
-        /// Konstruktur
+        ///     Konstruktur
         /// </summary>
         /// <param name="pos1">Ecke 1</param>
         /// <param name="pos2">Ecke 2</param>
@@ -44,7 +44,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt alle möglichen Flächen eines Blockes zurück
+        ///     Gibt alle möglichen Flächen eines Blockes zurück
         /// </summary>
         /// <param name="pos">Position des Blockes</param>
         /// <param name="movevector">Bewegungsvector</param>
@@ -56,24 +56,24 @@ namespace OctoAwesome
                 yield return new CollisionPlane(
                     new Vector3(pos.X, pos.Y, pos.Z),
                     new Vector3(pos.X, pos.Y + 1f, pos.Z + 1f),
-                    new Vector3(-1, 0, 0));
+                    new Vector3(-1, 0));
             else if (movevector.X < 0)
                 yield return new CollisionPlane(
                     new Vector3(pos.X + 1f, pos.Y, pos.Z),
                     new Vector3(pos.X + 1f, pos.Y + 1f, pos.Z + 1f),
-                    new Vector3(1, 0, 0));
+                    new Vector3(1, 0));
 
             //Ebene Y
             if (movevector.Y > 0)
                 yield return new CollisionPlane(
                     new Vector3(pos.X, pos.Y, pos.Z),
                     new Vector3(pos.X + 1f, pos.Y, pos.Z + 1f),
-                    new Vector3(0, -1, 0));
+                    new Vector3(0, -1));
             else if (movevector.Y < 0)
                 yield return new CollisionPlane(
                     new Vector3(pos.X, pos.Y + 1f, pos.Z),
                     new Vector3(pos.X + 1f, pos.Y + 1f, pos.Z + 1f),
-                    new Vector3(0, 1, 0));
+                    new Vector3(0, 1));
 
             //Ebene Z
             if (movevector.Z > 0)
@@ -89,12 +89,12 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt alle Flächen eines Spielers zurück
+        ///     Gibt alle Flächen eines Spielers zurück
         /// </summary>
-        /// <param name="radius">radius of the <see cref="Entity"/></param>
-        /// <param name="height">height of the <see cref="Entity"/></param>
-        /// <param name="velocity">velocity of the <see cref="Entity"/></param>
-        /// <param name="coordinate"><see cref="Coordinate"/> ot the <see cref="Entity"/></param>
+        /// <param name="radius">radius of the <see cref="Entity" /></param>
+        /// <param name="height">height of the <see cref="Entity" /></param>
+        /// <param name="velocity">velocity of the <see cref="Entity" /></param>
+        /// <param name="coordinate"><see cref="Coordinate" /> ot the <see cref="Entity" /></param>
         /// <param name="invertvelocity">Gibt an ob die geschwindigkeit invertiert werden soll</param>
         /// <returns></returns>
         public static IEnumerable<CollisionPlane> GetEntityCollisionPlanes(float radius, float height, Vector3 velocity,
@@ -108,24 +108,24 @@ namespace OctoAwesome
                 yield return new CollisionPlane(
                     new Vector3(pos.X - radius, pos.Y - radius, pos.Z),
                     new Vector3(pos.X - radius, pos.Y + radius, pos.Z + height),
-                    new Vector3(-1, 0, 0));
+                    new Vector3(-1, 0));
             else if (vel.X < 0)
                 yield return new CollisionPlane(
                     new Vector3(pos.X + radius, pos.Y - radius, pos.Z),
                     new Vector3(pos.X + radius, pos.Y + radius, pos.Z + height),
-                    new Vector3(1, 0, 0));
+                    new Vector3(1, 0));
 
             //Ebene Y
             if (vel.Y > 0)
                 yield return new CollisionPlane(
                     new Vector3(pos.X - radius, pos.Y - radius, pos.Z),
                     new Vector3(pos.X + radius, pos.Y - radius, pos.Z + height),
-                    new Vector3(0, -1, 0));
+                    new Vector3(0, -1));
             else if (vel.Y < 0)
                 yield return new CollisionPlane(
                     new Vector3(pos.X - radius, pos.Y + radius, pos.Z),
                     new Vector3(pos.X + radius, pos.Y + radius, pos.Z + height),
-                    new Vector3(0, 1, 0));
+                    new Vector3(0, 1));
 
             //Ebene Z
             if (vel.Z > 0)
@@ -141,7 +141,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt zurück ob zwei Flächen miteinander Kollidieren können(Achtung noch keine gedrehten Flächen)
+        ///     Gibt zurück ob zwei Flächen miteinander Kollidieren können(Achtung noch keine gedrehten Flächen)
         /// </summary>
         /// <param name="p1">Fläche 1</param>
         /// <param name="p2">Fläche 2</param>
@@ -155,44 +155,44 @@ namespace OctoAwesome
 
             if (vec.X < 0)
             {
-                var ry = (p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y) ||
-                         (p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y) ||
-                         (p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y) ||
-                         (p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y);
+                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y ||
+                         p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y ||
+                         p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y ||
+                         p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
 
-                var rz = (p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z) ||
-                         (p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z) ||
-                         (p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z) ||
-                         (p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z);
+                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z ||
+                         p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z ||
+                         p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z ||
+                         p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
 
                 result = rz && ry;
             }
             else if (vec.Y < 0)
             {
-                var rx = (p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X) ||
-                         (p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X) ||
-                         (p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X) ||
-                         (p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X);
+                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X ||
+                         p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X ||
+                         p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X ||
+                         p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
 
-                var rz = (p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z) ||
-                         (p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z) ||
-                         (p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z) ||
-                         (p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z);
+                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z ||
+                         p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z ||
+                         p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z ||
+                         p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
 
 
                 result = rx && rz;
             }
             else if (vec.Z < 0)
             {
-                var rx = (p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X) ||
-                         (p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X) ||
-                         (p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X) ||
-                         (p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X);
+                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X ||
+                         p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X ||
+                         p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X ||
+                         p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
 
-                var ry = (p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y) ||
-                         (p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y) ||
-                         (p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y) ||
-                         (p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y);
+                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y ||
+                         p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y ||
+                         p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y ||
+                         p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
 
                 result = rx && ry;
             }
@@ -201,7 +201,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt den Abstand zweier Flächen zurück(Mittelpunkt zu Mittelpunkt)
+        ///     Gibt den Abstand zweier Flächen zurück(Mittelpunkt zu Mittelpunkt)
         /// </summary>
         /// <param name="p1">Fläche 1</param>
         /// <param name="p2">Fläche 2</param>
@@ -222,7 +222,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Überprüft ob Vektor 2 größer als Vektor 1 ist
+        ///     Überprüft ob Vektor 2 größer als Vektor 1 ist
         /// </summary>
         /// <param name="d1">Vektor 1</param>
         /// <param name="d2">Vektor 2</param>

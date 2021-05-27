@@ -5,7 +5,7 @@ using OctoAwesome.Serialization;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Base Class for all Components.
+    ///     Base Class for all Components.
     /// </summary>
     public abstract class Component : ISerializable
     {
@@ -19,7 +19,7 @@ namespace OctoAwesome
         public bool Sendable { get; set; }
 
         /// <summary>
-        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
+        ///     Serialisiert die Entität mit dem angegebenen BinaryWriter.
         /// </summary>
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
         public virtual void Serialize(BinaryWriter writer)
@@ -28,7 +28,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
+        ///     Deserialisiert die Entität aus dem angegebenen BinaryReader.
         /// </summary>
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
         public virtual void Deserialize(BinaryReader reader)

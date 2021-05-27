@@ -2,6 +2,7 @@
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -17,7 +18,7 @@ namespace OctoAwesome.Client.Screens
 
             Padding = new Border(0, 0, 0, 0);
 
-            Title = Languages.OctoClient.Options;
+            Title = OctoClient.Options;
 
             var panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
 
@@ -35,7 +36,7 @@ namespace OctoAwesome.Client.Screens
 
             #region OptionsPage
 
-            var optionsPage = new TabPage(manager, Languages.OctoClient.Options);
+            var optionsPage = new TabPage(manager, OctoClient.Options);
             tabs.Pages.Add(optionsPage);
 
             var optionsOptions = new OptionsOptionControl(manager, this)
@@ -49,7 +50,7 @@ namespace OctoAwesome.Client.Screens
 
             #region BindingsPage
 
-            var bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings);
+            var bindingsPage = new TabPage(manager, OctoClient.KeyBindings);
             bindingsPage.Padding = Border.All(10);
             tabs.Pages.Add(bindingsPage);
 
@@ -78,7 +79,7 @@ namespace OctoAwesome.Client.Screens
 
             #region ExtensionPage
 
-            var extensionPage = new TabPage(manager, Languages.OctoClient.Extensions);
+            var extensionPage = new TabPage(manager, OctoClient.Extensions);
             tabs.Pages.Add(extensionPage);
 
             var extensionOptions = new ExtensionsOptionControl(manager)
@@ -91,7 +92,7 @@ namespace OctoAwesome.Client.Screens
             #endregion
 
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
-            exitButton = new TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
+            exitButton = new TextButton(manager, OctoClient.RestartGameToApplyChanges);
             exitButton.VerticalAlignment = VerticalAlignment.Top;
             exitButton.HorizontalAlignment = HorizontalAlignment.Right;
             exitButton.Enabled = false;

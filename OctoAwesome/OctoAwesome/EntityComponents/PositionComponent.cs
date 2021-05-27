@@ -24,10 +24,10 @@ namespace OctoAwesome.EntityComponents
             get => _position;
             set
             {
-                var valueBlockX = ((int) (value.BlockPosition.X * 100)) / 100f;
-                var valueBlockY = ((int) (value.BlockPosition.Y * 100)) / 100f;
-                var positionBlockX = ((int) (_position.BlockPosition.X * 100)) / 100f;
-                var positionBlockY = ((int) (_position.BlockPosition.Y * 100)) / 100f;
+                var valueBlockX = (int) (value.BlockPosition.X * 100) / 100f;
+                var valueBlockY = (int) (value.BlockPosition.Y * 100) / 100f;
+                var positionBlockX = (int) (_position.BlockPosition.X * 100) / 100f;
+                var positionBlockY = (int) (_position.BlockPosition.Y * 100) / 100f;
 
                 _posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || _position.BlockPosition.Z != value.BlockPosition.Z;
 

@@ -4,6 +4,7 @@ using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Languages;
 using OctoAwesome.Client.Screens;
 
 namespace OctoAwesome.Client.Controls
@@ -58,7 +59,7 @@ namespace OctoAwesome.Client.Controls
             }
         }
 
-        private ScreenComponent Manager { get; set; }
+        private ScreenComponent Manager { get; }
 
         private void BindingKeyLabel_LeftMouseClick(Control sender, MouseEventArgs args)
         {
@@ -68,7 +69,7 @@ namespace OctoAwesome.Client.Controls
 
             var lbl = (Label) sender;
 
-            var screen = new MessageScreen(Manager, Languages.OctoClient.PressKey, "", Languages.OctoClient.Cancel);
+            var screen = new MessageScreen(Manager, OctoClient.PressKey, "", OctoClient.Cancel);
             screen.KeyDown += (s, a) =>
             {
                 Manager.Game.KeyMapper.RemoveKey(id, oldKey);

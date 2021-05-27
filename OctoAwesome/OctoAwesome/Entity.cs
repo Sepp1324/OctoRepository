@@ -7,12 +7,12 @@ using OctoAwesome.Serialization;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Basisklasse für alle selbständigen Wesen
+    ///     Basisklasse für alle selbständigen Wesen
     /// </summary>
     public abstract class Entity : ISerializable, IIdentification
     {
         /// <summary>
-        /// Entity die regelmäßig eine Updateevent bekommt
+        ///     Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
         public Entity()
         {
@@ -22,22 +22,22 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Contains all Components.
+        ///     Contains all Components.
         /// </summary>
-        public ComponentList<EntityComponent> Components { get; private set; }
+        public ComponentList<EntityComponent> Components { get; }
 
         /// <summary>
-        /// Reference to the active Simulation.
+        ///     Reference to the active Simulation.
         /// </summary>
         public Simulation Simulation { get; internal set; }
 
         /// <summary>
-        /// Id
+        ///     Id
         /// </summary>
         public Guid Id { get; internal set; }
 
         /// <summary>
-        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
+        ///     Serialisiert die Entität mit dem angegebenen BinaryWriter.
         /// </summary>
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
         public virtual void Serialize(BinaryWriter writer)
@@ -48,7 +48,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
+        ///     Deserialisiert die Entität aus dem angegebenen BinaryReader.
         /// </summary>
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
         public virtual void Deserialize(BinaryReader reader)

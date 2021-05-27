@@ -63,8 +63,6 @@ namespace OctoAwesome.Network
                     updateHub.Push(chunkNotification, DefaultChannels.Chunk);
                     chunkNotification.Release();
                     break;
-                default:
-                    break;
             }
 
             return Task.CompletedTask;

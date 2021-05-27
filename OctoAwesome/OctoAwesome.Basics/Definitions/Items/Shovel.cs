@@ -4,7 +4,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class Shovel : Item
+    internal class Shovel : Item
     {
         public Shovel(ShovelDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)

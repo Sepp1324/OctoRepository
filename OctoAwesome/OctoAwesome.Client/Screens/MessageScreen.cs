@@ -8,8 +8,8 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class MessageScreen : Screen
     {
-        readonly AssetComponent assets;
-        readonly Panel panel;
+        private readonly AssetComponent assets;
+        private readonly Panel panel;
 
         public MessageScreen(ScreenComponent manager, string title, string content, string buttonText = "OK", Action<Control, MouseEventArgs> buttonClick = null) : base(manager)
         {

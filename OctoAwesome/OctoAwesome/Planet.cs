@@ -5,7 +5,7 @@ using OctoAwesome.Notifications;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Standard-Implementierung des Planeten.
+    ///     Standard-Implementierung des Planeten.
     /// </summary>
     public class Planet : IPlanet
     {
@@ -16,7 +16,7 @@ namespace OctoAwesome
         private IUpdateHub updateHub;
 
         /// <summary>
-        /// Initialisierung des Planeten.
+        ///     Initialisierung des Planeten.
         /// </summary>
         /// <param name="id">ID des Planeten.</param>
         /// <param name="universe">ID des Universums.</param>
@@ -34,7 +34,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Erzeugt eine neue Instanz eines Planeten.
+        ///     Erzeugt eine neue Instanz eines Planeten.
         /// </summary>
         public Planet()
         {
@@ -42,37 +42,37 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// ID des Planeten.
+        ///     ID des Planeten.
         /// </summary>
         public int Id { get; private set; }
 
         /// <summary>
-        /// Referenz auf das Parent Universe
+        ///     Referenz auf das Parent Universe
         /// </summary>
         public Guid Universe { get; private set; }
 
         /// <summary>
-        /// Die Klimakarte des Planeten
+        ///     Die Klimakarte des Planeten
         /// </summary>
         public IClimateMap ClimateMap { get; protected set; }
 
         /// <summary>
-        /// Seed des Zufallsgenerators dieses Planeten.
+        ///     Seed des Zufallsgenerators dieses Planeten.
         /// </summary>
         public int Seed { get; private set; }
 
         /// <summary>
-        /// Die Größe des Planeten in Chunks.
+        ///     Die Größe des Planeten in Chunks.
         /// </summary>
         public Index3 Size { get; private set; }
 
         /// <summary>
-        /// Gravitation des Planeten.
+        ///     Gravitation des Planeten.
         /// </summary>
         public float Gravity { get; protected set; }
 
         /// <summary>
-        /// Der Generator des Planeten.
+        ///     Der Generator des Planeten.
         /// </summary>
         public IMapGenerator Generator { get; set; }
 
@@ -90,7 +90,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Serialisiert den Planeten in den angegebenen Stream.
+        ///     Serialisiert den Planeten in den angegebenen Stream.
         /// </summary>
         /// <param name="stream">Zielstream</param>
         public virtual void Serialize(BinaryWriter writer)
@@ -105,7 +105,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Deserialisiert den Planeten aus dem angegebenen Stream.
+        ///     Deserialisiert den Planeten aus dem angegebenen Stream.
         /// </summary>
         /// <param name="stream">Quellstream</param>
         public virtual void Deserialize(BinaryReader reader)

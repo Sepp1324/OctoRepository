@@ -2,6 +2,7 @@
 using engenious;
 using OctoAwesome.Basics.Entities;
 using OctoAwesome.Basics.EntityComponents;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Basics.SimulationComponents;
 using OctoAwesome.Definitions;
 using OctoAwesome.EntityComponents;
@@ -11,9 +12,9 @@ namespace OctoAwesome.Basics
 {
     public sealed class Extension : IExtension
     {
-        public string Description => Languages.OctoBasics.ExtensionDescription;
+        public string Description => OctoBasics.ExtensionDescription;
 
-        public string Name => Languages.OctoBasics.ExtensionName;
+        public string Name => OctoBasics.ExtensionName;
 
 
         public void Register(ITypeContainer typeContainer)
@@ -34,13 +35,13 @@ namespace OctoAwesome.Basics
             extensionLoader.RegisterEntity<WauziEntity>();
             extensionLoader.RegisterDefaultEntityExtender<WauziEntity>();
 
-            extensionLoader.RegisterEntityExtender<Player>((p) =>
+            extensionLoader.RegisterEntityExtender<Player>(p =>
             {
-                var posComponent = new PositionComponent {Position = new Coordinate(0, new Index3(0, 0, 200), new Vector3(0, 0, 0))};
+                var posComponent = new PositionComponent {Position = new Coordinate(0, new Index3(0, 0, 200), new Vector3(0, 0))};
 
                 p.Components.AddComponent(posComponent);
-                p.Components.AddComponent(new BodyComponent() {Mass = 50f, Height = 3.5f, Radius = 0.75f});
-                p.Components.AddComponent(new BodyPowerComponent() {Power = 600f, JumpTime = 120});
+                p.Components.AddComponent(new BodyComponent {Mass = 50f, Height = 3.5f, Radius = 0.75f});
+                p.Components.AddComponent(new BodyPowerComponent {Power = 600f, JumpTime = 120});
                 p.Components.AddComponent(new GravityComponent());
                 p.Components.AddComponent(new MoveableComponent());
                 p.Components.AddComponent(new BoxCollisionComponent());
@@ -49,7 +50,7 @@ namespace OctoAwesome.Basics
             });
 
 
-            extensionLoader.RegisterSimulationExtender((s) =>
+            extensionLoader.RegisterSimulationExtender(s =>
             {
                 s.Components.AddComponent(new WattMoverComponent());
                 s.Components.AddComponent(new NewtonGravitatorComponent());

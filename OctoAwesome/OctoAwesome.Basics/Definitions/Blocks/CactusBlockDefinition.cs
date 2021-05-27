@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -17,7 +18,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override string Icon => "cactus_inside";
 
-        public override string Name => Languages.OctoBasics.Cactus;
+        public override string Name => OctoBasics.Cactus;
 
         public override string[] Textures { get; }
 

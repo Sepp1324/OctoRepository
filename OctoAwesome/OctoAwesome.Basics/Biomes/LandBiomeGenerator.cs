@@ -44,7 +44,7 @@ namespace OctoAwesome.Basics.Biomes
             for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
             {
-                var region = (regions[(y * Chunk.CHUNKSIZE_X) + x] / 2) + 0.5f;
+                var region = regions[y * Chunk.CHUNKSIZE_X + x] / 2 + 0.5f;
 
                 int biome2;
                 var biome1 = ChooseBiome(region, out biome2);
@@ -53,11 +53,11 @@ namespace OctoAwesome.Basics.Biomes
                 if (biome2 != -1)
                 {
                     interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
-                    heightmap[(y * Chunk.CHUNKSIZE_X) + x] = (biomeValues[(biome2 * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y) + (y * Chunk.CHUNKSIZE_X) + x] * interpolationValue) + (biomeValues[(biome1 * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y) + (y * Chunk.CHUNKSIZE_X) + x] * (1 - interpolationValue));
+                    heightmap[y * Chunk.CHUNKSIZE_X + x] = biomeValues[biome2 * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y + y * Chunk.CHUNKSIZE_X + x] * interpolationValue + biomeValues[biome1 * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y + y * Chunk.CHUNKSIZE_X + x] * (1 - interpolationValue);
                 }
                 else
                 {
-                    heightmap[(y * Chunk.CHUNKSIZE_X) + x] = biomeValues[(biome1 * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y) + (y * Chunk.CHUNKSIZE_X) + x];
+                    heightmap[y * Chunk.CHUNKSIZE_X + x] = biomeValues[biome1 * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y + y * Chunk.CHUNKSIZE_X + x];
                 }
             }
 

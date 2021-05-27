@@ -1,12 +1,12 @@
 ﻿namespace OctoAwesome.Definitions.Items
 {
     /// <summary>
-    /// Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity"/>
+    ///     Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity" />
     /// </summary>
     public abstract class Item : IItem, IInventoryable
     {
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse Item.
+        ///     Erzeugt eine neue Instanz der Klasse Item.
         /// </summary>
         protected Item(IItemDefinition definition, IMaterialDefinition material)
         {
@@ -20,12 +20,12 @@
         public virtual int StackLimit => 1;
 
         /// <summary>
-        /// Der Zustand des Items
+        ///     Der Zustand des Items
         /// </summary>
         public int Condition { get; set; }
 
         /// <summary>
-        /// Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
+        ///     Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
         /// </summary>
         public Coordinate? Position { get; set; }
 

@@ -72,7 +72,7 @@ namespace OctoAwesome.Client.Components
             var strafeX = (float) Math.Cos(head.Angle + MathHelper.PiOver2);
             var strafeY = -(float) Math.Sin(head.Angle + MathHelper.PiOver2);
 
-            CameraUpVector = Vector3.Cross(new Vector3(strafeX, strafeY, 0), new Vector3(lookX, lookY, height));
+            CameraUpVector = Vector3.Cross(new Vector3(strafeX, strafeY), new Vector3(lookX, lookY, height));
 
             View = Matrix.CreateLookAt(
                 CameraPosition,
@@ -86,16 +86,15 @@ namespace OctoAwesome.Client.Components
                 new Vector3(CameraPosition.X, CameraPosition.Y, 100),
                 new Vector3(
                     position.Position.LocalPosition.X,
-                    position.Position.LocalPosition.Y,
-                    0f),
+                    position.Position.LocalPosition.Y),
                 new Vector3(
                     (float) Math.Cos(head.Angle),
-                    (float) Math.Sin(-head.Angle), 0f));
+                    (float) Math.Sin(-head.Angle)));
 
             float centerX = GraphicsDevice.Viewport.Width / 2;
             float centerY = GraphicsDevice.Viewport.Height / 2;
 
-            var nearPoint = GraphicsDevice.Viewport.Unproject(new Vector3(centerX, centerY, 0f), Projection, View, Matrix.Identity);
+            var nearPoint = GraphicsDevice.Viewport.Unproject(new Vector3(centerX, centerY), Projection, View, Matrix.Identity);
             var farPoint = GraphicsDevice.Viewport.Unproject(new Vector3(centerX, centerY, 1f), Projection, View, Matrix.Identity);
             var direction = farPoint - nearPoint;
             direction.Normalize();

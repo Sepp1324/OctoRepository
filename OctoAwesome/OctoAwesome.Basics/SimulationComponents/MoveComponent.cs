@@ -120,7 +120,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 foreach (var plane in planes)
                 {
-                    var subvelocity = (plane.Distance / (float) gameTime.ElapsedGameTime.TotalSeconds);
+                    var subvelocity = plane.Distance / (float) gameTime.ElapsedGameTime.TotalSeconds;
                     var diff = movecomp.Velocity - subvelocity;
 
                     float vx;

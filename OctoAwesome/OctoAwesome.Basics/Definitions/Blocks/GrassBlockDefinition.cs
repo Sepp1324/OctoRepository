@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,11 +11,11 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.Grass;
+        public override string Name => OctoBasics.Grass;
 
         public override string Icon => "grass_top";
 
-        public override string[] Textures { get; } = new[]
+        public override string[] Textures { get; } =
         {
             "grass_top",
             "dirt",
@@ -27,10 +28,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         {
             if (wall == Wall.Top)
                 return 0;
-            else if (wall == Wall.Bottom)
+            if (wall == Wall.Bottom)
                 return 1;
-            else
-                return 2;
+            return 2;
         }
     }
 }

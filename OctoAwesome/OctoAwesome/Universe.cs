@@ -4,19 +4,19 @@ using System.IO;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Ein Universum von OctoAwesome. Ein Universum beinhaltet verschiedene Planeten und entspricht einem Speicherstand.
+    ///     Ein Universum von OctoAwesome. Ein Universum beinhaltet verschiedene Planeten und entspricht einem Speicherstand.
     /// </summary>
     public class Universe : IUniverse
     {
         /// <summary>
-        /// Erzeugt eine neue Instanz eines Universums
+        ///     Erzeugt eine neue Instanz eines Universums
         /// </summary>
         public Universe()
         {
         }
 
         /// <summary>
-        /// Erzeugt eine neue Instanz eines Universums
+        ///     Erzeugt eine neue Instanz eines Universums
         /// </summary>
         /// <param name="id">Die GUID des Universums</param>
         /// <param name="name">Der Name des Universums</param>
@@ -29,22 +29,22 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// ID des Universums
+        ///     ID des Universums
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Der Name des Universums
+        ///     Der Name des Universums
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Universe Seed
+        ///     Universe Seed
         /// </summary>
         public int Seed { get; set; }
 
         /// <summary>
-        /// Deserialisiert ein Universum aus dem angegebenen Stream
+        ///     Deserialisiert ein Universum aus dem angegebenen Stream
         /// </summary>
         /// <param name="stream"></param>
         public void Deserialize(BinaryReader reader)
@@ -56,7 +56,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Serialisiert das Universum in den angegebenen Stream
+        ///     Serialisiert das Universum in den angegebenen Stream
         /// </summary>
         /// <param name="stream"></param>
         public void Serialize(BinaryWriter writer)

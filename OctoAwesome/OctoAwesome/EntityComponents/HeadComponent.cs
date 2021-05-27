@@ -4,26 +4,22 @@ using engenious;
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// HeadComponent
+    ///     HeadComponent
     /// </summary>
     public sealed class HeadComponent : EntityComponent
     {
-        public HeadComponent()
-        {
-        }
-
         /// <summary>
-        /// HeadPosition
+        ///     HeadPosition
         /// </summary>
         public Vector3 Offset { get; set; }
 
         /// <summary>
-        /// Tilt
+        ///     Tilt
         /// </summary>
         public float Tilt { get; set; }
 
         /// <summary>
-        /// Angle
+        ///     Angle
         /// </summary>
         public float Angle { get; set; }
 

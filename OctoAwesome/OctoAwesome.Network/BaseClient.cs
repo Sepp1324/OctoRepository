@@ -206,13 +206,11 @@ namespace OctoAwesome.Network
                     ex.Data.Add(nameof(bufferOffset), bufferOffset);
                     throw ex;
                 }
+
+                if (currentPackage.TryDeserializeHeader(buffer, bufferOffset))
+                    offset += Package.HEAD_LENGTH;
                 else
-                {
-                    if (currentPackage.TryDeserializeHeader(buffer, bufferOffset))
-                        offset += Package.HEAD_LENGTH;
-                    else
-                        throw new InvalidCastException("Can not deserialize header with these bytes :(");
-                }
+                    throw new InvalidCastException("Can not deserialize header with these bytes :(");
             }
 
             offset += currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));

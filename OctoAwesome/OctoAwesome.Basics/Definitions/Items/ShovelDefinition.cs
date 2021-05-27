@@ -3,7 +3,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class ShovelDefinition : IItemDefinition
+    internal class ShovelDefinition : IItemDefinition
     {
         public ShovelDefinition()
         {

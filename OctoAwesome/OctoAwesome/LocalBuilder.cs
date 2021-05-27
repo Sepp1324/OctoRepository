@@ -4,7 +4,7 @@ using System.Linq;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Erzeugt ein lokales Koordinatensystem.
+    ///     Erzeugt ein lokales Koordinatensystem.
     /// </summary>
     public class LocalBuilder
     {
@@ -12,7 +12,7 @@ namespace OctoAwesome
         private readonly int originX, originY, originZ;
 
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse LocalBuilder
+        ///     Erzeugt eine neue Instanz der Klasse LocalBuilder
         /// </summary>
         /// <param name="originX"></param>
         /// <param name="originY"></param>
@@ -34,7 +34,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="column00"></param>
         /// <param name="column10"></param>
@@ -60,7 +59,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="column00"></param>
         /// <param name="column10"></param>
@@ -76,7 +74,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -98,7 +95,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="blockInfos"></param>
         public void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos)
@@ -125,7 +121,6 @@ namespace OctoAwesome
 
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -147,7 +142,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>

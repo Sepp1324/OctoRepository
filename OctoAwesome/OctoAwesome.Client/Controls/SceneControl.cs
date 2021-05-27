@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Threading;
 using engenious;
 using engenious.Graphics;
@@ -9,6 +10,8 @@ using engenious.Helper;
 using engenious.UI;
 using engenious.UserDefined;
 using OctoAwesome.Client.Components;
+using EventArgs = System.EventArgs;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -31,12 +34,12 @@ namespace OctoAwesome.Client.Controls
 
         private readonly VertexPositionTexture[] billboardVertices =
         {
-            new VertexPositionTexture(new Vector3(-0.5f, 0.5f, 0), new Vector2(0, 0)),
-            new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
-            new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
-            new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
-            new VertexPositionTexture(new Vector3(0.5f, -0.5f, 0), new Vector2(1, 1)),
-            new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1))
+            new VertexPositionTexture(new Vector3(-0.5f, 0.5f), new Vector2(0, 0)),
+            new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
+            new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1)),
+            new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
+            new VertexPositionTexture(new Vector3(0.5f, -0.5f), new Vector2(1, 1)),
+            new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1))
         };
 
         //private Texture2D blockTextures;
@@ -98,7 +101,7 @@ namespace OctoAwesome.Client.Controls
 
         private PlayerComponent player;
 
-        private float sunPosition = 0f;
+        private float sunPosition;
 
         public SceneControl(ScreenComponent manager, string style = "") :
             base(manager, style)
@@ -113,9 +116,9 @@ namespace OctoAwesome.Client.Controls
             entities = manager.Game.Entity;
             Manager = manager;
 
-            var chunkDiag = (float) Math.Sqrt((Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_X) + (Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Y) + (Chunk.CHUNKSIZE_Z * Chunk.CHUNKSIZE_Z));
-            var tmpSphereRadius = (float) (((Math.Sqrt((Span * Chunk.CHUNKSIZE_X) * (Span * Chunk.CHUNKSIZE_X) * 3)) / 3) + camera.NearPlaneDistance + (chunkDiag / 2));
-            sphereRadius = tmpSphereRadius - (chunkDiag / 2);
+            var chunkDiag = (float) Math.Sqrt(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_X + Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Y + Chunk.CHUNKSIZE_Z * Chunk.CHUNKSIZE_Z);
+            var tmpSphereRadius = (float) (Math.Sqrt(Span * Chunk.CHUNKSIZE_X * Span * Chunk.CHUNKSIZE_X * 3) / 3 + camera.NearPlaneDistance + chunkDiag / 2);
+            sphereRadius = tmpSphereRadius - chunkDiag / 2;
             sphereRadiusSquared = tmpSphereRadius * tmpSphereRadius;
 
             simpleShader = manager.Game.Content.Load<simple>("simple");
@@ -136,8 +139,8 @@ namespace OctoAwesome.Client.Controls
 
                 var scaled = texture; //new Bitmap(bitmap, new System.Drawing.Size(bitmapSize, bitmapSize));
                 var data = new int[scaled.Width * scaled.Height];
-                var bitmapData = scaled.LockBits(new System.Drawing.Rectangle(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
+                var bitmapData = scaled.LockBits(new System.Drawing.Rectangle(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
                 blockTextures.SetData(data, layer);
                 scaled.UnlockBits(bitmapData);
                 layer++;
@@ -216,12 +219,12 @@ namespace OctoAwesome.Client.Controls
 
             var billboardVertices = new[]
             {
-                new VertexPositionTexture(new Vector3(-0.5f, 0.5f, 0), new Vector2(0, 0)),
-                new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
-                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
-                new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
-                new VertexPositionTexture(new Vector3(0.5f, -0.5f, 0), new Vector2(1, 1)),
-                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1))
+                new VertexPositionTexture(new Vector3(-0.5f, 0.5f), new Vector2(0, 0)),
+                new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1)),
+                new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(0.5f, -0.5f), new Vector2(1, 1)),
+                new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1))
             };
 
             var selectionIndices = new short[]
@@ -258,7 +261,7 @@ namespace OctoAwesome.Client.Controls
         public RenderTarget2D MiniMapTexture { get; set; }
         public RenderTarget2D ControlTexture { get; set; }
 
-        private ScreenComponent Manager { get; set; }
+        private ScreenComponent Manager { get; }
 
         public void Dispose()
         {
@@ -359,7 +362,7 @@ namespace OctoAwesome.Client.Controls
                     selected = pos;
                     selectedAxis = collisionAxis;
                     bestDistance = distance.Value;
-                    selectionPoint = (camera.PickRay.Position + (camera.PickRay.Direction * distance)) - (selected - renderOffset);
+                    selectionPoint = camera.PickRay.Position + camera.PickRay.Direction * distance - (selected - renderOffset);
                 }
             }
 
@@ -369,13 +372,13 @@ namespace OctoAwesome.Client.Controls
                 switch (selectedAxis)
                 {
                     case Axis.X:
-                        player.SelectedSide = (camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast);
+                        player.SelectedSide = camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast;
                         break;
                     case Axis.Y:
-                        player.SelectedSide = (camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth);
+                        player.SelectedSide = camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth;
                         break;
                     case Axis.Z:
-                        player.SelectedSide = (camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop);
+                        player.SelectedSide = camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop;
                         break;
                 }
 
@@ -452,12 +455,12 @@ namespace OctoAwesome.Client.Controls
 
             var diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
 
-            var inclination = ((float) Math.Sin(playerPosY) * inclinationVariance) + MathHelper.Pi / 6f;
+            var inclination = (float) Math.Sin(playerPosY) * inclinationVariance + MathHelper.Pi / 6f;
             //Console.WriteLine("Stand: " + (MathHelper.Pi + playerPosX) + " Neigung: " + inclination);
             var sunMovement =
                 Matrix.CreateRotationX(inclination) *
                 //Matrix.CreateRotationY((((float)gameTime.TotalGameTime.TotalMinutes * MathHelper.TwoPi) + playerPosX) * -1); 
-                Matrix.CreateRotationY((float) (MathHelper.TwoPi - ((diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi) % MathHelper.TwoPi)));
+                Matrix.CreateRotationY((float) (MathHelper.TwoPi - diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi % MathHelper.TwoPi));
 
             var sunDirection = Vector3.Transform(new Vector3(0, 0, 1), sunMovement);
 
@@ -534,9 +537,9 @@ namespace OctoAwesome.Client.Controls
                     player.SelectedBox.Value.Z - offset.Z);
 
                 var selectedBoxPosition = new Vector3(
-                    player.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
-                    player.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
-                    player.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
+                    player.SelectedBox.Value.X - chunkOffset.X * Chunk.CHUNKSIZE_X,
+                    player.SelectedBox.Value.Y - chunkOffset.Y * Chunk.CHUNKSIZE_Y,
+                    player.SelectedBox.Value.Z - chunkOffset.Z * Chunk.CHUNKSIZE_Z);
                 // selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
                 selectionEffect.World = Matrix.CreateTranslation(relativePosition);
                 selectionEffect.View = camera.View;
@@ -557,7 +560,7 @@ namespace OctoAwesome.Client.Controls
 
         private void DrawChunks(Index3 chunkOffset, Matrix viewProj)
         {
-            var spherePos = camera.PickRay.Position + (camera.PickRay.Direction * sphereRadius);
+            var spherePos = camera.PickRay.Position + camera.PickRay.Direction * sphereRadius;
 
             foreach (var renderer in chunkRenderer)
             {
@@ -567,9 +570,9 @@ namespace OctoAwesome.Client.Controls
                 var shift = renderer.GetShift(chunkOffset, planet);
 
                 var chunkPos = new Vector3(
-                    (shift.X * Chunk.CHUNKSIZE_X) + (Chunk.CHUNKSIZE_X / 2),
-                    (shift.Y * Chunk.CHUNKSIZE_Y) + (Chunk.CHUNKSIZE_Y / 2),
-                    (shift.Z * Chunk.CHUNKSIZE_Z) + (Chunk.CHUNKSIZE_Z / 2));
+                    shift.X * Chunk.CHUNKSIZE_X + Chunk.CHUNKSIZE_X / 2,
+                    shift.Y * Chunk.CHUNKSIZE_Y + Chunk.CHUNKSIZE_Y / 2,
+                    shift.Z * Chunk.CHUNKSIZE_Z + Chunk.CHUNKSIZE_Z / 2);
 
                 var frustumDist = spherePos - chunkPos;
                 if (frustumDist.LengthSquared < sphereRadiusSquared)
@@ -594,7 +597,7 @@ namespace OctoAwesome.Client.Controls
                         if (b)
                         {
                             fillResetEvent.Set();
-                            OnCenterChanged?.Invoke(this, System.EventArgs.Empty);
+                            OnCenterChanged?.Invoke(this, EventArgs.Empty);
                         }
                     });
 
@@ -688,13 +691,11 @@ namespace OctoAwesome.Client.Controls
             if (point.X > point.Y)
             {
                 if (1f - point.X > point.Y) return upper;
-                else return right;
+                return right;
             }
-            else
-            {
-                if (1f - point.X > point.Y) return left;
-                else return lower;
-            }
+
+            if (1f - point.X > point.Y) return left;
+            return lower;
         }
 
         private static OrientationFlags FindCorner(Vector2 point, OrientationFlags upperLeftCorner, OrientationFlags upperRightCorner, OrientationFlags lowerLeftCorner, OrientationFlags lowerRightCorner)
@@ -702,13 +703,11 @@ namespace OctoAwesome.Client.Controls
             if (point.X < 0.5f)
             {
                 if (point.Y < 0.5f) return upperLeftCorner;
-                else return lowerLeftCorner;
+                return lowerLeftCorner;
             }
-            else
-            {
-                if (point.Y < 0.5f) return upperRightCorner;
-                else return lowerRightCorner;
-            }
+
+            if (point.Y < 0.5f) return upperRightCorner;
+            return lowerRightCorner;
         }
 
         #endregion

@@ -28,7 +28,7 @@ namespace OctoAwesome.Basics
             {
                 var fractureEfficiency = polynomial.Evaluate(solid.FractureToughness);
 
-                return (int) (baseEfficiency * (fractureEfficiency) / 100);
+                return (int) (baseEfficiency * fractureEfficiency / 100);
             }
 
             return baseEfficiency;

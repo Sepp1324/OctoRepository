@@ -2,6 +2,7 @@
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -26,12 +27,12 @@ namespace OctoAwesome.Client.Controls
             };
             Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Fixed, Width = 100});
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 1});
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Auto, Height = 1});
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Auto, Height = 1});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 100});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Auto, Height = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Auto, Height = 1});
 
             var buttons = new StackPanel(manager)
             {
@@ -41,29 +42,29 @@ namespace OctoAwesome.Client.Controls
 
             #region Manipulationsbuttons
 
-            addButton = new TextButton(manager, Languages.OctoClient.Add);
+            addButton = new TextButton(manager, OctoClient.Add);
             addButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             addButton.Visible = false;
             buttons.Controls.Add(addButton);
 
-            removeButton = new TextButton(manager, Languages.OctoClient.Remove);
+            removeButton = new TextButton(manager, OctoClient.Remove);
             removeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             removeButton.Visible = false;
             buttons.Controls.Add(removeButton);
 
-            moveUpButton = new TextButton(manager, Languages.OctoClient.Up);
+            moveUpButton = new TextButton(manager, OctoClient.Up);
             moveUpButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             moveUpButton.Visible = false;
             buttons.Controls.Add(moveUpButton);
 
-            moveDownButton = new TextButton(manager, Languages.OctoClient.Down);
+            moveDownButton = new TextButton(manager, OctoClient.Down);
             moveDownButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             moveDownButton.Visible = false;
             buttons.Controls.Add(moveDownButton);
 
             #endregion
 
-            applyButton = new TextButton(manager, Languages.OctoClient.Apply);
+            applyButton = new TextButton(manager, OctoClient.Apply);
             applyButton.HorizontalAlignment = HorizontalAlignment.Right;
             applyButton.VerticalAlignment = VerticalAlignment.Bottom;
             grid.AddControl(applyButton, 0, 2, 3);

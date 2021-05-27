@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace OctoAwesome.Database.Checks
 {
@@ -12,8 +13,8 @@ namespace OctoAwesome.Database.Checks
         }
 
         protected KeyInvalidException(
-            System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context) : base(info, context)
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
 

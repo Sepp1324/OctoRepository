@@ -21,7 +21,7 @@ namespace OctoAwesome.Database
         public abstract void Close();
 
         /// <summary>
-        /// Locks this Database for the specific operation
+        ///     Locks this Database for the specific operation
         /// </summary>
         /// <param name="mode">Indicates witch operation is currently performed</param>
         /// <returns>A new database lock</returns>
@@ -77,10 +77,10 @@ namespace OctoAwesome.Database
         public bool IsOpen { get; private set; }
 
         /// <summary>
-        /// This Threshold handels the auto defragmenation. 
-        /// If the Database have more Empty Values than this Threshold the <see cref="Defragmentation"/> is executed.
-        /// Use -1 to deactivate the deframentation for this Database.
-        /// Default Value is 1000.
+        ///     This Threshold handels the auto defragmenation.
+        ///     If the Database have more Empty Values than this Threshold the <see cref="Defragmentation" /> is executed.
+        ///     Use -1 to deactivate the deframentation for this Database.
+        ///     Default Value is 1000.
         /// </summary>
         public int Threshold { get; set; }
 

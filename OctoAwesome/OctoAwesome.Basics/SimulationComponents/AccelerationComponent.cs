@@ -22,7 +22,7 @@ namespace OctoAwesome.Basics.SimulationComponents
             foreach (var entity in acceleratedEntities.ToArray())
             {
                 // Convert external Forces to Powers
-                var power = ((entity.Move.ExternalForces * entity.Move.ExternalForces) / (2 * entity.Body.Mass)) *
+                var power = entity.Move.ExternalForces * entity.Move.ExternalForces / (2 * entity.Body.Mass) *
                             (float) gameTime.ElapsedGameTime.TotalSeconds;
 
                 // Take care of direction
@@ -49,7 +49,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
 
                 // Calculate Velocity change
-                var velocityChange = ((2.0f / entity.Body.Mass) * power) *
+                var velocityChange = 2.0f / entity.Body.Mass * power *
                                      (float) gameTime.ElapsedGameTime.TotalSeconds;
 
                 // Take care of direction
@@ -65,7 +65,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            var acceleratedEntity = new AcceleratedEntity()
+            var acceleratedEntity = new AcceleratedEntity
             {
                 Entity = entity,
                 Move = entity.Components.GetComponent<MoveableComponent>(),

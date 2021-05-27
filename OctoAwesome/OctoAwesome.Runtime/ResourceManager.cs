@@ -11,25 +11,25 @@ using OctoAwesome.Threading;
 namespace OctoAwesome.Runtime
 {
     /// <summary>
-    /// Manager für die Weltelemente im Spiel.
+    ///     Manager für die Weltelemente im Spiel.
     /// </summary>
     public class ResourceManager : IResourceManager
     {
-        private readonly bool disablePersistence = false;
+        private readonly bool disablePersistence;
 
         private readonly IExtensionResolver extensionResolver;
 
         private readonly CountedScopeSemaphore loadingSemaphore;
         private readonly ILogger logger;
-        private readonly IPersistenceManager persistenceManager = null;
-        private readonly List<IMapPopulator> populators = null;
+        private readonly IPersistenceManager persistenceManager;
+        private readonly List<IMapPopulator> populators;
         private readonly LockSemaphore semaphoreSlim;
         private CancellationToken currentToken;
         private Player player;
         private CancellationTokenSource tokenSource;
 
         /// <summary>
-        /// Konstruktor
+        ///     Konstruktor
         /// </summary>
         /// <param name="extensionResolver">ExetnsionResolver</param>
         /// <param name="definitionManager">DefinitionManager</param>
@@ -66,15 +66,15 @@ namespace OctoAwesome.Runtime
         public IUpdateHub UpdateHub { get; private set; }
 
         /// <summary>
-        /// Das aktuell geladene Universum.
+        ///     Das aktuell geladene Universum.
         /// </summary>
         public IUniverse CurrentUniverse { get; private set; }
 
-        public IDefinitionManager DefinitionManager { get; private set; }
+        public IDefinitionManager DefinitionManager { get; }
         public ConcurrentDictionary<int, IPlanet> Planets { get; }
 
         /// <summary>
-        /// Erzuegt ein neues Universum.
+        ///     Erzuegt ein neues Universum.
         /// </summary>
         /// <param name="name">Name des neuen Universums.</param>
         /// <param name="seed">Weltgenerator-Seed für das neue Universum.</param>
@@ -98,7 +98,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Gibt alle Universen zurück, die geladen werden können.
+        ///     Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
         public IUniverse[] ListUniverses()
@@ -107,14 +107,13 @@ namespace OctoAwesome.Runtime
 
             if (awaiter == null)
                 return Array.Empty<IUniverse>();
-            else
-                awaiter.WaitOnAndRelease();
+            awaiter.WaitOnAndRelease();
 
             return universes.ToArray();
         }
 
         /// <summary>
-        /// Lädt das Universum mit der angegebenen Guid.
+        ///     Lädt das Universum mit der angegebenen Guid.
         /// </summary>
         /// <param name="universeId">Die Guid des Universums.</param>
         /// <returns>Das geladene Universum.</returns>
@@ -135,8 +134,7 @@ namespace OctoAwesome.Runtime
 
                 if (awaiter == null)
                     return false;
-                else
-                    awaiter.WaitOnAndRelease();
+                awaiter.WaitOnAndRelease();
 
                 CurrentUniverse = universe;
                 if (CurrentUniverse == null)
@@ -147,7 +145,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Entlädt das aktuelle Universum.
+        ///     Entlädt das aktuelle Universum.
         /// </summary>
         public void UnloadUniverse()
         {
@@ -179,7 +177,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Gibt das aktuelle Universum zurück
+        ///     Gibt das aktuelle Universum zurück
         /// </summary>
         /// <returns>Das gewünschte Universum, falls es existiert</returns>
         public IUniverse GetUniverse()
@@ -188,7 +186,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Löscht ein Universum.
+        ///     Löscht ein Universum.
         /// </summary>
         /// <param name="id">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid id)
@@ -200,7 +198,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Gibt den Planeten mit der angegebenen ID zurück
+        ///     Gibt den Planeten mit der angegebenen ID zurück
         /// </summary>
         /// <param name="id">Die Planteten-ID des gewünschten Planeten</param>
         /// <returns>Der gewünschte Planet, falls er existiert</returns>
@@ -243,7 +241,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Lädt einen Player.
+        ///     Lädt einen Player.
         /// </summary>
         /// <param name="playername">Der Name des Players.</param>
         /// <returns></returns>
@@ -267,7 +265,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Speichert einen Player.
+        ///     Speichert einen Player.
         /// </summary>
         /// <param name="player">Der Player.</param>
         public void SavePlayer(Player player)
@@ -387,8 +385,7 @@ namespace OctoAwesome.Runtime
 
                 if (awaiter == null)
                     return null;
-                else
-                    awaiter.WaitOnAndRelease();
+                awaiter.WaitOnAndRelease();
 
                 return entity;
             }

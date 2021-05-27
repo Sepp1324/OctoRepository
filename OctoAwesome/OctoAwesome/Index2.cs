@@ -4,22 +4,22 @@ using engenious;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Struktur zur Definierung einer zweidimensionalen Index-Position.
+    ///     Struktur zur Definierung einer zweidimensionalen Index-Position.
     /// </summary>
     public struct Index2 : IEquatable<Index2>
     {
         /// <summary>
-        /// X Anteil
+        ///     X Anteil
         /// </summary>
         public int X;
 
         /// <summary>
-        /// Y Anteil
+        ///     Y Anteil
         /// </summary>
         public int Y;
 
         /// <summary>
-        /// Initialisierung
+        ///     Initialisierung
         /// </summary>
         /// <param name="x">X Anteil</param>
         /// <param name="y">Y Anteil</param>
@@ -30,7 +30,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Initialisierung
+        ///     Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte</param>
         public Index2(Index2 value) : this(value.X, value.Y)
@@ -38,7 +38,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Initialisierung
+        ///     Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte (X und Y Anteil wird übernommen)</param>
         public Index2(Index3 value) : this(value.X, value.Y)
@@ -46,7 +46,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert die X-Achse auf die angegebene Größe.
+        ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X</param>
         public void NormalizeX(int size)
@@ -55,7 +55,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert die X-Achse auf die angegebene Größe.
+        ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Größe (X-Anzeil wird genommen)</param>
         public void NormalizeX(Index2 size)
@@ -64,7 +64,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert die X-Achse auf die angegebene Größe.
+        ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Größe (X-Anzeil wird genommen)</param>
         public void NormalizeX(Index3 size)
@@ -73,7 +73,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert die Y-Achse auf die angegebene Größe.
+        ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für Y</param>
         public void NormalizeY(int size)
@@ -82,7 +82,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert die Y-Achse auf die angegebene Größe.
+        ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Größe (Y-Anzeil wird genommen)</param>
         public void NormalizeY(Index2 size)
@@ -91,7 +91,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert die Y-Achse auf die angegebene Größe.
+        ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Größe (Y-Anzeil wird genommen)</param>
         public void NormalizeY(Index3 size)
@@ -100,7 +100,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
+        ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="x">Größe in X-Richtung</param>
         /// <param name="y">Größe in Y-Richtung</param>
@@ -111,7 +111,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
+        ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="size">2D Size</param>
         public void NormalizeXY(Index2 size)
@@ -120,7 +120,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
+        ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="size">3D Size</param>
         public void NormalizeXY(Index3 size)
@@ -129,7 +129,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
+        ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="index">Der zu normalisierende Index2</param>
         /// <param name="size">3D Size</param>
@@ -140,7 +140,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten X-Achse.
+        ///     Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten X-Achse.
         /// </summary>
         /// <param name="x">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
@@ -151,7 +151,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten Y-Achse.
+        ///     Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten Y-Achse.
         /// </summary>
         /// <param name="y">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
@@ -162,7 +162,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ermittelt die kürzeste Entfernung zum Ziel auf den normalisierten Achsen.
+        ///     Ermittelt die kürzeste Entfernung zum Ziel auf den normalisierten Achsen.
         /// </summary>
         /// <param name="destination">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
@@ -174,7 +174,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ermittelt die Entferung zum Nullpunkt.
+        ///     Ermittelt die Entferung zum Nullpunkt.
         /// </summary>
         /// <returns></returns>
         public double Length()
@@ -183,16 +183,16 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ermittelt die Entfernung zum Nullpunkt im Quadrat.
+        ///     Ermittelt die Entfernung zum Nullpunkt im Quadrat.
         /// </summary>
         /// <returns></returns>
         public int LengthSquared()
         {
-            return (X * X) + (Y * Y);
+            return X * X + Y * Y;
         }
 
         /// <summary>
-        /// Addition von zwei Indices2
+        ///     Addition von zwei Indices2
         /// </summary>
         /// <param name="i1">1. Summand</param>
         /// <param name="i2">2. Summand</param>
@@ -203,7 +203,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Subtraktion von zwei Indices2
+        ///     Subtraktion von zwei Indices2
         /// </summary>
         /// <param name="i1">Minuend</param>
         /// <param name="i2">Subtrahend</param>
@@ -214,7 +214,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Multiplikation eines Index2 mit einem Skalierungsfaktor
+        ///     Multiplikation eines Index2 mit einem Skalierungsfaktor
         /// </summary>
         /// <param name="i1">Index</param>
         /// <param name="scale">Skalierungsfaktor</param>
@@ -225,7 +225,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Division eines Index2 durch einen Skalierungsfaktor
+        ///     Division eines Index2 durch einen Skalierungsfaktor
         /// </summary>
         /// <param name="i1">Index</param>
         /// <param name="scale">Skalierungsfaktor</param>
@@ -236,7 +236,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Überprüft, ob beide gegebenen Indices gleich sind.
+        ///     Überprüft, ob beide gegebenen Indices gleich sind.
         /// </summary>
         /// <param name="i1"></param>
         /// <param name="i2"></param>
@@ -247,7 +247,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Überprüft, ob beide gegebenen Indices nicht gleich sind.
+        ///     Überprüft, ob beide gegebenen Indices nicht gleich sind.
         /// </summary>
         /// <param name="i1"></param>
         /// <param name="i2"></param>
@@ -258,7 +258,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Implizite Umwandlung eines Index2 in einen Vector2. Möglicherweise entstehen dadurch Rundungsfehler.
+        ///     Implizite Umwandlung eines Index2 in einen Vector2. Möglicherweise entstehen dadurch Rundungsfehler.
         /// </summary>
         /// <param name="index"></param>
         public static implicit operator Vector2(Index2 index)
@@ -267,7 +267,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Normalisiert einen Integer auf die angegebene Maximalgröße.
+        ///     Normalisiert einen Integer auf die angegebene Maximalgröße.
         /// </summary>
         /// <param name="value">Wert</param>
         /// <param name="size">Normalisierungsgröße</param>
@@ -288,7 +288,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ermittelt die kürzeste Entfernung von Ursprung zum Ziel auf einer normalisierten Achse.
+        ///     Ermittelt die kürzeste Entfernung von Ursprung zum Ziel auf einer normalisierten Achse.
         /// </summary>
         /// <param name="origin">Ursprungswert</param>
         /// <param name="destination">Zielwert</param>
@@ -311,7 +311,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt einen string zurück, der den akteullen Index2 darstellt.
+        ///     Gibt einen string zurück, der den akteullen Index2 darstellt.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -320,7 +320,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Überprüft, ob das gegebene Objekt (falls ein <see cref="Index2"/> gleich der aktuellen Instanz ist.
+        ///     Überprüft, ob das gegebene Objekt (falls ein <see cref="Index2" /> gleich der aktuellen Instanz ist.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -331,7 +331,7 @@ namespace OctoAwesome
 
 
         /// <summary>
-        /// Gibt einen möglichst eindeutigen Hashwert für den aktuellen Index2 zurück.
+        ///     Gibt einen möglichst eindeutigen Hashwert für den aktuellen Index2 zurück.
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
@@ -345,22 +345,22 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Null-Index
+        ///     Null-Index
         /// </summary>
         public static Index2 Zero => new Index2(0, 0);
 
         /// <summary>
-        /// Index(1,1)
+        ///     Index(1,1)
         /// </summary>
         public static Index2 One => new Index2(1, 1);
 
         /// <summary>
-        /// Einheitsindex für X
+        ///     Einheitsindex für X
         /// </summary>
         public static Index2 UnitX => new Index2(1, 0);
 
         /// <summary>
-        /// Einheitsindex für Y
+        ///     Einheitsindex für Y
         /// </summary>
         public static Index2 UnitY => new Index2(0, 1);
     }

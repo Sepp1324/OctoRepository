@@ -18,16 +18,16 @@ namespace OctoAwesome.Client.Components
 
         public const string RESOURCEPATH = "Resources";
 
-        readonly List<ResourcePack> activePacks = new List<ResourcePack>();
+        private readonly List<ResourcePack> activePacks = new List<ResourcePack>();
 
-        readonly Dictionary<string, Bitmap> bitmaps;
+        private readonly Dictionary<string, Bitmap> bitmaps;
 
-        readonly List<ResourcePack> loadedPacks = new List<ResourcePack>();
+        private readonly List<ResourcePack> loadedPacks = new List<ResourcePack>();
         private readonly Settings settings;
 
-        readonly Dictionary<string, Texture2D> textures;
+        private readonly Dictionary<string, Texture2D> textures;
 
-        readonly string[] textureTypes = new string[] {"png", "jpg", "jpeg", "bmp"};
+        private readonly string[] textureTypes = {"png", "jpg", "jpeg", "bmp"};
 
         public AssetComponent(OctoGame game) : base(game)
         {
@@ -58,22 +58,22 @@ namespace OctoAwesome.Client.Components
         }
 
         /// <summary>
-        /// Gibt an, ob der Asset Manager bereit zum Laden von Resourcen ist.
+        ///     Gibt an, ob der Asset Manager bereit zum Laden von Resourcen ist.
         /// </summary>
         public bool Ready { get; private set; }
 
         /// <summary>
-        /// Gibt die Anzahl geladener Texturen zurück.
+        ///     Gibt die Anzahl geladener Texturen zurück.
         /// </summary>
         public int LoadedTextures => textures.Count + bitmaps.Count;
 
         /// <summary>
-        /// Auflistung aller bekannten Resource Packs.
+        ///     Auflistung aller bekannten Resource Packs.
         /// </summary>
         public IEnumerable<ResourcePack> LoadedResourcePacks => loadedPacks.AsEnumerable();
 
         /// <summary>
-        /// Auflistung aller aktuell aktiven Resource Packs.
+        ///     Auflistung aller aktuell aktiven Resource Packs.
         /// </summary>
         public IEnumerable<ResourcePack> ActiveResourcePacks => activePacks.AsEnumerable();
 
@@ -97,7 +97,7 @@ namespace OctoAwesome.Client.Components
                     }
                     else
                     {
-                        var pack = new ResourcePack()
+                        var pack = new ResourcePack
                         {
                             Path = info.FullName,
                             Name = info.Name
@@ -152,7 +152,7 @@ namespace OctoAwesome.Client.Components
         {
             lock (textures)
             {
-                return Load(baseType, key, textureTypes, textures, (stream) => Texture2D.FromStream(GraphicsDevice, stream));
+                return Load(baseType, key, textureTypes, textures, stream => Texture2D.FromStream(GraphicsDevice, stream));
             }
         }
 
@@ -160,13 +160,13 @@ namespace OctoAwesome.Client.Components
         {
             lock (bitmaps)
             {
-                return Load(baseType, key, textureTypes, bitmaps, (stream) => (Bitmap) Image.FromStream(stream));
+                return Load(baseType, key, textureTypes, bitmaps, stream => (Bitmap) Image.FromStream(stream));
             }
         }
 
         public Stream LoadStream(Type baseType, string key, params string[] fileTypes)
         {
-            return Load(baseType, key, fileTypes, null, (stream) =>
+            return Load(baseType, key, fileTypes, null, stream =>
             {
                 var result = new MemoryStream();
                 var buffer = new byte[1024];
@@ -188,7 +188,7 @@ namespace OctoAwesome.Client.Components
                 throw new ArgumentNullException();
 
             if (string.IsNullOrEmpty(key))
-                return default(T);
+                return default;
 
             var fullkey = string.Format("{0}.{1}", baseType.Namespace, key);
 

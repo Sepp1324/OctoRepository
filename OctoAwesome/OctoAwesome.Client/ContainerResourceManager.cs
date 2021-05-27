@@ -11,7 +11,7 @@ using OctoAwesome.Runtime;
 namespace OctoAwesome.Client
 {
     /// <summary>
-    /// This is only temporary
+    ///     This is only temporary
     /// </summary>
     public class ContainerResourceManager : IResourceManager, IDisposable
     {

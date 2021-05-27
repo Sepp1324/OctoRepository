@@ -18,7 +18,7 @@ namespace OctoAwesome.Pooling
         [Obsolete("Can not be used. Use Get(Index3, IPlanet) instead.", true)]
         public Chunk Get()
         {
-            throw new NotSupportedException($"Use Get(Index3, IPlanet) instead.");
+            throw new NotSupportedException("Use Get(Index3, IPlanet) instead.");
         }
 
 

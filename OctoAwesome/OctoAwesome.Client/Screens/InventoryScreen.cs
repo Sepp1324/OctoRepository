@@ -6,6 +6,7 @@ using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using OctoAwesome.Client.Languages;
 using OctoAwesome.Definitions;
 using OctoAwesome.EntityComponents;
 
@@ -58,10 +59,10 @@ namespace OctoAwesome.Client.Screens
                 Height = 500
             };
 
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Fixed, Width = 600});
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Fixed, Width = 200});
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 1});
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Fixed, Height = 100});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 600});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 200});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Fixed, Height = 100});
 
             Controls.Add(grid);
 
@@ -101,11 +102,11 @@ namespace OctoAwesome.Client.Screens
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30)
             };
 
-            toolbar.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
+            toolbar.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
             for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
-                toolbar.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Fixed, Width = 50});
-            toolbar.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
-            toolbar.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Parts, Height = 1});
+                toolbar.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 50});
+            toolbar.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            toolbar.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
 
             images = new Image[ToolBarComponent.TOOLCOUNT];
             for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
@@ -120,7 +121,7 @@ namespace OctoAwesome.Client.Screens
                     Padding = Border.All(2)
                 };
 
-                image.StartDrag += (e) =>
+                image.StartDrag += e =>
                 {
                     var slot = player.Toolbar.Tools[(int) image.Tag];
                     if (slot != null)
@@ -132,9 +133,9 @@ namespace OctoAwesome.Client.Screens
                     }
                 };
 
-                image.DropEnter += (e) => { image.Background = hoverBrush; };
-                image.DropLeave += (e) => { image.Background = backgroundBrush; };
-                image.EndDrop += (e) =>
+                image.DropEnter += e => { image.Background = hoverBrush; };
+                image.DropLeave += e => { image.Background = backgroundBrush; };
+                image.EndDrop += e =>
                 {
                     e.Handled = true;
 
@@ -162,7 +163,7 @@ namespace OctoAwesome.Client.Screens
             }
 
             grid.AddControl(toolbar, 0, 1, 2);
-            Title = Languages.OctoClient.Inventory;
+            Title = OctoClient.Inventory;
         }
 
         protected override void OnEndDrop(DragEventArgs args)

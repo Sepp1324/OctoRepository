@@ -174,7 +174,7 @@ namespace OctoAwesome
                 singeltonInstance = instance;
             }
 
-            public InstanceBehaviour Behaviour { get; set; }
+            public InstanceBehaviour Behaviour { get; }
             public object Instance => CreateObject();
 
             private object CreateObject()

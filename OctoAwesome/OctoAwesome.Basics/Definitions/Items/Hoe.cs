@@ -3,7 +3,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class Hoe : Item
+    internal class Hoe : Item
     {
         public Hoe(HoeDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)

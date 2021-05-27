@@ -6,7 +6,7 @@ namespace OctoAwesome.Basics
 {
     public class TreePopulator : MapPopulator
     {
-        private IEnumerable<ITreeDefinition> treeDefinitions = null;
+        private IEnumerable<ITreeDefinition> treeDefinitions;
 
         public TreePopulator()
         {

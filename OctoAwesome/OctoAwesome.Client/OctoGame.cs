@@ -4,6 +4,7 @@ using engenious;
 using engenious.Input;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using OctoAwesome.Client.Languages;
 using OctoAwesome.Common;
 using OctoAwesome.Definitions;
 using OctoAwesome.Notifications;
@@ -12,13 +13,13 @@ using OctoAwesome.Runtime;
 namespace OctoAwesome.Client
 {
     /// <summary>
-    /// This is the main type for your game
+    ///     This is the main type for your game
     /// </summary>
     internal class OctoGame : Game
     {
         private readonly ITypeContainer typeContainer;
 
-        public OctoGame() : base()
+        public OctoGame()
         {
             //graphics = new GraphicsDeviceManager(this);
             //graphics.PreferredBackBufferWidth = 1080;
@@ -117,29 +118,29 @@ namespace OctoAwesome.Client
 
         //GraphicsDeviceManager graphics;
 
-        public CameraComponent Camera { get; private set; }
+        public CameraComponent Camera { get; }
 
-        public PlayerComponent Player { get; private set; }
+        public PlayerComponent Player { get; }
 
-        public Components.SimulationComponent Simulation { get; private set; }
+        public Components.SimulationComponent Simulation { get; }
 
-        public GameService Service { get; private set; }
+        public GameService Service { get; }
 
-        public ScreenComponent Screen { get; private set; }
+        public ScreenComponent Screen { get; }
 
-        public KeyMapper KeyMapper { get; private set; }
+        public KeyMapper KeyMapper { get; }
 
-        public AssetComponent Assets { get; private set; }
+        public AssetComponent Assets { get; }
 
-        public Settings Settings { get; private set; }
+        public Settings Settings { get; }
 
-        public IDefinitionManager DefinitionManager { get; private set; }
+        public IDefinitionManager DefinitionManager { get; }
 
-        public IResourceManager ResourceManager { get; private set; }
+        public IResourceManager ResourceManager { get; }
 
-        public ExtensionLoader ExtensionLoader { get; private set; }
+        public ExtensionLoader ExtensionLoader { get; }
 
-        public Components.EntityComponent Entity { get; private set; }
+        public Components.EntityComponent Entity { get; }
 
         private static void Register(ITypeContainer typeContainer)
         {
@@ -160,32 +161,32 @@ namespace OctoAwesome.Client
 
         private void SetKeyBindings()
         {
-            KeyMapper.RegisterBinding("octoawesome:forward", Languages.OctoKeys.forward);
-            KeyMapper.RegisterBinding("octoawesome:left", Languages.OctoKeys.left);
-            KeyMapper.RegisterBinding("octoawesome:backward", Languages.OctoKeys.backward);
-            KeyMapper.RegisterBinding("octoawesome:right", Languages.OctoKeys.right);
-            KeyMapper.RegisterBinding("octoawesome:headup", Languages.OctoKeys.headup);
-            KeyMapper.RegisterBinding("octoawesome:headdown", Languages.OctoKeys.headdown);
-            KeyMapper.RegisterBinding("octoawesome:headleft", Languages.OctoKeys.headleft);
-            KeyMapper.RegisterBinding("octoawesome:headright", Languages.OctoKeys.headright);
-            KeyMapper.RegisterBinding("octoawesome:interact", Languages.OctoKeys.interact);
-            KeyMapper.RegisterBinding("octoawesome:apply", Languages.OctoKeys.apply);
-            KeyMapper.RegisterBinding("octoawesome:flymode", Languages.OctoKeys.flymode);
-            KeyMapper.RegisterBinding("octoawesome:jump", Languages.OctoKeys.jump);
+            KeyMapper.RegisterBinding("octoawesome:forward", OctoKeys.forward);
+            KeyMapper.RegisterBinding("octoawesome:left", OctoKeys.left);
+            KeyMapper.RegisterBinding("octoawesome:backward", OctoKeys.backward);
+            KeyMapper.RegisterBinding("octoawesome:right", OctoKeys.right);
+            KeyMapper.RegisterBinding("octoawesome:headup", OctoKeys.headup);
+            KeyMapper.RegisterBinding("octoawesome:headdown", OctoKeys.headdown);
+            KeyMapper.RegisterBinding("octoawesome:headleft", OctoKeys.headleft);
+            KeyMapper.RegisterBinding("octoawesome:headright", OctoKeys.headright);
+            KeyMapper.RegisterBinding("octoawesome:interact", OctoKeys.interact);
+            KeyMapper.RegisterBinding("octoawesome:apply", OctoKeys.apply);
+            KeyMapper.RegisterBinding("octoawesome:flymode", OctoKeys.flymode);
+            KeyMapper.RegisterBinding("octoawesome:jump", OctoKeys.jump);
             for (var i = 0; i < 10; i++)
-                KeyMapper.RegisterBinding("octoawesome:slot" + i, Languages.OctoKeys.ResourceManager.GetString("slot" + i));
-            KeyMapper.RegisterBinding("octoawesome:debug.allblocks", Languages.OctoKeys.debug_allblocks);
-            KeyMapper.RegisterBinding("octoawesome:debug.control", Languages.OctoKeys.debug_control);
-            KeyMapper.RegisterBinding("octoawesome:inventory", Languages.OctoKeys.inventory);
-            KeyMapper.RegisterBinding("octoawesome:hidecontrols", Languages.OctoKeys.hidecontrols);
-            KeyMapper.RegisterBinding("octoawesome:exit", Languages.OctoKeys.exit);
-            KeyMapper.RegisterBinding("octoawesome:freemouse", Languages.OctoKeys.freemouse);
-            KeyMapper.RegisterBinding("octoawesome:fullscreen", Languages.OctoKeys.fullscreen);
-            KeyMapper.RegisterBinding("octoawesome:teleport", Languages.OctoKeys.teleport);
-            KeyMapper.RegisterBinding("octoawesome:toggleAmbientOcclusion", Languages.OctoKeys.ambientOcclusion);
-            KeyMapper.RegisterBinding("octoawesome:toggleWireFrame", Languages.OctoKeys.wireFrame);
+                KeyMapper.RegisterBinding("octoawesome:slot" + i, OctoKeys.ResourceManager.GetString("slot" + i));
+            KeyMapper.RegisterBinding("octoawesome:debug.allblocks", OctoKeys.debug_allblocks);
+            KeyMapper.RegisterBinding("octoawesome:debug.control", OctoKeys.debug_control);
+            KeyMapper.RegisterBinding("octoawesome:inventory", OctoKeys.inventory);
+            KeyMapper.RegisterBinding("octoawesome:hidecontrols", OctoKeys.hidecontrols);
+            KeyMapper.RegisterBinding("octoawesome:exit", OctoKeys.exit);
+            KeyMapper.RegisterBinding("octoawesome:freemouse", OctoKeys.freemouse);
+            KeyMapper.RegisterBinding("octoawesome:fullscreen", OctoKeys.fullscreen);
+            KeyMapper.RegisterBinding("octoawesome:teleport", OctoKeys.teleport);
+            KeyMapper.RegisterBinding("octoawesome:toggleAmbientOcclusion", OctoKeys.ambientOcclusion);
+            KeyMapper.RegisterBinding("octoawesome:toggleWireFrame", OctoKeys.wireFrame);
 
-            var standardKeys = new Dictionary<string, Keys>()
+            var standardKeys = new Dictionary<string, Keys>
             {
                 {"octoawesome:forward", Keys.W},
                 {"octoawesome:left", Keys.A},

@@ -64,7 +64,7 @@ namespace OctoAwesome
                     var position = entity.Components.GetComponent<PositionComponent>();
 
                     if (position.Position.ChunkIndex.X != column.Index.X || position.Position.ChunkIndex.Y != column.Index.Y)
-                        yield return new FailEntityChunkArgs()
+                        yield return new FailEntityChunkArgs
                         {
                             Entity = entity,
                             CurrentChunk = new Index2(column.Index),

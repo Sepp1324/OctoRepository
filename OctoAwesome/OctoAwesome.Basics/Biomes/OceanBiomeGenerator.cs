@@ -15,7 +15,7 @@
 
             for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
-                heightmap[(y * Chunk.CHUNKSIZE_X) + x] = 0f;
+                heightmap[y * Chunk.CHUNKSIZE_X + x] = 0f;
 
             return heightmap;
         }

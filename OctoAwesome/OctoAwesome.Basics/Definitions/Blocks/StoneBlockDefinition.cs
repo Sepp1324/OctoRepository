@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,12 +11,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.Stone;
+        public override string Name => OctoBasics.Stone;
 
         public override string Icon => "stone";
 
 
-        public override string[] Textures { get; } = new[] {"stone"};
+        public override string[] Textures { get; } = {"stone"};
 
         public override IMaterialDefinition Material { get; }
     }

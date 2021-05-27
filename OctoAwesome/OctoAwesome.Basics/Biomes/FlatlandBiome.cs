@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Basics.Biomes
 {
-    class FlatlandBiome : BiomeBase
+    internal class FlatlandBiome : BiomeBase
     {
         public FlatlandBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
             : base(planet, minValue, maxValue, valueRangeOffset, valueRange)

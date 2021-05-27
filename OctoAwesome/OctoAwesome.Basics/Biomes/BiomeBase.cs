@@ -17,7 +17,7 @@ namespace OctoAwesome.Basics.Biomes
         }
 
         public List<IBiome> SubBiomes { get; protected set; }
-        public IPlanet Planet { get; private set; }
+        public IPlanet Planet { get; }
 
         public INoise BiomeNoiseGenerator { get; protected set; }
 
@@ -39,7 +39,7 @@ namespace OctoAwesome.Basics.Biomes
 
             for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
-                heightmap[(y * Chunk.CHUNKSIZE_X) + x] = (((heights[(y * Chunk.CHUNKSIZE_X) + x] / 2) + 0.5f) * ValueRange) + ValueRangeOffset;
+                heightmap[y * Chunk.CHUNKSIZE_X + x] = (heights[y * Chunk.CHUNKSIZE_X + x] / 2 + 0.5f) * ValueRange + ValueRangeOffset;
 
             ArrayPool<float>.Shared.Return(heights);
             return heightmap;

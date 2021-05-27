@@ -21,10 +21,6 @@ namespace OctoAwesome.Client.Crew
             Grafik,
             WikiAdmin,
             DatenbankFreigeschaltet
-        };
-
-        public CrewMember()
-        {
         }
 
         public string Username { get; set; }

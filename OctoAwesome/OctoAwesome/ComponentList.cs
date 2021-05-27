@@ -7,7 +7,7 @@ using OctoAwesome.Serialization;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Base Class for all Component based Entities.
+    ///     Base Class for all Component based Entities.
     /// </summary>
     /// <typeparam name="T">Type of Component</typeparam>
     public class ComponentList<T> : IEnumerable<T> where T : Component, ISerializable
@@ -52,7 +52,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Adds a new Component to the List.
+        ///     Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
         public void AddComponent<V>(V component) where V : T
@@ -79,7 +79,6 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
@@ -89,7 +88,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Returns the Component of the given Type or null
+        ///     Returns the Component of the given Type or null
         /// </summary>
         /// <typeparam name="V">Component Type</typeparam>
         /// <returns>Component</returns>
@@ -102,7 +101,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Removes the Component of the given Type.
+        ///     Removes the Component of the given Type.
         /// </summary>
         /// <typeparam name="V">Component Type</typeparam>
         /// <returns></returns>
@@ -122,7 +121,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
+        ///     Serialisiert die Entität mit dem angegebenen BinaryWriter.
         /// </summary>
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
         public virtual void Serialize(BinaryWriter writer)
@@ -136,7 +135,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
+        ///     Deserialisiert die Entität aus dem angegebenen BinaryReader.
         /// </summary>
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
         public virtual void Deserialize(BinaryReader reader)

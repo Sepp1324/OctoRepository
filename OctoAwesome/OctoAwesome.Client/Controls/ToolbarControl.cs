@@ -48,10 +48,10 @@ namespace OctoAwesome.Client.Controls
             };
             Controls.Add(grid);
 
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Auto, Height = 1});
-            grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Fixed, Height = 50});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Auto, Height = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Fixed, Height = 50});
 
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++) grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Fixed, Width = 50});
+            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++) grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 50});
 
             activeToolLabel = new Label(screenManager)
             {

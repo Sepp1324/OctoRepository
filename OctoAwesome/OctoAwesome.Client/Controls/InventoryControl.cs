@@ -1,4 +1,5 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using engenious.Graphics;
 using engenious.UI;
 using engenious.UI.Controls;
@@ -25,10 +26,10 @@ namespace OctoAwesome.Client.Controls
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
             for (var i = 0; i < columns; i++)
-                grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Parts, Width = 1});
-            var rows = (int) System.Math.Ceiling((float) manager.Game.Player.Inventory.Inventory.Count / columns);
+                grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            var rows = (int) Math.Ceiling((float) manager.Game.Player.Inventory.Inventory.Count / columns);
             for (var i = 0; i < rows; i++)
-                grid.Rows.Add(new RowDefinition() {ResizeMode = ResizeMode.Fixed, Height = 50});
+                grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Fixed, Height = 50});
 
             var column = 0;
             var row = 0;
@@ -37,14 +38,13 @@ namespace OctoAwesome.Client.Controls
                 Texture2D texture;
                 if (inventorySlot.Definition is null)
                     continue;
-                else
-                    texture = manager.Game.Assets.LoadTexture(inventorySlot.Definition.GetType(), inventorySlot.Definition.Icon);
+                texture = manager.Game.Assets.LoadTexture(inventorySlot.Definition.GetType(), inventorySlot.Definition.Icon);
 
 
                 var image = new Image(manager) {Texture = texture, Width = 42, Height = 42, VerticalAlignment = VerticalAlignment.Center};
                 image.MouseEnter += (s, e) => { HoveredSlot = inventorySlot; };
                 image.MouseLeave += (s, e) => { HoveredSlot = null; };
-                image.StartDrag += (e) =>
+                image.StartDrag += e =>
                 {
                     e.Handled = true;
                     e.Icon = texture;
@@ -67,7 +67,7 @@ namespace OctoAwesome.Client.Controls
         }
 
         /// <summary>
-        /// Gibt den aktuell selektierten Slot an.
+        ///     Gibt den aktuell selektierten Slot an.
         /// </summary>
         public InventorySlot HoveredSlot { get; private set; }
     }

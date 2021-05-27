@@ -30,7 +30,7 @@ namespace OctoAwesome.Basics
             for (var layer = 0; layer < planet.Size.Z; layer++)
                 result[layer] = new Chunk(new Index3(index.X, index.Y, layer), planet);
 
-            var part = (planet.Size.Z * Chunk.CHUNKSIZE_Z) / 4;
+            var part = planet.Size.Z * Chunk.CHUNKSIZE_Z / 4;
 
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
             {
@@ -39,11 +39,11 @@ namespace OctoAwesome.Basics
                 {
                     var heightX = (float) Math.Sin((float) (x * Math.PI) / 18f);
 
-                    var height = ((heightX + heightY + 2) / 4) * (2 * part);
+                    var height = (heightX + heightY + 2) / 4 * (2 * part);
                     for (var z = 0; z < planet.Size.Z * Chunk.CHUNKSIZE_Z; z++)
                         if (z < (int) (height + part))
                         {
-                            var block = z % (Chunk.CHUNKSIZE_Z);
+                            var block = z % Chunk.CHUNKSIZE_Z;
                             var layer = z / Chunk.CHUNKSIZE_Z;
                             result[layer].SetBlock(x, y, block, sandIndex);
                         }

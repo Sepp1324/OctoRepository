@@ -2,13 +2,14 @@
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
-    class CreateUniverseScreen : BaseScreen
+    internal class CreateUniverseScreen : BaseScreen
     {
-        readonly Button createButton;
-        new readonly ScreenComponent Manager;
+        private readonly Button createButton;
+        private new readonly ScreenComponent Manager;
         private readonly Textbox nameInput;
         private readonly Textbox seedInput;
 
@@ -21,7 +22,7 @@ namespace OctoAwesome.Client.Screens
 
             Padding = new Border(0, 0, 0, 0);
 
-            Title = Languages.OctoClient.CreateUniverse;
+            Title = OctoClient.CreateUniverse;
 
             SetDefaultBackground();
 
@@ -42,17 +43,17 @@ namespace OctoAwesome.Client.Screens
             };
             panel.Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition() {ResizeMode = ResizeMode.Auto});
-            grid.Columns.Add(new ColumnDefinition() {Width = 1, ResizeMode = ResizeMode.Parts});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Auto});
+            grid.Columns.Add(new ColumnDefinition {Width = 1, ResizeMode = ResizeMode.Parts});
 
             nameInput = GetTextbox();
             nameInput.TextChanged += (s, e) => { createButton.Visible = !string.IsNullOrEmpty(e.NewValue); };
-            AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Name), nameInput);
+            AddLabeledControl(grid, string.Format("{0}: ", OctoClient.Name), nameInput);
 
             seedInput = GetTextbox();
-            AddLabeledControl(grid, string.Format("{0}: ", Languages.OctoClient.Seed), seedInput);
+            AddLabeledControl(grid, string.Format("{0}: ", OctoClient.Seed), seedInput);
 
-            createButton = new TextButton(manager, Languages.OctoClient.Create);
+            createButton = new TextButton(manager, OctoClient.Create);
             createButton.HorizontalAlignment = HorizontalAlignment.Right;
             createButton.VerticalAlignment = VerticalAlignment.Bottom;
             createButton.Visible = false;

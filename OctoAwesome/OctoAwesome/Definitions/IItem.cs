@@ -1,17 +1,17 @@
 ﻿namespace OctoAwesome.Definitions
 {
     /// <summary>
-    /// Interface, das ein Item darstellt
+    ///     Interface, das ein Item darstellt
     /// </summary>
     public interface IItem
     {
         /// <summary>
-        /// Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
+        ///     Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
         /// </summary>
         Coordinate? Position { get; set; }
 
         /// <summary>
-        /// Der Zustand des Items
+        ///     Der Zustand des Items
         /// </summary>
         int Condition { get; set; }
 

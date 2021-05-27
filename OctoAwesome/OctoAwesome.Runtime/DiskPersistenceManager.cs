@@ -14,7 +14,7 @@ using OctoAwesome.Serialization.Entities;
 namespace OctoAwesome.Runtime
 {
     /// <summary>
-    /// Persistiert Chunks auf die Festplatte.
+    ///     Persistiert Chunks auf die Festplatte.
     /// </summary>
     public class DiskPersistenceManager : IPersistenceManager, IDisposable, INotificationObserver
     {
@@ -67,7 +67,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Speichert das Universum.
+        ///     Speichert das Universum.
         /// </summary>
         /// <param name="universe">Das zu speichernde Universum</param>
         public void SaveUniverse(IUniverse universe)
@@ -85,7 +85,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Löscht ein Universum.
+        ///     Löscht ein Universum.
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         public void DeleteUniverse(Guid universeGuid)
@@ -95,7 +95,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Speichert einen Planeten.
+        ///     Speichert einen Planeten.
         /// </summary>
         /// <param name="universeGuid">Guid des Universums</param>
         /// <param name="planet">Zu speichernder Planet</param>
@@ -123,7 +123,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Speichert eine <see cref="IChunkColumn"/>.
+        ///     Speichert eine <see cref="IChunkColumn" />.
         /// </summary>
         /// <param name="universeGuid">GUID des Universums.</param>
         /// <param name="planet">Index des Planeten.</param>
@@ -135,7 +135,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Speichert einen Player
+        ///     Speichert einen Player
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <param name="player">Der Player.</param>
@@ -162,7 +162,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Gibt alle Universen zurück, die geladen werden können.
+        ///     Gibt alle Universen zurück, die geladen werden können.
         /// </summary>
         /// <returns>Die Liste der Universen.</returns>
         public Awaiter Load(out SerializableCollection<IUniverse> universes)
@@ -187,7 +187,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Lädt das Universum mit der angegebenen Guid.
+        ///     Lädt das Universum mit der angegebenen Guid.
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <returns>Das geladene Universum.</returns>
@@ -211,7 +211,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Lädt einen Planeten.
+        ///     Lädt einen Planeten.
         /// </summary>
         /// <param name="universeGuid">Guid des Universums</param>
         /// <param name="planetId">Index des Planeten</param>
@@ -251,7 +251,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Lädt eine <see cref="IChunkColumn"/>.
+        ///     Lädt eine <see cref="IChunkColumn" />.
         /// </summary>
         /// <param name="universeGuid">GUID des Universums.</param>
         /// <param name="planet">Index des Planeten.</param>
@@ -286,7 +286,7 @@ namespace OctoAwesome.Runtime
 
 
         /// <summary>
-        /// Lädt einen Player.
+        ///     Lädt einen Player.
         /// </summary>
         /// <param name="universeGuid">Die Guid des Universums.</param>
         /// <param name="playername">Der Name des Spielers.</param>
@@ -354,13 +354,11 @@ namespace OctoAwesome.Runtime
                 if (!root.Exists) root.Create();
                 return root.FullName;
             }
-            else
-            {
-                var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
-                if (!root.Exists) root.Create();
-                return root.FullName;
-            }
+
+            var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
+            if (!root.Exists) root.Create();
+            return root.FullName;
         }
 
         private void SaveChunk(BlockChangedNotification chunkNotification)

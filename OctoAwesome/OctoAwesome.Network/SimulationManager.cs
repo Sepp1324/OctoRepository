@@ -74,7 +74,7 @@ namespace OctoAwesome.Network
 
         public GameTime GameTime { get; private set; }
 
-        public ResourceManager ResourceManager { get; private set; }
+        public ResourceManager ResourceManager { get; }
         public GameService Service { get; }
 
         public void Start()

@@ -6,19 +6,19 @@ using engenious;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Basisklasse für Simulationskomponenten
+    ///     Basisklasse für Simulationskomponenten
     /// </summary>
     public abstract class SimulationComponent : Component
     {
         private readonly List<Type[]> componentFilter = new List<Type[]>();
 
         /// <summary>
-        /// Entities die durch diese Simulationkomponete simuliert werden
+        ///     Entities die durch diese Simulationkomponete simuliert werden
         /// </summary>
         protected List<Entity> entities = new List<Entity>();
 
         /// <summary>
-        /// Konstruktor
+        ///     Konstruktor
         /// </summary>
         public SimulationComponent()
         {
@@ -34,7 +34,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Fügt eine neue Entity der Simulationskomponente hinzu
+        ///     Fügt eine neue Entity der Simulationskomponente hinzu
         /// </summary>
         /// <param name="entity">Neue Entity</param>
         public void Add(Entity entity)
@@ -43,7 +43,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
+        ///     Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
@@ -59,14 +59,14 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Internes Event, für das hinzufügen einer Entity
+        ///     Internes Event, für das hinzufügen einer Entity
         /// </summary>
         /// <param name="entity">Neue Entity</param>
         /// <returns>Ergebnis</returns>
         protected abstract bool AddEntity(Entity entity);
 
         /// <summary>
-        /// Entfernt eine Entity aus der Simulationskomponente
+        ///     Entfernt eine Entity aus der Simulationskomponente
         /// </summary>
         /// <param name="entity"></param>
         public void Remove(Entity entity)
@@ -79,26 +79,26 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Internes Event, für das entfernen einer Entity
+        ///     Internes Event, für das entfernen einer Entity
         /// </summary>
         /// <param name="entity">Neue Entity</param>
         /// <returns>Ergebnis</returns>
         protected abstract void RemoveEntity(Entity entity);
 
         /// <summary>
-        /// Updatemethode der Entity
+        ///     Updatemethode der Entity
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         public abstract void Update(GameTime gameTime);
     }
 
     /// <summary>
-    /// Basisklasse für Simulationskomponenten
+    ///     Basisklasse für Simulationskomponenten
     /// </summary>
     public abstract class SimulationComponent<C1> : SimulationComponent where C1 : EntityComponent
     {
         /// <summary>
-        /// Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
+        ///     Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
@@ -108,7 +108,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Updatemethode der Entity
+        ///     Updatemethode der Entity
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
@@ -118,7 +118,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Internes Event, für das Updaten der Simulationskomponente
+        ///     Internes Event, für das Updaten der Simulationskomponente
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         /// <param name="entity">Entity die geupdatet werden muss</param>
@@ -127,14 +127,14 @@ namespace OctoAwesome
     }
 
     /// <summary>
-    /// Basisklasse für Simulationskomponenten
+    ///     Basisklasse für Simulationskomponenten
     /// </summary>
     public abstract class SimulationComponent<C1, C2> : SimulationComponent
         where C1 : EntityComponent
         where C2 : EntityComponent
     {
         /// <summary>
-        /// Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
+        ///     Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
@@ -145,7 +145,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Updatemethode der Entity
+        ///     Updatemethode der Entity
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
@@ -156,7 +156,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Internes Event, für das Updaten der Simulationskomponente
+        ///     Internes Event, für das Updaten der Simulationskomponente
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         /// <param name="entity">Entity die geupdatet werden muss</param>
@@ -166,7 +166,7 @@ namespace OctoAwesome
     }
 
     /// <summary>
-    /// Basisklasse für Simulationskomponenten
+    ///     Basisklasse für Simulationskomponenten
     /// </summary>
     public abstract class SimulationComponent<C1, C2, C3> : SimulationComponent
         where C1 : EntityComponent
@@ -174,7 +174,7 @@ namespace OctoAwesome
         where C3 : EntityComponent
     {
         /// <summary>
-        /// Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
+        ///     Führt ein Vergleich durch, ob diese Entity in die Komponente eingefügt werden kann
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
@@ -186,7 +186,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Updatemethode der Entity
+        ///     Updatemethode der Entity
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
@@ -197,7 +197,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Internes Event, für das Updaten der Simulationskomponente
+        ///     Internes Event, für das Updaten der Simulationskomponente
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         /// <param name="entity">Entity die geupdatet werden muss</param>

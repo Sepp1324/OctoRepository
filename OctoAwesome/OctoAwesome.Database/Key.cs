@@ -18,27 +18,27 @@ namespace OctoAwesome.Database
         }
 
         /// <summary>
-        /// The uniqe identification object for this key
+        ///     The uniqe identification object for this key
         /// </summary>
         public TTag Tag { get; }
 
         /// <summary>
-        /// The current position of this Key and the referenced <see cref="Value"/> in the value file
+        ///     The current position of this Key and the referenced <see cref="Value" /> in the value file
         /// </summary>
         public long Index { get; }
 
         /// <summary>
-        /// The length of the referenced <see cref="Value"/> in the value file
+        ///     The length of the referenced <see cref="Value" /> in the value file
         /// </summary>
         public int ValueLength { get; }
 
         /// <summary>
-        /// The current position of the key in the <see cref="KeyStore{TTag}"/> file
+        ///     The current position of the key in the <see cref="KeyStore{TTag}" /> file
         /// </summary>
         public long Position { get; }
 
         /// <summary>
-        /// Returns true if the Key is not valid. Comparing with default should have the same result
+        ///     Returns true if the Key is not valid. Comparing with default should have the same result
         /// </summary>
         public bool IsEmpty => ValueLength == 0 && Tag == null;
 

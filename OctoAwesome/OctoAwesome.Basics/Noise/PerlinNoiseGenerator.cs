@@ -80,7 +80,7 @@ namespace OctoAwesome.Noise
         public float Persistance { get; set; }
         public int Octaves { get; set; }
         public int Sizefactor { get; set; }
-        public int Seed { get; private set; }
+        public int Seed { get; }
 
 
         public PerlinNoiseGenerator(int seed, float smoothfactor = 0, float persistance = 0.25f, int octaves = 3, int sizefactor = 64)
@@ -107,7 +107,7 @@ namespace OctoAwesome.Noise
                 n += 1376312589;
                 n = n & 0x7fffffff;
 
-                return (float) (1.0 - (n / 1073741824.0));
+                return (float) (1.0 - n / 1073741824.0);
             }
         }
 
@@ -115,7 +115,7 @@ namespace OctoAwesome.Noise
         {
             unchecked
             {
-                var n = x + (y * 57 * Seed);
+                var n = x + y * 57 * Seed;
                 n = (n << 13) ^ n;
                 n *= n * 15731;
                 n += 789221;
@@ -123,7 +123,7 @@ namespace OctoAwesome.Noise
                 n += 1376312589;
                 n = n & 0x7fffffff;
 
-                return (float) (1.0 - (n / 1073741824.0));
+                return (float) (1.0 - n / 1073741824.0);
             }
         }
 
@@ -131,7 +131,7 @@ namespace OctoAwesome.Noise
         {
             unchecked
             {
-                var n = x + (y * 29) + (z * 37 * Seed);
+                var n = x + y * 29 + z * 37 * Seed;
                 n = (n << 13) ^ n;
                 n *= n * 15731;
                 n += 789221;
@@ -139,7 +139,7 @@ namespace OctoAwesome.Noise
                 n += 1376312589;
                 n = n & 0x7fffffff;
 
-                return (float) (1.0 - (n / 1073741824.0));
+                return (float) (1.0 - n / 1073741824.0);
             }
         }
 
@@ -149,7 +149,7 @@ namespace OctoAwesome.Noise
 
         private float LinearInterpolation(float a, float b, float x)
         {
-            return (a * (1 - x)) + (b * x);
+            return a * (1 - x) + b * x;
         }
 
         private float LinearInterpolation2(float a, float b, float c, float d, float x, float y)

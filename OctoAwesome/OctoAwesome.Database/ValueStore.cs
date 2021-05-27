@@ -42,12 +42,12 @@ namespace OctoAwesome.Database
         }
 
         /// <summary>
-        /// Update a value on the exact <paramref name="key"/> index <see cref="Key{TTag}.Index"/> 
+        ///     Update a value on the exact <paramref name="key" /> index <see cref="Key{TTag}.Index" />
         /// </summary>
         /// <typeparam name="TTag"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <exception cref="NotSupportedException">If <see cref="FixedValueLength"/> is false</exception>
+        /// <exception cref="NotSupportedException">If <see cref="FixedValueLength" /> is false</exception>
         internal void Update<TTag>(Key<TTag> key, Value value) where TTag : ITag, new()
         {
             if (!FixedValueLength)

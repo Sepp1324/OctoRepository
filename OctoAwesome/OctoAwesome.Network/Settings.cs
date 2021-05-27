@@ -20,7 +20,7 @@ namespace OctoAwesome.Network
 
         public Settings()
         {
-            dictionary = new Dictionary<string, string>()
+            dictionary = new Dictionary<string, string>
             {
                 ["ChunkRoot"] = "ServerMap",
                 ["Viewrange"] = "4",

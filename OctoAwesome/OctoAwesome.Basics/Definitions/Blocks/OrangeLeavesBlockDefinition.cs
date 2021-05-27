@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,12 +11,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.OrangeLeaves;
+        public override string Name => OctoBasics.OrangeLeaves;
 
         public override string Icon => "leaves_orange";
 
 
-        public override string[] Textures { get; } = new[] {"leaves_orange"};
+        public override string[] Textures { get; } = {"leaves_orange"};
 
         public override IMaterialDefinition Material { get; }
     }

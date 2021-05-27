@@ -5,9 +5,9 @@ using OctoAwesome.Client.Components;
 
 namespace OctoAwesome.Client.Controls
 {
-    class CrosshairControl : Control
+    internal class CrosshairControl : Control
     {
-        readonly AssetComponent assets;
+        private readonly AssetComponent assets;
         public Color Color;
         public Texture2D Texture;
         public float Transparency;

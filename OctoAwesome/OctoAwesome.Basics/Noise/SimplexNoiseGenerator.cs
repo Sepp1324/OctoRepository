@@ -33,7 +33,7 @@ namespace OctoAwesome.Noise
         private int octaves;
         private float persistance;
 
-        public int Seed { get; private set; }
+        public int Seed { get; }
 
         public float FrequencyX { get; set; }
         public float FrequencyY { get; set; }
@@ -82,7 +82,7 @@ namespace OctoAwesome.Noise
         #region NoiseMaps
 
         /// <summary>
-        /// Gibt ein float-Array einer 1D-Noise im angegebenem Bereich zurück
+        ///     Gibt ein float-Array einer 1D-Noise im angegebenem Bereich zurück
         /// </summary>
         /// <param name="startX">Startposition, ab welcher die Noise Werte ausgegeben werden</param>
         /// <param name="width">Anzahl der gewollten Noise-Werte</param>
@@ -108,7 +108,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück
+        ///     Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück
         /// </summary>
         /// <param name="startX">Startposition auf der X-Achse,ab welcher die Noise Werte ausgegeben werden</param>
         /// <param name="startY">Startposition auf der Y-Achse,ab welcher die Noise Werte ausgegeben werden</param>
@@ -141,7 +141,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück, welche kachelbar ist
+        ///     Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück, welche kachelbar ist
         /// </summary>
         /// <param name="startX">Startposition auf der X-Achse,ab welcher die Noise Werte ausgegeben werden</param>
         /// <param name="startY">Startposition auf der Y-Achse,ab welcher die Noise Werte ausgegeben werden</param>
@@ -172,14 +172,14 @@ namespace OctoAwesome.Noise
 
                     for (var i = 0; i < Octaves; i++)
                     {
-                        array[(y * Chunk.CHUNKSIZE_X) + x] += Noise4D(nx * frequencyX, ny * frequencyY, nz * frequencyX, nw * frequencyY) * amplitude;
+                        array[y * Chunk.CHUNKSIZE_X + x] += Noise4D(nx * frequencyX, ny * frequencyY, nz * frequencyX, nw * frequencyY) * amplitude;
 
                         amplitude *= Persistance;
                         frequencyX *= 2f;
                         frequencyY *= 2f;
                     }
 
-                    array[(y * Chunk.CHUNKSIZE_X) + x] = array[(y * Chunk.CHUNKSIZE_X) + x] * Factor / MaxValue;
+                    array[y * Chunk.CHUNKSIZE_X + x] = array[y * Chunk.CHUNKSIZE_X + x] * Factor / MaxValue;
                 }
             });
 
@@ -187,7 +187,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück
+        ///     Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück
         /// </summary>
         /// <param name="startX">Startposition auf der X-Achse,ab welcher die Noise Werte ausgegeben werden</param>
         /// <param name="startY">Startposition auf der Y-Achse,ab welcher die Noise Werte ausgegeben werden</param>
@@ -227,7 +227,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück, welche in X und Y Richtung kachelbar ist
+        ///     Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>
         /// <param name="startX">Startposition auf der X-Achse,ab welcher die Noise Werte ausgegeben werden</param>
         /// <param name="startY">Startposition auf der Y-Achse,ab welcher die Noise Werte ausgegeben werden</param>
@@ -279,7 +279,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein 4D-float-Array einer 4D-Noise im angegebem Bereich zurück
+        ///     Gibt ein 4D-float-Array einer 4D-Noise im angegebem Bereich zurück
         /// </summary>
         /// <param name="startX">Startposition auf der X-Achse,ab welcher die Noise Werte ausgegeben werden</param>
         /// <param name="startY">Startposition auf der Y-Achse,ab welcher die Noise Werte ausgegeben werden</param>
@@ -327,7 +327,7 @@ namespace OctoAwesome.Noise
         #region SingleNoise
 
         /// <summary>
-        /// Gibt ein float-Wert einer 1D-Noise an gegebener Position zurück
+        ///     Gibt ein float-Wert einer 1D-Noise an gegebener Position zurück
         /// </summary>
         /// <param name="x">Position, für welche die Noise ausgegeben wird</param>
         /// <returns>Gibt ein float-Wert einer 1D Noise zurück</returns>
@@ -347,7 +347,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein float-Wert einer 2D-Noise an gegebener Position zurück
+        ///     Gibt ein float-Wert einer 2D-Noise an gegebener Position zurück
         /// </summary>
         /// <param name="x">X-Position, für welche die Noise ausgegeben wird</param>
         /// <param name="y">Y-Position, für welche die Noise ausgegeben wird</param>
@@ -370,7 +370,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein float-Wert einer 2D-Noise an gegebener Position zurück, welche kachelbar ist
+        ///     Gibt ein float-Wert einer 2D-Noise an gegebener Position zurück, welche kachelbar ist
         /// </summary>
         /// <param name="x">X-Position, für welche die Noise ausgegeben wird</param>
         /// <param name="y">Y-Position, für welche die Noise ausgegeben wird</param>
@@ -405,7 +405,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück
+        ///     Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück
         /// </summary>
         /// <param name="x">X-Position, für welche die Noise ausgegeben wird</param>
         /// <param name="y">Y-Position, für welche die Noise ausgegeben wird</param>
@@ -433,7 +433,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück, welche in X und Y Richtung kachelbar ist
+        ///     Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>
         /// <param name="x">X-Position, für welche die Noise ausgegeben wird</param>
         /// <param name="y">Y-Position, für welche die Noise ausgegeben wird</param>
@@ -471,7 +471,7 @@ namespace OctoAwesome.Noise
         }
 
         /// <summary>
-        /// Gibt ein float-Wert einer 4D-Noise an gegebener Position zurück
+        ///     Gibt ein float-Wert einer 4D-Noise an gegebener Position zurück
         /// </summary>
         /// <param name="x">X-Position, für welche die Noise ausgegeben wird</param>
         /// <param name="y">Y-Position, für welche die Noise ausgegeben wird</param>
@@ -505,10 +505,10 @@ namespace OctoAwesome.Noise
 
         #region Noise Implementation
 
-        private static readonly int[] grad3 = new int[] {1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1, 0, 1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, -1, 0, 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1};
-        private static readonly int[] grad4 = new int[] {0, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, 1, 1, 0, 1, -1, 1, 0, -1, 1, 1, 0, -1, -1, -1, 0, 1, 1, -1, 0, 1, -1, -1, 0, -1, 1, -1, 0, -1, -1, 1, 1, 0, 1, 1, 1, 0, -1, 1, -1, 0, 1, 1, -1, 0, -1, -1, 1, 0, 1, -1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, -1, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 0};
+        private static readonly int[] grad3 = {1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1, 0, 1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, -1, 0, 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1};
+        private static readonly int[] grad4 = {0, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, 1, 1, 0, 1, -1, 1, 0, -1, 1, 1, 0, -1, -1, -1, 0, 1, 1, -1, 0, 1, -1, -1, 0, -1, 1, -1, 0, -1, -1, 1, 1, 0, 1, 1, 1, 0, -1, 1, -1, 0, 1, 1, -1, 0, -1, -1, 1, 0, 1, -1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, -1, 1, 1, 1, 0, 1, 1, -1, 0, 1, -1, 1, 0, 1, -1, -1, 0, -1, 1, 1, 0, -1, 1, -1, 0, -1, -1, 1, 0, -1, -1, -1, 0};
 
-        private static readonly int[] grad5 = new int[]
+        private static readonly int[] grad5 =
         {
             0, -1, -1, -1, -1, 0, -1, -1, -1, 1, 0, -1, -1, 1, -1, 0, -1, -1, 1, 1, 0, -1, 1, -1, -1, 0, -1, 1, -1, 1, 0, -1, 1, 1, -1, 0, -1, 1, 1, 1, 0, 1, -1, -1, -1, 0, 1, -1, -1, 1, 0, 1, -1, 1, -1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, 0, 1, 1, 1, 1, -1, 0, -1, -1, -1, -1, 0, -1, -1, 1, -1, 0, -1, 1, -1, -1, 0, -1, 1, 1, -1, 0, 1, -1, -1, -1, 0, 1, -1, 1, -1, 0, 1, 1, -1, -1, 0, 1, 1, 1, 1, 0, -1, -1, -1, 1, 0, -1, -1, 1, 1, 0, -1, 1, -1, 1, 0, -1, 1, 1, 1, 0, 1,
             -1, -1, 1, 0, 1, -1, 1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, -1, -1, 0, -1, -1, -1, -1, 0, -1, 1, -1, -1, 0, 1, -1, -1, -1, 0, 1, 1, -1, 1, 0, -1, -1, -1, 1, 0, -1, 1, -1, 1, 0, 1, -1, -1, 1, 0, 1, 1, 1, -1, 0, -1, -1, 1, -1, 0, -1, 1, 1, -1, 0, 1, -1, 1, -1, 0, 1, 1, 1, 1, 0, -1, -1, 1, 1, 0, -1, 1, 1, 1, 0, 1, -1, 1, 1, 0, 1, 1, -1, -1, -1, 0, -1, -1, -1, -1, 0, 1, -1, -1, 1, 0, -1, -1, -1, 1, 0, 1, -1, 1, -1, 0, -1, -1, 1, -1, 0, 1, -1, 1, 1, 0, -1, -1, 1, 1, 0, 1, 1, -1, -1, 0, -1, 1,
@@ -517,22 +517,22 @@ namespace OctoAwesome.Noise
 
         private static float Dotproduct(int dIndex, float x, float y)
         {
-            return (grad3[dIndex] * x) + (grad3[dIndex + 1] * y);
+            return grad3[dIndex] * x + grad3[dIndex + 1] * y;
         }
 
         private static float Dotproduct(int dIndex, float x, float y, float z)
         {
-            return (grad3[dIndex] * x) + (grad3[dIndex + 1] * y) + (grad3[dIndex + 2] * z);
+            return grad3[dIndex] * x + grad3[dIndex + 1] * y + grad3[dIndex + 2] * z;
         }
 
         private static float Dotproduct(int dIndex, float x, float y, float z, float w)
         {
-            return (grad4[dIndex] * x) + (grad4[dIndex + 1] * y) + (grad4[dIndex + 2] * z) + (grad4[dIndex + 3] * w);
+            return grad4[dIndex] * x + grad4[dIndex + 1] * y + grad4[dIndex + 2] * z + grad4[dIndex + 3] * w;
         }
 
         private static float Dotproduct(int dIndex, float x, float y, float z, float w, float v)
         {
-            return (grad5[dIndex] * x) + (grad5[dIndex + 1] * y) + (grad5[dIndex + 2] * z) + (grad5[dIndex + 3] * w) + (grad5[dIndex + 4] * v);
+            return grad5[dIndex] * x + grad5[dIndex + 1] * y + grad5[dIndex + 2] * z + grad5[dIndex + 3] * w + grad5[dIndex + 4] * v;
         }
 
         private static readonly float F2 = (float) (0.5f * (Math.Sqrt(3.0f) - 1.0f));
@@ -561,13 +561,13 @@ namespace OctoAwesome.Noise
                 n += 1376312589;
                 n = n & 0x7fffffff;
 
-                return (float) (1.0 - (n / 1073741824.0));
+                return (float) (1.0 - n / 1073741824.0);
             }
         }
 
         private float LinearInterpolation(float a, float b, float x)
         {
-            return a + ((b - a) * x);
+            return a + (b - a) * x;
         }
 
         private float Noise(float x)
@@ -616,9 +616,9 @@ namespace OctoAwesome.Noise
             var x1 = x0 - i1 + G2;
 
             var y1 = y0 - j1 + G2;
-            var x2 = x0 - 1.0f + (2.0f * G2);
+            var x2 = x0 - 1.0f + 2.0f * G2;
 
-            var y2 = y0 - 1.0f + (2.0f * G2);
+            var y2 = y0 - 1.0f + 2.0f * G2;
 
             var ii = i & 255;
             var jj = j & 255;
@@ -626,7 +626,7 @@ namespace OctoAwesome.Noise
             var gi1 = permutations[ii + i1 + permutations[jj + j1]] % 12;
             var gi2 = permutations[ii + 1 + permutations[jj + 1]] % 12;
 
-            var t0 = 0.5f - (x0 * x0) - (y0 * y0);
+            var t0 = 0.5f - x0 * x0 - y0 * y0;
             if (t0 <= 0)
             {
                 n0 = 0.0f;
@@ -637,7 +637,7 @@ namespace OctoAwesome.Noise
                 n0 = t0 * t0 * Dotproduct(gi0 * 3, x0, y0);
             }
 
-            var t1 = 0.5f - (x1 * x1) - (y1 * y1);
+            var t1 = 0.5f - x1 * x1 - y1 * y1;
             if (t1 <= 0)
             {
                 n1 = 0.0f;
@@ -648,7 +648,7 @@ namespace OctoAwesome.Noise
                 n1 = t1 * t1 * Dotproduct(gi1 * 3, x1, y1);
             }
 
-            var t2 = 0.5f - (x2 * x2) - (y2 * y2);
+            var t2 = 0.5f - x2 * x2 - y2 * y2;
             if (t2 <= 0)
             {
                 n2 = 0.0f;
@@ -743,12 +743,12 @@ namespace OctoAwesome.Noise
             var x1 = x0 - i1 + G3;
             var y1 = y0 - j1 + G3;
             var z1 = z0 - k1 + G3;
-            var x2 = x0 - i2 + (2.0f * G3);
-            var y2 = y0 - j2 + (2.0f * G3);
-            var z2 = z0 - k2 + (2.0f * G3);
-            var x3 = x0 - 1.0f + (3.0f * G3);
-            var y3 = y0 - 1.0f + (3.0f * G3);
-            var z3 = z0 - 1.0f + (3.0f * G3);
+            var x2 = x0 - i2 + 2.0f * G3;
+            var y2 = y0 - j2 + 2.0f * G3;
+            var z2 = z0 - k2 + 2.0f * G3;
+            var x3 = x0 - 1.0f + 3.0f * G3;
+            var y3 = y0 - 1.0f + 3.0f * G3;
+            var z3 = z0 - 1.0f + 3.0f * G3;
 
             var ii = i & 255;
             var jj = j & 255;
@@ -759,7 +759,7 @@ namespace OctoAwesome.Noise
             var gi2 = permutations[ii + i2 + permutations[jj + j2 + permutations[kk + k2]]] % 12;
             var gi3 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1]]] % 12;
 
-            var t0 = 0.6f - (x0 * x0) - (y0 * y0) - (z0 * z0);
+            var t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0;
             if (t0 <= 0)
             {
                 n0 = 0.0f;
@@ -770,7 +770,7 @@ namespace OctoAwesome.Noise
                 n0 = t0 * t0 * Dotproduct(gi0 * 3, x0, y0, z0);
             }
 
-            var t1 = 0.6f - (x1 * x1) - (y1 * y1) - (z1 * z1);
+            var t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1;
             if (t1 <= 0)
             {
                 n1 = 0.0f;
@@ -781,7 +781,7 @@ namespace OctoAwesome.Noise
                 n1 = t1 * t1 * Dotproduct(gi1 * 3, x1, y1, z1);
             }
 
-            var t2 = 0.6f - (x2 * x2) - (y2 * y2) - (z2 * z2);
+            var t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2;
             if (t2 <= 0)
             {
                 n2 = 0.0f;
@@ -792,7 +792,7 @@ namespace OctoAwesome.Noise
                 n2 = t2 * t2 * Dotproduct(gi2 * 3, x2, y2, z2);
             }
 
-            var t3 = 0.6f - (x3 * x3) - (y3 * y3) - (z3 * z3);
+            var t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3;
             if (t3 <= 0)
             {
                 n3 = 0.0f;
@@ -864,18 +864,18 @@ namespace OctoAwesome.Noise
             var y1 = y0 - j1 + G4;
             var z1 = z0 - k1 + G4;
             var w1 = w0 - l1 + G4;
-            var x2 = x0 - i2 + (2.0f * G4);
-            var y2 = y0 - j2 + (2.0f * G4);
-            var z2 = z0 - k2 + (2.0f * G4);
-            var w2 = w0 - l2 + (2.0f * G4);
-            var x3 = x0 - i3 + (3.0f * G4);
-            var y3 = y0 - j3 + (3.0f * G4);
-            var z3 = z0 - k3 + (3.0f * G4);
-            var w3 = w0 - l3 + (3.0f * G4);
-            var x4 = x0 - 1.0f + (4.0f * G4);
-            var y4 = y0 - 1.0f + (4.0f * G4);
-            var z4 = z0 - 1.0f + (4.0f * G4);
-            var w4 = w0 - 1.0f + (4.0f * G4);
+            var x2 = x0 - i2 + 2.0f * G4;
+            var y2 = y0 - j2 + 2.0f * G4;
+            var z2 = z0 - k2 + 2.0f * G4;
+            var w2 = w0 - l2 + 2.0f * G4;
+            var x3 = x0 - i3 + 3.0f * G4;
+            var y3 = y0 - j3 + 3.0f * G4;
+            var z3 = z0 - k3 + 3.0f * G4;
+            var w3 = w0 - l3 + 3.0f * G4;
+            var x4 = x0 - 1.0f + 4.0f * G4;
+            var y4 = y0 - 1.0f + 4.0f * G4;
+            var z4 = z0 - 1.0f + 4.0f * G4;
+            var w4 = w0 - 1.0f + 4.0f * G4;
 
             var ii = i & 255;
             var jj = j & 255;
@@ -887,7 +887,7 @@ namespace OctoAwesome.Noise
             var gi3 = permutations[ii + i3 + permutations[jj + j3 + permutations[kk + k3 + permutations[ll + l3]]]] % 32;
             var gi4 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1 + permutations[ll + 1]]]] % 32;
 
-            var t0 = 0.6f - (x0 * x0) - (y0 * y0) - (z0 * z0) - (w0 * w0);
+            var t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
             if (t0 < 0)
             {
                 n0 = 0.0f;
@@ -898,7 +898,7 @@ namespace OctoAwesome.Noise
                 n0 = t0 * t0 * Dotproduct(gi0 * 4, x0, y0, z0, w0);
             }
 
-            var t1 = 0.6f - (x1 * x1) - (y1 * y1) - (z1 * z1) - (w1 * w1);
+            var t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1;
             if (t1 < 0)
             {
                 n1 = 0.0f;
@@ -909,7 +909,7 @@ namespace OctoAwesome.Noise
                 n1 = t1 * t1 * Dotproduct(gi1 * 4, x1, y1, z1, w1);
             }
 
-            var t2 = 0.6f - (x2 * x2) - (y2 * y2) - (z2 * z2) - (w2 * w2);
+            var t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2;
             if (t2 < 0)
             {
                 n2 = 0.0f;
@@ -920,7 +920,7 @@ namespace OctoAwesome.Noise
                 n2 = t2 * t2 * Dotproduct(gi2 * 4, x2, y2, z2, w2);
             }
 
-            var t3 = 0.6f - (x3 * x3) - (y3 * y3) - (z3 * z3) - (w3 * w3);
+            var t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3;
             if (t3 < 0)
             {
                 n3 = 0.0f;
@@ -931,7 +931,7 @@ namespace OctoAwesome.Noise
                 n3 = t3 * t3 * Dotproduct(gi3 * 4, x3, y3, z3, w3);
             }
 
-            var t4 = 0.6f - (x4 * x4) - (y4 * y4) - (z4 * z4) - (w4 * w4);
+            var t4 = 0.6f - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4;
             if (t4 < 0)
             {
                 n4 = 0.0f;
@@ -1028,29 +1028,29 @@ namespace OctoAwesome.Noise
             var w1 = w0 - l1 + G5;
             var v1 = v0 - m1 + G5;
 
-            var x2 = x0 - i2 + (2.0f * G5);
-            var y2 = y0 - j2 + (2.0f * G5);
-            var z2 = z0 - k2 + (2.0f * G5);
-            var w2 = w0 - l2 + (2.0f * G5);
-            var v2 = v0 - m2 + (2.0f * G5);
+            var x2 = x0 - i2 + 2.0f * G5;
+            var y2 = y0 - j2 + 2.0f * G5;
+            var z2 = z0 - k2 + 2.0f * G5;
+            var w2 = w0 - l2 + 2.0f * G5;
+            var v2 = v0 - m2 + 2.0f * G5;
 
-            var x3 = x0 - i3 + (3.0f * G5);
-            var y3 = y0 - j3 + (3.0f * G5);
-            var z3 = z0 - k3 + (3.0f * G5);
-            var w3 = w0 - l3 + (3.0f * G5);
-            var v3 = v0 - m3 + (3.0f * G5);
+            var x3 = x0 - i3 + 3.0f * G5;
+            var y3 = y0 - j3 + 3.0f * G5;
+            var z3 = z0 - k3 + 3.0f * G5;
+            var w3 = w0 - l3 + 3.0f * G5;
+            var v3 = v0 - m3 + 3.0f * G5;
 
-            var x4 = x0 - i4 + (4.0f * G5);
-            var y4 = y0 - j4 + (4.0f * G5);
-            var z4 = z0 - k4 + (4.0f * G5);
-            var w4 = w0 - l4 + (4.0f * G5);
-            var v4 = v0 - m4 + (4.0f * G5);
+            var x4 = x0 - i4 + 4.0f * G5;
+            var y4 = y0 - j4 + 4.0f * G5;
+            var z4 = z0 - k4 + 4.0f * G5;
+            var w4 = w0 - l4 + 4.0f * G5;
+            var v4 = v0 - m4 + 4.0f * G5;
 
-            var x5 = x0 - 1.0f + (5.0f * G5);
-            var y5 = y0 - 1.0f + (5.0f * G5);
-            var z5 = z0 - 1.0f + (5.0f * G5);
-            var w5 = w0 - 1.0f + (5.0f * G5);
-            var v5 = v0 - 1.0f + (5.0f * G5);
+            var x5 = x0 - 1.0f + 5.0f * G5;
+            var y5 = y0 - 1.0f + 5.0f * G5;
+            var z5 = z0 - 1.0f + 5.0f * G5;
+            var w5 = w0 - 1.0f + 5.0f * G5;
+            var v5 = v0 - 1.0f + 5.0f * G5;
 
             var ii = i & 255;
             var jj = j & 255;
@@ -1064,7 +1064,7 @@ namespace OctoAwesome.Noise
             var gi4 = permutations[ii + i4 + permutations[jj + j4 + permutations[kk + k4 + permutations[ll + l4 + permutations[mm + m4]]]]] % 80;
             var gi5 = permutations[ii + 1 + permutations[jj + 1 + permutations[kk + 1 + permutations[ll + 1 + permutations[mm + 1]]]]] % 80;
 
-            var t0 = 0.6f - (x0 * x0) - (y0 * y0) - (z0 * z0) - (w0 * w0) - (v0 * v0);
+            var t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
             if (t0 < 0)
             {
                 n0 = 0.0f;
@@ -1075,7 +1075,7 @@ namespace OctoAwesome.Noise
                 n0 = t0 * t0 * Dotproduct(gi0 * 5, x0, y0, z0, w0, v0);
             }
 
-            var t1 = 0.6f - (x1 * x1) - (y1 * y1) - (z1 * z1) - (w1 * w1) - (v1 * v1);
+            var t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
             if (t1 < 0)
             {
                 n1 = 0.0f;
@@ -1086,7 +1086,7 @@ namespace OctoAwesome.Noise
                 n1 = t1 * t1 * Dotproduct(gi1 * 5, x1, y1, z1, w1, v1);
             }
 
-            var t2 = 0.6f - (x2 * x2) - (y2 * y2) - (z2 * z2) - (w2 * w2) - (v2 * v2);
+            var t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
             if (t2 < 0)
             {
                 n2 = 0.0f;
@@ -1097,7 +1097,7 @@ namespace OctoAwesome.Noise
                 n2 = t2 * t2 * Dotproduct(gi2 * 5, x2, y2, z2, w2, v2);
             }
 
-            var t3 = 0.6f - (x3 * x3) - (y3 * y3) - (z3 * z3) - (w3 * w3) - (v3 * v3);
+            var t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
             if (t3 < 0)
             {
                 n3 = 0.0f;
@@ -1108,7 +1108,7 @@ namespace OctoAwesome.Noise
                 n3 = t3 * t3 * Dotproduct(gi3 * 5, x3, y3, z3, w3, v3);
             }
 
-            var t4 = 0.6f - (x4 * x4) - (y4 * y4) - (z4 * z4) - (w4 * w4) - (v4 * v4);
+            var t4 = 0.6f - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
             if (t4 < 0)
             {
                 n4 = 0.0f;
@@ -1119,7 +1119,7 @@ namespace OctoAwesome.Noise
                 n4 = t4 * t4 * Dotproduct(gi4 * 5, x4, y4, z4, w4, v4);
             }
 
-            var t5 = 0.6f - (x5 * x5) - (y5 * y5) - (z5 * z5) - (w5 * w5) - (v5 * v5);
+            var t5 = 0.6f - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
             if (t5 < 0)
             {
                 n5 = 0.0f;

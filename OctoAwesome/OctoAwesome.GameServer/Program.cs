@@ -40,7 +40,7 @@ namespace OctoAwesome.GameServer
                 if (!fileInfo.Exists)
                 {
                     logger.Debug("Create new Default Settings");
-                    settings = new Settings()
+                    settings = new Settings
                     {
                         FileInfo = fileInfo
                     };

@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,13 +11,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.Plank;
+        public override string Name => OctoBasics.Plank;
 
         public override string Icon => "planks_red";
 
         public override bool HasMetaData => true;
 
-        public override string[] Textures { get; } = new[] {"planks_red"};
+        public override string[] Textures { get; } = {"planks_red"};
 
         public override IMaterialDefinition Material { get; }
     }

@@ -72,14 +72,14 @@ namespace OctoAwesome.Basics
                 for (var z = Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
                 {
                     var flatIndex = Chunk.GetFlatIndex(x, y, z);
-                    var absoluteZ = z + (i * Chunk.CHUNKSIZE_Z);
-                    if (absoluteZ <= localHeightmap[(y * Chunk.CHUNKSIZE_X) + x] * localPlanet.Size.Z * Chunk.CHUNKSIZE_Z)
+                    var absoluteZ = z + i * Chunk.CHUNKSIZE_Z;
+                    if (absoluteZ <= localHeightmap[y * Chunk.CHUNKSIZE_X + x] * localPlanet.Size.Z * Chunk.CHUNKSIZE_Z)
                     {
                         if (obersteSchicht > 0)
                         {
-                            var temp = localPlanet.ClimateMap.GetTemperature(new Index3((index.Y * Chunk.CHUNKSIZE_X) + x, (index.Y * Chunk.CHUNKSIZE_X) + x, (i * Chunk.CHUNKSIZE_Z) + z));
+                            var temp = localPlanet.ClimateMap.GetTemperature(new Index3(index.Y * Chunk.CHUNKSIZE_X + x, index.Y * Chunk.CHUNKSIZE_X + x, i * Chunk.CHUNKSIZE_Z + z));
 
-                            if ((ozeanSurface || surfaceBlock) && (absoluteZ <= (localPlanet.BiomeGenerator.SeaLevel + 2)) && (absoluteZ >= (localPlanet.BiomeGenerator.SeaLevel - 2)))
+                            if ((ozeanSurface || surfaceBlock) && absoluteZ <= localPlanet.BiomeGenerator.SeaLevel + 2 && absoluteZ >= localPlanet.BiomeGenerator.SeaLevel - 2)
                             {
                                 chunks[i].Blocks[flatIndex] = sandIndex;
                             }
@@ -130,7 +130,7 @@ namespace OctoAwesome.Basics
                             chunks[i].Blocks[flatIndex] = stoneIndex;
                         }
                     }
-                    else if ((z + (i * Chunk.CHUNKSIZE_Z)) <= localPlanet.BiomeGenerator.SeaLevel)
+                    else if (z + i * Chunk.CHUNKSIZE_Z <= localPlanet.BiomeGenerator.SeaLevel)
                     {
                         chunks[i].Blocks[flatIndex] = waterIndex;
                         ozeanSurface = true;

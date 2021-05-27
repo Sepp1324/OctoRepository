@@ -3,7 +3,7 @@
 namespace OctoAwesome.Definitions
 {
     /// <summary>
-    /// Interface für die Definition eînes Items
+    ///     Interface für die Definition eînes Items
     /// </summary>
     public interface IItemDefinition : IDefinition
     {

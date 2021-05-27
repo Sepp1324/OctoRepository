@@ -8,7 +8,7 @@ using OctoAwesome.Definitions;
 namespace OctoAwesome.Runtime
 {
     /// <summary>
-    /// ExtensionLoader
+    ///     ExtensionLoader
     /// </summary>
     public sealed class ExtensionLoader : IExtensionLoader, IExtensionResolver
     {
@@ -31,7 +31,7 @@ namespace OctoAwesome.Runtime
         private readonly ITypeContainer typeContainer;
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="settings">Current Gamesettings</param>
         public ExtensionLoader(ITypeContainer typeContainer, ISettings settings)
@@ -50,17 +50,17 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// List of Loaded Extensions
+        ///     List of Loaded Extensions
         /// </summary>
-        public List<IExtension> LoadedExtensions { get; private set; }
+        public List<IExtension> LoadedExtensions { get; }
 
         /// <summary>
-        /// List of active Extensions
+        ///     List of active Extensions
         /// </summary>
-        public List<IExtension> ActiveExtensions { get; private set; }
+        public List<IExtension> ActiveExtensions { get; }
 
         /// <summary>
-        /// Activate the Extenisons
+        ///     Activate the Extenisons
         /// </summary>
         /// <param name="disabledExtensions">List of Extensions</param>
         public void ApplyExtensions(IList<IExtension> disabledExtensions)
@@ -70,7 +70,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Load all Plugins
+        ///     Load all Plugins
         /// </summary>
         public void LoadExtensions()
         {
@@ -135,7 +135,7 @@ namespace OctoAwesome.Runtime
         #region Loader Methods
 
         /// <summary>
-        /// Registers a new Definition.
+        ///     Registers a new Definition.
         /// </summary>
         /// <param name="definition">Definition Instance</param>
         public void RegisterDefinition(Type definition)
@@ -155,7 +155,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Removes an existing Definition Type.
+        ///     Removes an existing Definition Type.
         /// </summary>
         /// <typeparam name="T">Definition Type</typeparam>
         public void RemoveDefinition<T>() where T : IDefinition
@@ -164,7 +164,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Registers a new Entity.
+        ///     Registers a new Entity.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
         public void RegisterEntity<T>() where T : Entity
@@ -177,7 +177,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Adds a new Extender for the given Entity Type.
+        ///     Adds a new Extender for the given Entity Type.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
         /// <param name="extenderDelegate">Extender Delegate</param>
@@ -196,11 +196,11 @@ namespace OctoAwesome.Runtime
 
         public void RegisterDefaultEntityExtender<T>() where T : Entity
         {
-            RegisterEntityExtender<T>((e) => e.RegisterDefault());
+            RegisterEntityExtender<T>(e => e.RegisterDefault());
         }
 
         /// <summary>
-        /// Adds a new Extender for the simulation.
+        ///     Adds a new Extender for the simulation.
         /// </summary>
         /// <param name="extenderDelegate"></param>
         public void RegisterSimulationExtender(Action<Simulation> extenderDelegate)
@@ -209,7 +209,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Adds a new Map Generator.
+        ///     Adds a new Map Generator.
         /// </summary>
         public void RegisterMapGenerator(IMapGenerator generator)
         {
@@ -224,7 +224,7 @@ namespace OctoAwesome.Runtime
 
 
         /// <summary>
-        /// Removes an existing Entity Type.
+        ///     Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void RemoveEntity<T>() where T : Entity
@@ -233,7 +233,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Removes an existing Map Generator.
+        ///     Removes an existing Map Generator.
         /// </summary>
         /// <typeparam name="T">Map Generator Type</typeparam>
         public void RemoveMapGenerator<T>(T item) where T : IMapGenerator
@@ -251,7 +251,7 @@ namespace OctoAwesome.Runtime
         #region Resolver Methods
 
         /// <summary>
-        /// Extend a Simulation
+        ///     Extend a Simulation
         /// </summary>
         /// <param name="simulation">Simulation</param>
         public void ExtendSimulation(Simulation simulation)
@@ -261,7 +261,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Extend a Entity
+        ///     Extend a Entity
         /// </summary>
         /// <param name="entity">Entity</param>
         public void ExtendEntity(Entity entity)
@@ -289,7 +289,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Return a List of Definitions
+        ///     Return a List of Definitions
         /// </summary>
         /// <typeparam name="T">Definitiontype</typeparam>
         /// <returns>List</returns>
@@ -301,7 +301,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Return a List of MapGenerators
+        ///     Return a List of MapGenerators
         /// </summary>
         /// <returns>List of Generators</returns>
         public IEnumerable<IMapGenerator> GetMapGenerator()
@@ -310,7 +310,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Return a List of Populators
+        ///     Return a List of Populators
         /// </summary>
         /// <returns>List of Populators</returns>
         public IEnumerable<IMapPopulator> GetMapPopulator()

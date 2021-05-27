@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,12 +11,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.Greystone;
+        public override string Name => OctoBasics.Greystone;
 
         public override string Icon => "greystone";
 
 
-        public override string[] Textures { get; } = new[] {"greystone"};
+        public override string[] Textures { get; } = {"greystone"};
 
         public override IMaterialDefinition Material { get; }
     }

@@ -6,11 +6,11 @@ namespace OctoAwesome.Network
     public sealed class Package : IPoolElement
     {
         /// <summary>
-        /// Bytesize of Header
+        ///     Bytesize of Header
         /// </summary>
         public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(uint);
 
-        private volatile static uint nextUid;
+        private static volatile uint nextUid;
 
         private int internalOffset;
         private IPool pool;

@@ -13,7 +13,7 @@ using OctoAwesome.Threading;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Globaler Cache für Chunks
+    ///     Globaler Cache für Chunks
     /// </summary>
     public sealed class GlobalChunkCache : IGlobalChunkCache, IDisposable
     {
@@ -22,7 +22,7 @@ namespace OctoAwesome
         private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
 
         /// <summary>
-        /// Dictionary, das alle <see cref="CacheItem"/>s hält.
+        ///     Dictionary, das alle <see cref="CacheItem" />s hält.
         /// </summary>
         private readonly Dictionary<Index3, CacheItem> cache;
 
@@ -35,7 +35,7 @@ namespace OctoAwesome
         private readonly IResourceManager resourceManager;
 
         /// <summary>
-        /// Objekt, das für die Locks benutzt wird
+        ///     Objekt, das für die Locks benutzt wird
         /// </summary>
         private readonly LockSemaphore semaphore = new LockSemaphore(1, 1);
 
@@ -44,9 +44,9 @@ namespace OctoAwesome
         private IUpdateHub updateHub;
 
         /// <summary>
-        /// Create new instance of GlobalChunkCache
+        ///     Create new instance of GlobalChunkCache
         /// </summary>
-        /// <param name="resourceManager">the current <see cref="IResourceManager"/> to load ressources/></param>
+        /// <param name="resourceManager">the current <see cref="IResourceManager" /> to load ressources/></param>
         public GlobalChunkCache(IPlanet planet, IResourceManager resourceManager)
         {
             Planet = planet ?? throw new ArgumentNullException(nameof(planet));
@@ -91,7 +91,7 @@ namespace OctoAwesome
         public event EventHandler<IChunkColumn> ChunkColumnChanged;
 
         /// <summary>
-        /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
+        ///     Gibt die Anzahl der aktuell geladenen Chunks zurück.
         /// </summary>
         public int LoadedChunkColumns
         {
@@ -105,14 +105,14 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Anzahl der noch nicht gespeicherten ChunkColumns.
+        ///     Anzahl der noch nicht gespeicherten ChunkColumns.
         /// </summary>
         public int DirtyChunkColumn => 0;
 
         public IPlanet Planet { get; }
 
         /// <summary>
-        /// Abonniert einen Chunk.
+        ///     Abonniert einen Chunk.
         /// </summary>
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Position des Chunks</param>
@@ -125,7 +125,7 @@ namespace OctoAwesome
             {
                 if (!cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
                 {
-                    cacheItem = new CacheItem()
+                    cacheItem = new CacheItem
                     {
                         Planet = Planet,
                         Index = position,
@@ -182,7 +182,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Liefert den Chunk, sofern geladen.
+        ///     Liefert den Chunk, sofern geladen.
         /// </summary>
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Die Position des zurückzugebenden Chunks</param>
@@ -197,7 +197,7 @@ namespace OctoAwesome
 
 
         /// <summary>
-        /// Löscht den gesamten Inhalt des Caches.
+        ///     Löscht den gesamten Inhalt des Caches.
         /// </summary>
         public void Clear()
         {
@@ -214,7 +214,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt einen abonnierten Chunk wieder frei.
+        ///     Gibt einen abonnierten Chunk wieder frei.
         /// </summary>
         /// <param name="position">Die Position des freizugebenden Chunks</param>
         public void Release(Index2 position)
@@ -306,8 +306,6 @@ namespace OctoAwesome
                 case BlocksChangedNotification blocksChangedNotification:
                     Update(blocksChangedNotification);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -370,7 +368,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Element für den Cache
+        ///     Element für den Cache
         /// </summary>
         private class CacheItem : IDisposable
         {
@@ -392,13 +390,13 @@ namespace OctoAwesome
             public Index2 Index { get; set; }
 
             /// <summary>
-            /// Die Zahl der Subscriber, die das Item Abboniert hat.
+            ///     Die Zahl der Subscriber, die das Item Abboniert hat.
             /// </summary>
             public int References { get; set; }
 
 
             /// <summary>
-            /// Der Chunk, auf den das <see cref="CacheItem"/> referenziert
+            ///     Der Chunk, auf den das <see cref="CacheItem" /> referenziert
             /// </summary>
             public IChunkColumn ChunkColumn
             {

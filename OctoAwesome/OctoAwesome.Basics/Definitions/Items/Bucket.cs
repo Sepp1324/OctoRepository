@@ -3,7 +3,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class Bucket : Item, IFluidInventory
+    internal class Bucket : Item, IFluidInventory
     {
         public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)

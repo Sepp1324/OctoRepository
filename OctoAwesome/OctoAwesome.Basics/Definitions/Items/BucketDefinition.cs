@@ -3,7 +3,7 @@ using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class BucketDefinition : IItemDefinition
+    internal class BucketDefinition : IItemDefinition
     {
         public BucketDefinition()
         {

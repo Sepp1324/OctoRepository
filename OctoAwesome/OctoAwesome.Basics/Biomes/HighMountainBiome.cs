@@ -2,7 +2,7 @@
 
 namespace OctoAwesome.Basics.Biomes
 {
-    class HighMountainBiome : BiomeBase
+    internal class HighMountainBiome : BiomeBase
     {
         public HighMountainBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
             : base(planet, minValue, maxValue, valueRangeOffset, valueRange)

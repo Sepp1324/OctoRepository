@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,7 +11,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.Water;
+        public override string Name => OctoBasics.Water;
 
         public override uint SolidWall => 0;
 
@@ -19,6 +20,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         public override IMaterialDefinition Material { get; }
 
 
-        public override string[] Textures { get; } = new[] {"water"};
+        public override string[] Textures { get; } = {"water"};
     }
 }

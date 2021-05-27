@@ -10,34 +10,35 @@ using OctoAwesome.Threading;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Chunk Cache für lokale Anwendungen.
+    ///     Chunk Cache für lokale Anwendungen.
     /// </summary>
     public class LocalChunkCache : ILocalChunkCache
     {
         /// <summary>
-        /// Die im lokalen Cache gespeicherten Chunks
+        ///     Die im lokalen Cache gespeicherten Chunks
         /// </summary>
         private readonly IChunkColumn[] chunkColumns;
 
         /// <summary>
-        /// Referenz auf den Globalen Cache
+        ///     Referenz auf den Globalen Cache
         /// </summary>
         private readonly IGlobalChunkCache globalCache;
 
         /// <summary>
-        /// Größe des Caches in Zweierpotenzen
+        ///     Größe des Caches in Zweierpotenzen
         /// </summary>
         private readonly int limit;
 
         private readonly ILogger logger;
 
         /// <summary>
-        /// Maske, die die Grösse des Caches markiert
+        ///     Maske, die die Grösse des Caches markiert
         /// </summary>
         private readonly int mask;
 
         /// <summary>
-        /// Gibt die Range in Chunks in alle Richtungen an (bsp. Range = 1 bedeutet centraler Block + links uns rechts jeweils 1 = 3)
+        ///     Gibt die Range in Chunks in alle Richtungen an (bsp. Range = 1 bedeutet centraler Block + links uns rechts jeweils
+        ///     1 = 3)
         /// </summary>
         private readonly int range;
 
@@ -45,24 +46,24 @@ namespace OctoAwesome
         private readonly LockSemaphore taskSemaphore;
 
         /// <summary>
-        /// Token, das angibt, ob der Chûnk-nachlade-Task abgebrochen werden soll
+        ///     Token, das angibt, ob der Chûnk-nachlade-Task abgebrochen werden soll
         /// </summary>
         private CancellationTokenSource _cancellationToken;
 
         /// <summary>
-        /// Task, der bei einem Wechsel des Zentralen Chunks neue nachlädt falls nötig
+        ///     Task, der bei einem Wechsel des Zentralen Chunks neue nachlädt falls nötig
         /// </summary>
         private Task _loadingTask;
 
         /// <summary>
-        /// Instanziert einen neuen local Chunk Cache.
+        ///     Instanziert einen neuen local Chunk Cache.
         /// </summary>
         /// <param name="globalCache">Referenz auf global Chunk Cache</param>
         /// <param name="dimensions">Größe des Caches in Zweierpotenzen</param>
         /// <param name="range">Gibt die Range in alle Richtungen an.</param>
         public LocalChunkCache(IGlobalChunkCache globalCache, int dimensions, int range)
         {
-            if (1 << dimensions < (range * 2) + 1)
+            if (1 << dimensions < range * 2 + 1)
                 throw new ArgumentException("Range too big");
 
 
@@ -81,13 +82,13 @@ namespace OctoAwesome
         public Index2 CenterPosition { get; set; }
 
         /// <summary>
-        /// Aktueller Planet auf dem sich der Cache bezieht.
+        ///     Aktueller Planet auf dem sich der Cache bezieht.
         /// </summary>
-        public IPlanet Planet { get; private set; }
+        public IPlanet Planet { get; }
 
 
         /// <summary>
-        /// Setzt den Zentrums-Chunk für diesen lokalen Cache.
+        ///     Setzt den Zentrums-Chunk für diesen lokalen Cache.
         /// </summary>
         /// <param name="planet">Der Planet, auf dem sich der Chunk befindet</param>
         /// <param name="index">Die Koordinaten an der sich der Chunk befindet</param>
@@ -120,7 +121,7 @@ namespace OctoAwesome
 
 
         /// <summary>
-        /// Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
+        ///     Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
         /// </summary>
         /// <param name="index">Chunk Index</param>
         /// <returns>Instanz des Chunks</returns>
@@ -130,7 +131,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
+        ///     Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
         /// </summary>
         /// <param name="x">X Koordinate</param>
         /// <param name="y">Y Koordinate</param>
@@ -153,7 +154,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Liefert den Block an der angegebenen Block-Koodinate zurück.
+        ///     Liefert den Block an der angegebenen Block-Koodinate zurück.
         /// </summary>
         /// <param name="index">Block Index</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
@@ -163,7 +164,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Liefert den Block an der angegebenen Block-Koodinate zurück.
+        ///     Liefert den Block an der angegebenen Block-Koodinate zurück.
         /// </summary>
         /// <param name="index">Block Index</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
@@ -184,7 +185,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Liefert den Block an der angegebenen Block-Koodinate zurück.
+        ///     Liefert den Block an der angegebenen Block-Koodinate zurück.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
@@ -201,7 +202,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Überschreibt den Block an der angegebenen Koordinate.
+        ///     Überschreibt den Block an der angegebenen Koordinate.
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="block">Die neue Block-ID.</param>
@@ -211,7 +212,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Überschreibt den Block an der angegebenen Koordinate.
+        ///     Überschreibt den Block an der angegebenen Koordinate.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -226,7 +227,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
+        ///     Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -243,7 +244,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
+        ///     Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
@@ -253,7 +254,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 
+        ///     Ändert die Metadaten des Blockes an der angegebenen Koordinate.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -268,7 +269,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 
+        ///     Ändert die Metadaten des Blockes an der angegebenen Koordinate.
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="meta">Die neuen Metadaten</param>
@@ -278,7 +279,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
+        ///     Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
         /// </summary>
         public void Flush()
         {
@@ -295,7 +296,8 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Interne Methode, in der der zentrale Chunk gesetzt wird. Die Chunks um den Zentrumschunk werden auch nachgeladen falls nötig
+        ///     Interne Methode, in der der zentrale Chunk gesetzt wird. Die Chunks um den Zentrumschunk werden auch nachgeladen
+        ///     falls nötig
         /// </summary>
         /// <param name="token">Token, um zu prüfen, ob die aktualisierung abgeborchen werden soll</param>
         /// <param name="planet">Der Planet, auf dem die Chunks aktualisiert werden sollen</param>
@@ -392,14 +394,14 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt einen falchen Index um auf das Array <see cref="chunkColumns"/> zu zu greiffen
+        ///     Gibt einen falchen Index um auf das Array <see cref="chunkColumns" /> zu zu greiffen
         /// </summary>
         /// <param name="x">Die X-Koordinate</param>
         /// <param name="y">Die Y-Koordinate</param>
         /// <returns>Der Abgeflachte index</returns>
         private int FlatIndex(int x, int y)
         {
-            return (((y & (mask)) << limit) | ((x & (mask))));
+            return ((y & mask) << limit) | (x & mask);
         }
     }
 }

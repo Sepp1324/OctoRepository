@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using engenious;
 using engenious.Graphics;
 
 namespace OctoAwesome.Client.Components
 {
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    struct VertexPositionNormalTextureLight : IVertexType
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct VertexPositionNormalTextureLight : IVertexType
     {
         public static readonly VertexDeclaration VertexDeclaration;
 
@@ -26,7 +27,7 @@ namespace OctoAwesome.Client.Components
             var normalY = (int) normal.Y;
             var normalZ = (int) normal.Z;
 
-            var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+            var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + normalZ + 1;
 
             uint normalPacked;
             switch (normalExpanded)
@@ -53,7 +54,7 @@ namespace OctoAwesome.Client.Components
                     throw new Exception("Expected error happened.");
             }
 
-            var uvExpanded = ((uint) uv.X << 1) | ((uint) uv.Y);
+            var uvExpanded = ((uint) uv.X << 1) | (uint) uv.Y;
             PackedValue = (posX & 0xFF) | ((posY & 0xFF) << 8) | ((posZ & 0xFF) << 16) | ((uint) layer << 24);
             PackedValue2 = light | (normalPacked << 24) | (uvExpanded << 28);
         }
@@ -64,8 +65,8 @@ namespace OctoAwesome.Client.Components
             PackedValue2 = packedValue2;
         }
 
-        public uint PackedValue { get; private set; }
-        public uint PackedValue2 { get; private set; }
+        public uint PackedValue { get; }
+        public uint PackedValue2 { get; }
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
     }
 }

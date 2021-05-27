@@ -1,4 +1,5 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -10,13 +11,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             Material = material;
         }
 
-        public override string Name => Languages.OctoBasics.BirchWood;
+        public override string Name => OctoBasics.BirchWood;
 
         public override string Icon => "birch_wood_top";
 
         public override bool HasMetaData => true;
 
-        public override string[] Textures { get; } = new[]
+        public override string[] Textures { get; } =
         {
             "birch_wood_top",
             "birch_wood_side"

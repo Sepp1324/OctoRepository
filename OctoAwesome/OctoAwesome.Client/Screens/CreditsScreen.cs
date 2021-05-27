@@ -2,16 +2,17 @@
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Crew;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
-    class CreditsScreen : BaseScreen
+    internal class CreditsScreen : BaseScreen
     {
         public CreditsScreen(ScreenComponent manager) : base(manager)
         {
             Padding = new Border(0, 0, 0, 0);
 
-            Title = Languages.OctoClient.CreditsCrew;
+            Title = OctoClient.CreditsCrew;
 
             SetDefaultBackground();
 

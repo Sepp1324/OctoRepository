@@ -1,8 +1,10 @@
 ﻿using System;
 using engenious;
+using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -16,7 +18,7 @@ namespace OctoAwesome.Client.Screens
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.5f);
-            Title = Languages.OctoClient.SelectTarget;
+            Title = OctoClient.SelectTarget;
 
             var panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
             var panel = new Panel(manager)
@@ -77,7 +79,7 @@ namespace OctoAwesome.Client.Screens
             };
             yStack.Controls.Add(yText);
 
-            Button closeButton = new TextButton(manager, Languages.OctoClient.Teleport);
+            Button closeButton = new TextButton(manager, OctoClient.Teleport);
             closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             closeButton.LeftMouseClick += (s, e) =>
             {
@@ -90,7 +92,7 @@ namespace OctoAwesome.Client.Screens
 
             KeyDown += (s, e) =>
             {
-                if (e.Key == engenious.Input.Keys.Escape)
+                if (e.Key == Keys.Escape)
                     manager.NavigateBack();
                 e.Handled = true;
             };

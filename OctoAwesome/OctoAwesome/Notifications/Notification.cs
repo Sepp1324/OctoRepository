@@ -27,14 +27,14 @@ namespace OctoAwesome.Notifications
         }
 
         /// <summary>
-        /// This method is called from the Init method. It's not needed to hold an seperate pool
+        ///     This method is called from the Init method. It's not needed to hold an seperate pool
         /// </summary>
         protected virtual void OnInit()
         {
         }
 
         /// <summary>
-        /// This is called from the Release method. Do not push this instance manualy to any pool 
+        ///     This is called from the Release method. Do not push this instance manualy to any pool
         /// </summary>
         protected virtual void OnRelease()
         {
