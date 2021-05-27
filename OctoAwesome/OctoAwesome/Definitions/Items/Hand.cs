@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿namespace OctoAwesome.Definitions.Items
 {
     public class Hand : Item
@@ -19,6 +20,24 @@
                 return 0;
 
             return volumePerHit - material.Hardness / 2;
+=======
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OctoAwesome.Definitions.Items
+{
+    public class Hand : Item
+    {
+        public Hand(HandDefinition handDefinition) : base(handDefinition)
+        {
+
+        }
+        public override void Hit(IItem item)
+        {
+>>>>>>> feature/performance
         }
     }
 }

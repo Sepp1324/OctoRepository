@@ -13,6 +13,7 @@ namespace OctoAwesome.Network
     {
         private static uint NextId => ++nextId;
         private static uint nextId;
+<<<<<<< HEAD
 
         static BaseClient() => nextId = 0;
         public uint Id { get; }
@@ -36,6 +37,34 @@ namespace OctoAwesome.Network
         {            
             _sendQueue = new (byte[] data, int len)[256];
             _sendLock = new object();
+=======
+
+        static BaseClient()
+        {
+            nextId = 0;
+        }
+        public uint Id { get; }
+
+        protected Socket Socket;
+        protected readonly SocketAsyncEventArgs ReceiveArgs;
+
+        private byte readSendQueueIndex;
+        private byte nextSendQueueWriteIndex;
+        private bool sending;
+        private Package currentPackage;
+        private readonly ConcurrentBag<IAsyncObserver<Package>> observers;
+        private readonly PackagePool packagePool;
+        private readonly SocketAsyncEventArgs sendArgs;
+
+        private readonly (byte[] data, int len)[] sendQueue;
+        private readonly object sendLock;
+        private readonly CancellationTokenSource cancellationTokenSource;
+
+        protected BaseClient()
+        {            
+            sendQueue = new (byte[] data, int len)[256];
+            sendLock = new object();
+>>>>>>> feature/performance
             ReceiveArgs = new SocketAsyncEventArgs();
             ReceiveArgs.Completed += OnReceived;
             ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(1024 * 1024), 0, 1024 * 1024);
@@ -92,7 +121,7 @@ namespace OctoAwesome.Network
 
         public async Task SendPackageAsync(Package package)
         {
-            var bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
+            byte[] bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
             package.SerializePackage(bytes, 0);
             await SendAsync(bytes, bytes.Length);
         }
@@ -112,7 +141,11 @@ namespace OctoAwesome.Network
 
         public Task<IDisposable> Subscribe(IAsyncObserver<Package> observer)
         {
+<<<<<<< HEAD
             _observers.Add(observer);
+=======
+            observers.Add(observer);
+>>>>>>> feature/performance
             return Task.FromResult( new Subscription<Package>(this, observer) as IDisposable);
         }
 
@@ -174,7 +207,7 @@ namespace OctoAwesome.Network
                 if (e.BytesTransferred < 1)
                     return;
 
-                var offset = 0;
+                int offset = 0;
 
                 do
                 {
@@ -187,7 +220,7 @@ namespace OctoAwesome.Network
 
         private int DataReceived(byte[] buffer, int length, int bufferOffset)
         {
-            var offset = 0;
+            int offset = 0;
 
             if (_currentPackage == null)
             {
@@ -214,7 +247,11 @@ namespace OctoAwesome.Network
                 }
             }
 
+<<<<<<< HEAD
             offset += _currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));
+=======
+            offset += currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));
+>>>>>>> feature/performance
 
             if (_currentPackage.IsComplete)
             {

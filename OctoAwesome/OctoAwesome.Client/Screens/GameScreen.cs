@@ -15,11 +15,19 @@ namespace OctoAwesome.Client.Screens
             add => scene.OnCenterChanged += value;
             remove => scene.OnCenterChanged -= value;
         }
+<<<<<<< HEAD
 
         private const float mouseSpeed = 0.2f;
 
         private new ScreenComponent Manager { get; set; }
 
+=======
+
+        private const float mouseSpeed = 0.2f;
+
+        private new ScreenComponent Manager { get; set; }
+
+>>>>>>> feature/performance
         private readonly DebugControl debug;
         private readonly SceneControl scene;
         private readonly CompassControl compass;
@@ -106,7 +114,14 @@ namespace OctoAwesome.Client.Screens
             base.OnUpdate(gameTime);
         }
 
+<<<<<<< HEAD
         public void Unload() => scene.Dispose();
+=======
+        public void Unload()
+        {
+            scene.Dispose();
+        }
+>>>>>>> feature/performance
 
         #region Mouse Input
 

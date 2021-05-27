@@ -11,7 +11,14 @@ namespace OctoAwesome.Database
     {
         public Type TagType { get; }
 
+<<<<<<< HEAD
         protected Database(Type tagType) => TagType = tagType;
+=======
+        protected Database(Type tagType)
+        {
+            TagType = tagType;
+        }
+>>>>>>> feature/performance
 
         public abstract void Open();
         public abstract void Close();
@@ -104,9 +111,17 @@ namespace OctoAwesome.Database
             valueStore.Close();
         }
 
+<<<<<<< HEAD
         public void Validate() => ExecuteOperationOnKeyValueStore(fileCheck.Check);
 
         public void Defragmentation() => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
+=======
+        public void Validate()
+            => ExecuteOperationOnKeyValueStore(fileCheck.Check);
+
+        public void Defragmentation()
+            => ExecuteOperationOnKeyValueStore(defragmentation.StartDefragmentation);
+>>>>>>> feature/performance
 
         public Value GetValue(TTag tag)
         {

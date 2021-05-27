@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 using OctoAwesome.MathLib;
@@ -9,6 +10,20 @@ namespace OctoAwesome.Basics.Definitions.Items
         private static readonly Polynomial _polynomial = new Polynomial(150, 0, -1f/400f);
         
         public Pickaxe(PickaxeDefinition pickaxeDefinition, IMaterialDefinition materialDefinition) : base(pickaxeDefinition, materialDefinition)
+=======
+﻿using OctoAwesome.Basics.Definitions.Items;
+
+namespace OctoAwesome.Basics
+{
+    public class Pickaxe : Item
+    {
+        public Pickaxe(PickaxeDefinition pickaxeDefinition) : base(pickaxeDefinition)
+        {
+
+        }
+
+        public override void Hit(IItem item)
+>>>>>>> feature/performance
         {
 
         }

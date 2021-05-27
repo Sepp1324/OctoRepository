@@ -18,6 +18,12 @@ namespace OctoAwesome.EntityComponents
         
         public OrientationFlags ApplySide { get; set; }
 
+<<<<<<< HEAD
         public ControllableComponent() { }
+=======
+        public ControllableComponent()
+        {
+        }
+>>>>>>> feature/performance
     }
 }

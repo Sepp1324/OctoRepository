@@ -12,7 +12,14 @@ namespace OctoAwesome.EntityComponents
 
         public float BaseZRotation { get; set; }
 
+<<<<<<< HEAD
         public RenderComponent() => Sendable = true;
+=======
+        public RenderComponent()
+        {
+            Sendable = true;
+        }
+>>>>>>> feature/performance
 
         public override void Serialize(BinaryWriter writer)
         {

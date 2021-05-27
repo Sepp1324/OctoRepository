@@ -9,5 +9,6 @@ namespace OctoAwesome.Notifications
         void Unsubscribe(INotificationObserver observer, string channel);
         
         void Unsubscribe(INotificationObserver observer);
+
     }
 }

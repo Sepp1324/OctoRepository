@@ -33,9 +33,18 @@ namespace OctoAwesome
 
         protected virtual void OnSetEntity()
         {
+<<<<<<< HEAD
+=======
 
         }
+>>>>>>> feature/performance
+
+        }
+<<<<<<< HEAD
 
         protected virtual void Update(SerializableNotification notification) => Entity?.OnUpdate(notification);
+=======
+        
+>>>>>>> feature/performance
     }
 }

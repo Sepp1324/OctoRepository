@@ -239,6 +239,13 @@ namespace OctoAwesome.Client
         }
 
 
+<<<<<<< HEAD
         public override void Dispose() => base.Dispose();
+=======
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
+>>>>>>> feature/performance
     }
 }

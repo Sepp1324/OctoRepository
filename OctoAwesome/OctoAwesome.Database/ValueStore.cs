@@ -6,6 +6,7 @@ namespace OctoAwesome.Database
     {
         public bool FixedValueLength { get;  }
 
+<<<<<<< HEAD
         private readonly Writer _writer;
         private readonly Reader _reader;
 
@@ -13,6 +14,15 @@ namespace OctoAwesome.Database
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _reader = reader ?? throw new ArgumentNullException(nameof(reader)); 
+=======
+        private readonly Writer writer;
+        private readonly Reader reader;
+
+        public ValueStore(Writer writer, Reader reader, bool fixedValueLength)
+        {
+            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader)); 
+>>>>>>> feature/performance
             FixedValueLength = fixedValueLength;
         }
         public ValueStore(Writer writer, Reader reader) : this(writer, reader, false)
@@ -52,14 +62,32 @@ namespace OctoAwesome.Database
 
         internal void Remove<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
+<<<<<<< HEAD
             _writer.Write(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Index);
             _writer.WriteAndFlush(BitConverter.GetBytes(key.ValueLength), 0, sizeof(int), key.Index + Key<TTag>.KEY_SIZE);
+=======
+            writer.Write(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Index);
+            writer.WriteAndFlush(BitConverter.GetBytes(key.ValueLength), 0, sizeof(int), key.Index + Key<TTag>.KEY_SIZE);
+>>>>>>> feature/performance
         }
 
         internal void Open() => _writer.Open();
 
+<<<<<<< HEAD
         internal void Close() => _writer.Close();
 
         public void Dispose() => _writer.Dispose();
+=======
+        internal void Close()
+        {
+            writer.Close();
+        }
+
+        public void Dispose()
+        {
+            writer.Dispose(); //TODO: Move to owner
+        }
+        
+>>>>>>> feature/performance
     }
 }

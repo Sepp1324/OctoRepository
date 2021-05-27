@@ -358,7 +358,11 @@ namespace OctoAwesome
             for (var i = 0; i < typecount; i++)
             {
                 var typeName = reader.ReadString();
+<<<<<<< HEAD
                 IDefinition[] definitions = DefinitionManager.Definitions.ToArray();
+=======
+                IDefinition[] definitions = DefinitionManager.GetDefinitions().ToArray();
+>>>>>>> feature/performance
                 IDefinition blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
                 types.Add(blockDefinition);
 
@@ -437,6 +441,10 @@ namespace OctoAwesome
 
             foreach (var chunk in Chunks)
                 chunk.FlagDirty();
+<<<<<<< HEAD
+=======
+            }
+>>>>>>> feature/performance
         }
     }
 }

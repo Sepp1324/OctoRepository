@@ -31,8 +31,18 @@ namespace OctoAwesome.Network.Pooling
         {
             Package obj;
 
+<<<<<<< HEAD
             using (_semaphoreExtended.Wait())
                 obj = _internalStack.Count > 0 ? _internalStack.Pop() : new Package(false);
+=======
+            using (semaphoreExtended.Wait())
+            {
+                if (internalStack.Count > 0)
+                    obj = internalStack.Pop();
+                else
+                    obj = new Package(false);
+            }
+>>>>>>> feature/performance
 
             obj.Init(this);
             return obj;
@@ -50,6 +60,10 @@ namespace OctoAwesome.Network.Pooling
                 Push(package);
             else
                 throw new InvalidCastException("Can not push object from type: " + obj.GetType());
+<<<<<<< HEAD
+=======
+            }
+>>>>>>> feature/performance
         }       
     }
 }

@@ -15,8 +15,13 @@ namespace OctoAwesome.GameServer
         public SimulationManager SimulationManager { get; set; }
         public IUpdateHub UpdateHub { get; private set; }
 
+<<<<<<< HEAD
         private readonly ILogger _logger;
         private readonly Server _server;
+=======
+        private readonly ILogger logger;
+        private readonly Server server;
+>>>>>>> feature/performance
         private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
 
         public ServerHandler()
@@ -38,13 +43,22 @@ namespace OctoAwesome.GameServer
         public void Start()
         {
             SimulationManager.Start(); //Temp
+<<<<<<< HEAD
             _server.Start(new IPEndPoint(IPAddress.Any, 8888), new IPEndPoint(IPAddress.IPv6Any, 8888));
             _server.OnClientConnected += ServerOnClientConnected;
+=======
+            server.Start(new IPEndPoint(IPAddress.Any, 8888), new IPEndPoint(IPAddress.IPv6Any, 8888));
+            server.OnClientConnected += ServerOnClientConnected;
+>>>>>>> feature/performance
         }
 
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
+<<<<<<< HEAD
             _logger.Debug("Hurra ein neuer Spieler");
+=======
+            logger.Debug("Hurra ein neuer Spieler");
+>>>>>>> feature/performance
             e.ServerSubscription = e.Subscribe(this);
             e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.Network);
         }
@@ -56,7 +70,11 @@ namespace OctoAwesome.GameServer
                 _logger.Debug("Received null package");
                 return;
             }
+<<<<<<< HEAD
             _logger.Trace("Received a new Package with ID: " + value.UId);
+=======
+            logger.Trace("Received a new Package with ID: " + value.UId);
+>>>>>>> feature/performance
             try
             {
                 value.Payload = defaultManager.Dispatch(value.Command, new CommandParameter(value.BaseClient.Id, value.Payload));
@@ -71,7 +89,11 @@ namespace OctoAwesome.GameServer
 
             if (value.Payload == null)
             {
+<<<<<<< HEAD
                 _logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
+=======
+                logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
+>>>>>>> feature/performance
                 return;
             }
 
@@ -83,7 +105,10 @@ namespace OctoAwesome.GameServer
             _logger.Error(error.Message, error);
             return Task.CompletedTask;
         }
+<<<<<<< HEAD
 
         public Task OnCompleted() => Task.CompletedTask;
+=======
+>>>>>>> feature/performance
     }
 }

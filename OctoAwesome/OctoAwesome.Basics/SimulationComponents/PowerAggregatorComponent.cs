@@ -21,7 +21,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            var poweredEntity = new PoweredEntity()
+            PoweredEntity poweredEntity = new PoweredEntity()
             {
                 Entity = entity,
                 Moveable = entity.Components.GetComponent<MoveableComponent>(),

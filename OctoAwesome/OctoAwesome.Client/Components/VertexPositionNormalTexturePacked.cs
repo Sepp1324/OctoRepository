@@ -12,6 +12,7 @@ namespace OctoAwesome.Client.Components
         //      (0,0,1),(0,0,-1)
 
         public static readonly VertexDeclaration VertexDeclaration;
+<<<<<<< HEAD
         static VertexPositionNormalTexturePacked() => VertexDeclaration = new engenious.Graphics.VertexDeclaration(sizeof(uint)*2, new VertexElement(0, VertexElementFormat.Rgba32, VertexElementUsage.Position, 0), new VertexElement(sizeof(uint), VertexElementFormat.Rgba32, VertexElementUsage.Normal, 0));
 
         public VertexPositionNormalTexturePacked(Vector3 position,Vector3 normal,Vector2 uv)
@@ -23,6 +24,23 @@ namespace OctoAwesome.Client.Components
             var normalY = (int)normal.Y;
             var normalZ = (int)normal.Z;
             var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+=======
+        static VertexPositionNormalTexturePacked()
+        {
+            VertexDeclaration = new engenious.Graphics.VertexDeclaration(sizeof(uint)*2, new VertexElement(0, VertexElementFormat.Rgba32, VertexElementUsage.Position, 0), new VertexElement(sizeof(uint), VertexElementFormat.Rgba32, VertexElementUsage.Normal, 0));
+        }
+        public VertexPositionNormalTexturePacked(Vector3 position,Vector3 normal,Vector2 uv)
+        {
+            uint posX = (uint)position.X;
+            uint posY = (uint)position.Y;
+            uint posZ = (uint)position.Z;
+
+            int normalX = (int)normal.X;
+            int normalY = (int)normal.Y;
+            int normalZ = (int)normal.Z;
+
+            int normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+>>>>>>> feature/performance
 
             uint normalPacked;
             switch (normalExpanded)
@@ -37,7 +55,11 @@ namespace OctoAwesome.Client.Components
                     throw new Exception("Expected error happened.");
             }
 
+<<<<<<< HEAD
             var uvExpanded = ((uint)uv.X << 1) | ((uint)uv.Y);
+=======
+            uint uvExpanded = ((uint)uv.X << 1) | ((uint)uv.Y);
+>>>>>>> feature/performance
 
             PackedValue = (posX & 0xFF) | ((posY & 0xFF) << 8) | ((posZ & 0xFF) << 16) | (normalPacked << 24) | (uvExpanded << 28);
             PackedValue2 = ((uint)(uv.X * 65536) << 16) | (uint)(uv.Y * 65536);
@@ -51,6 +73,16 @@ namespace OctoAwesome.Client.Components
             get;private set;
         }
 
+<<<<<<< HEAD
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+=======
+        VertexDeclaration IVertexType.VertexDeclaration
+        {
+            get
+            {
+                return VertexDeclaration;
+            }
+        }
+>>>>>>> feature/performance
     }
 }

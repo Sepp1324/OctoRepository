@@ -6,17 +6,21 @@ using engenious;
 using System;
 using System.Windows.Threading;
 using System.Threading;
+<<<<<<< HEAD
 using OctoAwesome.Definitions;
+=======
+using OctoAwesome.Threading;
+>>>>>>> feature/performance
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class ChunkRenderer : IDisposable
     {
-        private readonly Effect _simple;
-        private readonly GraphicsDevice _graphicsDevice;
+        private Effect simple;
+        private GraphicsDevice graphicsDevice;
 
-        private readonly Texture2DArray _textures;
-        private readonly Dispatcher _dispatcher;
+        private Texture2DArray textures;
+        private readonly Dispatcher dispatcher;
 
         public static float OverrideLightLevel { get; set; }
         public static bool WireFrame { get; set; }
@@ -24,8 +28,13 @@ namespace OctoAwesome.Client.Components
         /// <summary>
         /// Referenz auf den aktuellen Chunk (falls vorhanden)
         /// </summary>
+<<<<<<< HEAD
         private IChunk _chunk;
         private bool _loaded = false;
+=======
+        private IChunk chunk;
+        private bool loaded = false;
+>>>>>>> feature/performance
 
         private VertexBuffer _vb;
         private static IndexBuffer ib;
@@ -42,7 +51,10 @@ namespace OctoAwesome.Client.Components
         /// </summary>
         public Index3? ChunkPosition
         {
-            get => _chunkPosition;
+            get
+            {
+                return _chunkPosition;
+            }
             private set
             {
                 _chunkPosition = value;
@@ -50,7 +62,7 @@ namespace OctoAwesome.Client.Components
             }
         }
 
-        public bool DispatchRequired => Thread.CurrentThread.ManagedThreadId != _dispatcher.Thread.ManagedThreadId;
+        public bool DispatchRequired => Thread.CurrentThread.ManagedThreadId != dispatcher.Thread.ManagedThreadId;
 
         static ChunkRenderer()
         {
@@ -62,11 +74,19 @@ namespace OctoAwesome.Client.Components
         public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, Effect simpleShader, GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
         {
             _sceneControl = sceneControl;
+<<<<<<< HEAD
             this._definitionManager = definitionManager;
             this._graphicsDevice = graphicsDevice;
             this._textures = textures;
             _dispatcher = Dispatcher.CurrentDispatcher;
             _simple = simpleShader;
+=======
+            this.definitionManager = definitionManager;
+            this.graphicsDevice = graphicsDevice;
+            this.textures = textures;
+            dispatcher = Dispatcher.CurrentDispatcher;
+            simple = simpleShader;
+>>>>>>> feature/performance
             GenerateIndexBuffer();
         }
 
@@ -111,26 +131,42 @@ namespace OctoAwesome.Client.Components
                 shift.Y * Chunk.CHUNKSIZE_Y,
                 shift.Z * Chunk.CHUNKSIZE_Z);
 
+<<<<<<< HEAD
             _simple.Parameters["OverrideLightLevel"].SetValue(OverrideLightLevel);
             _simple.Parameters["WorldViewProj"].SetValue(worldViewProj);
             _simple.Parameters["BlockTextures"].SetValue(_textures);
+=======
+            simple.Parameters["OverrideLightLevel"].SetValue(OverrideLightLevel);
+            simple.Parameters["WorldViewProj"].SetValue(worldViewProj);
+            simple.Parameters["BlockTextures"].SetValue(textures);
+>>>>>>> feature/performance
 
-            _simple.Parameters["AmbientIntensity"].SetValue(0.4f);
-            _simple.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
+            simple.Parameters["AmbientIntensity"].SetValue(0.4f);
+            simple.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
 
             lock (this)
             {
                 if (_vb == null)
                     return;
 
+<<<<<<< HEAD
                 _graphicsDevice.RasterizerState = WireFrame ? wireFrameState : RasterizerState.CullCounterClockwise;
                 _graphicsDevice.VertexBuffer = _vb;
                 _graphicsDevice.IndexBuffer = ib;
+=======
+                graphicsDevice.RasterizerState = WireFrame ? wireFrameState : RasterizerState.CullCounterClockwise;
+                graphicsDevice.VertexBuffer = vb;
+                graphicsDevice.IndexBuffer = ib;
+>>>>>>> feature/performance
 
-                foreach (var pass in _simple.CurrentTechnique.Passes)
+                foreach (var pass in simple.CurrentTechnique.Passes)
                 {
                     pass.Apply();
+<<<<<<< HEAD
                     _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, _vertexCount, 0, _indexCount / 3);
+=======
+                    graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, vertexCount, 0, indexCount / 3);
+>>>>>>> feature/performance
                 }
             }
         }
@@ -144,7 +180,11 @@ namespace OctoAwesome.Client.Components
                 if (ib != null)
                     return;
 
+<<<<<<< HEAD
                 ib = new IndexBuffer(_graphicsDevice, DrawElementsType.UnsignedInt, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Z * 6 * 6);
+=======
+                ib = new IndexBuffer(graphicsDevice, DrawElementsType.UnsignedInt, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Z * 6 * 6);
+>>>>>>> feature/performance
                 List<int> indices = new List<int>(ib.IndexCount);
                 for (int i = 0; i < ib.IndexCount * 2 / 3; i += 4)
                 {
@@ -184,9 +224,15 @@ namespace OctoAwesome.Client.Components
 
                 this._chunk.Changed += OnChunkChanged;
             }
+<<<<<<< HEAD
             var chunk = this._chunk;
             List<VertexPositionNormalTextureLight> vertices = new List<VertexPositionNormalTextureLight>();
             int textureColumns = _textures.Width / SceneControl.TEXTURESIZE;
+=======
+            var chunk = this.chunk;
+            List<VertexPositionNormalTextureLight> vertices = new List<VertexPositionNormalTextureLight>();
+            int textureColumns = textures.Width / SceneControl.TEXTURESIZE;
+>>>>>>> feature/performance
             float textureWidth = 1f / textureColumns;
             float texelSize = 1f / SceneControl.TEXTURESIZE;
             float textureSizeGap = texelSize;
@@ -229,7 +275,11 @@ namespace OctoAwesome.Client.Components
                         if (block == 0)
                             continue;
 
+<<<<<<< HEAD
                         IBlockDefinition blockDefinition = (IBlockDefinition)_definitionManager.GetBlockDefinitionByIndex(block);
+=======
+                        IBlockDefinition blockDefinition = (IBlockDefinition)definitionManager.GetBlockDefinitionByIndex(block);
+>>>>>>> feature/performance
 
                         if (blockDefinition == null)
                             continue;
@@ -244,7 +294,11 @@ namespace OctoAwesome.Client.Components
                                 {
                                     blocks[GetIndex(zOffset, yOffset, xOffset)] = _manager.GetBlock((ChunkPosition.Value * Chunk.CHUNKSIZE) + new Index3(x + xOffset, y + yOffset, z + zOffset));
                                     blockDefinitions[GetIndex(zOffset, yOffset, xOffset)] =
+<<<<<<< HEAD
                                         (IBlockDefinition)_definitionManager.GetBlockDefinitionByIndex(blocks[GetIndex(zOffset, yOffset, xOffset)]);
+=======
+                                        (IBlockDefinition)definitionManager.GetBlockDefinitionByIndex(blocks[GetIndex(zOffset, yOffset, xOffset)]);
+>>>>>>> feature/performance
                                 }
 
                         ushort topBlock = blocks[GetIndex(1, 0, 0)];
@@ -516,7 +570,11 @@ namespace OctoAwesome.Client.Components
                 {
                     if (_vb == null || ib == null)
                     {
+<<<<<<< HEAD
                         _vb = new VertexBuffer(_graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, _vertexCount);
+=======
+                        vb = new VertexBuffer(graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, vertexCount);
+>>>>>>> feature/performance
                     }
                     if (_vertexCount > _vb.VertexCount)
                         _vb.Resize(_vertexCount);
@@ -581,7 +639,7 @@ namespace OctoAwesome.Client.Components
         private void Dispatch(Action action)
         {
             if (DispatchRequired)
-                _dispatcher.Invoke(action);
+                dispatcher.Invoke(action);
             else
                 action();
         }

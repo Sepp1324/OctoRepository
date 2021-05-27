@@ -8,8 +8,13 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class MessageScreen : Screen
     {
+<<<<<<< HEAD
         private readonly Panel _panel;
         private readonly AssetComponent _assets;
+=======
+        Panel panel;
+        AssetComponent assets;
+>>>>>>> feature/performance
 
         public MessageScreen(ScreenComponent manager, string title, string content, string buttonText = "OK", Action<Control, MouseEventArgs> buttonClick = null) : base(manager)
         {
@@ -27,10 +32,15 @@ namespace OctoAwesome.Client.Screens
             };
             Controls.Add(_panel);
 
+<<<<<<< HEAD
             var spanel = new StackPanel(manager);
             _panel.Controls.Add(spanel);
+=======
+            StackPanel spanel = new StackPanel(manager);
+            panel.Controls.Add(spanel);
+>>>>>>> feature/performance
 
-            var headLine = new Label(manager)
+            Label headLine = new Label(manager)
             {
                 Text = title,
                 Font = Skin.Current.HeadlineFont,
@@ -38,7 +48,7 @@ namespace OctoAwesome.Client.Screens
             };
             spanel.Controls.Add(headLine);
 
-            var contentLabel = new Label(manager)
+            Label contentLabel = new Label(manager)
             {
                 Text = content,
                 Font = Skin.Current.TextFont,
@@ -57,7 +67,11 @@ namespace OctoAwesome.Client.Screens
             };
             spanel.Controls.Add(closeButton);
 
+<<<<<<< HEAD
             _panel.Background = NineTileBrush.FromSingleTexture(_assets.LoadTexture(typeof(ScreenComponent), "panel"), 30, 30);
+=======
+            panel.Background = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "panel"), 30, 30);
+>>>>>>> feature/performance
         }
     }
 }

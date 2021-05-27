@@ -12,7 +12,14 @@ namespace OctoAwesome.EntityComponents
         /// </summary>
         public List<InventorySlot> Inventory { get; set; }
 
+<<<<<<< HEAD
         public InventoryComponent() => Inventory = new List<InventorySlot>();
+=======
+        public InventoryComponent()
+        {
+            Inventory = new List<InventorySlot>();
+        }
+>>>>>>> feature/performance
 
         public override void Deserialize(BinaryReader reader)
         {
@@ -22,10 +29,15 @@ namespace OctoAwesome.EntityComponents
             base.Deserialize(reader);
 
             var count = reader.ReadInt32();
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
+<<<<<<< HEAD
                 var name = reader.ReadString();
                 var definition = definitionManager.Definitions.FirstOrDefault(d => d.GetType().FullName == name);
+=======
+                string name = reader.ReadString();
+                var definition = definitionManager.GetDefinitions().FirstOrDefault(d => d.GetType().FullName == name);
+>>>>>>> feature/performance
                 var amount = reader.ReadDecimal();
 
                 if (definition == null || !(definition is IInventoryable))
@@ -34,7 +46,11 @@ namespace OctoAwesome.EntityComponents
                 var slot = new InventorySlot()
                 {
                     Amount = amount,
+<<<<<<< HEAD
                     Item = (IInventoryable)definition,
+=======
+                    Definition = (IInventoryableDefinition)definition,
+>>>>>>> feature/performance
                 };
 
                 Inventory.Add(slot);
@@ -56,11 +72,19 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         /// Fügt ein Element des angegebenen Definitionstyps hinzu.
         /// </summary>
+<<<<<<< HEAD
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
         {
             var slot = Inventory.FirstOrDefault(s => s.Item == item &&
                 s.Amount < item.VolumePerUnit * item.StackLimit);
+=======
+        /// <param name="definition">Die Definition.</param>
+        public void AddUnit(int quantity, IInventoryableDefinition definition)
+        {
+            var slot = Inventory.FirstOrDefault(s => s.Definition == definition &&
+                s.Amount < definition.VolumePerUnit * definition.StackLimit);
+>>>>>>> feature/performance
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
@@ -72,10 +96,14 @@ namespace OctoAwesome.EntityComponents
                 };
                 Inventory.Add(slot);
             }
+<<<<<<< HEAD
             else
             {
                 slot.Amount += quantity;
             }
+=======
+            slot.Amount += quantity;
+>>>>>>> feature/performance
         }
 
         /// <summary>

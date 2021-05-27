@@ -9,6 +9,7 @@ namespace OctoAwesome.EntityComponents
     {
         public Coordinate Position
         {
+<<<<<<< HEAD
             get => _position; set
             {
                 var valueBlockX = ((int)(value.BlockPosition.X * 100)) / 100f;
@@ -17,6 +18,17 @@ namespace OctoAwesome.EntityComponents
                 var positionBlockY = ((int)(_position.BlockPosition.Y * 100)) / 100f;
 
                 _posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || _position.BlockPosition.Z != value.BlockPosition.Z;
+=======
+            get => position; set
+            {
+                var valueBlockX = ((int)(value.BlockPosition.X * 100)) / 100f;
+                var valueBlockY = ((int)(value.BlockPosition.Y * 100)) / 100f;
+                var positionBlockX = ((int)(position.BlockPosition.X * 100)) / 100f;
+                var positionBlockY = ((int)(position.BlockPosition.Y * 100)) / 100f;
+
+                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY
+                    || position.BlockPosition.Z != value.BlockPosition.Z;
+>>>>>>> feature/performance
 
                 SetValue(ref _position, value);
                 TryUpdatePlanet(value.Planet);
@@ -27,16 +39,28 @@ namespace OctoAwesome.EntityComponents
         
         public IPlanet Planet { get; private set; }
 
+<<<<<<< HEAD
         private Coordinate _position;
         private bool _posUpdate;
         private readonly IResourceManager _resourceManager;
         private readonly IPool<PropertyChangedNotification> _propertyChangedNotificationPool;
+=======
+        private Coordinate position;
+        private bool posUpdate;
+        private readonly IResourceManager resourceManager;
+        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
+>>>>>>> feature/performance
 
         public PositionComponent()
         {
             Sendable = true;
+<<<<<<< HEAD
             _resourceManager = TypeContainer.Get<IResourceManager>();
             _propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
+=======
+            resourceManager = TypeContainer.Get<IResourceManager>();
+            propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
+>>>>>>> feature/performance
         }
 
         public override void Serialize(BinaryWriter writer)
@@ -57,13 +81,13 @@ namespace OctoAwesome.EntityComponents
             base.Deserialize(reader);
 
             // Position
-            var planet = reader.ReadInt32();
-            var blockX = reader.ReadInt32();
-            var blockY = reader.ReadInt32();
-            var blockZ = reader.ReadInt32();
-            var posX = reader.ReadSingle();
-            var posY = reader.ReadSingle();
-            var posZ = reader.ReadSingle();
+            int planet = reader.ReadInt32();
+            int blockX = reader.ReadInt32();
+            int blockY = reader.ReadInt32();
+            int blockZ = reader.ReadInt32();
+            float posX = reader.ReadSingle();
+            float posY = reader.ReadSingle();
+            float posZ = reader.ReadSingle();
 
             _position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
             TryUpdatePlanet(planet);

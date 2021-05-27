@@ -4,7 +4,14 @@
     {
         protected Database<Tag> Database { get; }
 
+<<<<<<< HEAD
         protected DatabaseContext(Database<Tag> database) => Database = database;
+=======
+        protected DatabaseContext(Database<Tag> database)
+        {
+            Database = database;
+        }
+>>>>>>> feature/performance
 
         public abstract TObject Get(Tag key);
 

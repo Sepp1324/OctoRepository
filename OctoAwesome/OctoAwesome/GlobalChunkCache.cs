@@ -16,6 +16,7 @@ namespace OctoAwesome
     /// </summary>
     public sealed class GlobalChunkCache : IGlobalChunkCache, IDisposable
     {
+<<<<<<< HEAD
         private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
         private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
         private readonly Dictionary<Index3, CacheItem> _cache;
@@ -34,6 +35,33 @@ namespace OctoAwesome
         /// Event for changes in the ChunkCOlumn
         /// </summary>
         public event EventHandler<IChunkColumn> ChunkColumnChanged;
+=======
+
+        public event EventHandler<IChunkColumn> ChunkColumnChanged;
+
+        private readonly ConcurrentQueue<CacheItem> _unreferencedItems = new ConcurrentQueue<CacheItem>();
+        private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
+        /// <summary>
+        /// Dictionary, das alle <see cref="CacheItem"/>s hält.
+        /// </summary>
+        private readonly Dictionary<Index3, CacheItem> cache;
+        private readonly Queue<CacheItem> newChunks;
+        private readonly Queue<CacheItem> oldChunks;
+        private readonly CancellationTokenSource tokenSource;
+        private readonly IResourceManager resourceManager;
+
+        /// <summary>
+        /// Objekt, das für die Locks benutzt wird
+        /// </summary>
+        private readonly LockSemaphore semaphore = new LockSemaphore(1, 1);
+        private readonly LockSemaphore updateSemaphore = new LockSemaphore(1, 1);
+
+        // TODO: Früher oder später nach draußen auslagern
+        private readonly Task cleanupTask;
+        private readonly ILogger logger;
+        private readonly IEnumerable<(Guid Id, PositionComponent Component)> positionComponents;
+        private IUpdateHub updateHub;
+>>>>>>> feature/performance
 
         /// <summary>
         /// Gibt die Anzahl der aktuell geladenen Chunks zurück.
@@ -61,6 +89,7 @@ namespace OctoAwesome
         public GlobalChunkCache(IPlanet planet, IResourceManager resourceManager)
         {
             Planet = planet ?? throw new ArgumentNullException(nameof(planet));
+<<<<<<< HEAD
             _resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
 
             _cache = new Dictionary<Index3, CacheItem>();
@@ -74,6 +103,21 @@ namespace OctoAwesome
 
             var ids = resourceManager.GetEntityIdsFromComponent<PositionComponent>().ToList();
             _positionComponents = resourceManager.GetEntityComponents<PositionComponent>(ids);
+=======
+            this.resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
+
+            cache = new Dictionary<Index3, CacheItem>();
+            newChunks = new Queue<CacheItem>();
+            oldChunks = new Queue<CacheItem>();
+
+            tokenSource = new CancellationTokenSource();
+            cleanupTask = new Task(async () => await BackgroundCleanup(tokenSource.Token), TaskCreationOptions.LongRunning);
+            cleanupTask.Start(TaskScheduler.Default);
+            logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(GlobalChunkCache));
+
+            var ids = resourceManager.GetEntityIdsFromComponent<PositionComponent>().ToList();
+            positionComponents = resourceManager.GetEntityComponents<PositionComponent>(ids);
+>>>>>>> feature/performance
         }
 
         /// <summary>
@@ -88,7 +132,12 @@ namespace OctoAwesome
 
             using (_semaphore.Wait())
             {
+<<<<<<< HEAD
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
+=======
+
+                if (!cache.TryGetValue(new Index3(position, Planet.Id), out cacheItem))
+>>>>>>> feature/performance
                 {
 
                     cacheItem = new CacheItem()
@@ -105,7 +154,12 @@ namespace OctoAwesome
                 cacheItem.References++;
 
                 if (cacheItem.References > 1)
+<<<<<<< HEAD
                     _logger.Warn($"Add Reference to:{cacheItem.Index}, now at:{cacheItem.References}");
+=======
+                    logger.Warn($"Add Reference to:{cacheItem.Index}, now at:{cacheItem.References}");
+
+>>>>>>> feature/performance
             }
 
             using (cacheItem.Wait())
@@ -115,9 +169,15 @@ namespace OctoAwesome
                 {
                     cacheItem.ChunkColumn = _resourceManager.LoadChunkColumn(Planet, position);
                     var chunkIndex = new Index3(position, Planet.Id);
+<<<<<<< HEAD
                     var loadedEntities = _positionComponents
                         .Where(x => x.Component.Planet == Planet && x.Component.Position.ChunkIndex.X == chunkIndex.X && x.Component.Position.ChunkIndex.Y == chunkIndex.Y)
                         .Select(x => _resourceManager.LoadEntity(x.Id))
+=======
+                    var loadedEntities = positionComponents
+                        .Where(x => x.Component.Planet == Planet && x.Component.Position.ChunkIndex.X == chunkIndex.X && x.Component.Position.ChunkIndex.Y == chunkIndex.Y)
+                        .Select(x => resourceManager.LoadEntity(x.Id))
+>>>>>>> feature/performance
                         .ToArray();
 
                     foreach (var entity in loadedEntities)
@@ -131,7 +191,12 @@ namespace OctoAwesome
             }
         }
 
+<<<<<<< HEAD
         public bool IsChunkLoaded(Index2 position) => _cache.ContainsKey(new Index3(position, Planet.Id));
+=======
+        public bool IsChunkLoaded(Index2 position)
+            => cache.ContainsKey(new Index3(position, Planet.Id));
+>>>>>>> feature/performance
 
         private void ItemChanged(CacheItem obj, IChunkColumn chunkColumn)
         {
@@ -145,7 +210,17 @@ namespace OctoAwesome
         /// <param name="planet">Die Id des Planeten</param>
         /// <param name="position">Die Position des zurückzugebenden Chunks</param>
         /// <returns>Chunk Instanz oder null, falls nicht geladen</returns>
+<<<<<<< HEAD
         public IChunkColumn Peek(Index2 position) => _cache.TryGetValue(new Index3(position, Planet.Id), out CacheItem cacheItem) ? cacheItem.ChunkColumn : null;
+=======
+        public IChunkColumn Peek(Index2 position)
+        {
+            if (cache.TryGetValue(new Index3(position, Planet.Id), out CacheItem cacheItem))
+                return cacheItem.ChunkColumn;
+
+            return null;
+        }
+>>>>>>> feature/performance
 
 
         /// <summary>
@@ -155,7 +230,11 @@ namespace OctoAwesome
         {
             using (_semaphore.Wait())
             {
+<<<<<<< HEAD
                 foreach (CacheItem value in _cache.Values)
+=======
+                foreach (CacheItem value in cache.Values)
+>>>>>>> feature/performance
                 {
                     value.References = 0;
                     _unreferencedItems.Enqueue(value);
@@ -172,7 +251,11 @@ namespace OctoAwesome
         {
             using (_semaphore.Wait())
             {
+<<<<<<< HEAD
                 if (!_cache.TryGetValue(new Index3(position, Planet.Id), out CacheItem cacheItem))
+=======
+                if (!cache.TryGetValue(new Index3(position, Planet.Id), out CacheItem cacheItem))
+>>>>>>> feature/performance
                 {
                     throw new NotSupportedException(string.Format("Kein Chunk für die Position ({0}) im Cache", position));
                 }
@@ -203,6 +286,7 @@ namespace OctoAwesome
                         using (ci.Wait())
                             ci.Changed -= ItemChanged;
 
+<<<<<<< HEAD
                         using (_semaphore.Wait())
                             _cache.Remove(key);
 
@@ -211,6 +295,17 @@ namespace OctoAwesome
                     }
                 }
             }
+=======
+                        using (semaphore.Wait())
+                            cache.Remove(key);
+
+                        using (updateSemaphore.Wait())
+                            oldChunks.Enqueue(ci);
+                    }
+                }
+            }
+
+>>>>>>> feature/performance
             return Task.CompletedTask;
         }
 
@@ -222,14 +317,23 @@ namespace OctoAwesome
                 //Neue Chunks in die Simulation einpflegen
                 while (_newChunks.Count > 0)
                 {
+<<<<<<< HEAD
                     var chunk = _newChunks.Dequeue();
+=======
+                    CacheItem chunk = newChunks.Dequeue();
+>>>>>>> feature/performance
                     chunk.ChunkColumn.ForEachEntity(simulation.AddEntity);
                 }
 
                 //Alte Chunks aus der Siumaltion entfernen
                 while (_oldChunks.Count > 0)
                 {
+<<<<<<< HEAD
                     using (var chunk = _oldChunks.Dequeue())
+=======
+                    using (CacheItem chunk = oldChunks.Dequeue())
+                    {
+>>>>>>> feature/performance
                         chunk.ChunkColumn.ForEachEntity(simulation.RemoveEntity);
                 }
             }
@@ -240,15 +344,24 @@ namespace OctoAwesome
             //TODO: Überarbeiten
             using (_semaphore.Wait())
             {
+<<<<<<< HEAD
                 var failChunkEntities = _cache
+=======
+                FailEntityChunkArgs[] failChunkEntities = cache
+>>>>>>> feature/performance
                     .Where(chunk => chunk.Value.ChunkColumn != null)
                     .SelectMany(chunk => chunk.Value.ChunkColumn.FailChunkEntity())
                     .ToArray();
 
-                foreach (var entity in failChunkEntities)
+                foreach (FailEntityChunkArgs entity in failChunkEntities)
                 {
+<<<<<<< HEAD
                     var currentChunk = Peek(entity.CurrentChunk);
                     var targetChunk = Peek(entity.TargetChunk);
+=======
+                    IChunkColumn currentchunk = Peek(entity.CurrentChunk);
+                    IChunkColumn targetchunk = Peek(entity.TargetChunk);
+>>>>>>> feature/performance
 
                     currentChunk?.Remove(entity.Entity);
 
@@ -269,7 +382,12 @@ namespace OctoAwesome
 
         public void OnCompleted() { }
 
+<<<<<<< HEAD
         public void OnError(Exception error) => throw error;
+=======
+        public void OnError(Exception error)
+            => throw error;
+>>>>>>> feature/performance
 
         public void OnNext(Notification value)
         {
@@ -296,17 +414,30 @@ namespace OctoAwesome
 
         public void Update(SerializableNotification notification)
         {
+<<<<<<< HEAD
             if (notification is IChunkNotification chunk && _cache.TryGetValue(new Index3(chunk.ChunkPos.X, chunk.ChunkPos.Y, chunk.Planet), out var cacheItem)) 
+=======
+            if (notification is IChunkNotification chunk
+                && cache.TryGetValue(new Index3(chunk.ChunkPos.X, chunk.ChunkPos.Y, chunk.Planet),
+                out CacheItem cacheItem))
+            {
+>>>>>>> feature/performance
                 cacheItem.ChunkColumn?.Update(notification);
         }
 
+<<<<<<< HEAD
         public void InsertUpdateHub(IUpdateHub updateHub) => this._updateHub = updateHub;
+=======
+        public void InsertUpdateHub(IUpdateHub updateHub)
+            => this.updateHub = updateHub;
+>>>>>>> feature/performance
 
         public void Dispose()
         {
             foreach (var item in _unreferencedItems.ToArray())
                 item.Dispose();
 
+<<<<<<< HEAD
             foreach (var item in _cache.ToArray())
                 item.Value.Dispose();
 
@@ -322,6 +453,23 @@ namespace OctoAwesome
 
             _semaphore.Dispose();
             _updateSemaphore.Dispose();
+=======
+            foreach (var item in cache.ToArray())
+                item.Value.Dispose();
+
+            foreach (var item in newChunks.ToArray())
+                item.Dispose();
+
+            foreach (var item in oldChunks.ToArray())
+                item.Dispose();
+
+            cache.Clear();
+            newChunks.Clear();
+            oldChunks.Clear();
+
+            semaphore.Dispose();
+            updateSemaphore.Dispose();
+>>>>>>> feature/performance
             _autoResetEvent.Dispose();
         }
 
@@ -331,7 +479,11 @@ namespace OctoAwesome
         private class CacheItem : IDisposable
         {
             private IChunkColumn _chunkColumn;
+<<<<<<< HEAD
             private readonly LockSemaphore _internalSemaphore;
+=======
+            private readonly LockSemaphore internalSemaphore;
+>>>>>>> feature/performance
 
             public IPlanet Planet { get; set; }
 
@@ -362,11 +514,20 @@ namespace OctoAwesome
 
             public event Action<CacheItem, IChunkColumn> Changed;
 
+<<<<<<< HEAD
             private bool _disposed;
 
             public CacheItem() => _internalSemaphore = new LockSemaphore(1, 1);
 
             public LockSemaphore.SemaphoreLock Wait() => _internalSemaphore.Wait();
+=======
+            private bool disposed;
+
+            public CacheItem() => internalSemaphore = new LockSemaphore(1, 1);
+
+            public LockSemaphore.SemaphoreLock Wait()
+                => internalSemaphore.Wait();
+>>>>>>> feature/performance
 
             public void Dispose()
             {
@@ -384,7 +545,14 @@ namespace OctoAwesome
                 Planet = null;
             }
 
+<<<<<<< HEAD
             private void OnChanged(IChunkColumn chunkColumn, IChunk chunk) => Changed?.Invoke(this, chunkColumn);
+=======
+            private void OnChanged(IChunkColumn chunkColumn, IChunk chunk)
+                => Changed?.Invoke(this, chunkColumn);
+
+>>>>>>> feature/performance
         }
+
     }
 }

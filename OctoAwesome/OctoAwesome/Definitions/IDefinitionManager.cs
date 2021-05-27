@@ -17,8 +17,13 @@ namespace OctoAwesome.Definitions
         /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
+<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/IDefinitionManager.cs
         IItemDefinition[] ItemDefinitions { get; }
 
+=======
+        IEnumerable<IItemDefinition> GetItemDefinitions();
+        
+>>>>>>> feature/performance:OctoAwesome/OctoAwesome/IDefinitionManager.cs
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>

@@ -94,6 +94,21 @@ namespace OctoAwesome.Network
         }
 
         public Task OnError(Exception error)
+<<<<<<< HEAD
+=======
+        {
+            logger.Error(error.Message, error);
+            return Task.CompletedTask;
+        }
+
+        public Task OnCompleted()
+        {
+            clientSubscription.Dispose();
+            return Task.CompletedTask;
+        }
+
+        void INotificationObserver.OnCompleted()
+>>>>>>> feature/performance
         {
             logger.Error(error.Message, error);
             return Task.CompletedTask;

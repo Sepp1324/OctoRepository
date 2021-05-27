@@ -6,10 +6,19 @@ namespace OctoAwesome.Client.Screens
 {
     public sealed class QuoteProvider
     {
+<<<<<<< HEAD
         private readonly FileInfo _fileInfo;
         private readonly Random _random;
         private bool _loaded;
         private string[] _quotes;
+
+        private readonly LockSemaphore semaphoreExtended;
+=======
+        private readonly FileInfo fileInfo;
+        private readonly Random random;
+        private bool loaded;
+        private string[] quotes;
+>>>>>>> feature/performance
 
         private readonly LockSemaphore semaphoreExtended;
 

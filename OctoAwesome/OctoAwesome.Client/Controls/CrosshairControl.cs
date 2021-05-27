@@ -7,11 +7,19 @@ namespace OctoAwesome.Client.Controls
 {
     class CrosshairControl : Control
     {
+<<<<<<< HEAD
         public Texture2D TEXTURE;
         public float TRANSPARENCY;
         public Color COLOR;
 
         readonly AssetComponent _assets;
+=======
+        public Texture2D Texture;
+        public float Transparency;
+        public Color Color;
+
+        AssetComponent assets;
+>>>>>>> feature/performance
 
         public CrosshairControl(ScreenComponent manager) : base(manager)
         {

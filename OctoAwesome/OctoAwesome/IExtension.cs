@@ -20,7 +20,10 @@
         /// </summary>
         /// <param name="extensionLoader">ExtensionsLoader</param>
         void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer);
+<<<<<<< HEAD
         
+=======
+>>>>>>> feature/performance
         void Register(ITypeContainer typeContainer);
     }
 }

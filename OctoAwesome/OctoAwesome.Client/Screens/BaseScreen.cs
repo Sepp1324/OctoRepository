@@ -17,7 +17,13 @@ namespace OctoAwesome.Client.Screens
         {
             if (Manager.CanGoBack)
             {
+<<<<<<< HEAD
                 BackButton = new TextButton(Manager, Languages.OctoClient.Back) {VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Left};
+=======
+                BackButton = new TextButton(Manager, Languages.OctoClient.Back);
+                BackButton.VerticalAlignment = VerticalAlignment.Top;
+                BackButton.HorizontalAlignment = HorizontalAlignment.Left;
+>>>>>>> feature/performance
                 BackButton.LeftMouseClick += (s, e) =>
                 {
                     Manager.NavigateBack();
@@ -25,7 +31,16 @@ namespace OctoAwesome.Client.Screens
                 BackButton.Margin = new Border(10, 10, 10, 10);
                 Controls.Add(BackButton);
             }
+<<<<<<< HEAD
 
+=======
+
+        }
+
+        protected void SetDefaultBackground()
+        {
+            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
+>>>>>>> feature/performance
         }
 
         protected void SetDefaultBackground() => Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
@@ -57,5 +72,6 @@ namespace OctoAwesome.Client.Screens
             };
             return button;
         }
+
     }
 }

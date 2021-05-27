@@ -1,13 +1,18 @@
 ﻿using OctoAwesome.EntityComponents;
 using engenious;
 using OctoAwesome.Services;
+<<<<<<< HEAD
 using OctoAwesome.Definitions;
+=======
+using OctoAwesome.Definitions.Items;
+>>>>>>> feature/performance
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
     [EntityFilter(typeof(ControllableComponent), typeof(InventoryComponent))]
     public class BlockInteractionComponent : SimulationComponent<ControllableComponent, InventoryComponent>
     {
+<<<<<<< HEAD
         private readonly Simulation _simulation;
         private readonly BlockCollectionService _service;
 
@@ -15,11 +20,30 @@ namespace OctoAwesome.Basics.SimulationComponents
         {
             _simulation = simulation;
             _service = interactionService;
+=======
+        private readonly Simulation simulation;
+        private readonly BlockCollectionService service;
+
+        private readonly Hand hand;
+
+        public BlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
+        {
+            this.simulation = simulation;
+            service = interactionService;
+            hand = new Hand(new HandDefinition());
+>>>>>>> feature/performance
         }
 
         protected override bool AddEntity(Entity entity) => true;
 
+<<<<<<< HEAD
         protected override void RemoveEntity(Entity entity) { }
+=======
+        protected override void RemoveEntity(Entity entity)
+        {
+
+        }
+>>>>>>> feature/performance
 
         protected override void UpdateEntity(GameTime gameTime, Entity entity, ControllableComponent controller, InventoryComponent inventory)
         {
@@ -32,6 +56,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                 if (!lastBlock.IsEmpty)
                 {
+<<<<<<< HEAD
                     IItem activeItem;
 
                     if (toolbar.ActiveTool.Item is IItem item)
@@ -49,6 +74,17 @@ namespace OctoAwesome.Basics.SimulationComponents
                             else if(definition is IInventoryable invDef) 
                                 inventory.AddUnit(quantity, invDef);
                         }
+=======
+                    var blockHitInformation = service.Hit(lastBlock, hand, cache);
+
+                    if (blockHitInformation.IsHitValid)
+                        foreach (var definition in blockHitInformation.Definitions ?? Array.Empty<KeyValuePair<int, IDefinition>>())
+                        {
+                            if (definition.Value is IInventoryableDefinition invDef)
+                                inventory.AddUnit(definition.Key, invDef);
+                        }
+
+>>>>>>> feature/performance
                 }
                 controller.InteractBlock = null;
             }
@@ -57,7 +93,7 @@ namespace OctoAwesome.Basics.SimulationComponents
             {
                 if (toolbar.ActiveTool != null)
                 {
-                    var add = new Index3();
+                    Index3 add = new Index3();
                     switch (controller.ApplySide)
                     {
                         case OrientationFlags.SideWest: add = new Index3(-1, 0, 0); break;
@@ -70,15 +106,27 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                     if (toolbar.ActiveTool.Item is IBlockDefinition definition)
                     {
+<<<<<<< HEAD
                         var idx = controller.ApplyBlock.Value + add;
                         var boxes = definition.GetCollisionBoxes(cache, idx.X, idx.Y, idx.Z);
 
                         var intersects = false;
                         var positionComponent = entity.Components.GetComponent<PositionComponent>();
                         var bodyComponent = entity.Components.GetComponent<BodyComponent>();
+=======
+                        IBlockDefinition definition = toolbar.ActiveTool.Definition as IBlockDefinition;
+
+                        Index3 idx = controller.ApplyBlock.Value + add;
+                        var boxes = definition.GetCollisionBoxes(cache, idx.X, idx.Y, idx.Z);
+
+                        bool intersects = false;
+                        var positioncomponent = entity.Components.GetComponent<PositionComponent>();
+                        var bodycomponent = entity.Components.GetComponent<BodyComponent>();
+>>>>>>> feature/performance
 
                         if (positionComponent != null && bodyComponent != null)
                         {
+<<<<<<< HEAD
                             const float gap = 0.01f;
                             var playerBox = new BoundingBox(
                                 new Vector3(
@@ -89,6 +137,18 @@ namespace OctoAwesome.Basics.SimulationComponents
                                     positionComponent.Position.GlobalBlockIndex.X + positionComponent.Position.BlockPosition.X + bodyComponent.Radius - gap,
                                     positionComponent.Position.GlobalBlockIndex.Y + positionComponent.Position.BlockPosition.Y + bodyComponent.Radius - gap,
                                     positionComponent.Position.GlobalBlockIndex.Z + positionComponent.Position.BlockPosition.Z + bodyComponent.Height - gap)
+=======
+                            float gap = 0.01f;
+                            var playerBox = new BoundingBox(
+                                new Vector3(
+                                    positioncomponent.Position.GlobalBlockIndex.X + positioncomponent.Position.BlockPosition.X - bodycomponent.Radius + gap,
+                                    positioncomponent.Position.GlobalBlockIndex.Y + positioncomponent.Position.BlockPosition.Y - bodycomponent.Radius + gap,
+                                    positioncomponent.Position.GlobalBlockIndex.Z + positioncomponent.Position.BlockPosition.Z + gap),
+                                new Vector3(
+                                    positioncomponent.Position.GlobalBlockIndex.X + positioncomponent.Position.BlockPosition.X + bodycomponent.Radius - gap,
+                                    positioncomponent.Position.GlobalBlockIndex.Y + positioncomponent.Position.BlockPosition.Y + bodycomponent.Radius - gap,
+                                    positioncomponent.Position.GlobalBlockIndex.Z + positioncomponent.Position.BlockPosition.Z + bodycomponent.Height - gap)
+>>>>>>> feature/performance
                                 );
 
                             // Nicht in sich selbst reinbauen
@@ -107,9 +167,14 @@ namespace OctoAwesome.Basics.SimulationComponents
                         {
                             if (inventory.RemoveUnit(toolbar.ActiveTool))
                             {
+<<<<<<< HEAD
                                 cache.SetBlock(idx, _simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 cache.SetBlockMeta(idx, (int)controller.ApplySide);
                                 
+=======
+                                cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
+                                cache.SetBlockMeta(idx, (int)controller.ApplySide);
+>>>>>>> feature/performance
                                 if (toolbar.ActiveTool.Amount <= 0)
                                     toolbar.RemoveSlot(toolbar.ActiveTool);
                             }

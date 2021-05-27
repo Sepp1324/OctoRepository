@@ -30,13 +30,23 @@ namespace OctoAwesome
         /// Serialisiert den Player mit dem angegebenen BinaryWriter.
         /// </summary>
         /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
+<<<<<<< HEAD
         public override void Serialize(BinaryWriter writer) => base.Serialize(writer); // Entity
+=======
+        public override void Serialize(BinaryWriter writer)
+            => base.Serialize(writer); // Entity
+>>>>>>> feature/performance
 
         /// <summary>
         /// Deserialisiert den Player aus dem angegebenen BinaryReader.
         /// </summary>
         /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
+<<<<<<< HEAD
         public override void Deserialize(BinaryReader reader) => base.Deserialize(reader); // Entity
+=======
+        public override void Deserialize(BinaryReader reader)
+            => base.Deserialize(reader); // Entity
+>>>>>>> feature/performance
 
         public override void OnUpdate(SerializableNotification notification)
         {
@@ -50,5 +60,6 @@ namespace OctoAwesome
             Simulation?.OnUpdate(entityNotification);
             entityNotification.Release();
         }
+
     }
 }

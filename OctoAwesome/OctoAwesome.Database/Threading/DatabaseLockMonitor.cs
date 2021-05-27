@@ -5,6 +5,7 @@ namespace OctoAwesome.Database.Threading
 {
     public sealed class DatabaseLockMonitor : IDisposable
     {
+<<<<<<< HEAD
         private int _readLocks;
         private int _writeLocks;
         private bool _exclusiveLocks;
@@ -16,9 +17,23 @@ namespace OctoAwesome.Database.Threading
         private readonly ManualResetEvent _writeEvent;
         private readonly ManualResetEvent _exclusiveEvent;
         private readonly SemaphoreSlim _semaphoreSlim;
+=======
+        private int readLocks;
+        private int writeLocks;
+        private bool exclusiveLocks;
+
+        private int readOperations;
+        private int writeOperations;
+>>>>>>> feature/performance
+
+        private readonly ManualResetEvent readEvent;
+        private readonly ManualResetEvent writeEvent;
+        private readonly ManualResetEvent exclusiveEvent;
+        private readonly SemaphoreSlim semaphoreSlim;
 
         public DatabaseLockMonitor()
         {
+<<<<<<< HEAD
             _readEvent = new ManualResetEvent(true);
             _writeEvent = new ManualResetEvent(true);
             _exclusiveEvent = new ManualResetEvent(true);
@@ -29,6 +44,18 @@ namespace OctoAwesome.Database.Threading
             _readOperations = 0;
             _writeOperations = 0;
             _exclusiveLocks = false;
+=======
+            readEvent = new ManualResetEvent(true);
+            writeEvent = new ManualResetEvent(true);
+            exclusiveEvent = new ManualResetEvent(true);
+            semaphoreSlim = new SemaphoreSlim(1, 1);
+
+            readLocks = 0;
+            writeLocks = 0;
+            readOperations = 0;
+            writeOperations = 0;
+            exclusiveLocks = false;
+>>>>>>> feature/performance
         }
 
         public bool CheckLock(Operation operation)
@@ -62,7 +89,11 @@ namespace OctoAwesome.Database.Threading
                 _writeEvent.WaitOne();
 
             if (operation.HasFlag(Operation.Write))
+<<<<<<< HEAD
                 _readEvent.WaitOne();
+=======
+                readEvent.WaitOne();
+>>>>>>> feature/performance
 
         }
 
@@ -169,10 +200,17 @@ namespace OctoAwesome.Database.Threading
 
         public void Dispose()
         {
+<<<<<<< HEAD
             _readEvent.Dispose();
             _writeEvent.Dispose();
             _exclusiveEvent.Dispose();
             _semaphoreSlim.Dispose();
+=======
+            readEvent.Dispose();
+            writeEvent.Dispose();
+            exclusiveEvent.Dispose();
+            semaphoreSlim.Dispose();
+>>>>>>> feature/performance
         }
     }
 }

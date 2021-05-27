@@ -14,16 +14,31 @@ namespace OctoAwesome.Runtime
     {
         private const string SETTINGSKEY = "DisabledExtensions";
 
+<<<<<<< HEAD
         private readonly List<Type> _entities;
         private readonly Dictionary<Type, List<Action<Entity>>> _entityExtender;
         private readonly List<Action<Simulation>> _simulationExtender;
         private readonly List<IMapGenerator> _mapGenerators;
         private readonly List<IMapPopulator> _mapPopulators;
+=======
+        private List<IDefinition> definitions;
+
+        private List<Type> entities;
+
+        private Dictionary<Type, List<Action<Entity>>> entityExtender;
+
+        private List<Action<Simulation>> simulationExtender;
+
+        private List<IMapGenerator> mapGenerators;
+
+        private List<IMapPopulator> mapPopulators;
+>>>>>>> feature/performance
 
         /// <summary>
         /// List of Loaded Extensions
         /// </summary>
         public List<IExtension> LoadedExtensions { get; private set; }
+<<<<<<< HEAD
 
         /// <summary>
         /// List of active Extensions
@@ -54,6 +69,34 @@ namespace OctoAwesome.Runtime
             LoadedExtensions = new List<IExtension>();
             ActiveExtensions = new List<IExtension>();
 
+=======
+
+        /// <summary>
+        /// List of active Extensions
+        /// </summary>
+        public List<IExtension> ActiveExtensions { get; private set; }
+
+        private readonly ISettings settings;
+        private readonly ITypeContainer typeContainer;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Current Gamesettings</param>
+        public ExtensionLoader(ITypeContainer typeContainer, ISettings settings)
+        {
+            this.settings = settings;
+            this.typeContainer = typeContainer;
+            definitions = new List<IDefinition>();
+            entities = new List<Type>();
+            entityExtender = new Dictionary<Type, List<Action<Entity>>>();
+            simulationExtender = new List<Action<Simulation>>();
+            mapGenerators = new List<IMapGenerator>();
+            mapPopulators = new List<IMapPopulator>();
+            LoadedExtensions = new List<IExtension>();
+            ActiveExtensions = new List<IExtension>();
+
+>>>>>>> feature/performance
         }
 
         /// <summary>
@@ -61,20 +104,24 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void LoadExtensions()
         {
-            var assemblies = new List<Assembly>();
+            List<Assembly> assemblies = new List<Assembly>();
             var tempAssembly = Assembly.GetEntryAssembly();
 
             if (tempAssembly == null)
                 tempAssembly = Assembly.GetAssembly(GetType());
 
-            var dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
+            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
             assemblies.AddRange(LoadAssemblies(dir));
 
-            var plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
+            DirectoryInfo plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
             if (plugins.Exists)
                 assemblies.AddRange(LoadAssemblies(plugins));
 
+<<<<<<< HEAD
             var disabledExtensions = _settings.KeyExists(SETTINGSKEY) ? _settings.GetArray<string>(SETTINGSKEY) : new string[0];
+=======
+            var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : new string[0];
+>>>>>>> feature/performance
 
             var result = new List<Type>();
             foreach (var assembly in assemblies)
@@ -85,9 +132,15 @@ namespace OctoAwesome.Runtime
                 {
                     try
                     {
+<<<<<<< HEAD
                         var extension = (IExtension)Activator.CreateInstance(type);
                         extension.Register(_typeContainer);
                         extension.Register(this, _typeContainer);
+=======
+                        IExtension extension = (IExtension)Activator.CreateInstance(type);
+                        extension.Register(typeContainer);
+                        extension.Register(this, typeContainer);
+>>>>>>> feature/performance
 
                         if (disabledExtensions.Contains(type.FullName))
                             LoadedExtensions.Add(extension);
@@ -104,7 +157,7 @@ namespace OctoAwesome.Runtime
 
         private IEnumerable<Assembly> LoadAssemblies(DirectoryInfo directory)
         {
-            var assemblies = new List<Assembly>();
+            List<Assembly> assemblies = new List<Assembly>();
             foreach (var file in directory.GetFiles("*.dll"))
             {
                 try
@@ -127,7 +180,11 @@ namespace OctoAwesome.Runtime
         public void ApplyExtensions(IList<IExtension> disabledExtensions)
         {
             var types = disabledExtensions.Select(e => e.GetType().FullName).ToArray();
+<<<<<<< HEAD
             _settings.Set(SETTINGSKEY, types);
+=======
+            settings.Set(SETTINGSKEY, types);
+>>>>>>> feature/performance
         }
 
         #region Loader Methods
@@ -170,8 +227,13 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Entity Type</typeparam>
         public void RegisterEntity<T>() where T : Entity
         {
+<<<<<<< HEAD
             var type = typeof(T);
             if (_entities.Contains(type))
+=======
+            Type type = typeof(T);
+            if (entities.Contains(type))
+>>>>>>> feature/performance
                 throw new ArgumentException("Already registered");
 
             _entities.Add(type);
@@ -184,8 +246,14 @@ namespace OctoAwesome.Runtime
         /// <param name="extenderDelegate">Extender Delegate</param>
         public void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity
         {
+<<<<<<< HEAD
             var type = typeof(T);
             if (!_entityExtender.TryGetValue(type, out var list))
+=======
+            Type type = typeof(T);
+            List<Action<Entity>> list;
+            if (!entityExtender.TryGetValue(type, out list))
+>>>>>>> feature/performance
             {
                 list = new List<Action<Entity>>();
                 _entityExtender.Add(type, list);
@@ -193,7 +261,12 @@ namespace OctoAwesome.Runtime
             list.Add(extenderDelegate);
         }
 
+<<<<<<< HEAD
         public void RegisterDefaultEntityExtender<T>() where T : Entity => RegisterEntityExtender<T>((e) => e.RegisterDefault());
+=======
+        public void RegisterDefaultEntityExtender<T>() where T : Entity 
+            => RegisterEntityExtender<T>((e) => e.RegisterDefault());
+>>>>>>> feature/performance
 
         /// <summary>
         /// Adds a new Extender for the simulation.
@@ -207,6 +280,7 @@ namespace OctoAwesome.Runtime
         public void RegisterMapGenerator(IMapGenerator generator) => _mapGenerators.Add(generator);
 
         public void RegisterMapPopulator(IMapPopulator populator) => _mapPopulators.Add(populator);
+
 
         /// <summary>
         /// Removes an existing Entity Type.
@@ -242,8 +316,8 @@ namespace OctoAwesome.Runtime
         /// <param name="entity">Entity</param>
         public void ExtendEntity(Entity entity)
         {
-            var stack = new List<Type>();
-            var t = entity.GetType();
+            List<Type> stack = new List<Type>();
+            Type t = entity.GetType();
             stack.Add(t);
             do
             {

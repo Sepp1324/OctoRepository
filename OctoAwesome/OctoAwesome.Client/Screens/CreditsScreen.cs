@@ -16,16 +16,20 @@ namespace OctoAwesome.Client.Screens
 
             SetDefaultBackground();
 
-            var crew = CrewMember.getCrew(manager);
+            List<CrewMember> crew = CrewMember.getCrew(manager);
 
-            var crewScroll = new ScrollContainer(manager)
+            ScrollContainer crewScroll = new ScrollContainer(manager)
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Margin = new Border(10, 10, 10, 10),
                 CanFocus = false
             };
 
+<<<<<<< HEAD
             var crewList = new StackPanel(manager) {
+=======
+            StackPanel crewList = new StackPanel(manager) {
+>>>>>>> feature/performance
                 MinWidth = 700,
                 Padding = new Border(10, 0, 10, 0),
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -33,7 +37,11 @@ namespace OctoAwesome.Client.Screens
             };
             crewScroll.Content = crewList;
 
+<<<<<<< HEAD
             foreach(var member in crew)
+=======
+            foreach(CrewMember member in crew)
+>>>>>>> feature/performance
             {
                 Button memberButton = new TextButton(manager, member.Username);
                 memberButton.HorizontalAlignment = HorizontalAlignment.Stretch;

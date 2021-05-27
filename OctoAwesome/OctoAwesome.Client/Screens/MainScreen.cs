@@ -7,7 +7,11 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class MainScreen : BaseScreen
     {
+<<<<<<< HEAD
         private readonly AssetComponent _assets;
+=======
+        private AssetComponent assets;
+>>>>>>> feature/performance
 
         public MainScreen(ScreenComponent manager) : base(manager)
         {
@@ -15,9 +19,13 @@ namespace OctoAwesome.Client.Screens
 
             Padding = new Border(0,0,0,0);
 
+<<<<<<< HEAD
             Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
+=======
+            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
+>>>>>>> feature/performance
 
-            var stack = new StackPanel(manager);
+            StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);
 
             Button startButton = new TextButton(manager, Languages.OctoClient.Start);

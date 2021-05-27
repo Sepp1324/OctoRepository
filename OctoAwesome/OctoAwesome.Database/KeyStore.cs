@@ -7,6 +7,7 @@ namespace OctoAwesome.Database
 {
     internal class KeyStore<TTag> : IDisposable where TTag : ITag, new()
     {
+<<<<<<< HEAD
         private readonly Dictionary<TTag, Key<TTag>> _keys;
         private readonly Writer _writer;
         private readonly Reader _reader;
@@ -21,6 +22,21 @@ namespace OctoAwesome.Database
             _keys = new Dictionary<TTag, Key<TTag>>();
             _writer = writer;
             _reader = reader;
+=======
+        public int EmptyKeys { get; private set; }
+        public IReadOnlyList<TTag> Tags => keys.Keys.ToArray();
+        public IReadOnlyList<Key<TTag>> Keys => keys.Values.ToArray();
+        private readonly Dictionary<TTag, Key<TTag>> keys;
+        private readonly Writer writer;
+        private readonly Reader reader;
+
+        public KeyStore(Writer writer, Reader reader)
+        {
+            keys = new Dictionary<TTag, Key<TTag>>();
+
+            this.writer = writer;
+            this.reader = reader;
+>>>>>>> feature/performance
         }
 
         public void Open()
@@ -54,7 +70,12 @@ namespace OctoAwesome.Database
 
         public void Close() => _writer.Close();
 
+<<<<<<< HEAD
         internal Key<TTag> GetKey(TTag tag) => _keys[tag];
+=======
+        internal Key<TTag> GetKey(TTag tag)
+            => keys[tag];
+>>>>>>> feature/performance
 
         internal void Update(Key<TTag> key)
         {
@@ -83,6 +104,12 @@ namespace OctoAwesome.Database
         {
             _keys.Clear();
             _writer.Dispose(); //TODO: Move to owner
+        }
+
+        public void Dispose()
+        {
+            keys.Clear();
+            writer.Dispose(); //TODO: Move to owner
         }
     }
 }

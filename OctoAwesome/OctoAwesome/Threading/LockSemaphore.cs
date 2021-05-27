@@ -9,7 +9,14 @@ namespace OctoAwesome.Threading
     {
         private readonly SemaphoreSlim semaphoreSlim;
 
+<<<<<<< HEAD
         public LockSemaphore(int initialCount, int maxCount) => semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
+=======
+        public LockSemaphore(int initialCount, int maxCount)
+        {
+            semaphoreSlim = new SemaphoreSlim(initialCount, maxCount);
+        }
+>>>>>>> feature/performance
 
         public SemaphoreLock Wait()
         {
@@ -23,7 +30,14 @@ namespace OctoAwesome.Threading
             return new SemaphoreLock(this);
         }
               
+<<<<<<< HEAD
         public void Dispose() => semaphoreSlim.Dispose();
+=======
+        public void Dispose()
+        {
+            semaphoreSlim.Dispose();
+        }
+>>>>>>> feature/performance
 
         private void Release() => semaphoreSlim.Release();
 
@@ -33,6 +47,7 @@ namespace OctoAwesome.Threading
 
             private readonly LockSemaphore internalSemaphore;
 
+<<<<<<< HEAD
             public SemaphoreLock(LockSemaphore semaphoreExtended) => internalSemaphore = semaphoreExtended;
 
             public void Dispose() => internalSemaphore?.Release();
@@ -46,6 +61,30 @@ namespace OctoAwesome.Threading
             public static bool operator ==(SemaphoreLock left, SemaphoreLock right) => left.Equals(right);
             
             public static bool operator !=(SemaphoreLock left, SemaphoreLock right) => !(left == right);
+=======
+            public SemaphoreLock(LockSemaphore semaphoreExtended)
+            {
+                internalSemaphore = semaphoreExtended;
+            }
+
+            public void Dispose()
+            {
+                internalSemaphore?.Release();
+            }
+
+            public override bool Equals(object obj) 
+                => obj is SemaphoreLock @lock 
+                   && Equals(@lock);
+            public bool Equals(SemaphoreLock other) 
+                => EqualityComparer<LockSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
+            public override int GetHashCode() 
+                => 37286538 + EqualityComparer<LockSemaphore>.Default.GetHashCode(internalSemaphore);
+
+            public static bool operator ==(SemaphoreLock left, SemaphoreLock right) 
+                => left.Equals(right);
+            public static bool operator !=(SemaphoreLock left, SemaphoreLock right)
+                => !(left == right);
+>>>>>>> feature/performance
         }
     }
 }

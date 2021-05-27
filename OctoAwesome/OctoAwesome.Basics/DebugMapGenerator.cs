@@ -17,7 +17,11 @@ namespace OctoAwesome.Basics
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
+<<<<<<< HEAD
             IDefinition[] definitions = definitionManager.Definitions.ToArray();
+=======
+            IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
+>>>>>>> feature/performance
 
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().First();
             ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);

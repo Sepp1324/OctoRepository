@@ -54,6 +54,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                 if (controller.JumpTime <= 0)
                     controller.JumpActive = false;
             }
+
+            
         }
     }
 }

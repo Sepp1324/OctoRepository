@@ -11,7 +11,13 @@ namespace OctoAwesome.Serialization
 
         public Index2Tag(Index2 index) => Index = index;
 
+<<<<<<< HEAD
         public void FromBytes(byte[] array, int startIndex) => Index = new Index2(BitConverter.ToInt32(array, startIndex), BitConverter.ToInt32(array, startIndex + sizeof(int)));
+=======
+        public void FromBytes(byte[] array, int startIndex)
+            => Index = new Index2(BitConverter.ToInt32(array, startIndex),
+                                  BitConverter.ToInt32(array, startIndex + sizeof(int)));
+>>>>>>> feature/performance
 
         public byte[] GetBytes()
         {

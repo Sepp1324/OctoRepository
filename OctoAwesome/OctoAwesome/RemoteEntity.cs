@@ -5,7 +5,14 @@ namespace OctoAwesome
 {
     public class RemoteEntity : Entity
     {
+<<<<<<< HEAD
         public RemoteEntity() { }
+=======
+        public RemoteEntity()
+        {
+
+        }
+>>>>>>> feature/performance
 
         public RemoteEntity(Entity originEntity)
         {

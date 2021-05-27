@@ -11,9 +11,18 @@ namespace OctoAwesome.Network
         public IDisposable NetworkChannelSubscription { get; set; }
         public IDisposable ServerSubscription { get; set; }
 
+<<<<<<< HEAD
         private readonly PackagePool _packagePool;
 
         public ConnectedClient(Socket socket) : base(socket) => _packagePool = TypeContainer.Get<PackagePool>();
+=======
+        private readonly PackagePool packagePool;
+
+        public ConnectedClient(Socket socket) : base(socket)
+        {
+            packagePool = TypeContainer.Get<PackagePool>();
+        }
+>>>>>>> feature/performance
 
         public void OnCompleted()
         {

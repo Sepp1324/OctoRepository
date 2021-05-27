@@ -21,8 +21,12 @@ namespace OctoAwesome.Network
             ipv6Socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
             connectedClients = new List<ConnectedClient>();
             lockObj = new object();
+
+<<<<<<< HEAD
+=======
         }
 
+>>>>>>> feature/performance
         public void Start(params IPEndPoint[] endpoints)
         {
             connectedClients.Clear();

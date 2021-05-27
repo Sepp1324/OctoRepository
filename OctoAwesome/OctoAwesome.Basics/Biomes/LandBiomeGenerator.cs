@@ -20,25 +20,46 @@ namespace OctoAwesome.Basics.Biomes
 
         public override float[,] GetHeightmap(Index2 chunkIndex)
         {
+<<<<<<< HEAD
             var values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
             var blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
             var regions = BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
             var biomeValues = new float[SubBiomes.Count][,];
+=======
+            float[,] values = new float[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
 
-            for (var i = 0; i < SubBiomes.Count; i++)
+            Index2 blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
+
+            float[,] regions = BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y);
+
+            float[][,] biomeValues = new float[SubBiomes.Count][,];
+>>>>>>> feature/performance
+
+            for (int i = 0; i < SubBiomes.Count; i++)
                 biomeValues[i] = SubBiomes[i].GetHeightmap(chunkIndex);
 
-            for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
+            for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
             {
-                for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
+                for (int y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 {
-                    var region = regions[x, y] / 2 + 0.5f;
+                    float region = regions[x, y] / 2 + 0.5f;
 
+<<<<<<< HEAD
                     var biome1 = ChooseBiome(region, out int biome2);
 
                     if (biome2 != -1)
                     {
                         var interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
+=======
+                    int biome2;
+                    int biome1 = ChooseBiome(region, out biome2);
+
+                    float interpolationValue = 0f;
+
+                    if (biome2 != -1)
+                    {
+                        interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
+>>>>>>> feature/performance
                         values[x, y] = (biomeValues[biome2][x, y] * interpolationValue) + (biomeValues[biome1][x, y] * (1 - interpolationValue));
                     }
                     else

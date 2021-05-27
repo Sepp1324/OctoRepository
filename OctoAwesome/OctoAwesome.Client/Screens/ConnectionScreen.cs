@@ -10,7 +10,11 @@ namespace OctoAwesome.Client.Screens
     {
         public new ScreenComponent Manager => (ScreenComponent)base.Manager;
 
+<<<<<<< HEAD
         private readonly OctoGame _game;
+=======
+        private readonly OctoGame game;
+>>>>>>> feature/performance
 
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
@@ -65,7 +69,11 @@ namespace OctoAwesome.Client.Screens
                 _game.Settings.Set("server", serverNameInput.Text);
                 _game.Settings.Set("player", playerNameInput.Text);
 
+<<<<<<< HEAD
                 ((ContainerResourceManager)_game.ResourceManager)
+=======
+                ((ContainerResourceManager)game.ResourceManager)
+>>>>>>> feature/performance
                     .CreateManager(true);
 
                 PlayMultiplayer(manager, playerNameInput.Text);
@@ -83,7 +91,7 @@ namespace OctoAwesome.Client.Screens
             Manager.Game.Simulation.LoadGame(Guid.Empty);
             //settings.Set("LastUniverse", levelList.SelectedItem.Id.ToString());
 
-            var player = Manager.Game.Simulation.LoginPlayer(playerName);
+            Player player = Manager.Game.Simulation.LoginPlayer(playerName);
             Manager.Game.Player.SetEntity(player);
 
             Manager.NavigateToScreen(new GameScreen(manager));

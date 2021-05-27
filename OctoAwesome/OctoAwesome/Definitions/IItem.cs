@@ -15,11 +15,15 @@
         /// Der Zustand des Items
         /// </summary>
         int Condition { get; set; }
+<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/IItem.cs
         
         IItemDefinition Definition { get; }
         
         IMaterialDefinition Material { get; set; }
         
         int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit);
+=======
+        IItemDefinition Definition { get; }
+>>>>>>> feature/performance:OctoAwesome/OctoAwesome/IItem.cs
     }
 }

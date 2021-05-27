@@ -20,11 +20,14 @@ namespace OctoAwesome
         /// </summary>
         public string Name => "OctoAwesome";
 
+<<<<<<< HEAD
         /// <summary>
         /// Register the Extension
         /// </summary>
         /// <param name="extensionLoader"></param>
         /// <param name="typeContainer"></param>
+=======
+>>>>>>> feature/performance
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {
             extensionLoader.RegisterEntityExtender<Player>((p) =>

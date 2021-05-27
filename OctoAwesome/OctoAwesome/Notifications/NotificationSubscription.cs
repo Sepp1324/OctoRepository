@@ -4,9 +4,15 @@ namespace OctoAwesome.Notifications
 {
     public sealed class NotificationSubscription : IDisposable
     {
+<<<<<<< HEAD
         private INotificationObservable _observable;
         private INotificationObserver _observer;
         private readonly string _channel;
+=======
+        private INotificationObservable observable;
+        private INotificationObserver observer;
+        private readonly string channel;
+>>>>>>> feature/performance
 
         public NotificationSubscription(INotificationObservable observable, INotificationObserver observer, string channel)
         {

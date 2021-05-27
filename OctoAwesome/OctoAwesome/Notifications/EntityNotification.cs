@@ -7,6 +7,7 @@ namespace OctoAwesome.Notifications
 {
     public sealed class EntityNotification : SerializableNotification
     {
+<<<<<<< HEAD
         private Entity _entity;
         private readonly IPool<PropertyChangedNotification> _propertyChangedNotificationPool;
         
@@ -19,19 +20,47 @@ namespace OctoAwesome.Notifications
             get => _entity; set
             {
                 _entity = value;
+=======
+        public ActionType Type { get; set; }
+        public Guid EntityId { get; set; }
+        public Entity Entity
+        {
+            get => entity; set
+            {
+                entity = value;
+>>>>>>> feature/performance
                 EntityId = value?.Id ?? default;
             }
         }
 
         public PropertyChangedNotification Notification { get; set; }
 
+<<<<<<< HEAD
         public EntityNotification() => _propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
 
         public EntityNotification(Guid id) : this() => EntityId = id;
+=======
+        private Entity entity;
+        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
+
+        public EntityNotification()
+        {
+            propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
+        }
+
+        public EntityNotification(Guid id) : this()
+        {
+            EntityId = id;
+        }
+>>>>>>> feature/performance
 
         public override void Deserialize(BinaryReader reader)
         {
             Type = (ActionType)reader.ReadInt32();
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature/performance
 
             if (Type == ActionType.Add)
                 Entity = Serializer.Deserialize<RemoteEntity>(reader.ReadBytes(reader.ReadInt32()));

@@ -19,8 +19,13 @@ namespace OctoAwesome.Basics.SimulationComponents
             foreach (var entity in _acceleratedEntities.ToArray())
             {
                 // Convert external Forces to Powers
+<<<<<<< HEAD
                 var power = ((entity.Move.ExternalForces * entity.Move.ExternalForces) / (2 * entity.Body.Mass)) * 
                             (float)gameTime.ElapsedGameTime.TotalSeconds;
+=======
+                Vector3 power = ((entity.Move.ExternalForces * entity.Move.ExternalForces) / (2 * entity.Body.Mass)) * 
+                    (float)gameTime.ElapsedGameTime.TotalSeconds;
+>>>>>>> feature/performance
 
                 // Take care of direction
                 power *= new Vector3(
@@ -75,7 +80,11 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override void RemoveEntity(Entity entity)
         {
+<<<<<<< HEAD
             var acceleratedEntity = _acceleratedEntities.FirstOrDefault(e => e.Entity == entity);
+=======
+            AcceleratedEntity acceleratedEntity = acceleratedEntities.FirstOrDefault(e => e.Entity == entity);
+>>>>>>> feature/performance
             if (acceleratedEntity != null)
                 _acceleratedEntities.Remove(acceleratedEntity);
         }

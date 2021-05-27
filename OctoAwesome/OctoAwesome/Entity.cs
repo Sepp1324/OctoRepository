@@ -25,13 +25,22 @@ namespace OctoAwesome
         /// Reference to the active Simulation.
         /// </summary>
         public Simulation Simulation { get; internal set; }
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature/performance
 
         /// <summary>
         /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
         public Entity()
         {
+<<<<<<< HEAD
             Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+=======
+            Components = new ComponentList<EntityComponent>(
+                ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
+>>>>>>> feature/performance
             Id = Guid.Empty;
         }
 
@@ -98,9 +107,19 @@ namespace OctoAwesome
             Components.Deserialize(reader);
         }
 
+<<<<<<< HEAD
         public virtual void RegisterDefault() { }
 
         public override int GetHashCode() => Id.GetHashCode();
+=======
+        public virtual void RegisterDefault()
+        {
+
+        }
+
+        public override int GetHashCode()
+            => Id.GetHashCode();
+>>>>>>> feature/performance
 
         public override bool Equals(object obj)
         {
@@ -118,5 +137,6 @@ namespace OctoAwesome
             foreach (var component in Components)
                 component?.OnUpdate(notification);
         }
+
     }
 }

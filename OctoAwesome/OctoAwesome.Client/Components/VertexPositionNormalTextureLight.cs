@@ -1,7 +1,9 @@
 ﻿using engenious;
 using engenious.Graphics;
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 namespace OctoAwesome.Client.Components
 {
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential,Pack=1)]
@@ -9,6 +11,7 @@ namespace OctoAwesome.Client.Components
     {
         public static readonly VertexDeclaration VertexDeclaration;
         static VertexPositionNormalTextureLight()
+<<<<<<< HEAD
         {
             VertexDeclaration = new engenious.Graphics.VertexDeclaration(sizeof(uint) * 2, 
                 new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.Position, 0), 
@@ -23,6 +26,24 @@ namespace OctoAwesome.Client.Components
             var normalY = (int)normal.Y;
             var normalZ = (int)normal.Z;
             var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+=======
+        {
+            VertexDeclaration = new engenious.Graphics.VertexDeclaration(sizeof(uint) * 2, 
+                new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.Position, 0), 
+                new VertexElement(sizeof(uint), VertexElementFormat.Single, VertexElementUsage.Normal, 0));
+        }
+        public VertexPositionNormalTextureLight(Vector3 position, Vector3 normal, Vector2 uv,byte layer,uint light)
+        {
+            uint posX = (uint)position.X;
+            uint posY = (uint)position.Y;
+            uint posZ = (uint)position.Z;
+
+            int normalX = (int)normal.X;
+            int normalY = (int)normal.Y;
+            int normalZ = (int)normal.Z;
+
+            int normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
+>>>>>>> feature/performance
 
             uint normalPacked;
             switch (normalExpanded)
@@ -43,7 +64,17 @@ namespace OctoAwesome.Client.Components
         }
         public uint PackedValue { get; private set; }
         public uint PackedValue2 { get; private set; }
+<<<<<<< HEAD
         
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+=======
+        VertexDeclaration IVertexType.VertexDeclaration
+        {
+            get
+            {
+                return VertexDeclaration;
+            }
+        }
+>>>>>>> feature/performance
     }
 }

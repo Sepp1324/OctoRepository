@@ -14,7 +14,25 @@ namespace OctoAwesome.Notifications
         public override void Deserialize(BinaryReader reader)
         {
             if (reader.ReadByte() != (byte)BlockNotificationType.BlockChanged)//Read type of the notification
+<<<<<<< HEAD
                 throw new InvalidCastException("this is the wrong type of notification");
+=======
+            {
+                throw new InvalidCastException("this is the wrong type of notification");
+            }
+
+            BlockInfo = new BlockInfo(
+                    x: reader.ReadInt32(),
+                    y: reader.ReadInt32(),
+                    z: reader.ReadInt32(),
+                    block: reader.ReadUInt16(),
+                    meta: reader.ReadInt32());
+
+            ChunkPos = new Index3(
+                reader.ReadInt32(),
+                reader.ReadInt32(),
+                reader.ReadInt32());
+>>>>>>> feature/performance
 
             BlockInfo = new BlockInfo(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32());
             ChunkPos = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());

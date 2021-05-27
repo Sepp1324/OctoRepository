@@ -1,6 +1,7 @@
 ﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
+using OctoAwesome.Information;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Services;

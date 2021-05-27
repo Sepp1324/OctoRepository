@@ -11,8 +11,16 @@ namespace OctoAwesome.Database
 
         public GuidTag(Guid id) => Tag = id;
 
+<<<<<<< HEAD
         public byte[] GetBytes() => Tag.ToByteArray();
 
         public void FromBytes(byte[] array, int startIndex) => Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
+=======
+        public byte[] GetBytes()
+            => Tag.ToByteArray();
+
+        public void FromBytes(byte[] array, int startIndex)
+            => Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
+>>>>>>> feature/performance
     }
 }

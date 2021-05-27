@@ -1,7 +1,15 @@
+<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/BlockDefinition.cs
 ﻿using engenious;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
 using System;
+=======
+﻿using System.Drawing;
+using engenious;
+using System.Collections.Generic;
+using OctoAwesome.Information;
+using OctoAwesome.Services;
+>>>>>>> feature/performance:OctoAwesome/OctoAwesome/BlockDefinition.cs
 
 namespace OctoAwesome.Definitions
 {
@@ -31,8 +39,11 @@ namespace OctoAwesome.Definitions
         /// Gibt das Volumen für eine Einheit an.
         /// </summary>
         public virtual int VolumePerUnit => 125;
+<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/BlockDefinition.cs
 
         public virtual int VolumePerHit => 25;
+=======
+>>>>>>> feature/performance:OctoAwesome/OctoAwesome/BlockDefinition.cs
 
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
@@ -53,15 +64,31 @@ namespace OctoAwesome.Definitions
         public abstract IMaterialDefinition Material { get; }
 
         /// <summary>
+        /// Liefert die Physikalischen Paramerter, wie härte, dichte und bruchzähigkeit
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>Die physikalischen Parameter</returns>
+        public abstract PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z);
+
+        /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
         /// </summary>
         /// <param name="block">Der Block-Typ des interagierenden Elements</param>
         /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
+<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/BlockDefinition.cs
         public virtual BlockHitInformation Hit(BlockVolumeState blockVolume, IItem item)
         {
             // item.Definition.Hit(item, volumeState.BlockDefinition, blockHitInformation);
             var valueMined = item.Hit(Material, blockVolume.VolumeRemaining, VolumePerHit);
             return new BlockHitInformation(valueMined != 0, valueMined, new[] {(VolumePerUnit, (IDefinition) this)});
+=======
+        public virtual BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition)
+        {
+            return default;
+>>>>>>> feature/performance:OctoAwesome/OctoAwesome/BlockDefinition.cs
         }
 
         /// <summary>
@@ -72,7 +99,12 @@ namespace OctoAwesome.Definitions
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
+<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/BlockDefinition.cs
         public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z) => new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
+=======
+        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
+            => new[] { new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1)) };
+>>>>>>> feature/performance:OctoAwesome/OctoAwesome/BlockDefinition.cs
 
         public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
 

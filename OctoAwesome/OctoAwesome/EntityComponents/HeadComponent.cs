@@ -23,7 +23,15 @@ namespace OctoAwesome.EntityComponents
         /// </summary>
         public float Angle { get; set; }
 
+<<<<<<< HEAD
         public HeadComponent() { }
+=======
+        public HeadComponent()
+        {
+
+        }
+
+>>>>>>> feature/performance
 
         public override void Serialize(BinaryWriter writer)
         {

@@ -14,7 +14,7 @@ namespace OctoAwesome.Database.Checks
             using (var fileStream = _fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
-                var length = 0;
+                int length = 0;
                 do
                 {
                     fileStream.Read(keyBuffer, 0, keyBuffer.Length);

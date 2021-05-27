@@ -12,7 +12,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            var forcedEntity = new ForcedEntity()
+            ForcedEntity forcedEntity = new ForcedEntity()
             {
                 Entity = entity,
                 Moveable = entity.Components.GetComponent<MoveableComponent>(),
@@ -25,7 +25,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override void RemoveEntity(Entity entity)
         {
-            var forcedEntity = forcedEntities.FirstOrDefault(e => e.Entity == entity);
+            ForcedEntity forcedEntity = forcedEntities.FirstOrDefault(e => e.Entity == entity);
             if (forcedEntity != null)
                 forcedEntities.Remove(forcedEntity);
         }

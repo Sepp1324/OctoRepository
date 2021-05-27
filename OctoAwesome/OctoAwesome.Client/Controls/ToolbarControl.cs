@@ -10,6 +10,7 @@ namespace OctoAwesome.Client.Controls
 {
     internal class ToolbarControl : Panel
     {
+<<<<<<< HEAD
         private readonly Dictionary<string, Texture2D> _toolTextures;
         private readonly Button[] _buttons = new Button[ToolBarComponent.Toolcount];
         private readonly Image[] _images = new Image[ToolBarComponent.Toolcount];
@@ -21,6 +22,21 @@ namespace OctoAwesome.Client.Controls
         private readonly Label _activeToolLabel;
         
         public PlayerComponent Player { get; set; }
+=======
+        private Dictionary<string, Texture2D> toolTextures;
+
+        private Button[] buttons = new Button[ToolBarComponent.TOOLCOUNT];
+
+        private Image[] images = new Image[ToolBarComponent.TOOLCOUNT];
+
+        private Brush buttonBackgroud;
+
+        private Brush activeBackground;
+
+        public PlayerComponent Player { get; set; }
+
+        public Label activeToolLabel;
+>>>>>>> feature/performance
 
         public ToolbarControl(ScreenComponent screenManager) : base(screenManager)
         {
@@ -34,11 +50,16 @@ namespace OctoAwesome.Client.Controls
 
             foreach (var item in screenManager.Game.DefinitionManager.Definitions)
             {
+<<<<<<< HEAD
                 var texture = screenManager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
                 _toolTextures.Add(item.GetType().FullName, texture);
+=======
+                Texture2D texture = screenManager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
+                toolTextures.Add(item.GetType().FullName, texture);
+>>>>>>> feature/performance
             }
 
-            var grid = new Grid(screenManager)
+            Grid grid = new Grid(screenManager)
             {
                 Margin = new Border(0, 0, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -49,13 +70,24 @@ namespace OctoAwesome.Client.Controls
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 50 });
 
+<<<<<<< HEAD
             for (var i = 0; i < ToolBarComponent.Toolcount; i++)
                 grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
+=======
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            {
+                grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 50 });
+            }
+>>>>>>> feature/performance
 
             _activeToolLabel = new Label(screenManager) {VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Center, Background = new BorderBrush(Color.Black * 0.3f), TextColor = Color.White};
             grid.AddControl(_activeToolLabel, 0, 0, ToolBarComponent.Toolcount);
 
+<<<<<<< HEAD
             for (var i = 0; i < ToolBarComponent.Toolcount; i++)
+=======
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+>>>>>>> feature/performance
             {
                 _buttons[i] = new Button(screenManager)
                 {
@@ -64,7 +96,15 @@ namespace OctoAwesome.Client.Controls
                     Background = _buttonBackground,
                     HoveredBackground = null,
                     PressedBackground = null,
+<<<<<<< HEAD
                     Content = _images[i] = new Image(screenManager) {Width = 42, Height = 42,},
+=======
+                };
+                buttons[i].Content = images[i] = new Image(screenManager)
+                {
+                    Width = 42,
+                    Height = 42,
+>>>>>>> feature/performance
                 };
                 grid.AddControl(_buttons[i], i, 1);
             }
@@ -76,7 +116,12 @@ namespace OctoAwesome.Client.Controls
 
             if (Player.CurrentEntity == null) return;
 
+<<<<<<< HEAD
             if (Player.Toolbar.ActiveIndex != _lastActiveIndex)
+=======
+           // Aktualisierung des aktiven Buttons
+            for (int i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+>>>>>>> feature/performance
             {
                 _buttons[_lastActiveIndex].Background = _buttonBackground;
                 _lastActiveIndex = Player.Toolbar.ActiveIndex;
@@ -89,6 +134,7 @@ namespace OctoAwesome.Client.Controls
             var newText = "";
 
             // Aktualisierung des ActiveTool Labels
+<<<<<<< HEAD
             if (Player.Toolbar.ActiveTool != null)
             {
                 newText = Player.Toolbar.ActiveTool.Definition.Name;
@@ -96,6 +142,11 @@ namespace OctoAwesome.Client.Controls
                 if (Player.Toolbar.ActiveTool.Amount > 1)
                     newText += $" ({Player.Toolbar.ActiveTool.Amount})";
             }
+=======
+            activeToolLabel.Text = Player.Toolbar.ActiveTool != null ?
+                string.Format("{0} ({1})", Player.Toolbar.ActiveTool.Definition.Name, Player.Toolbar.ActiveTool.Amount) :
+                string.Empty;
+>>>>>>> feature/performance
 
             _activeToolLabel.Text = newText;
 

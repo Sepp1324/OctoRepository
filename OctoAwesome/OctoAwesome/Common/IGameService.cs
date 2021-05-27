@@ -25,6 +25,12 @@ namespace OctoAwesome.Common
         /// <param name="velocity">Berechnete Geschwindigkeit</param>
         /// <exception cref="ArgumentNullException">Cache</exception>
         /// <returns>Geschwindigkeit der <see cref="Entity"/> nach der Killisionsprüfung</returns>
+<<<<<<< HEAD
         Vector3 WorldCollision(GameTime gameTime, Coordinate position, ILocalChunkCache cache, float radius, float height, Vector3 deltaPosition, Vector3 velocity);
+=======
+        Vector3 WorldCollision(GameTime gameTime, Coordinate position, ILocalChunkCache cache, float radius, float height,
+            Vector3 deltaPosition, Vector3 velocity);
+
+>>>>>>> feature/performance
     }
 }

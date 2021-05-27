@@ -10,7 +10,14 @@ namespace OctoAwesome.Network.ServerNotifications
 
         public HashSet<int> PlayerIds { get; set; }
 
+<<<<<<< HEAD
         public ServerDataNotification() => PlayerIds = new HashSet<int>();
+=======
+        public ServerDataNotification()
+        {
+            PlayerIds = new HashSet<int>();
+        }
+>>>>>>> feature/performance
 
         public override bool Match<T>(T filter) 
         {

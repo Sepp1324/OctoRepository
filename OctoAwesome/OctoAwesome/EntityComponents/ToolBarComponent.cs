@@ -16,12 +16,16 @@ namespace OctoAwesome.EntityComponents
         public const int Toolcount = 10;
 
         /// <summary>
+<<<<<<< HEAD
         /// Stores all of the Tools of a Player
         /// </summary>
         public InventorySlot[] Tools { get; set; }
 
         /// <summary>
         /// Active Tool of the Player
+=======
+        /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
+>>>>>>> feature/performance
         /// </summary>
         public InventorySlot ActiveTool => Tools[_activeIndex] ?? HandSlot;
         
@@ -45,12 +49,24 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
+<<<<<<< HEAD
         /// Removes an InventorySlot from the Toolbar
+=======
+        /// Erzeugte eine neue ToolBarComponent
+        /// </summary>
+        public ToolBarComponent()
+        {
+            Tools = new InventorySlot[TOOLCOUNT];
+        }
+
+        /// <summary>
+        /// Entfernt einen InventorySlot aus der Toolbar
+>>>>>>> feature/performance
         /// </summary>
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
         {
-            for (var i = 0; i < Tools.Length; i++)
+            for (int i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == slot)
                 {
@@ -59,6 +75,11 @@ namespace OctoAwesome.EntityComponents
                     break;
                 }
             }
+<<<<<<< HEAD
+=======
+            if (ActiveTool == slot)
+                ActiveTool = null;
+>>>>>>> feature/performance
         }
 
         /// <summary>
@@ -81,7 +102,7 @@ namespace OctoAwesome.EntityComponents
         /// <returns>Index of InventorySlot; 404: -1</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
-            for (var j = 0; j < Tools.Length; j++)
+            for (int j = 0; j < Tools.Length; j++)
                 if (Tools[j] == slot)
                     return j;
 
@@ -94,7 +115,7 @@ namespace OctoAwesome.EntityComponents
         /// <param name="slot"></param>
         public void AddNewSlot(InventorySlot slot)
         {
-            for (var i = 0; i < Tools.Length; i++)
+            for (int i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == null)
                 {

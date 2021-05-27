@@ -16,6 +16,7 @@ namespace OctoAwesome
         private readonly Action<T> removeValidator;
         private readonly Action<T> onInserter;
         private readonly Action<T> onRemover;
+<<<<<<< HEAD
 
         private readonly Dictionary<Type, T> components = new Dictionary<Type, T>();
 
@@ -36,17 +37,55 @@ namespace OctoAwesome
         public IEnumerator<T> GetEnumerator() => components.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => components.Values.GetEnumerator();
+=======
+
+        private readonly Dictionary<Type, T> components = new Dictionary<Type, T>();
+
+        public T this[Type type]
+        {
+            get
+            {
+                if (components.TryGetValue(type, out T result))
+                    return result;
+
+                return null;
+            }
+        }
+
+        public ComponentList()
+        {
+        }
+
+        public ComponentList(Action<T> insertValidator, Action<T> removeValidator, Action<T> onInserter, Action<T> onRemover)
+        {
+            this.insertValidator = insertValidator;
+            this.removeValidator = removeValidator;
+            this.onInserter = onInserter;
+            this.onRemover = onRemover;
+        }
+>>>>>>> feature/performance
+
+        public IEnumerator<T> GetEnumerator()
+            => components.Values.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => components.Values.GetEnumerator();
 
         /// <summary>
         /// Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
+<<<<<<< HEAD
         public void AddComponent<V>(V component) where V : T => AddComponent(component, false);
+=======
+        public void AddComponent<V>(V component) where V : T 
+            => AddComponent(component, false);
+>>>>>>> feature/performance
 
 
         public void AddComponent<V>(V component, bool replace) where V : T
         {
-            var type = component.GetType();
+            Type type = component.GetType();
 
             if (components.ContainsKey(type))
             {
@@ -70,7 +109,12 @@ namespace OctoAwesome
         /// </summary>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
+<<<<<<< HEAD
         public bool ContainsComponent<V>() => components.ContainsKey(typeof(V));
+=======
+        public bool ContainsComponent<V>() 
+            => components.ContainsKey(typeof(V));
+>>>>>>> feature/performance
 
         /// <summary>
         /// Returns the Component of the given Type or null

@@ -15,10 +15,22 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 "wood_top",
                 "wood_side" };
 
+<<<<<<< HEAD
         public override IMaterialDefinition Material { get; }
 
         public WoodBlockDefinition(WoodMaterialDefinition material) => Material = material;
+=======
+        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z) 
+            => new PhysicalProperties()
+            {
+                Density = 0.87f,
+                FractureToughness = 0.3f,
+                Granularity = 0.9f,
+                Hardness = 0.1f
+            };
+>>>>>>> feature/performance
 
+      
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);

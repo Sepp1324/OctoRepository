@@ -7,8 +7,15 @@ namespace OctoAwesome.Database
     {
         private readonly FileInfo _fileInfo;
 
+<<<<<<< HEAD
         public Reader(FileInfo fileInfo) => _fileInfo = fileInfo ?? throw new ArgumentNullException(nameof(fileInfo));
 
+=======
+        public Reader(FileInfo fileInfo)
+        {
+            this.fileInfo = fileInfo ?? throw new ArgumentNullException(nameof(fileInfo));
+        }
+>>>>>>> feature/performance
         public Reader(string path) : this(new FileInfo(path))
         {
 
@@ -18,8 +25,13 @@ namespace OctoAwesome.Database
         {
             if (length < 0)
             {
+<<<<<<< HEAD
                 _fileInfo.Refresh();
                 length = _fileInfo.Exists ? (int)_fileInfo.Length : length;
+=======
+                fileInfo.Refresh();
+                length = fileInfo.Exists ? (int)fileInfo.Length : length;
+>>>>>>> feature/performance
             }
 
             var array = new byte[length];

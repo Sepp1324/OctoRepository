@@ -9,11 +9,19 @@ namespace OctoAwesome.Client.Components
 {
     internal class KeyMapper
     {
+<<<<<<< HEAD
         private readonly Dictionary<string, Binding> _bindings;
 
         public Dictionary<string, Binding> Bindings { get { return _bindings; } }
 
         private readonly ISettings _settings;
+=======
+        private Dictionary<string, Binding> bindings;
+
+        public Dictionary<string, Binding> Bindings { get { return bindings; } }
+
+        private ISettings settings;
+>>>>>>> feature/performance
 
         public KeyMapper(BaseScreenComponent manager, ISettings settings)
         {
@@ -34,8 +42,12 @@ namespace OctoAwesome.Client.Components
         {
             if (_bindings.ContainsKey(id))
                 return;
+<<<<<<< HEAD
             
             _bindings.Add(id, new Binding() { Id = id, DisplayName = displayName });
+=======
+            bindings.Add(id, new Binding() { Id = id, DisplayName = displayName });
+>>>>>>> feature/performance
         }
 
         /// <summary>
@@ -115,8 +127,13 @@ namespace OctoAwesome.Client.Components
                 {
                     try
                     {
+<<<<<<< HEAD
                         var val = _settings.Get<string>("KeyMapper-" + id);
                         var key = (Keys)Enum.Parse(typeof(Keys), val);
+=======
+                        string val = settings.Get<string>("KeyMapper-" + id);
+                        Keys key = (Keys)Enum.Parse(typeof(Keys), val);
+>>>>>>> feature/performance
                         AddKey(id, key);
                     }
                     catch
@@ -129,7 +146,17 @@ namespace OctoAwesome.Client.Components
             }
         }
 
+<<<<<<< HEAD
         public List<Binding> GetBindings() => Bindings.Select(binding => binding.Value).ToList();
+=======
+        public List<Binding> GetBindings()
+        {
+            List<Binding> bindings = new List<Binding>();
+            foreach (var binding in Bindings)
+                bindings.Add(binding.Value);
+            return bindings;
+        }
+>>>>>>> feature/performance
 
 
         #region KeyEvents

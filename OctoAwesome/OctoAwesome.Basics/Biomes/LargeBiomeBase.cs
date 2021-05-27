@@ -5,7 +5,14 @@ namespace OctoAwesome.Basics.Biomes
 {
     public abstract class LargeBiomeBase : BiomeBase
     {
+<<<<<<< HEAD
         protected LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange) : base(planet, 0, 0, valueRangeOffset, valueRange)
+=======
+
+
+        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange)
+            : base(planet, 0, 0, valueRangeOffset, valueRange)
+>>>>>>> feature/performance
         {
         }
 
@@ -20,9 +27,14 @@ namespace OctoAwesome.Basics.Biomes
         protected IBiome ChooseBiome(float value, out IBiome secondBiome)
         {
             secondBiome = null;
+<<<<<<< HEAD
             var betweenPossible = false;
             
             for (var i = 0; i < SubBiomes.Count; i++)
+=======
+            bool betweenPossible = false;
+            for (int i = 0; i < SubBiomes.Count; i++)
+>>>>>>> feature/performance
             {
                 if (betweenPossible && value < SubBiomes[i].MinValue)
                 {
@@ -39,9 +51,14 @@ namespace OctoAwesome.Basics.Biomes
         protected int ChooseBiome(float value, out int secondBiome)
         {
             secondBiome = -1;
+<<<<<<< HEAD
             var betweenPossible = false;
             
             for (var i = 0; i < SubBiomes.Count; i++)
+=======
+            bool betweenPossible = false;
+            for (int i = 0; i < SubBiomes.Count; i++)
+>>>>>>> feature/performance
             {
                 if (betweenPossible && value < SubBiomes[i].MinValue)
                 {
@@ -66,7 +83,7 @@ namespace OctoAwesome.Basics.Biomes
         {
             if (biome2 != null)
             {
-                var diff = biome2.MinValue - biome1.MaxValue;
+                float diff = biome2.MinValue - biome1.MaxValue;
                 region -= biome1.MaxValue;
                 region /= diff;
                 return CurveFunction(region);

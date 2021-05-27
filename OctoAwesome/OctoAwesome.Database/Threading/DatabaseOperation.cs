@@ -18,11 +18,24 @@ namespace OctoAwesome.Database.Threading
             _currentOperation = operation;
         }
 
+<<<<<<< HEAD
         public void Dispose() => _lockMonitor.StopOperation(_currentOperation);
 
         public override bool Equals(object obj) => obj is DatabaseOperation @lock && Equals(@lock);
         
         public bool Equals(DatabaseOperation other) => EqualityComparer<DatabaseLockMonitor>.Default.Equals(_lockMonitor, other._lockMonitor) && _currentOperation == other._currentOperation;
+=======
+        public void Dispose()
+        {
+            lockMonitor.StopOperation(currentOperation);
+        }
+
+        public override bool Equals(object obj)
+            => obj is DatabaseOperation @lock && Equals(@lock);
+        public bool Equals(DatabaseOperation other)
+            => EqualityComparer<DatabaseLockMonitor>.Default.Equals(lockMonitor, other.lockMonitor)
+            && currentOperation == other.currentOperation;
+>>>>>>> feature/performance
 
         public override int GetHashCode()
         {
@@ -32,8 +45,15 @@ namespace OctoAwesome.Database.Threading
             return hashCode;
         }
 
+<<<<<<< HEAD
         public static bool operator ==(DatabaseOperation left, DatabaseOperation right) => left.Equals(right);
        
         public static bool operator !=(DatabaseOperation left, DatabaseOperation right) => !(left == right);
+=======
+        public static bool operator ==(DatabaseOperation left, DatabaseOperation right)
+            => left.Equals(right);
+        public static bool operator !=(DatabaseOperation left, DatabaseOperation right)
+            => !(left == right);
+>>>>>>> feature/performance
     }
 }

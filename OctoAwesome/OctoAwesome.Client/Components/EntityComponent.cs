@@ -16,10 +16,19 @@ namespace OctoAwesome.Client.Components
             public Texture2D texture;
             public Model model;
         }
+<<<<<<< HEAD
         private readonly GraphicsDevice _graphicsDevice;
         private readonly BasicEffect _effect;
         
         public SimulationComponent Simulation { get; private set; }
+=======
+        private GraphicsDevice graphicsDevice;
+        private BasicEffect effect;
+        public SimulationComponent Simulation { get; private set; }
+
+
+        private Dictionary<string, ModelInfo> models = new Dictionary<string, ModelInfo>();
+>>>>>>> feature/performance
 
         private readonly Dictionary<string, ModelInfo> _models = new Dictionary<string, ModelInfo>();
 
@@ -56,7 +65,12 @@ namespace OctoAwesome.Client.Components
 
                         var rendercomp = entity.Components.GetComponent<RenderComponent>();
 
+<<<<<<< HEAD
                         if (!_models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
+=======
+
+                        if (!models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
+>>>>>>> feature/performance
                         {
                             modelinfo = new ModelInfo()
                             {
@@ -86,7 +100,11 @@ namespace OctoAwesome.Client.Components
                             shift.X * Chunk.CHUNKSIZE_X + position.LocalPosition.X,
                             shift.Y * Chunk.CHUNKSIZE_Y + position.LocalPosition.Y,
                             shift.Z * Chunk.CHUNKSIZE_Z + position.LocalPosition.Z) * Matrix.CreateScaling(body.Radius * 2, body.Radius * 2, body.Height) * Matrix.CreateRotationZ(rotation);
+<<<<<<< HEAD
                         _effect.World = world;
+=======
+                        effect.World = world;
+>>>>>>> feature/performance
                         modelinfo.model.Transform = world;
 
                         modelinfo.model.Draw(_effect, modelinfo.texture);

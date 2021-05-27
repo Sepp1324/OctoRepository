@@ -16,5 +16,6 @@ namespace OctoAwesome.Serialization
             foreach (var item in this)
                 item.Serialize(writer);
         }
+
     }
 }

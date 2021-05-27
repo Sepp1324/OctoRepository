@@ -14,6 +14,7 @@ namespace OctoAwesome
     /// </summary>
     public class LocalChunkCache : ILocalChunkCache
     {
+<<<<<<< HEAD
         private readonly LockSemaphore _semaphore;
         private readonly ILogger _logger;
      
@@ -39,15 +40,47 @@ namespace OctoAwesome
         /// </summary>
         public IPlanet Planet { get; private set; }
         
+=======
+        private readonly LockSemaphore semaphore;
+        private readonly LockSemaphore taskSemaphore;
+
+        /// <summary>
+        /// Aktueller Planet auf dem sich der Cache bezieht.
+        /// </summary>
+        public IPlanet Planet { get; private set; }
+
+        public Index2 CenterPosition { get; set; }
+
+        /// <summary>
+        /// Referenz auf den Globalen Cache
+        /// </summary>
+        private readonly IGlobalChunkCache globalCache;
+
+        /// <summary>
+        /// Die im lokalen Cache gespeicherten Chunks
+        /// </summary>
+        private readonly IChunkColumn[] chunkColumns;
+        private readonly ILogger logger;
+
+>>>>>>> feature/performance
         /// <summary>
         /// Gibt die Range in Chunks in alle Richtungen an (bsp. Range = 1 bedeutet centraler Block + links uns rechts jeweils 1 = 3)
         /// </summary>
+<<<<<<< HEAD
         private readonly int _range;
         
+=======
+        private int limit;
+
+>>>>>>> feature/performance
         /// <summary>
         /// Task, der bei einem Wechsel des Zentralen Chunks neue nachlädt falls nötig
         /// </summary>
+<<<<<<< HEAD
         private Task _loadingTask;
+=======
+        private int mask;
+>>>>>>> feature/performance
 
         /// <summary>
         /// Token, das angibt, ob der Chûnk-nachlade-Task abgebrochen werden soll
@@ -57,10 +90,22 @@ namespace OctoAwesome
         /// <summary>
         /// Referenz auf den Globalen Cache
         /// </summary>
+<<<<<<< HEAD
         private readonly IGlobalChunkCache _globalCache;
+=======
+        private int range;
+        /// <summary>
+        /// Task, der bei einem Wechsel des Zentralen Chunks neue nachlädt falls nötig
+        /// </summary>
+        private Task _loadingTask;
+>>>>>>> feature/performance
 
         public Index2 CenterPosition { get; set; }
         
+        /// <summary>
+        /// Token, das angibt, ob der Chûnk-nachlade-Task abgebrochen werden soll
+        /// </summary>
+        private CancellationTokenSource _cancellationToken;
         /// <summary>
         /// Instanziert einen neuen local Chunk Cache.
         /// </summary>
@@ -73,7 +118,11 @@ namespace OctoAwesome
                 throw new ArgumentException("Range too big");
 
             
+<<<<<<< HEAD
             _semaphore = new LockSemaphore(1, 1);
+=======
+            semaphore = new LockSemaphore(1, 1);
+>>>>>>> feature/performance
             taskSemaphore = new LockSemaphore(1, 1);
             Planet = globalCache.Planet;
             
@@ -102,7 +151,11 @@ namespace OctoAwesome
 
                 if (_loadingTask != null && !_loadingTask.IsCompleted)
                 {
+<<<<<<< HEAD
                     _logger.Debug("Continue with task on index " + index);
+=======
+                    logger.Debug("Continue with task on index " + index);
+>>>>>>> feature/performance
                     _loadingTask = _loadingTask.ContinueWith(_ => InternalSetCenter(_cancellationToken.Token, index, successCallback));
                 }
                 else
@@ -132,6 +185,7 @@ namespace OctoAwesome
                 return;
             }
 
+<<<<<<< HEAD
             var requiredChunkColumns = new List<Index2>();
 
             for (var x = -_range; x <= _range; x++)
@@ -139,6 +193,15 @@ namespace OctoAwesome
                 for (var y = -_range; y <= _range; y++)
                 {
                     var local = new Index2(index.X + x, index.Y + y);
+=======
+            List<Index2> requiredChunkColumns = new List<Index2>();
+
+            for (int x = -range; x <= range; x++)
+            {
+                for (int y = -range; y <= range; y++)
+                {
+                    Index2 local = new Index2(index.X + x, index.Y + y);
+>>>>>>> feature/performance
                     local.NormalizeXY(Planet.Size);
                     requiredChunkColumns.Add(local);
                 }
@@ -151,6 +214,7 @@ namespace OctoAwesome
                 return;
             }
 
+<<<<<<< HEAD
             foreach (var chunkColumnIndex in requiredChunkColumns.OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size)).LengthSquared()))
             {
                 var localX = chunkColumnIndex.X & _mask;
@@ -161,14 +225,35 @@ namespace OctoAwesome
                 // Alten Chunk entfernen, falls notwendig
 
                 using (_semaphore.Wait())
+=======
+            foreach (var chunkColumnIndex in requiredChunkColumns
+                                                .OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size))
+                                                .LengthSquared()))
+            {
+                int localX = chunkColumnIndex.X & mask;
+                int localY = chunkColumnIndex.Y & mask;
+                int flatIndex = FlatIndex(localX, localY);
+                IChunkColumn chunkColumn = chunkColumns[flatIndex];
+
+                // Alten Chunk entfernen, falls notwendig
+
+                using (semaphore.Wait())
+>>>>>>> feature/performance
                 {
                     if (chunkColumn != null && chunkColumn.Index != chunkColumnIndex)
                     {
                         //logger.Debug($"Remove Chunk: {chunkColumn.Index}, new: {chunkColumnIndex}");
+<<<<<<< HEAD
                         _globalCache.Release(chunkColumn.Index);
 
 
                         _chunkColumns[flatIndex] = null;
+=======
+                        globalCache.Release(chunkColumn.Index);
+
+
+                        chunkColumns[flatIndex] = null;
+>>>>>>> feature/performance
                         chunkColumn = null;
                     }
                 }
@@ -180,11 +265,16 @@ namespace OctoAwesome
                     return;
                 }
 
+<<<<<<< HEAD
                 using (_semaphore.Wait())
+=======
+                using (semaphore.Wait())
+>>>>>>> feature/performance
                 {
                     // Neuen Chunk laden
                     if (chunkColumn == null)
                     {
+<<<<<<< HEAD
                         chunkColumn = _globalCache.Subscribe(new Index2(chunkColumnIndex));
 
                         if (chunkColumn?.Index != chunkColumnIndex)
@@ -194,6 +284,17 @@ namespace OctoAwesome
 
 
                         _chunkColumns[flatIndex] = chunkColumn;
+=======
+                        chunkColumn = globalCache.Subscribe(new Index2(chunkColumnIndex));
+
+                        if (chunkColumn?.Index != chunkColumnIndex)
+                            logger.Error($"Loaded Chunk Index: {chunkColumn?.Index}, wanted: {chunkColumnIndex} ");
+                        if (chunkColumns[flatIndex] != null)
+                            logger.Error($"Chunk in Array!!: {flatIndex}, on index: {chunkColumns[flatIndex].Index} ");
+
+
+                        chunkColumns[flatIndex] = chunkColumn;
+>>>>>>> feature/performance
 
                         if (chunkColumn == null)
                         {
@@ -220,7 +321,12 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Chunk Index</param>
         /// <returns>Instanz des Chunks</returns>
+<<<<<<< HEAD
         public IChunk GetChunk(Index3 index) => GetChunk(index.X, index.Y, index.Z);
+=======
+        public IChunk GetChunk(Index3 index)
+            => GetChunk(index.X, index.Y, index.Z);
+>>>>>>> feature/performance
 
         /// <summary>
         /// Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
@@ -237,7 +343,11 @@ namespace OctoAwesome
             x = Index2.NormalizeAxis(x, Planet.Size.X);
             y = Index2.NormalizeAxis(y, Planet.Size.Y);
 
+<<<<<<< HEAD
             var chunkColumn = _chunkColumns[FlatIndex(x, y)];
+=======
+            IChunkColumn chunkColumn = chunkColumns[FlatIndex(x, y)];
+>>>>>>> feature/performance
 
             if (chunkColumn != null && chunkColumn.Index.X == x && chunkColumn.Index.Y == y)
                 return chunkColumn.Chunks[z];
@@ -250,7 +360,12 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block Index</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
+<<<<<<< HEAD
         public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
+=======
+        public ushort GetBlock(Index3 index)
+            => GetBlock(index.X, index.Y, index.Z);
+>>>>>>> feature/performance
 
         /// <summary>
         /// Liefert den Block an der angegebenen Block-Koodinate zurück.
@@ -259,7 +374,11 @@ namespace OctoAwesome
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
         public BlockInfo GetBlockInfo(Index3 index)
         {
+<<<<<<< HEAD
             var chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
+=======
+            IChunk chunk = GetChunk(index.X >> Chunk.LimitX, index.Y >> Chunk.LimitY, index.Z >> Chunk.LimitZ);
+>>>>>>> feature/performance
 
             if (chunk != null)
             {
@@ -282,8 +401,17 @@ namespace OctoAwesome
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
         public ushort GetBlock(int x, int y, int z)
         {
+<<<<<<< HEAD
             var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
             return chunk?.GetBlock(x, y, z) ?? (ushort) 0;
+=======
+            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+
+            if (chunk != null)
+                return chunk.GetBlock(x, y, z);
+
+            return 0;
+>>>>>>> feature/performance
         }
 
         /// <summary>
@@ -291,7 +419,12 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="block">Die neue Block-ID.</param>
+<<<<<<< HEAD
         public void SetBlock(Index3 index, ushort block) => SetBlock(index.X, index.Y, index.Z, block);
+=======
+        public void SetBlock(Index3 index, ushort block)
+            => SetBlock(index.X, index.Y, index.Z, block);
+>>>>>>> feature/performance
 
         /// <summary>
         /// Überschreibt den Block an der angegebenen Koordinate.
@@ -302,7 +435,7 @@ namespace OctoAwesome
         /// <param name="block">Die neue Block-ID</param>
         public void SetBlock(int x, int y, int z, ushort block)
         {
-            var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
             chunk?.SetBlock(x, y, z, block);
         }
@@ -316,7 +449,7 @@ namespace OctoAwesome
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
         public int GetBlockMeta(int x, int y, int z)
         {
-            var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
             return chunk?.GetBlockMeta(x, y, z) ?? 0;
         }
@@ -326,7 +459,12 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
+<<<<<<< HEAD
         public int GetBlockMeta(Index3 index) => GetBlockMeta(index.X, index.Y, index.Z);
+=======
+        public int GetBlockMeta(Index3 index)
+            => GetBlockMeta(index.X, index.Y, index.Z);
+>>>>>>> feature/performance
 
         /// <summary>
         /// Ändert die Metadaten des Blockes an der angegebenen Koordinate. 
@@ -337,8 +475,15 @@ namespace OctoAwesome
         /// <param name="meta">Die neuen Metadaten</param>
         public void SetBlockMeta(int x, int y, int z, int meta)
         {
+<<<<<<< HEAD
             var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
             chunk?.SetBlockMeta(x, y, z, meta);
+=======
+            IChunk chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
+
+            if (chunk != null)
+                chunk.SetBlockMeta(x, y, z, meta);
+>>>>>>> feature/performance
         }
 
         /// <summary>
@@ -346,19 +491,32 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="meta">Die neuen Metadaten</param>
+<<<<<<< HEAD
         public void SetBlockMeta(Index3 index, int meta) => SetBlockMeta(index.X, index.Y, index.Z, meta);
+=======
+        public void SetBlockMeta(Index3 index, int meta)
+            => SetBlockMeta(index.X, index.Y, index.Z, meta);
+>>>>>>> feature/performance
 
         /// <summary>
         /// Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
         /// </summary>
         public void Flush()
         {
+<<<<<<< HEAD
             for (var i = 0; i < _chunkColumns.Length; i++)
+=======
+            for (int i = 0; i < chunkColumns.Length; i++)
+>>>>>>> feature/performance
             {
                 if (_chunkColumns[i] == null)
                     continue;
 
+<<<<<<< HEAD
                 var chunkColumn = _chunkColumns[i];
+=======
+                IChunkColumn chunkColumn = chunkColumns[i];
+>>>>>>> feature/performance
 
                 _globalCache.Release(chunkColumn.Index);
                 _chunkColumns[i] = null;
@@ -366,11 +524,21 @@ namespace OctoAwesome
         }
 
         /// <summary>
+<<<<<<< HEAD
         /// Gibt einen falchen Index um auf das Array <see cref="_chunkColumns"/> zu zu greiffen
+=======
+        /// Gibt einen falchen Index um auf das Array <see cref="chunkColumns"/> zu zu greiffen
+>>>>>>> feature/performance
         /// </summary>
         /// <param name="x">Die X-Koordinate</param>
         /// <param name="y">Die Y-Koordinate</param>
         /// <returns>Der Abgeflachte index</returns>
+<<<<<<< HEAD
         private int FlatIndex(int x, int y) => (((y & (_mask)) << _limit) | ((x & (_mask))));
+=======
+        private int FlatIndex(int x, int y)
+            => (((y & (mask)) << limit) | ((x & (mask))));
+
+>>>>>>> feature/performance
     }
 }

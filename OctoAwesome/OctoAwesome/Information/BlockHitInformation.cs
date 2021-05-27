@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using OctoAwesome.Definitions;
 using System;
 using System.Collections.Generic;
@@ -41,5 +42,27 @@ namespace OctoAwesome.Information
         public static bool operator ==(BlockHitInformation left, BlockHitInformation right) => left.Equals(right);
        
         public static bool operator !=(BlockHitInformation left, BlockHitInformation right) => !(left == right);
+=======
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OctoAwesome.Information
+{
+    public readonly struct BlockHitInformation
+    {
+        public bool IsHitValid { get;  }
+        public int Quantity { get; }
+        public IReadOnlyList<KeyValuePair<int, IDefinition>> Definitions { get; }
+
+        public BlockHitInformation(bool isHitValid, int quantity, KeyValuePair<int, IDefinition>[] definitions)
+        {
+            IsHitValid = isHitValid;
+            Quantity = quantity;
+            Definitions = definitions;
+        }
+>>>>>>> feature/performance
     }
 }
