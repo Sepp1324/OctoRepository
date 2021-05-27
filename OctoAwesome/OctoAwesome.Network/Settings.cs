@@ -1,14 +1,13 @@
-<<<<<<< HEAD
-﻿using Newtonsoft.Json;
-=======
 ﻿//using OpenTK;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
->>>>>>> feature/performance
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace OctoAwesome.Network
 {
@@ -33,17 +32,11 @@ namespace OctoAwesome.Network
             };
         }
 
-<<<<<<< HEAD
-        public void Delete(string key) => dictionary.Remove(key);
-
-        public T Get<T>(string key) => (T)Convert.ChangeType(dictionary[key], typeof(T));
-=======
         public void Delete(string key)
             => dictionary.Remove(key);
 
         public T Get<T>(string key)
             => (T)Convert.ChangeType(dictionary[key], typeof(T));
->>>>>>> feature/performance
 
         public T Get<T>(string key, T defaultValue)
         {
@@ -53,17 +46,11 @@ namespace OctoAwesome.Network
             return defaultValue;
         }
 
-<<<<<<< HEAD
-        public T[] GetArray<T>(string key) => DeserializeArray<T>(dictionary[key]);
-
-        public bool KeyExists(string key) => dictionary.ContainsKey(key);
-=======
         public T[] GetArray<T>(string key)
             => DeserializeArray<T>(dictionary[key]);
 
         public bool KeyExists(string key)
             => dictionary.ContainsKey(key);
->>>>>>> feature/performance
 
         public void Set(string key, string value)
         {
@@ -74,17 +61,6 @@ namespace OctoAwesome.Network
 
             Save();
         }
-<<<<<<< HEAD
-        public void Set(string key, int value) => Set(key, value.ToString());
-        
-        public void Set(string key, bool value) => Set(key, value.ToString());
-        
-        public void Set(string key, string[] values) => Set(key, "[" + string.Join(",", values) + "]");
-        
-        public void Set(string key, int[] values) => Set(key, values.Select(i => i.ToString()).ToArray());
-        
-        public void Set(string key, bool[] values) => Set(key, values.Select(b => b.ToString()).ToArray());
-=======
         public void Set(string key, int value)
             => Set(key, value.ToString());
         public void Set(string key, bool value)
@@ -95,7 +71,6 @@ namespace OctoAwesome.Network
             => Set(key, values.Select(i => i.ToString()).ToArray());
         public void Set(string key, bool[] values)
             => Set(key, values.Select(b => b.ToString()).ToArray());
->>>>>>> feature/performance
 
         public void Load()
         {
@@ -109,15 +84,18 @@ namespace OctoAwesome.Network
         public void Save()
         {
             FileInfo.Delete();
-            
             using (var writer = new StreamWriter(FileInfo.OpenWrite()))
+            {
                 writer.Write(JsonConvert.SerializeObject(dictionary, Formatting.Indented));
+            }
         }
 
         private Dictionary<string, string> InternalLoad(FileInfo fileInfo)
         {
             using (var reader = new StreamReader(fileInfo.OpenRead()))
+            {
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
+            }
         }
 
         private T[] DeserializeArray<T>(string arrayString)
@@ -127,16 +105,9 @@ namespace OctoAwesome.Network
 
             arrayString = arrayString.Substring(1, arrayString.Length - 2 /*- 1*/);
 
-<<<<<<< HEAD
-            var partsString = arrayString.Split(',');
-            var tArray = new T[partsString.Length];
-            
-            for (var i = 0; i < partsString.Length; i++)
-=======
             string[] partsString = arrayString.Split(',');
             T[] tArray = new T[partsString.Length];
             for (int i = 0; i < partsString.Length; i++)
->>>>>>> feature/performance
                 tArray[i] = (T)Convert.ChangeType(partsString[i], typeof(T));
 
             return tArray;

@@ -10,15 +10,11 @@ namespace OctoAwesome.Client.Screens
     {
         public new ScreenComponent Manager => (ScreenComponent)base.Manager;
 
-<<<<<<< HEAD
-        private readonly OctoGame _game;
-=======
         private readonly OctoGame game;
->>>>>>> feature/performance
 
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
-            _game = Manager.Game;
+            game = Manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
             Title = Languages.OctoClient.CreateUniverse;
@@ -48,7 +44,7 @@ namespace OctoAwesome.Client.Screens
 
             var serverNameInput = new Textbox(manager)
             {
-                Text = _game.Settings.Get("server", "localhost"),
+                Text = game.Settings.Get("server", "localhost"),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
             };
@@ -56,24 +52,23 @@ namespace OctoAwesome.Client.Screens
 
             var playerNameInput = new Textbox(manager)
             {
-                Text = _game.Settings.Get("player", "USERNAME"),
+                Text = game.Settings.Get("player", "USERNAME"),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Black)
 
             };
             AddLabeledControl(grid, "Username:", playerNameInput);
 
-            var createButton = new TextButton(manager, Languages.OctoClient.Connect) {HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Visible = true};
+            var createButton = new TextButton(manager, Languages.OctoClient.Connect);
+            createButton.HorizontalAlignment = HorizontalAlignment.Center;
+            createButton.VerticalAlignment = VerticalAlignment.Center;
+            createButton.Visible = true;
             createButton.LeftMouseClick += (s, e) =>
             {
-                _game.Settings.Set("server", serverNameInput.Text);
-                _game.Settings.Set("player", playerNameInput.Text);
+                game.Settings.Set("server", serverNameInput.Text);
+                game.Settings.Set("player", playerNameInput.Text);
 
-<<<<<<< HEAD
-                ((ContainerResourceManager)_game.ResourceManager)
-=======
                 ((ContainerResourceManager)game.ResourceManager)
->>>>>>> feature/performance
                     .CreateManager(true);
 
                 PlayMultiplayer(manager, playerNameInput.Text);

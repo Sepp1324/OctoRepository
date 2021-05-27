@@ -1,4 +1,9 @@
-﻿namespace OctoAwesome.Noise
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace OctoAwesome.Noise
 {
     public interface INoise
     {
@@ -14,10 +19,6 @@
         /// <param name="width">Anzahl der gewollten Noise-Werte</param>
         /// <returns>Gibt ein float-Array einer 1D Noise zurück</returns>
         float[] GetNoiseMap(int startX, int width);
-<<<<<<< HEAD
-        
-=======
->>>>>>> feature/performance
         /// <summary>
         /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück
         /// </summary>
@@ -27,10 +28,6 @@
         /// <param name="height">Höhe der Noise-Map</param>
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück</returns>
         float[,] GetNoiseMap2D(int startX, int startY, int width, int height);
-<<<<<<< HEAD
-        
-=======
->>>>>>> feature/performance
         /// <summary>
         /// Gibt ein 2D-float-Array einer 2D-Noise im angegebem Bereich zurück, welche kachelbar ist
         /// </summary>
@@ -40,8 +37,9 @@
         /// <param name="height">Höhe der Noise-Map</param>
         /// <param name="tileSizeX">Breite der Kachel</param>
         /// <param name="tileSizeY">Höhe der Kachel</param>
+        /// <param name="noiseArray">Array in der größé sizeX * sizeY</param>
         /// <returns>Gibt ein 2D-float-Array einer 2D-Noise zurück, welche kachelbar ist</returns>
-        float[,] GetTileableNoiseMap2D(int startX, int startY, int width, int height, int tileSizeX, int tileSizeY);
+        float[] GetTileableNoiseMap2D(int startX, int startY, int width, int height, int tileSizeX, int tileSizeY, float[] noiseArray);
 
         /// <summary>
         /// Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück
@@ -53,7 +51,7 @@
         /// <param name="height">Höhe der Noise-Map</param>
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück</returns>
-        float[, ,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth);
+        float[,,] GetNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth);
         /// <summary>
         /// Gibt ein 3D-float-Array einer 3D-Noise im angegebem Bereich zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>
@@ -66,7 +64,7 @@
         /// <param name="tileSizeX">Breite der Kachel</param>
         /// <param name="tileSizeY">Höhe der Kachel</param>
         /// <returns>Gibt ein 3D-float-Array einer 3D-Noise zurück, welche in X und Y Richtung kachelbar ist</returns>
-        float[, ,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY);
+        float[,,] GetTileableNoiseMap3D(int startX, int startY, int startZ, int width, int height, int depth, int tileSizeX, int tileSizeY);
 
         /// <summary>
         /// Gibt ein 4D-float-Array einer 4D-Noise im angegebem Bereich zurück
@@ -80,7 +78,7 @@
         /// <param name="depth">Tiefe der Noise-Map</param>
         /// <param name="thickness">Dicke(Tiefe 2.Grades) der Noise-Map</param>
         /// <returns>Gibt ein 4D-float-Array einer 4D-Noise zurück</returns>
-        float[, , ,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int thickness);
+        float[,,,] GetNoiseMap4D(int startX, int startY, int startZ, int startW, int width, int height, int depth, int thickness);
 
         /// <summary>
         /// Gibt ein float-Wert einer 1D-Noise an gegebener Position zurück
@@ -114,10 +112,6 @@
         /// <param name="z">Z-Position, für welche die Noise ausgegeben wird</param>
         /// <returns>Gibt ein float-Wert einer 3D Noise zurück</returns>
         float GetNoise3D(int x, int y, int z);
-<<<<<<< HEAD
-        
-=======
->>>>>>> feature/performance
         /// <summary>
         /// Gibt ein float-Wert einer 3D-Noise an gegebener Position zurück, welche in X und Y Richtung kachelbar ist
         /// </summary>

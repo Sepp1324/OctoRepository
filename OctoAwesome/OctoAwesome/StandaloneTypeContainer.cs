@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -22,19 +24,6 @@ namespace OctoAwesome
             if (!typeInformationRegister.ContainsKey(type))
                 typeInformationRegister.Add(type, new TypeInformation(this, type, instanceBehaviour));
 
-<<<<<<< HEAD
-            _typeRegister.Add(registrar, type);
-        }
-        
-        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(T), typeof(T), instanceBehaviour);
-        
-        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
-        
-        public void Register(Type registrar, Type type, object singleton)
-        {
-            if (!_typeInformationRegister.ContainsKey(type))
-                _typeInformationRegister.Add(type, new TypeInformation(this, type, InstanceBehaviour.Singleton, singleton));
-=======
             typeRegister.Add(registrar, type);
         }
         public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
@@ -45,31 +34,19 @@ namespace OctoAwesome
         {
             if (!typeInformationRegister.ContainsKey(type))
                 typeInformationRegister.Add(type, new TypeInformation(this, type, InstanceBehaviour.Singleton, singelton));
->>>>>>> feature/performance
 
             typeRegister.Add(registrar, type);
         }
-<<<<<<< HEAD
-        
-        public void Register<T>(T singleton) where T : class => Register(typeof(T), typeof(T), singleton);
-        
-        public void Register<TRegistrar, T>(object singleton) where T : class => Register(typeof(TRegistrar), typeof(T), singleton);
-=======
         public void Register<T>(T singelton) where T : class
             => Register(typeof(T), typeof(T), singelton);
         public void Register<TRegistrar, T>(object singelton) where T : class
             => Register(typeof(TRegistrar), typeof(T), singelton);
->>>>>>> feature/performance
 
         public bool TryResolve(Type type, out object instance)
         {
             instance = GetOrNull(type);
             return instance != null;
         }
-<<<<<<< HEAD
-        
-=======
->>>>>>> feature/performance
         public bool TryResolve<T>(out T instance) where T : class
         {
             var result = TryResolve(typeof(T), out var obj);
@@ -80,12 +57,8 @@ namespace OctoAwesome
         public object Get(Type type)
             => GetOrNull(type) ?? throw new KeyNotFoundException($"Type {type} was not found in Container");
 
-<<<<<<< HEAD
-        public T Get<T>() where T : class => (T)Get(typeof(T));
-=======
         public T Get<T>() where T : class
             => (T)Get(typeof(T));
->>>>>>> feature/performance
 
         public object GetOrNull(Type type)
         {
@@ -96,14 +69,6 @@ namespace OctoAwesome
             }
             return null;
         }
-<<<<<<< HEAD
-        
-        public T GetOrNull<T>() where T : class => (T)GetOrNull(typeof(T));
-
-        public object GetUnregistered(Type type) => GetOrNull(type) ?? CreateObject(type) ?? throw new InvalidOperationException($"Can not create unregistered type of {type}");
-
-        public T GetUnregistered<T>() where T : class => (T)GetUnregistered(typeof(T));
-=======
         public T GetOrNull<T>() where T : class
             => (T)GetOrNull(typeof(T));
 
@@ -114,7 +79,6 @@ namespace OctoAwesome
 
         public T GetUnregistered<T>() where T : class
             => (T)GetUnregistered(typeof(T));
->>>>>>> feature/performance
 
         public object CreateObject(Type type)
         {
@@ -145,7 +109,7 @@ namespace OctoAwesome
                 return constructor.Invoke(tmpList.ToArray());
             }
 
-            if (!constructors.Any())
+            if (constructors.Count() < 1)
             {
                 try
                 {
@@ -159,12 +123,8 @@ namespace OctoAwesome
 
             return null;
         }
-<<<<<<< HEAD
-        public T CreateObject<T>() where T : class => (T)CreateObject(typeof(T));
-=======
         public T CreateObject<T>() where T : class
             => (T)CreateObject(typeof(T));
->>>>>>> feature/performance
 
         public void Dispose()
         {
@@ -180,54 +140,31 @@ namespace OctoAwesome
 
         private class TypeInformation
         {
-<<<<<<< HEAD
-            private readonly StandaloneTypeContainer _typeContainer;
-            private readonly Type _type;
-            private object _singletonInstance;
-            
-            public InstanceBehaviour Behaviour { get; private set; }
-            public object Instance => CreateObject();
-=======
             public InstanceBehaviour Behaviour { get; set; }
             public object Instance => CreateObject();
 
             private readonly StandaloneTypeContainer typeContainer;
             private readonly Type type;
             private object singeltonInstance;
->>>>>>> feature/performance
 
             public TypeInformation(StandaloneTypeContainer container,
                 Type type, InstanceBehaviour instanceBehaviour, object instance = null)
             {
                 this.type = type;
                 Behaviour = instanceBehaviour;
-<<<<<<< HEAD
-                _typeContainer = container;
-                _singletonInstance = instance;
-=======
                 typeContainer = container;
                 singeltonInstance = instance;
->>>>>>> feature/performance
             }
 
             private object CreateObject()
             {
-<<<<<<< HEAD
-                if (Behaviour == InstanceBehaviour.Singleton && _singletonInstance != null)
-                    return _singletonInstance;
-=======
                 if (Behaviour == InstanceBehaviour.Singleton && singeltonInstance != null)
                     return singeltonInstance;
->>>>>>> feature/performance
 
                 var obj = typeContainer.CreateObject(type);
 
                 if (Behaviour == InstanceBehaviour.Singleton)
-<<<<<<< HEAD
-                    _singletonInstance = obj;
-=======
                     singeltonInstance = obj;
->>>>>>> feature/performance
 
                 return obj;
             }

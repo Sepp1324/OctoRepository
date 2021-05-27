@@ -1,15 +1,14 @@
-﻿using OctoAwesome.Basics.Entities;
+﻿using OctoAwesome.Basics.Definitions.Blocks;
+using OctoAwesome.Basics.Entities;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.Basics.SimulationComponents;
 using OctoAwesome.EntityComponents;
 using System.Reflection;
 using System.Linq;
+using System;
 using engenious;
 using OctoAwesome.Services;
-<<<<<<< HEAD
 using OctoAwesome.Definitions;
-=======
->>>>>>> feature/performance
 
 namespace OctoAwesome.Basics
 {
@@ -28,14 +27,10 @@ namespace OctoAwesome.Basics
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {
 
-            foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(
-                t => !t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t)))
-            {
-<<<<<<< HEAD
-                extensionLoader.RegisterDefinition(t);
-=======
-                extensionLoader.RegisterDefinition((IDefinition)Activator.CreateInstance(t));
->>>>>>> feature/performance
+            foreach (var t in Assembly.GetExecutingAssembly().GetTypes())
+            {                
+                if (!t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t))
+                    extensionLoader.RegisterDefinition(t);
             }
 
             extensionLoader.RegisterMapGenerator(new ComplexPlanetGenerator());

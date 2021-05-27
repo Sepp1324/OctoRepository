@@ -1,5 +1,8 @@
-﻿using System;
+﻿using OctoAwesome.Basics;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.IO;
 using OctoAwesome.Basics.Definitions.Blocks;
 using OctoAwesome.Definitions;
@@ -17,11 +20,7 @@ namespace OctoAwesome.Basics
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
-<<<<<<< HEAD
             IDefinition[] definitions = definitionManager.Definitions.ToArray();
-=======
-            IDefinition[] definitions = definitionManager.GetDefinitions().ToArray();
->>>>>>> feature/performance
 
             IBlockDefinition sandDefinition = definitions.OfType<SandBlockDefinition>().First();
             ushort sandIndex = (ushort)(Array.IndexOf(definitions.ToArray(), sandDefinition) + 1);

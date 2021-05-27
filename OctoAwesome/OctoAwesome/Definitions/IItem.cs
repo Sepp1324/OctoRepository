@@ -1,4 +1,6 @@
-﻿namespace OctoAwesome.Definitions
+﻿using System.Collections.Generic;
+
+namespace OctoAwesome.Definitions
 {
     /// <summary>
     /// Interface, das ein Item darstellt
@@ -15,15 +17,9 @@
         /// Der Zustand des Items
         /// </summary>
         int Condition { get; set; }
-<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/IItem.cs
-        
         IItemDefinition Definition { get; }
-        
         IMaterialDefinition Material { get; set; }
-        
-        int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit);
-=======
-        IItemDefinition Definition { get; }
->>>>>>> feature/performance:OctoAwesome/OctoAwesome/IItem.cs
+
+        int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit);
     }
 }

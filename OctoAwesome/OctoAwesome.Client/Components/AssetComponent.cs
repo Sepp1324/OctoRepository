@@ -12,11 +12,7 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class AssetComponent : DrawableGameComponent
     {
-<<<<<<< HEAD
-        private Settings _settings;
-=======
         private Settings settings;
->>>>>>> feature/performance
 
         public const string INFOFILENAME = "packinfo.xml";
 
@@ -56,7 +52,7 @@ namespace OctoAwesome.Client.Components
 
         public AssetComponent(OctoGame game) : base(game)
         {
-            _settings = game.Settings;
+            settings = game.Settings;
 
             Ready = false;
             textures = new Dictionary<string, Texture2D>();
@@ -65,15 +61,9 @@ namespace OctoAwesome.Client.Components
 
             // Load list of active Resource Packs
             List<ResourcePack> toLoad = new List<ResourcePack>();
-<<<<<<< HEAD
-            if (_settings.KeyExists(SETTINGSKEY))
-            {
-                string activePackPathes = _settings.Get<string>(SETTINGSKEY);
-=======
             if (settings.KeyExists(SETTINGSKEY))
             {
                 string activePackPathes = settings.Get<string>(SETTINGSKEY);
->>>>>>> feature/performance
                 if (!string.IsNullOrEmpty(activePackPathes))
                 {
                     string[] packPathes = activePackPathes.Split(';');
@@ -156,7 +146,7 @@ namespace OctoAwesome.Client.Components
                 component.ReloadAssets();
 
             // Speichern der Settings
-            _settings.Set(SETTINGSKEY, string.Join(";", activePacks.Select(p => p.Path)));
+            settings.Set(SETTINGSKEY, string.Join(";", activePacks.Select(p => p.Path)));
 
             Ready = true;
         }

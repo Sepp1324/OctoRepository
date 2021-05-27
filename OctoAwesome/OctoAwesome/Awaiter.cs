@@ -91,13 +91,9 @@ namespace OctoAwesome
             }
         }
 
-<<<<<<< HEAD
-        public void Dispose() => manualReset.Dispose();
-=======
         public void Dispose()
         {
             manualReset.Dispose();
         }
->>>>>>> feature/performance
     }
 }

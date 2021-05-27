@@ -11,22 +11,6 @@ namespace OctoAwesome.Client.Components
     {
         public static readonly VertexDeclaration VertexDeclaration;
         static VertexPositionNormalTextureLight()
-<<<<<<< HEAD
-        {
-            VertexDeclaration = new engenious.Graphics.VertexDeclaration(sizeof(uint) * 2, 
-                new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.Position, 0), 
-                new VertexElement(sizeof(uint), VertexElementFormat.Single, VertexElementUsage.Normal, 0));
-        }
-        public VertexPositionNormalTextureLight(Vector3 position, Vector3 normal, Vector2 uv,byte layer,uint light)
-        {
-            var posX = (uint)position.X;
-            var posY = (uint)position.Y;
-            var posZ = (uint)position.Z;
-            var normalX = (int)normal.X;
-            var normalY = (int)normal.Y;
-            var normalZ = (int)normal.Z;
-            var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
-=======
         {
             VertexDeclaration = new engenious.Graphics.VertexDeclaration(sizeof(uint) * 2, 
                 new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.Position, 0), 
@@ -43,7 +27,6 @@ namespace OctoAwesome.Client.Components
             int normalZ = (int)normal.Z;
 
             int normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + (normalZ + 1);
->>>>>>> feature/performance
 
             uint normalPacked;
             switch (normalExpanded)
@@ -62,12 +45,13 @@ namespace OctoAwesome.Client.Components
             PackedValue = (posX & 0xFF) | ((posY & 0xFF) << 8) | ((posZ & 0xFF) << 16) | ((uint)layer << 24);
             PackedValue2 = light | (normalPacked << 24) | (uvExpanded << 28);
         }
+        public VertexPositionNormalTextureLight(uint packedValue1, uint packedValue2)
+        {
+            PackedValue = packedValue1;
+            PackedValue2 = packedValue2;
+        }
         public uint PackedValue { get; private set; }
         public uint PackedValue2 { get; private set; }
-<<<<<<< HEAD
-        
-        VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
-=======
         VertexDeclaration IVertexType.VertexDeclaration
         {
             get
@@ -75,6 +59,5 @@ namespace OctoAwesome.Client.Components
                 return VertexDeclaration;
             }
         }
->>>>>>> feature/performance
     }
 }

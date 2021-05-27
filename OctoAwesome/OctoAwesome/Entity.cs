@@ -1,4 +1,5 @@
-﻿using OctoAwesome.EntityComponents;
+﻿using engenious;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
@@ -25,22 +26,15 @@ namespace OctoAwesome
         /// Reference to the active Simulation.
         /// </summary>
         public Simulation Simulation { get; internal set; }
-<<<<<<< HEAD
-=======
 
->>>>>>> feature/performance
 
         /// <summary>
         /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
         public Entity()
         {
-<<<<<<< HEAD
-            Components = new ComponentList<EntityComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
-=======
             Components = new ComponentList<EntityComponent>(
                 ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
->>>>>>> feature/performance
             Id = Guid.Empty;
         }
 
@@ -80,7 +74,10 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager mananger) => OnInitialize(mananger);
+        public void Initialize(IResourceManager mananger)
+        {
+            OnInitialize(mananger);
+        }
 
         protected virtual void OnInitialize(IResourceManager manager)
         {
@@ -107,11 +104,6 @@ namespace OctoAwesome
             Components.Deserialize(reader);
         }
 
-<<<<<<< HEAD
-        public virtual void RegisterDefault() { }
-
-        public override int GetHashCode() => Id.GetHashCode();
-=======
         public virtual void RegisterDefault()
         {
 
@@ -119,7 +111,6 @@ namespace OctoAwesome
 
         public override int GetHashCode()
             => Id.GetHashCode();
->>>>>>> feature/performance
 
         public override bool Equals(object obj)
         {
@@ -129,7 +120,9 @@ namespace OctoAwesome
             return base.Equals(obj);
         }
 
-        public virtual void OnUpdate(SerializableNotification notification) { }
+        public virtual void OnUpdate(SerializableNotification notification)
+        {
+        }
 
 
         public virtual void Update(SerializableNotification notification)

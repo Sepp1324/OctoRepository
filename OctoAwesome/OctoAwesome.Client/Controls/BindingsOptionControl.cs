@@ -62,18 +62,11 @@ namespace OctoAwesome.Client.Controls
 
         private void BindingKeyLabel_LeftMouseClick(Control sender, MouseEventArgs args)
         {
-<<<<<<< HEAD
-            var data = (object[])sender.Tag;
-            var id = (string)data[0];
-            var oldKey = (Keys)data[1];
-            var lbl = (Label)sender;
-=======
             object[] data = (object[])sender.Tag;
             string id = (string)data[0];
             Keys oldKey = (Keys)data[1];
 
             Label lbl = (Label)sender;
->>>>>>> feature/performance
 
             MessageScreen screen = new MessageScreen(Manager, Languages.OctoClient.PressKey, "", Languages.OctoClient.Cancel);
             screen.KeyDown += (s, a) =>

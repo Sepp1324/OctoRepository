@@ -1,4 +1,8 @@
-﻿namespace OctoAwesome.Database
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace OctoAwesome.Database
 {
     public interface ITag
     {

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-﻿using OctoAwesome.Definitions;
-using OctoAwesome.Basics.Definitions.Materials;
-=======
 ﻿using OctoAwesome.Basics.Properties;
 using OctoAwesome.Information;
 using System;
@@ -9,7 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
->>>>>>> feature/performance
+using OctoAwesome.Definitions;
+using OctoAwesome.Basics.Definitions.Materials;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
@@ -27,35 +24,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override bool HasMetaData { get { return true; } }
 
-<<<<<<< HEAD
-        public override string[] Textures =>
-            new[] {
-                "planks_red"};
+        public override string[] Textures { get; } = new[] {"planks_red"};
 
         public override IMaterialDefinition Material { get; }
 
-        public PlankBlockDefinition(WoodMaterialDefinition material) => Material = material;
-=======
-        public override string[] Textures
+        public PlankBlockDefinition(WoodMaterialDefinition material)
         {
-            get
-            {
-                return new[] {
-                "planks_red"};
-            }
+            Material = material;
         }
-
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return new PhysicalProperties()
-            {
-                Density = 0.87f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
-            };
-        }      
-
->>>>>>> feature/performance
     }
 }

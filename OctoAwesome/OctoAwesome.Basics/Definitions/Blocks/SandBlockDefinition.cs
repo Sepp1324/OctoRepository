@@ -1,4 +1,6 @@
-﻿using OctoAwesome.Basics.Definitions.Materials;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -15,38 +17,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             get { return "sand"; }
         }
 
-
-<<<<<<< HEAD
-        public override string[] Textures =>
-            new[] {
-                "sand"
-            };
+        public override string[] Textures { get; } = new[] {"sand"};
 
         public override IMaterialDefinition Material { get; }
 
-        public SandBlockDefinition(SandMaterialDefinition material) => Material = material;
-=======
-        public override string[] Textures
+        public SandBlockDefinition(SandMaterialDefinition material)
         {
-            get
-            {
-                return new[] {
-                    "sand"
-                };
-            }
+            Material = material;
         }
-
-        public override PhysicalProperties GetProperties(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return new PhysicalProperties()
-            {
-                //Schüttdichte
-                Density = 1.5f,
-                FractureToughness = 0.3f,
-                Granularity = 0.9f,
-                Hardness = 0.1f
-            };
-        }
->>>>>>> feature/performance
     }
 }

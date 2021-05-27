@@ -1,23 +1,17 @@
-<<<<<<< HEAD
-﻿using OctoAwesome.Definitions;
-using OctoAwesome.Definitions.Items;
-=======
 ﻿using OctoAwesome.Basics.Properties;
 using OctoAwesome.Information;
+using OctoAwesome.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
->>>>>>> feature/performance
+using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
     public class PickaxeDefinition : IItemDefinition
     {
-<<<<<<< HEAD
-        public string Icon => "pick_iron";
-=======
         public string Icon
         {
             get
@@ -33,7 +27,6 @@ namespace OctoAwesome.Basics.Definitions.Items
                 return "Pickaxe";
             }
         }
->>>>>>> feature/performance
 
         public int StackLimit
         {
@@ -51,30 +44,20 @@ namespace OctoAwesome.Basics.Definitions.Items
             }
         }
 
-<<<<<<< HEAD
-        public float VolumePerUnit => 10;
-        
-        public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
 
-        public Item Create(IMaterialDefinition material) => new Pickaxe(this, material);
-=======
-        int IInventoryableDefinition.VolumePerUnit => 1;
-
-        public PhysicalProperties GetProperties(IItem item)
+        public bool CanMineMaterial(IMaterialDefinition material)
         {
-            return new PhysicalProperties()
+            if(material is ISolidMaterialDefinition solid)
             {
-                Density = 1f,
-                FractureToughness = 1f,
-                Granularity = 1f,
-                Hardness = 1f
-            };
+                return true;
+            }
+
+            return false;
         }
 
-        public void Hit(IItem item, IBlockDefinition blockDefinition, BlockHitInformation blockHit)
+        public Item Create(IMaterialDefinition material)
         {
-            // item.Condition--;
+            return new Pickaxe(this, material);
         }
->>>>>>> feature/performance
     }
 }

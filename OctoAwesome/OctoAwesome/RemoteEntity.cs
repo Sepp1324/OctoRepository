@@ -1,24 +1,26 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
     public class RemoteEntity : Entity
     {
-<<<<<<< HEAD
-        public RemoteEntity() { }
-=======
         public RemoteEntity()
         {
 
         }
->>>>>>> feature/performance
 
         public RemoteEntity(Entity originEntity)
         {
-            var sendableComponents = Components.Where(c => c.Sendable);
-            foreach (var component in sendableComponents)
-                Components.AddComponent(component);
+            foreach (var component in Components)
+            {
+                if (component.Sendable)
+                    Components.AddComponent(component);
+            }
             Id = originEntity.Id;
         }
 

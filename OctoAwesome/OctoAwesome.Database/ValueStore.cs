@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -6,15 +10,6 @@ namespace OctoAwesome.Database
     {
         public bool FixedValueLength { get;  }
 
-<<<<<<< HEAD
-        private readonly Writer _writer;
-        private readonly Reader _reader;
-
-        public ValueStore(Writer writer, Reader reader, bool fixedValueLength)
-        {
-            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            _reader = reader ?? throw new ArgumentNullException(nameof(reader)); 
-=======
         private readonly Writer writer;
         private readonly Reader reader;
 
@@ -22,7 +17,6 @@ namespace OctoAwesome.Database
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
             this.reader = reader ?? throw new ArgumentNullException(nameof(reader)); 
->>>>>>> feature/performance
             FixedValueLength = fixedValueLength;
         }
         public ValueStore(Writer writer, Reader reader) : this(writer, reader, false)
@@ -32,16 +26,16 @@ namespace OctoAwesome.Database
         
         public Value GetValue<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
-            var byteArray = _reader.Read(key.Index + Key<TTag>.KEY_SIZE, key.ValueLength);
+            var byteArray = reader.Read(key.Index + Key<TTag>.KEY_SIZE, key.ValueLength);
             return new Value(byteArray);
         }
 
         internal Key<TTag> AddValue<TTag>(TTag tag, Value value) where TTag : ITag, new()
         {
-            var key = new Key<TTag>(tag, _writer.ToEnd(), value.Content.Length);
+            var key = new Key<TTag>(tag, writer.ToEnd(), value.Content.Length);
             //TODO: Hash, Sync
-            _writer.Write(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
-            _writer.WriteAndFlush(value.Content, 0, value.Content.Length);
+            writer.Write(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
+            writer.WriteAndFlush(value.Content, 0, value.Content.Length);
             return key;
         }
 
@@ -57,27 +51,20 @@ namespace OctoAwesome.Database
             if (!FixedValueLength)
                 throw new NotSupportedException("Update is not allowed when value have no fixed size");
 
-            _writer.WriteAndFlush(value.Content, 0, key.ValueLength, key.Index + Key<TTag>.KEY_SIZE);
+            writer.WriteAndFlush(value.Content, 0, key.ValueLength, key.Index + Key<TTag>.KEY_SIZE);
         }
 
         internal void Remove<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
-<<<<<<< HEAD
-            _writer.Write(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Index);
-            _writer.WriteAndFlush(BitConverter.GetBytes(key.ValueLength), 0, sizeof(int), key.Index + Key<TTag>.KEY_SIZE);
-=======
             writer.Write(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Index);
             writer.WriteAndFlush(BitConverter.GetBytes(key.ValueLength), 0, sizeof(int), key.Index + Key<TTag>.KEY_SIZE);
->>>>>>> feature/performance
         }
 
-        internal void Open() => _writer.Open();
+        internal void Open()
+        {
+            writer.Open();
+        }
 
-<<<<<<< HEAD
-        internal void Close() => _writer.Close();
-
-        public void Dispose() => _writer.Dispose();
-=======
         internal void Close()
         {
             writer.Close();
@@ -88,6 +75,5 @@ namespace OctoAwesome.Database
             writer.Dispose(); //TODO: Move to owner
         }
         
->>>>>>> feature/performance
     }
 }

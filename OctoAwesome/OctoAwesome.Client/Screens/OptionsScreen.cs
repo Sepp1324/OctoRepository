@@ -1,35 +1,31 @@
 ﻿using engenious.UI;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using engenious.Graphics;
+using engenious;
+using engenious.Input;
 using engenious.UI.Controls;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class OptionsScreen : BaseScreen
     {
-<<<<<<< HEAD
-        private readonly AssetComponent _assets;
-        private readonly Button _exitButton;
-=======
         private AssetComponent assets;
 
         private Button exitButton;
->>>>>>> feature/performance
 
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
-            _assets = manager.Game.Assets;
+            assets = manager.Game.Assets;
 
             Padding = new Border(0, 0, 0, 0);
 
             Title = Languages.OctoClient.Options;
 
-<<<<<<< HEAD
-            var panelBackground = _assets.LoadTexture(typeof(ScreenComponent), "panel");
-=======
             Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
->>>>>>> feature/performance
 
             SetDefaultBackground();
 
@@ -38,13 +34,8 @@ namespace OctoAwesome.Client.Screens
                 Padding = new Border(20, 20, 20, 20),
                 Width = 700,
                 TabPageBackground = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
-<<<<<<< HEAD
-                TabBrush = NineTileBrush.FromSingleTexture(_assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown"), 15, 15),
-                TabActiveBrush = NineTileBrush.FromSingleTexture(_assets.LoadTexture(typeof(ScreenComponent), "buttonLong_beige"), 15, 15),
-=======
                 TabBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown"), 15, 15),
                 TabActiveBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture(typeof(ScreenComponent), "buttonLong_beige"), 15, 15),
->>>>>>> feature/performance
             };
             Controls.Add(tabs);
 
@@ -64,12 +55,8 @@ namespace OctoAwesome.Client.Screens
 
             #region BindingsPage
 
-<<<<<<< HEAD
-            var bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings) {Padding = Border.All(10)};
-=======
             TabPage bindingsPage = new TabPage(manager, Languages.OctoClient.KeyBindings);
             bindingsPage.Padding = Border.All(10);
->>>>>>> feature/performance
             tabs.Pages.Add(bindingsPage);
 
             BindingsOptionControl bindingsOptions = new BindingsOptionControl(manager)
@@ -110,25 +97,20 @@ namespace OctoAwesome.Client.Screens
             #endregion
 
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
-            _exitButton = new TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
-            _exitButton.VerticalAlignment = VerticalAlignment.Top;
-            _exitButton.HorizontalAlignment = HorizontalAlignment.Right;
-            _exitButton.Enabled = false;
-            _exitButton.Visible = false;
-            _exitButton.LeftMouseClick += (s, e) => Program.Restart();
-            _exitButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(_exitButton);
+            exitButton = new TextButton(manager, Languages.OctoClient.RestartGameToApplyChanges);
+            exitButton.VerticalAlignment = VerticalAlignment.Top;
+            exitButton.HorizontalAlignment = HorizontalAlignment.Right;
+            exitButton.Enabled = false;
+            exitButton.Visible = false;
+            exitButton.LeftMouseClick += (s, e) => Program.Restart();
+            exitButton.Margin = new Border(10, 10, 10, 10);
+            Controls.Add(exitButton);
         }
 
         public void NeedRestart()
         {
-<<<<<<< HEAD
-            _exitButton.Visible = true;
-            _exitButton.Enabled = true;
-=======
             exitButton.Visible = true;
             exitButton.Enabled = true;
->>>>>>> feature/performance
         }        
     }
 }

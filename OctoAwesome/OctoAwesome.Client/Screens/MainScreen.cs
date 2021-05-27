@@ -1,29 +1,22 @@
 ﻿using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Runtime;
 using System.Diagnostics;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class MainScreen : BaseScreen
     {
-<<<<<<< HEAD
-        private readonly AssetComponent _assets;
-=======
         private AssetComponent assets;
->>>>>>> feature/performance
 
         public MainScreen(ScreenComponent manager) : base(manager)
         {
-            _assets = manager.Game.Assets;
+            assets = manager.Game.Assets;
 
             Padding = new Border(0,0,0,0);
 
-<<<<<<< HEAD
-            Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
-=======
             Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background"), TextureBrushMode.Stretch);
->>>>>>> feature/performance
 
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);

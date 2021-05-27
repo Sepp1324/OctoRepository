@@ -1,7 +1,10 @@
 ﻿using engenious.UI;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using engenious;
 using engenious.Input;
 using engenious.UI.Controls;
@@ -66,7 +69,14 @@ namespace OctoAwesome.Client.Screens
             {
                 seedLabel.Text = "";
                 if (levelList.SelectedItem != null)
+                {
                     seedLabel.Text = "Seed: " + levelList.SelectedItem.Seed;
+                    deleteButton.Enabled = true;
+                }
+                else
+                {
+                    deleteButton.Enabled = false;
+                }
             };
             mainStack.AddControl(levelList, 0, 0);
 
@@ -96,17 +106,10 @@ namespace OctoAwesome.Client.Screens
             //buttonStack.Controls.Add(renameButton);
 
             deleteButton = GetButton(Languages.OctoClient.Delete);
+            deleteButton.Enabled = false;
             buttonStack.Controls.Add(deleteButton);
             deleteButton.LeftMouseClick += (s, e) =>
             {
-                if (levelList.SelectedItem == null)
-                {
-                    MessageScreen msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
-                    manager.NavigateToScreen(msg);
-
-                    return;
-                }
-
                 // Sicherstellen, dass universe nicht geladen ist
                 if (Manager.Game.ResourceManager.CurrentUniverse != null &&
                     Manager.Game.ResourceManager.CurrentUniverse.Id == levelList.SelectedItem.Id)

@@ -1,40 +1,52 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    public class Bucket : Item, IFluidInventory
+    class Bucket : Item, IFluidInventory
     {
-        public int MaxQuantity { get; }
-        
         public int Quantity { get; private set; }
-        
-        public IBlockDefinition Fluid { get; private set; }
-        
-        public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition) => MaxQuantity = 125;
+        public IBlockDefinition FluidBlock { get; private set; }
+        public int MaxQuantity { get; }
 
-        public void AddFluid(int quantity, IBlockDefinition fluid)
+        public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition)
+            : base(definition, materialDefinition)
         {
-            if (!Definition.CanMineMaterial(fluid.Material)) return;
-            
-            Quantity += quantity;
-            Fluid = fluid;
+            MaxQuantity = 125;
         }
 
-        public override int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit)
+        public void AddFluid(int quantity, IBlockDefinition fluidBlock)
         {
-            if (!Definition.CanMineMaterial(material)) return 0;
+            if (!Definition.CanMineMaterial(fluidBlock.Material))
+                return;
+
+            Quantity += quantity;
+            FluidBlock = fluidBlock;
+        }
+
+        public override int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit)
+        {
+            if (!Definition.CanMineMaterial(material))
+                return 0;
 
             if (material is IFluidMaterialDefinition fluid)
             {
-                if(!(Fluid is null) && fluid != Fluid) return 0;
+                if (!(FluidBlock is null) && fluid != FluidBlock.Material)
+                    return 0;
 
-                if (Quantity + volumePerHit >= MaxQuantity) return MaxQuantity - Quantity;
+                if (Quantity + volumePerHit >= MaxQuantity)
+                    return MaxQuantity - Quantity;
 
                 return volumePerHit;
             }
-            
-            return base.Hit(material, blockVolumeVolumeRemaining, volumePerHit);
+
+
+            return base.Hit(material, volumeRemaining, volumePerHit);
         }
     }
 }

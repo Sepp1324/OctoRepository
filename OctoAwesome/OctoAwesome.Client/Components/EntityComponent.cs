@@ -2,9 +2,12 @@
 using engenious.Graphics;
 using engenious.Helper;
 using OctoAwesome.EntityComponents;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Components
 {
@@ -16,21 +19,13 @@ namespace OctoAwesome.Client.Components
             public Texture2D texture;
             public Model model;
         }
-<<<<<<< HEAD
-        private readonly GraphicsDevice _graphicsDevice;
-        private readonly BasicEffect _effect;
-        
-        public SimulationComponent Simulation { get; private set; }
-=======
         private GraphicsDevice graphicsDevice;
         private BasicEffect effect;
         public SimulationComponent Simulation { get; private set; }
 
 
         private Dictionary<string, ModelInfo> models = new Dictionary<string, ModelInfo>();
->>>>>>> feature/performance
 
-        private readonly Dictionary<string, ModelInfo> _models = new Dictionary<string, ModelInfo>();
 
         public List<Entity> Entities { get; set; }
 
@@ -39,20 +34,20 @@ namespace OctoAwesome.Client.Components
             Simulation = simulation;
 
             Entities = new List<Entity>();
-            _graphicsDevice = game.GraphicsDevice;
+            graphicsDevice = game.GraphicsDevice;
 
-            _effect = new BasicEffect(_graphicsDevice);
+            effect = new BasicEffect(graphicsDevice);
         }
 
         private int i = 0;
         public void Draw(Matrix view, Matrix projection, Index3 chunkOffset, Index2 planetSize)
         {
-            _effect.Projection = projection;
-            _effect.View = view;
-            _effect.TextureEnabled = true;
-            _graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
+            effect.Projection = projection;
+            effect.View = view;
+            effect.TextureEnabled = true;
+            graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
             using (var writer = File.AppendText(Path.Combine(".", "render.log")))
-                foreach (var pass in _effect.CurrentTechnique.Passes)
+                foreach (var pass in effect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                     i++;
@@ -65,12 +60,8 @@ namespace OctoAwesome.Client.Components
 
                         var rendercomp = entity.Components.GetComponent<RenderComponent>();
 
-<<<<<<< HEAD
-                        if (!_models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
-=======
 
                         if (!models.TryGetValue(rendercomp.Name, out ModelInfo modelinfo))
->>>>>>> feature/performance
                         {
                             modelinfo = new ModelInfo()
                             {
@@ -100,14 +91,10 @@ namespace OctoAwesome.Client.Components
                             shift.X * Chunk.CHUNKSIZE_X + position.LocalPosition.X,
                             shift.Y * Chunk.CHUNKSIZE_Y + position.LocalPosition.Y,
                             shift.Z * Chunk.CHUNKSIZE_Z + position.LocalPosition.Z) * Matrix.CreateScaling(body.Radius * 2, body.Radius * 2, body.Height) * Matrix.CreateRotationZ(rotation);
-<<<<<<< HEAD
-                        _effect.World = world;
-=======
                         effect.World = world;
->>>>>>> feature/performance
                         modelinfo.model.Transform = world;
 
-                        modelinfo.model.Draw(_effect, modelinfo.texture);
+                        modelinfo.model.Draw(effect, modelinfo.texture);
                     }
                 }
         }
@@ -122,8 +109,12 @@ namespace OctoAwesome.Client.Components
             if (!(simulation.State == SimulationState.Running || simulation.State == SimulationState.Paused))
                 return;
 
-            Entities = simulation.Entities.Where(i => i.Components.ContainsComponent<PositionComponent>()).ToList();
-
+            Entities.Clear();
+            foreach (var item in simulation.Entities)
+            {
+                if (item.Components.ContainsComponent<PositionComponent>())
+                    Entities.Add(item);
+            }
             //base.Update(gameTime);
         }
     }

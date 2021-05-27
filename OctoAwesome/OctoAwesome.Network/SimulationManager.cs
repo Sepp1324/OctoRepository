@@ -1,8 +1,13 @@
 ﻿using engenious;
 using OctoAwesome.Definitions;
+using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
@@ -104,14 +109,13 @@ namespace OctoAwesome.Network
             backgroundThread.Abort();
         }
 
-<<<<<<< HEAD
-        public IUniverse GetUniverse() => ResourceManager.CurrentUniverse;
-=======
         public IUniverse GetUniverse()
             => ResourceManager.CurrentUniverse;
->>>>>>> feature/performance
 
-        public IUniverse NewUniverse() => throw new NotImplementedException();
+        public IUniverse NewUniverse()
+        {
+            throw new NotImplementedException();
+        }
 
         public IPlanet GetPlanet(int planetId)
         {
@@ -120,16 +124,10 @@ namespace OctoAwesome.Network
             return planet;
         }
 
-<<<<<<< HEAD
-        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2) => ResourceManager.LoadChunkColumn(planet, index2);
-       
-        public IChunkColumn LoadColumn(int planetId, Index2 index2) => LoadColumn(GetPlanet(planetId), index2);
-=======
         public IChunkColumn LoadColumn(IPlanet planet, Index2 index2)
             => ResourceManager.LoadChunkColumn(planet, index2);
         public IChunkColumn LoadColumn(int planetId, Index2 index2)
             => LoadColumn(GetPlanet(planetId), index2);
->>>>>>> feature/performance
 
         private void SimulationLoop()
         {

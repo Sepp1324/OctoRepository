@@ -1,4 +1,11 @@
-﻿using OctoAwesome.Definitions;
+﻿using OctoAwesome.Basics.Properties;
+
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using OctoAwesome.Definitions;
 using OctoAwesome.Basics.Definitions.Materials;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -17,28 +24,14 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override bool HasMetaData { get { return true; } }
 
-<<<<<<< HEAD
-        public override string[] Textures =>
-            new[] {
-                "planks"};
-=======
-        public override string[] Textures
-        {
-            get
-            {
-                return new[] {
-                "planks"};
-            }
-        }
->>>>>>> feature/performance
+        public override string[] Textures { get; } = new[] { "planks" };
 
         public override IMaterialDefinition Material { get; }
 
-<<<<<<< HEAD
-        public RedPlankBlockDefinition(WoodMaterialDefinition material) => Material = material;
-=======
-       
+        public RedPlankBlockDefinition(WoodMaterialDefinition material)
+        {
+            Material = material;
+        }
 
->>>>>>> feature/performance
     }
 }

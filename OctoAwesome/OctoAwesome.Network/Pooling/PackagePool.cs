@@ -2,26 +2,34 @@
 using OctoAwesome.Threading;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network.Pooling
 {
     public sealed class PackagePool : IPool<Package>
     {
-        private readonly Stack<Package> _internalStack;
-        private readonly LockSemaphore _semaphoreExtended;
+        private readonly Stack<Package> internalStack;
+        private readonly LockSemaphore semaphoreExtended;
 
         public PackagePool()
         {
-            _internalStack = new Stack<Package>();
-            _semaphoreExtended = new LockSemaphore(1, 1);
+            internalStack = new Stack<Package>();
+            semaphoreExtended = new LockSemaphore(1, 1);
         }
 
         public Package Get()
         {
             Package obj;
 
-            using (_semaphoreExtended.Wait())
-                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new Package();
+            using (semaphoreExtended.Wait())
+            {
+                if (internalStack.Count > 0)
+                    obj = internalStack.Pop();
+                else
+                    obj = new Package();
+            }
 
             obj.Init(this);
             obj.UId = Package.NextUId;
@@ -31,10 +39,6 @@ namespace OctoAwesome.Network.Pooling
         {
             Package obj;
 
-<<<<<<< HEAD
-            using (_semaphoreExtended.Wait())
-                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new Package(false);
-=======
             using (semaphoreExtended.Wait())
             {
                 if (internalStack.Count > 0)
@@ -42,7 +46,6 @@ namespace OctoAwesome.Network.Pooling
                 else
                     obj = new Package(false);
             }
->>>>>>> feature/performance
 
             obj.Init(this);
             return obj;
@@ -50,20 +53,20 @@ namespace OctoAwesome.Network.Pooling
 
         public void Push(Package obj)
         {
-            using (_semaphoreExtended.Wait())
-                _internalStack.Push(obj);
+            using (semaphoreExtended.Wait())
+                internalStack.Push(obj);
         }
 
         public void Push(IPoolElement obj)
         {
             if (obj is Package package)
+            {
                 Push(package);
-            else
-                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
-<<<<<<< HEAD
-=======
             }
->>>>>>> feature/performance
+            else
+            {
+                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
+            }
         }       
     }
 }

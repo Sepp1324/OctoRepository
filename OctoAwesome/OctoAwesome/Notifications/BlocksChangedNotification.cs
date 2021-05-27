@@ -1,36 +1,34 @@
-﻿using System;
+﻿using NLog.Targets.Wrappers;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public sealed class BlocksChangedNotification : SerializableNotification, IChunkNotification
     {
         public ICollection<BlockInfo> BlockInfos { get; set; }
-        
         public Index3 ChunkPos { get; internal set; }
-        
         public int Planet { get; internal set; }
 
         public override void Deserialize(BinaryReader reader)
         {
             if (reader.ReadByte() != (byte)BlockNotificationType.BlocksChanged)//Read type of the notification
-<<<<<<< HEAD
-=======
             {
->>>>>>> feature/performance
                 throw new InvalidCastException("this is the wrong type of notification");
+            }
 
-            ChunkPos = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+            ChunkPos = new Index3(
+                reader.ReadInt32(),
+                reader.ReadInt32(),
+                reader.ReadInt32());
 
             Planet = reader.ReadInt32();
             var count = reader.ReadInt32();
             var list = new List<BlockInfo>(count);
-<<<<<<< HEAD
-            
-            for (var i = 0; i < count; i++)
-                list.Add(new BlockInfo(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32()));
-=======
             for (int i = 0; i < count; i++)
             {
                 list.Add(new BlockInfo(
@@ -40,7 +38,6 @@ namespace OctoAwesome.Notifications
                     block: reader.ReadUInt16(),
                     meta: reader.ReadInt32()));
             }
->>>>>>> feature/performance
         }
 
         public override void Serialize(BinaryWriter writer)
@@ -52,7 +49,6 @@ namespace OctoAwesome.Notifications
             writer.Write(Planet);
 
             writer.Write(BlockInfos.Count);
-            
             foreach (var block in BlockInfos)
             {
                 writer.Write(block.Position.X);

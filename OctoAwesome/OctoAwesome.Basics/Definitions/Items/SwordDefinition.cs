@@ -1,12 +1,16 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    public class SwordDefinition : IItemDefinition
+    class SwordDefinition : IItemDefinition
     {
         public string Name { get; }
-        
         public string Icon { get; }
 
         public SwordDefinition()
@@ -15,8 +19,12 @@ namespace OctoAwesome.Basics.Definitions.Items
             Icon = "sword_iron";
         }
 
-        public bool CanMineMaterial(IMaterialDefinition material) => false;
+        public bool CanMineMaterial(IMaterialDefinition material)
+        {   
+            return false;
+        }
 
-        public Item Create(IMaterialDefinition material) => new Sword(this, material);
+        public Item Create(IMaterialDefinition material)
+            => new Sword(this, material);
     }
 }

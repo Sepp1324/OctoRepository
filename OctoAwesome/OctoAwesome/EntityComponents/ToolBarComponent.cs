@@ -1,67 +1,59 @@
-﻿using System;
-using OctoAwesome.Definitions.Items;
+﻿using OctoAwesome.Definitions.Items;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// Provides the Toolbar for a Player
+    /// EntityComponent, die eine Werkzeug-Toolbar für den Apieler bereitstellt.
     /// </summary>
     public class ToolBarComponent : EntityComponent
     {
-        private int _activeIndex;
-        
         /// <summary>
-        /// Count of the Tools in the Toolbar
+        /// Gibt die Anzahl Tools in der Toolbar an.
         /// </summary>
-        public const int Toolcount = 10;
+        public const int TOOLCOUNT = 10;
 
         /// <summary>
-<<<<<<< HEAD
-        /// Stores all of the Tools of a Player
+        /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
         /// </summary>
         public InventorySlot[] Tools { get; set; }
 
         /// <summary>
-        /// Active Tool of the Player
-=======
-        /// Auflistung der Werkzeuge die der Spieler in seiner Toolbar hat.
->>>>>>> feature/performance
+        /// Derzeit aktives Werkzeug des Spielers
         /// </summary>
-        public InventorySlot ActiveTool => Tools[_activeIndex] ?? HandSlot;
-        
+        public InventorySlot ActiveTool => Tools[activeIndex] ?? HandSlot;
+
         public InventorySlot HandSlot { get; }
-        
-        /// <summary>
-        /// Represents the Index of the selected Item
-        /// </summary>
-        public int ActiveIndex { get => _activeIndex; set => _activeIndex = (value + Toolcount) % Toolcount; }
+
+        public int ActiveIndex
+        {
+            get => activeIndex;
+            set => activeIndex = (value + TOOLCOUNT) % TOOLCOUNT;
+        }
 
         public event Action<InventorySlot, int> OnChanged;
 
-        /// <summary>
-        /// Creates a new ToolBarComponent Instance
-        /// </summary>
-        public ToolBarComponent()
-        {
-            HandSlot = new InventorySlot {Item = new Hand(new HandDefinition())}; 
-            Tools = new InventorySlot[Toolcount];
-            ActiveIndex = 0;
-        }
+
+        private int activeIndex;
+
 
         /// <summary>
-<<<<<<< HEAD
-        /// Removes an InventorySlot from the Toolbar
-=======
         /// Erzeugte eine neue ToolBarComponent
         /// </summary>
         public ToolBarComponent()
         {
+            HandSlot = new InventorySlot { Item = new Hand(new HandDefinition()) };
             Tools = new InventorySlot[TOOLCOUNT];
+            ActiveIndex = 0;
         }
 
         /// <summary>
         /// Entfernt einen InventorySlot aus der Toolbar
->>>>>>> feature/performance
         /// </summary>
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
@@ -75,15 +67,10 @@ namespace OctoAwesome.EntityComponents
                     break;
                 }
             }
-<<<<<<< HEAD
-=======
-            if (ActiveTool == slot)
-                ActiveTool = null;
->>>>>>> feature/performance
         }
 
         /// <summary>
-        /// Sets a Tool to a certain Slot
+        /// Setzt einen InventorySlot an eine Stelle in der Toolbar und löscht ggf. vorher den Slot aus alten Positionen.
         /// </summary>
         /// <param name="slot"></param>
         /// <param name="index"></param>
@@ -96,10 +83,10 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Returns the Index of an InventorySlot
+        /// Gibt den Index eines InventorySlots in der Toolbar zurück.
         /// </summary>
         /// <param name="slot"></param>
-        /// <returns>Index of InventorySlot; 404: -1</returns>
+        /// <returns>Den Index des Slots, falls nicht gefunden -1.</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
             for (int j = 0; j < Tools.Length; j++)
@@ -110,7 +97,7 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Adds a new InventorySlot to the first possible place
+        /// Fügt einen neuen InventorySlot an der ersten freien Stelle hinzu.
         /// </summary>
         /// <param name="slot"></param>
         public void AddNewSlot(InventorySlot slot)

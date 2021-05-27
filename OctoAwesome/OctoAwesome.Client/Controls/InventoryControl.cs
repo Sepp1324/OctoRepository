@@ -3,6 +3,7 @@ using engenious.Graphics;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Controls
 {
@@ -31,32 +32,6 @@ namespace OctoAwesome.Client.Controls
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
-<<<<<<< HEAD
-            
-            for (var i = 0; i < columns; i++)
-                grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            
-            var rows = (int)System.Math.Ceiling((float)manager.Game.Player.Inventory.Inventory.Count / columns);
-            
-            for (var i = 0; i < rows; i++)
-                grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Fixed, Height = 50 });
-
-            var column = 0;
-            var row = 0;
-            
-            foreach (var inventorySlot in manager.Game.Player.Inventory.Inventory)
-            {
-                Texture2D texture;
-
-                if (inventorySlot.Definition is null)
-                    continue;
-                else
-                    texture = manager.Game.Assets.LoadTexture(inventorySlot.Definition.GetType(), inventorySlot.Definition.Icon);
-                
-                var image = new Image(manager) { Texture = texture, Width = 42, Height = 42, VerticalAlignment = VerticalAlignment.Center };
-                
-                image.MouseEnter += (s, e) => { HoveredSlot = inventorySlot; };
-=======
             for (int i = 0; i < columns; i++)
                 grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
             int rows = (int)System.Math.Ceiling((float)manager.Game.Player.Inventory.Inventory.Count / columns);
@@ -65,13 +40,17 @@ namespace OctoAwesome.Client.Controls
 
             int column = 0;
             int row = 0;
-            foreach (var item in manager.Game.Player.Inventory.Inventory)
+            foreach (var inventorySlot in manager.Game.Player.Inventory.Inventory)
             {
-                Texture2D texture = manager.Game.Assets.LoadTexture(item.Definition.GetType(), item.Definition.Icon);
+                Texture2D texture;
+                if (inventorySlot.Definition is null)
+                    continue;
+                else 
+                    texture = manager.Game.Assets.LoadTexture(inventorySlot.Definition.GetType(), inventorySlot.Definition.Icon);
+                    
 
                 var image = new Image(manager) { Texture = texture, Width = 42, Height = 42, VerticalAlignment = VerticalAlignment.Center };
-                image.MouseEnter += (s, e) => { HoveredSlot = item; };
->>>>>>> feature/performance
+                image.MouseEnter += (s, e) => { HoveredSlot = inventorySlot; };
                 image.MouseLeave += (s, e) => { HoveredSlot = null; };
                 image.StartDrag += (e) =>
                 {
@@ -80,11 +59,7 @@ namespace OctoAwesome.Client.Controls
                     e.Content = inventorySlot;
                     e.Sender = image;
                 };
-<<<<<<< HEAD
                 var label = new Label(manager) { Text = inventorySlot.Amount.ToString(), HorizontalAlignment = HorizontalAlignment.Right, VerticalTextAlignment = VerticalAlignment.Bottom, Background = new BorderBrush(Color.White) };
-=======
-                var label = new Label(manager) { Text = item.Amount.ToString(), HorizontalAlignment = HorizontalAlignment.Right, VerticalTextAlignment = VerticalAlignment.Bottom, Background = new BorderBrush(Color.White) };
->>>>>>> feature/performance
                 grid.AddControl(image, column, row);
                 grid.AddControl(label, column, row);
 
@@ -95,12 +70,10 @@ namespace OctoAwesome.Client.Controls
                     column = 0;
                 }
             }
+
             scroll.Content = grid;
-<<<<<<< HEAD
-=======
 
 
->>>>>>> feature/performance
         }
     }
 }

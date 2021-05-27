@@ -199,21 +199,14 @@ namespace OctoAwesome
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns>Das Ergebnis der Addition</returns>
-<<<<<<< HEAD
-        public static Coordinate operator +(Coordinate i1, Vector3 i2) => new Coordinate(i1.Planet, i1.block, i1.position + i2);
-=======
         public static Coordinate operator +(Coordinate i1, Vector3 i2)
             => new Coordinate(i1.Planet, i1.block, i1.position + i2);
->>>>>>> feature/performance
 
         /// <summary>
         /// Stellt die Coordinate-Instanz als string dar.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $@"({ Planet }/
-                    {(block.X + position.X).ToString("0.00")}/
-                    {(block.Y + position.Y).ToString("0.00")}/
-                    {(block.Z + position.Z).ToString("0.00")})";
+        public override string ToString() => $@"({ Planet }/{(block.X + position.X).ToString("0.000000")}/{(block.Y + position.Y).ToString("0.000000")}/{(block.Z + position.Z).ToString("0.000000")})";
 
         /// <summary>
         /// Compare this object with an other object

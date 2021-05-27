@@ -7,6 +7,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -163,7 +165,7 @@ namespace OctoAwesome.Client
         public IEnumerable<Guid> GetEntityIds()
             => resourceManager.GetEntityIds();
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : EntityComponent, new()
             => resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

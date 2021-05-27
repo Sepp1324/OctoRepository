@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-﻿namespace OctoAwesome.Definitions.Items
-{
-    public class Hand : Item
-    {
-        public Hand(HandDefinition handDefinition) : base(handDefinition, null)
-        {
-
-        }
-
-        public override int Hit(IMaterialDefinition material, decimal blockVolumeVolumeRemaining, int volumePerHit)
-        {
-            if (material is ISolidMaterialDefinition solidMaterial)
-            {
-                if (solidMaterial.Granularity > 1)
-                    return volumePerHit / 3;
-            }
-
-            if (material is IGasMaterialDefinition || material is IFluidMaterialDefinition)
-                return 0;
-
-            return volumePerHit - material.Hardness / 2;
-=======
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +8,22 @@ namespace OctoAwesome.Definitions.Items
 {
     public class Hand : Item
     {
-        public Hand(HandDefinition handDefinition) : base(handDefinition)
+        public Hand(HandDefinition handDefinition) : base(handDefinition, null)
         {
 
         }
-        public override void Hit(IItem item)
+
+        public override int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit)
         {
->>>>>>> feature/performance
+            if(material is ISolidMaterialDefinition solidMaterial)
+            {
+                if (solidMaterial.Granularity > 1)
+                    return volumePerHit / 3;
+            }
+            if(material is IGasMaterialDefinition || material is IFluidMaterialDefinition)
+                return 0;
+
+            return volumePerHit - material.Hardness / 2;
         }
     }
 }

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -10,28 +12,19 @@ namespace OctoAwesome
     /// </summary>
     public abstract class SimulationComponent : Component
     {
-<<<<<<< HEAD
-        private readonly List<Type[]> _componentFilter = new List<Type[]>();
-        
-=======
->>>>>>> feature/performance
         /// <summary>
         /// Entities die durch diese Simulationkomponete simuliert werden
         /// </summary>
-        protected List<Entity> ENTITIES = new List<Entity>();
+        protected List<Entity> entities = new List<Entity>();
 
         private List<Type[]> componentFilter = new List<Type[]>();
 
         /// <summary>
         /// Konstruktor
         /// </summary>
-        protected SimulationComponent()
+        public SimulationComponent()
         {
-<<<<<<< HEAD
-            // TODO: Reflect Attributes
-=======
             // TODO: Refelct Attributes
->>>>>>> feature/performance
             foreach (EntityFilterAttribute attribute in GetType().GetCustomAttributes(typeof(EntityFilterAttribute), false))
             {
                 foreach (var entityComponentType in attribute.EntityComponentTypes)
@@ -39,7 +32,7 @@ namespace OctoAwesome
                     if (!typeof(EntityComponent).IsAssignableFrom(entityComponentType))
                         throw new NotSupportedException();
 
-                    _componentFilter.Add(attribute.EntityComponentTypes);
+                    componentFilter.Add(attribute.EntityComponentTypes);
                 }
             }
         }
@@ -51,7 +44,9 @@ namespace OctoAwesome
         public void Add(Entity entity)
         {
             if (Match(entity) && AddEntity(entity))
-                ENTITIES.Add(entity);
+            {
+                entities.Add(entity);
+            }
         }
 
         /// <summary>
@@ -59,7 +54,16 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-        protected virtual bool Match(Entity entity) => _componentFilter.Count == 0 || _componentFilter.Any(x => x.All(t => entity.Components.Any(t.IsInstanceOfType)));
+        protected virtual bool Match(Entity entity)
+        {
+            if (componentFilter.Count == 0)
+                return true;
+
+            return componentFilter.Any(
+                x => x.All(
+                    t => entity.Components.Any(
+                        c => t.IsAssignableFrom(c.GetType()))));
+        }
 
         /// <summary>
         /// Internes Event, für das hinzufügen einer Entity
@@ -74,10 +78,10 @@ namespace OctoAwesome
         /// <param name="entity"></param>
         public void Remove(Entity entity)
         {
-            if (ENTITIES.Contains(entity))
+            if (entities.Contains(entity))
             {
                 RemoveEntity(entity);
-                ENTITIES.Remove(entity);
+                entities.Remove(entity);
             }
         }
 
@@ -105,12 +109,8 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-<<<<<<< HEAD
-        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>();
-=======
         protected override bool Match(Entity entity) 
             => entity.Components.ContainsComponent<C1>();
->>>>>>> feature/performance
 
         /// <summary>
         /// Updatemethode der Entity
@@ -118,7 +118,7 @@ namespace OctoAwesome
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
         {
-            foreach (var entity in ENTITIES)
+            foreach (var entity in entities)
                 UpdateEntity(gameTime, entity, entity.Components.GetComponent<C1>());
         }
 
@@ -134,7 +134,9 @@ namespace OctoAwesome
     /// <summary>
     /// Basisklasse für Simulationskomponenten
     /// </summary>
-    public abstract class SimulationComponent<C1, C2> : SimulationComponent where C1 : EntityComponent where C2 : EntityComponent
+    public abstract class SimulationComponent<C1, C2> : SimulationComponent
+        where C1 : EntityComponent
+        where C2 : EntityComponent
     {
 
         /// <summary>
@@ -142,13 +144,9 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-<<<<<<< HEAD
-        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>() && entity.Components.ContainsComponent<C2>();
-=======
         protected override bool Match(Entity entity) 
             => entity.Components.ContainsComponent<C1>()
                 && entity.Components.ContainsComponent<C2>();
->>>>>>> feature/performance
 
         /// <summary>
         /// Updatemethode der Entity
@@ -156,13 +154,8 @@ namespace OctoAwesome
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
         {
-<<<<<<< HEAD
-            //TODO: Rework
-            foreach (var entity in ENTITIES.ToArray())
-=======
             //TODO: Ändern
             foreach (var entity in entities.ToArray())
->>>>>>> feature/performance
                 UpdateEntity(gameTime, entity, entity.Components.GetComponent<C1>(), entity.Components.GetComponent<C2>());
         }
 
@@ -178,7 +171,10 @@ namespace OctoAwesome
     /// <summary>
     /// Basisklasse für Simulationskomponenten
     /// </summary>
-    public abstract class SimulationComponent<C1, C2, C3> : SimulationComponent where C1 : EntityComponent where C2 : EntityComponent where C3 : EntityComponent
+    public abstract class SimulationComponent<C1, C2, C3> : SimulationComponent
+        where C1 : EntityComponent
+        where C2 : EntityComponent
+        where C3 : EntityComponent
     {
 
         /// <summary>
@@ -186,14 +182,10 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="entity">Vergleichsentity</param>
         /// <returns>Ergebnis des Vergleiches</returns>
-<<<<<<< HEAD
-        protected override bool Match(Entity entity) => entity.Components.ContainsComponent<C1>() && entity.Components.ContainsComponent<C2>() && entity.Components.ContainsComponent<C3>();
-=======
         protected override bool Match(Entity entity) 
             => entity.Components.ContainsComponent<C1>()
                 && entity.Components.ContainsComponent<C2>()
                 && entity.Components.ContainsComponent<C3>();
->>>>>>> feature/performance
 
         /// <summary>
         /// Updatemethode der Entity
@@ -201,13 +193,8 @@ namespace OctoAwesome
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
         {
-<<<<<<< HEAD
-            //TODO: Rework
-            foreach (var entity in ENTITIES.ToArray())
-=======
             //TODO: Ändern
             foreach (var entity in entities.ToArray())
->>>>>>> feature/performance
                 UpdateEntity(gameTime, entity, entity.Components.GetComponent<C1>(), entity.Components.GetComponent<C2>(), entity.Components.GetComponent<C3>());
         }
 

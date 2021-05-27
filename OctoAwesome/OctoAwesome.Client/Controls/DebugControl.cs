@@ -1,5 +1,8 @@
 ﻿using engenious.UI;
+using System.Collections.Generic;
+using OctoAwesome.Runtime;
 using OctoAwesome.Client.Components;
+using System;
 using engenious;
 using engenious.Graphics;
 using System.Linq;
@@ -10,22 +13,6 @@ namespace OctoAwesome.Client.Controls
 {
     internal class DebugControl : Panel
     {
-<<<<<<< HEAD
-        private readonly int _buffersize = 10;
-        private readonly float[] _framebuffer;
-        private int _bufferindex = 0;
-
-        private int _framecount = 0;
-        private double seconds = 0;
-        private double lastfps = 0f;
-
-        AssetComponent assets;
-
-        public PlayerComponent Player { get; set; }
-
-        private readonly ScreenComponent manager;
-
-=======
         private int buffersize = 10;
         private float[] framebuffer;
         private int bufferindex = 0;
@@ -40,14 +27,13 @@ namespace OctoAwesome.Client.Controls
 
         private readonly ScreenComponent manager;
 
->>>>>>> feature/performance
         StackPanel leftView, rightView;
         Label devText, position, rotation, fps, box, controlInfo, loadedChunks, loadedTextures, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo, gravityInfo;
 
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
         {
-            _framebuffer = new float[_buffersize];
+            framebuffer = new float[buffersize];
             Player = screenManager.Player;
             manager = screenManager;
             assets = screenManager.Game.Assets;
@@ -72,7 +58,8 @@ namespace OctoAwesome.Client.Controls
             };
 
             //Creating all Labels
-            devText = new Label(ScreenManager) {Text = Languages.OctoClient.DevelopmentVersion};
+            devText = new Label(ScreenManager);
+            devText.Text = Languages.OctoClient.DevelopmentVersion;
             leftView.Controls.Add(devText);
 
             loadedChunks = new Label(ScreenManager);
@@ -115,7 +102,10 @@ namespace OctoAwesome.Client.Controls
             rightView.Controls.Add(flyInfo);
 
             //This Label gets added to the root and is set to Bottom Left
-            box = new Label(ScreenManager) {VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Left, TextColor = Color.White};
+            box = new Label(ScreenManager);
+            box.VerticalAlignment = VerticalAlignment.Bottom;
+            box.HorizontalAlignment = HorizontalAlignment.Left;
+            box.TextColor = Color.White;
             Controls.Add(box);
 
             //Add the left & right side to the root
@@ -131,11 +121,7 @@ namespace OctoAwesome.Client.Controls
                     ((Label)control).TextColor = Color.White;
                 }
             }
-<<<<<<< HEAD
-            foreach (var control in rightView.Controls)
-=======
             foreach (Control control in rightView.Controls)
->>>>>>> feature/performance
             {
                 control.HorizontalAlignment = HorizontalAlignment.Right;
                 if (control is Label)
@@ -155,22 +141,17 @@ namespace OctoAwesome.Client.Controls
                 return;
 
             //Calculate FPS
-            _framecount++;
+            framecount++;
             seconds += gameTime.ElapsedGameTime.TotalSeconds;
-            if (_framecount == 10)
+            if (framecount == 10)
             {
-                lastfps = seconds / _framecount;
-                _framecount = 0;
+                lastfps = seconds / framecount;
+                framecount = 0;
                 seconds = 0;
             }
 
-<<<<<<< HEAD
-            _framebuffer[_bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            _bufferindex %= _buffersize;
-=======
             framebuffer[bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
             bufferindex %= buffersize;
->>>>>>> feature/performance
 
             //Draw Control Info
             controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
@@ -201,13 +182,8 @@ namespace OctoAwesome.Client.Controls
                 assets.LoadedTextures);
 
             //Get Number of Loaded Items/Blocks
-<<<<<<< HEAD
             loadedInfo.Text = "" + manager.Game.DefinitionManager.ItemDefinitions.Count() + " " + Languages.OctoClient.Items + " - " +
                 manager.Game.DefinitionManager.BlockDefinitions.Count() + " " + Languages.OctoClient.Blocks;
-=======
-            loadedInfo.Text = "" + manager.Game.DefinitionManager.GetItemDefinitions().Count() + " " + Languages.OctoClient.Items + " - " +
-                manager.Game.DefinitionManager.GetBlockDefinitions().Count() + " " + Languages.OctoClient.Blocks;
->>>>>>> feature/performance
 
             //Additional Play Information
 
@@ -237,8 +213,8 @@ namespace OctoAwesome.Client.Controls
                 string selection = "box: " +
                     Player.SelectedBox.Value.ToString() + " on " +
                     Player.SelectedSide.ToString() + " (" +
-                    Player.SelectedPoint.Value.X.ToString("0.00") + "/" +
-                    Player.SelectedPoint.Value.Y.ToString("0.00") + ") -> " +
+                    Player.SelectedPoint.Value.X.ToString("0.000000") + "/" +
+                    Player.SelectedPoint.Value.Y.ToString("0.000000") + ") -> " +
                     Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
                 box.Text = selection;
             }

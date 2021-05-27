@@ -1,23 +1,22 @@
 ﻿using OctoAwesome.Database;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
-<<<<<<< HEAD
-    public abstract class SerializableDatabaseContext<TTag, TObject> : DatabaseContext<TTag, TObject> where TTag : ITag, new() where TObject : ISerializable, new()
-=======
     public abstract class SerializableDatabaseContext<TTag, TObject> : DatabaseContext<TTag, TObject>
          where TTag : ITag, new()
          where TObject : ISerializable, new()
->>>>>>> feature/performance
     {
-        protected SerializableDatabaseContext(Database<TTag> database) : base(database) { }
+        public SerializableDatabaseContext(Database<TTag> database) : base(database)
+        {
+        }
 
-<<<<<<< HEAD
-        public override TObject Get(TTag key) => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
-=======
         public override TObject Get(TTag key)
             => Serializer.Deserialize<TObject>(Database.GetValue(key).Content);
->>>>>>> feature/performance
 
         protected void InternalRemove(TTag tag)
         {

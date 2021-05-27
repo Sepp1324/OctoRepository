@@ -1,4 +1,6 @@
-﻿using OctoAwesome.Basics.Definitions.Materials;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
@@ -16,29 +18,14 @@ namespace OctoAwesome.Basics.Definitions.Blocks
         }
 
 
-<<<<<<< HEAD
-
-        public override string[] Textures =>
-            new[] {
-                "cotton_blue"
-            };
-=======
-        public override string[] Textures
-        {
-            get
-            {
-                return new[] {
-                    "cotton_blue"
-                };
-            }
-        }
->>>>>>> feature/performance
+        public override string[] Textures { get; } = new[] {"cotton_blue"};
 
         public override IMaterialDefinition Material { get; }
 
-<<<<<<< HEAD
-        public BlueCottonBlockDefinition(CottonMaterialDefinition material) => Material = material;
-=======
->>>>>>> feature/performance
+        public BlueCottonBlockDefinition(CottonMaterialDefinition material)
+        {
+            Material = material;
+        }
+
     }
 }

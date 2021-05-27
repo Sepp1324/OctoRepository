@@ -1,5 +1,10 @@
-﻿using OctoAwesome.Notifications;
+﻿using OctoAwesome.Network;
+using OctoAwesome.Notifications;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network.ServerNotifications
 {
@@ -10,14 +15,10 @@ namespace OctoAwesome.Network.ServerNotifications
 
         public HashSet<int> PlayerIds { get; set; }
 
-<<<<<<< HEAD
-        public ServerDataNotification() => PlayerIds = new HashSet<int>();
-=======
         public ServerDataNotification()
         {
             PlayerIds = new HashSet<int>();
         }
->>>>>>> feature/performance
 
         public override bool Match<T>(T filter) 
         {

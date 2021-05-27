@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data.Common;
 using System.Linq;
 
 namespace OctoAwesome
@@ -8,13 +10,7 @@ namespace OctoAwesome
     /// </summary>
     public class LocalBuilder
     {
-<<<<<<< HEAD
-        private readonly int _originX, _originY, _originZ;
-
-        private readonly IChunkColumn _column00, _column01, _column10, _column11;
-=======
         private readonly int originX, originY, originZ;
->>>>>>> feature/performance
 
         private readonly IChunkColumn column00, column01, column10, column11;
 
@@ -30,14 +26,14 @@ namespace OctoAwesome
         /// <param name="column11"></param>
         public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
-            _originX = originX;
-            _originY = originY;
-            _originZ = originZ;
+            this.originX = originX;
+            this.originY = originY;
+            this.originZ = originZ;
 
-            _column00 = column00;
-            _column01 = column01;
-            _column10 = column10;
-            _column11 = column11;
+            this.column00 = column00;
+            this.column01 = column01;
+            this.column10 = column10;
+            this.column11 = column11;
         }
 
         /// <summary>
@@ -92,26 +88,15 @@ namespace OctoAwesome
         /// <param name="meta"></param>
         public void SetBlock(int x, int y, int z, ushort block, int meta = 0)
         {
-<<<<<<< HEAD
-            x += _originX;
-            y += _originY;
-            z += _originZ;
-            
-            var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
-=======
             x += originX;
             y += originY;
             z += originZ;
             IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
->>>>>>> feature/performance
             var index = z / Chunk.CHUNKSIZE_Z;
-            
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             z %= Chunk.CHUNKSIZE_Z;
-            
             var flatIndex = Chunk.GetFlatIndex(x, y, z);
-            
             column.Chunks[index].Blocks[flatIndex] = block;
         }
 
@@ -123,17 +108,10 @@ namespace OctoAwesome
             => blockInfos
                     .Select(b =>
                     {
-<<<<<<< HEAD
-                        var x = b.Position.X + _originX;
-                        var y = b.Position.Y + _originY;
-                        var z = b.Position.Z + _originZ;
-                        IChunkColumn column = GetColumn(_column00, _column10, _column01, _column11, x, y);
-=======
                         var x = b.Position.X + originX;
                         var y = b.Position.Y + originY;
                         var z = b.Position.Z + originZ;
                         IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
->>>>>>> feature/performance
                         var index = z / Chunk.CHUNKSIZE_Z;
                         x %= Chunk.CHUNKSIZE_X;
                         y %= Chunk.CHUNKSIZE_Y;
@@ -183,21 +161,12 @@ namespace OctoAwesome
         /// <returns></returns>
         public ushort GetBlock(int x, int y, int z)
         {
-<<<<<<< HEAD
-            x += _originX;
-            y += _originY;
-            z += _originZ;
-            
-            var column = GetColumn(_column00, _column10, _column01, _column11, x, y);
-=======
             x += originX;
             y += originY;
             z += originZ;
             IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
->>>>>>> feature/performance
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
-            
             return column.GetBlock(x, y, z);
         }
     }

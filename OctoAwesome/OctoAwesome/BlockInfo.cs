@@ -1,6 +1,10 @@
-﻿using System;
+﻿using OctoAwesome.Serialization;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -20,10 +24,6 @@ namespace OctoAwesome
             Block = block;
             Meta = meta;
         }
-<<<<<<< HEAD
-        
-=======
->>>>>>> feature/performance
         public BlockInfo(int x, int y, int z, ushort block, int meta = 0) : this(new Index3(x, y, z), block, meta)
         {
         }
@@ -69,23 +69,6 @@ namespace OctoAwesome
             => !(left == right);
 
         #region BlockInfo <=> Tuple Operators
-<<<<<<< HEAD
-        public static implicit operator BlockInfo((int x, int y, int z, ushort block, int meta) blockTuple) => new BlockInfo(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block, blockTuple.meta);
-
-        public static implicit operator (int x, int y, int z, ushort block, int meta)(BlockInfo blockInfo) => (blockInfo.Position.X, blockInfo.Position.Y, blockInfo.Position.Z, blockInfo.Block, blockInfo.Meta);
-
-        public static implicit operator BlockInfo((int x, int y, int z, ushort block) blockTuple) => new BlockInfo(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block);
-
-        public static implicit operator (int x, int y, int z, ushort block)(BlockInfo blockInfo) => (blockInfo.Position.X, blockInfo.Position.Y, blockInfo.Position.Z, blockInfo.Block);
-
-        public static implicit operator BlockInfo((Index3 position, ushort block, int meta) blockTuple) => new BlockInfo(blockTuple.position, blockTuple.block, blockTuple.meta);
-
-        public static implicit operator (Index3 position, ushort block, int meta)(BlockInfo blockInfo) => (blockInfo.Position, blockInfo.Block, blockInfo.Meta);
-
-        public static implicit operator BlockInfo((Index3 position, ushort block) blockTuple) => new BlockInfo(blockTuple.position, blockTuple.block);
-
-        public static implicit operator (Index3 position, ushort block)(BlockInfo blockInfo) => (blockInfo.Position, blockInfo.Block);
-=======
         public static implicit operator BlockInfo((int x, int y, int z, ushort block, int meta) blockTuple)
             => new BlockInfo(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block, blockTuple.meta);
 
@@ -109,7 +92,6 @@ namespace OctoAwesome
 
         public static implicit operator (Index3 position, ushort block)(BlockInfo blockInfo)
             => (blockInfo.Position, blockInfo.Block);
->>>>>>> feature/performance
         #endregion
     }
 }

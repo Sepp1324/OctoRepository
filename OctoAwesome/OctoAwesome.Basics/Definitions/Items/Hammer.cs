@@ -1,11 +1,17 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    public class Hammer : Item
+    class Hammer : Item
     {
-        public Hammer(HammerDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition)
+        public Hammer(HammerDefinition definition, IMaterialDefinition materialDefinition)
+            : base(definition, materialDefinition)
         {
 
         }

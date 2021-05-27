@@ -15,11 +15,7 @@ namespace OctoAwesome.Definitions
         /// </summary>
         /// <param name="block">Der Block-Typ des interagierenden Elements</param>
         /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
-<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/IBlockDefinition.cs
-        BlockHitInformation Hit(BlockVolumeState blockVolume, IItem item);
-=======
         BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition);
->>>>>>> feature/performance:OctoAwesome/OctoAwesome/IBlockDefinition.cs
 
         /// <summary>
         /// Array, das alle Texturen für alle Seiten des Blocks enthält
@@ -30,11 +26,6 @@ namespace OctoAwesome.Definitions
         /// Zeigt, ob der Block-Typ Metadaten besitzt
         /// </summary>
         bool HasMetaData { get; }
-<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/IBlockDefinition.cs
-        
-        IMaterialDefinition Material { get; }
-=======
->>>>>>> feature/performance:OctoAwesome/OctoAwesome/IBlockDefinition.cs
 
         /// <summary>
         /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die
@@ -69,11 +60,8 @@ namespace OctoAwesome.Definitions
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
         uint SolidWall { get; }
-<<<<<<< HEAD:OctoAwesome/OctoAwesome/Definitions/IBlockDefinition.cs
-        
         TimeSpan TimeToVolumeReset { get; }
-=======
->>>>>>> feature/performance:OctoAwesome/OctoAwesome/IBlockDefinition.cs
+        IMaterialDefinition Material { get; }
 
         bool IsSolidWall(Wall wall);
     }

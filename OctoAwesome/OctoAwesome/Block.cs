@@ -19,11 +19,7 @@ namespace OctoAwesome
         public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, Ray ray, out Axis? collisionAxis)
         {
             Vector3 min = new Vector3(1, 1, 1);
-<<<<<<< HEAD
-            float raylength = Player.SelectionRange * 2;
-=======
             float raylength = Player.SELECTIONRANGE * 2;
->>>>>>> feature/performance
             float? minDistance = null;
             bool collided = false;
 

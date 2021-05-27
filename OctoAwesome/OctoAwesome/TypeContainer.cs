@@ -1,49 +1,23 @@
-﻿using System;
+﻿using OctoAwesome.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
     public static class TypeContainer
     {
-        private static readonly ITypeContainer _instance;
+        private static readonly ITypeContainer instance;
 
         static TypeContainer()
         {
-            _instance = new StandaloneTypeContainer();
-            _instance.Register(_instance as StandaloneTypeContainer);
-            _instance.Register<ITypeContainer, StandaloneTypeContainer>(_instance);
+            instance = new StandaloneTypeContainer();
+            instance.Register(instance as StandaloneTypeContainer);
+            instance.Register<ITypeContainer, StandaloneTypeContainer>(instance);
         }
 
-<<<<<<< HEAD
-        public static object CreateObject(Type type) => _instance.CreateObject(type);
-        
-        public static T CreateObject<T>() where T : class => _instance.CreateObject<T>();
-
-        public static void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour) => _instance.Register(registrar, type, instanceBehaviour);
-        
-        public static void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => _instance.Register<T>(instanceBehaviour);
-        
-        public static void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => _instance.Register<TRegistrar, T>(instanceBehaviour);
-        
-        public static void Register(Type registrar, Type type, object singleton) => _instance.Register(registrar, type, singleton); public static void Register<T>(T singelton) where T : class => _instance.Register(singelton);
-        
-        public static void Register<TRegistrar, T>(object singleton) where T : class => _instance.Register<TRegistrar, T>(singleton);
-
-        public static bool TryResolve(Type type, out object resolvedInstance) => _instance.TryResolve(type, out resolvedInstance);
-        
-        public static bool TryResolve<T>(out T resolvedInstance) where T : class => _instance.TryResolve(out resolvedInstance);
-
-        public static object Get(Type type) => _instance.Get(type);
-        
-        public static T Get<T>() where T : class => _instance.Get<T>();
-
-        public static object GetOrNull(Type type) => _instance.GetOrNull(type);
-        
-        public static T GetOrNull<T>() where T : class => _instance.GetOrNull<T>();
-
-        public static object GetUnregistered(Type type) => _instance.GetUnregistered(type);
-        
-        public static T GetUnregistered<T>() where T : class => _instance.GetUnregistered<T>();
-=======
         public static object CreateObject(Type type)
             => instance.CreateObject(type);
         public static T CreateObject<T>() where T : class
@@ -82,6 +56,5 @@ namespace OctoAwesome
         public static T GetUnregistered<T>() where T : class
             => instance.GetUnregistered<T>();
 
->>>>>>> feature/performance
     }
 }
