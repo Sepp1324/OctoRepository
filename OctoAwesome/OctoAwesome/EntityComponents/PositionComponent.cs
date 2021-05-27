@@ -1,31 +1,29 @@
 ﻿using engenious;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
     public sealed class PositionComponent : EntityComponent
     {
+        private Coordinate _position;
+        private bool _posUpdate;
+        private readonly IResourceManager _resourceManager;
+        private readonly IPool<PropertyChangedNotification> _propertyChangedNotificationPool;
+        
         public Coordinate Position
         {
-            get => position; set
+            get => _position; set
             {
                 var valueBlockX = ((int)(value.BlockPosition.X * 100)) / 100f;
                 var valueBlockY = ((int)(value.BlockPosition.Y * 100)) / 100f;
-                var positionBlockX = ((int)(position.BlockPosition.X * 100)) / 100f;
-                var positionBlockY = ((int)(position.BlockPosition.Y * 100)) / 100f;
+                var positionBlockX = ((int)(_position.BlockPosition.X * 100)) / 100f;
+                var positionBlockY = ((int)(_position.BlockPosition.Y * 100)) / 100f;
 
-                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY
-                    || position.BlockPosition.Z != value.BlockPosition.Z;
+                _posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || _position.BlockPosition.Z != value.BlockPosition.Z;
 
-                SetValue(ref position, value);
+                SetValue(ref _position, value);
                 TryUpdatePlanet(value.Planet);
             }
         }
@@ -33,16 +31,11 @@ namespace OctoAwesome.EntityComponents
         public float Direction { get; set; }
         public IPlanet Planet { get; private set; }
 
-        private Coordinate position;
-        private bool posUpdate;
-        private readonly IResourceManager resourceManager;
-        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
-
         public PositionComponent()
         {
             Sendable = true;
-            resourceManager = TypeContainer.Get<IResourceManager>();
-            propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
+            _resourceManager = TypeContainer.Get<IResourceManager>();
+            _propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
         }
 
         public override void Serialize(BinaryWriter writer)
@@ -63,15 +56,15 @@ namespace OctoAwesome.EntityComponents
             base.Deserialize(reader);
 
             // Position
-            int planet = reader.ReadInt32();
-            int blockX = reader.ReadInt32();
-            int blockY = reader.ReadInt32();
-            int blockZ = reader.ReadInt32();
-            float posX = reader.ReadSingle();
-            float posY = reader.ReadSingle();
-            float posZ = reader.ReadSingle();
+            var planet = reader.ReadInt32();
+            var blockX = reader.ReadInt32();
+            var blockY = reader.ReadInt32();
+            var blockZ = reader.ReadInt32();
+            var posX = reader.ReadSingle();
+            var posY = reader.ReadSingle();
+            var posZ = reader.ReadSingle();
 
-            position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
+            _position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
             TryUpdatePlanet(planet);
         }
 
@@ -80,7 +73,7 @@ namespace OctoAwesome.EntityComponents
             if (Planet != null && Planet.Id == planetId)
                 return false;
 
-            Planet = resourceManager.GetPlanet(planetId);
+            Planet = _resourceManager.GetPlanet(planetId);
             return true;
         }
 
@@ -88,9 +81,9 @@ namespace OctoAwesome.EntityComponents
         {
             base.OnPropertyChanged(value, callerName);
 
-            if (callerName == nameof(Position) && posUpdate)
+            if (callerName == nameof(Position) && _posUpdate)
             {
-                var updateNotification = propertyChangedNotificationPool.Get();
+                var updateNotification = _propertyChangedNotificationPool.Get();
 
                 updateNotification.Issuer = nameof(PositionComponent);
                 updateNotification.Property = callerName;

@@ -60,7 +60,9 @@ namespace OctoAwesome.Definitions
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
         uint SolidWall { get; }
+        
         TimeSpan TimeToVolumeReset { get; }
+        
         IMaterialDefinition Material { get; }
 
         bool IsSolidWall(Wall wall);

@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace OctoAwesome.EntityComponents
 {
     public class RenderComponent : EntityComponent
     {
         public string Name { get; set; }
+        
         public string ModelName { get; set; }
+        
         public string TextureName { get; set; }
 
         public float BaseZRotation { get; set; }
 
-        public RenderComponent()
-        {
-            Sendable = true;
-        }
+        public RenderComponent() => Sendable = true;
 
         public override void Serialize(BinaryWriter writer)
         {

@@ -1,6 +1,4 @@
 ﻿using OctoAwesome.Definitions.Items;
-using OctoAwesome.Information;
-using System;
 
 namespace OctoAwesome.Definitions
 {
@@ -10,6 +8,7 @@ namespace OctoAwesome.Definitions
     public interface IItemDefinition : IDefinition
     {
         bool CanMineMaterial(IMaterialDefinition material);
+        
         Item Create(IMaterialDefinition material);
     }
 }

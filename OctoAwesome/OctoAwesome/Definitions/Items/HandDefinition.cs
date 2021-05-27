@@ -1,9 +1,4 @@
 ﻿using OctoAwesome.Information;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Definitions.Items
 {
@@ -28,11 +23,9 @@ namespace OctoAwesome.Definitions.Items
             hand = new Hand(this);
         }
 
-        public bool CanMineMaterial(IMaterialDefinition material) 
-            => true;
+        public bool CanMineMaterial(IMaterialDefinition material) => true;
 
-        public Item Create(IMaterialDefinition material)
-            => hand;
+        public Item Create(IMaterialDefinition material) => hand;
 
         public void Hit(IItem item, IBlockDefinition blockDefinition, BlockHitInformation blockHit) { }
     }

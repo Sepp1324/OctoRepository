@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace OctoAwesome.Definitions.Items
+﻿namespace OctoAwesome.Definitions.Items
 {
     /// <summary>
     /// Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity"/>
@@ -28,7 +26,7 @@ namespace OctoAwesome.Definitions.Items
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Item.
         /// </summary>
-        public Item(IItemDefinition definition, IMaterialDefinition material)
+        protected Item(IItemDefinition definition, IMaterialDefinition material)
         {
             Definition = definition;
             Material = material;
@@ -51,7 +49,6 @@ namespace OctoAwesome.Definitions.Items
             if (Material.Hardness * 1.2f < material.Hardness)
                 return 0;
 
-            //(Hardness Effectivity + Fracture Effectivity) / 2
             return ((Material.Hardness - material.Hardness) * 3 + 100) * volumePerHit / 100;
         }
     }

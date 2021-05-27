@@ -1,26 +1,18 @@
 ﻿using OctoAwesome.Pooling;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public abstract class Notification : IPoolElement
     {
+        private IPool _pool;
+        
         public uint SenderId { get; set; }
 
-        private IPool pool;
-
-        public virtual bool Match<T>(T filter)
-        {
-            return true;
-        }
+        public virtual bool Match<T>(T filter) => true;
 
         public void Init(IPool pool)
         {
-            this.pool = pool;
+            _pool = pool;
             OnInit();
         }
 
@@ -28,7 +20,7 @@ namespace OctoAwesome.Notifications
         {
             SenderId = 0;
             OnRelease();
-            pool.Push(this);
+            _pool.Push(this);
         }
 
         /// <summary>

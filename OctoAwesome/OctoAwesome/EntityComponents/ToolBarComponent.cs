@@ -1,10 +1,5 @@
 ﻿using OctoAwesome.Definitions.Items;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
@@ -13,6 +8,8 @@ namespace OctoAwesome.EntityComponents
     /// </summary>
     public class ToolBarComponent : EntityComponent
     {
+        private int _activeIndex;
+        
         /// <summary>
         /// Gibt die Anzahl Tools in der Toolbar an.
         /// </summary>
@@ -26,21 +23,17 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         /// Derzeit aktives Werkzeug des Spielers
         /// </summary>
-        public InventorySlot ActiveTool => Tools[activeIndex] ?? HandSlot;
+        public InventorySlot ActiveTool => Tools[_activeIndex] ?? HandSlot;
 
         public InventorySlot HandSlot { get; }
 
         public int ActiveIndex
         {
-            get => activeIndex;
-            set => activeIndex = (value + TOOLCOUNT) % TOOLCOUNT;
+            get => _activeIndex;
+            set => _activeIndex = (value + TOOLCOUNT) % TOOLCOUNT;
         }
 
         public event Action<InventorySlot, int> OnChanged;
-
-
-        private int activeIndex;
-
 
         /// <summary>
         /// Erzeugte eine neue ToolBarComponent
@@ -58,7 +51,7 @@ namespace OctoAwesome.EntityComponents
         /// <param name="slot"></param>
         public void RemoveSlot(InventorySlot slot)
         {
-            for (int i = 0; i < Tools.Length; i++)
+            for (var i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == slot)
                 {
@@ -89,7 +82,7 @@ namespace OctoAwesome.EntityComponents
         /// <returns>Den Index des Slots, falls nicht gefunden -1.</returns>
         public int GetSlotIndex(InventorySlot slot)
         {
-            for (int j = 0; j < Tools.Length; j++)
+            for (var j = 0; j < Tools.Length; j++)
                 if (Tools[j] == slot)
                     return j;
 
@@ -102,7 +95,7 @@ namespace OctoAwesome.EntityComponents
         /// <param name="slot"></param>
         public void AddNewSlot(InventorySlot slot)
         {
-            for (int i = 0; i < Tools.Length; i++)
+            for (var i = 0; i < Tools.Length; i++)
             {
                 if (Tools[i] == null)
                 {
