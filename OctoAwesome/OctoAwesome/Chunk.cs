@@ -67,6 +67,7 @@ namespace OctoAwesome
         /// Referenz auf den Planeten.
         /// </summary>
         public IPlanet Planet { get; private set; }
+        public int Version { get; set; }
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Chunk
@@ -129,7 +130,7 @@ namespace OctoAwesome
             Blocks[flatIndex] = blockInfo.Block;
             MetaData[flatIndex] = blockInfo.Meta;
             Changed?.Invoke(this);
-
+            Version++;
             BlockChanged(blockInfo);
         }
 
@@ -145,6 +146,7 @@ namespace OctoAwesome
             {
                 Changed?.Invoke(this);
 
+                Version++;
                 BlocksChanged(blockInfos);
             }
         }
@@ -282,6 +284,23 @@ namespace OctoAwesome
             return ((position.Z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
                    | ((position.Y & (CHUNKSIZE_Y - 1)) << LimitX)
                    | (position.X & (CHUNKSIZE_X - 1));
+        }
+
+        public void Init(Index3 position, IPlanet planet)
+        {
+            Index = position;
+            Planet = planet;
+        }
+
+        public void Init(IPool pool)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Release()
+        {
+            Index = default;
+            Planet = default;
         }
     }
 }

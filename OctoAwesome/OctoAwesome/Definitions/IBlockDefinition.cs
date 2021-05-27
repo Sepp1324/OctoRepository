@@ -3,12 +3,12 @@ using OctoAwesome.Information;
 using OctoAwesome.Services;
 using System;
 
-namespace OctoAwesome
+namespace OctoAwesome.Definitions
 {
     /// <summary>
     /// Basisinterface für eine Blockdefinition
     /// </summary>
-    public interface IBlockDefinition : IInventoryableDefinition, IDefinition
+    public interface IBlockDefinition : IInventoryable, IDefinition
     {
         /// <summary>
         /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
@@ -60,6 +60,8 @@ namespace OctoAwesome
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
         uint SolidWall { get; }
+        TimeSpan TimeToVolumeReset { get; }
+        IMaterialDefinition Material { get; }
 
         bool IsSolidWall(Wall wall);
     }

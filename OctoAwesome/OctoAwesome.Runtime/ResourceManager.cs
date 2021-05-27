@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoAwesome.Definitions;
 using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
@@ -431,12 +432,12 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : EntityComponent, new()
         {
             using (loadingSemaphore.EnterScope())
             {
                 currentToken.ThrowIfCancellationRequested();
-                return persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds);
+                return persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds).ToArray(); //Hack wird noch geänder
             }
         }
     }

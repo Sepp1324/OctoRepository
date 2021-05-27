@@ -4,6 +4,7 @@ using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using OctoAwesome.Serialization.Entities;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -326,7 +327,7 @@ namespace OctoAwesome.Runtime
         public IEnumerable<Guid> GetEntityIds(Guid universeGuid)
             => new EntityDbContext(databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds) where T : EntityComponent, new()
         {
             foreach (var entityId in entityIds)
                 yield return (entityId, new EntityComponentsDbContext(databaseProvider, universeGuid).Get<T>(entityId));
@@ -369,19 +370,20 @@ namespace OctoAwesome.Runtime
         {
             var database = databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id, true);
             var databaseContext = new ChunkDiffDbContext(database, blockChangedNotificationPool);
-            var keys = databaseContext
-                .GetAllKeys()
-                .Where(t => t.ChunkPositon.X == column.Index.X && t.ChunkPositon.Y == column.Index.Y)
-                .ToArray();
+            var keys = databaseContext.GetAllKeys();
 
-            foreach (var key in keys)
+            for (int i = 0; i < keys.Count; i++)
             {
-                var block = databaseContext.Get(key);
-                column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.BlockInfo.Block;
-                column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.BlockInfo.Meta;
+                ChunkDiffTag key = keys[i];
+                if (key.ChunkPositon.X == column.Index.X && key.ChunkPositon.Y == column.Index.Y)
+                {
+                    var block = databaseContext.Get(key);
+                    column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.BlockInfo.Block;
+                    column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.BlockInfo.Meta;
+                }
             }
 
-            if (keys.Length > 1000)
+            if (keys.Count > 1000)
             {
                 SaveColumn(universeGuid, planet, column);
                 databaseContext.Remove(keys);

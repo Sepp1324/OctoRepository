@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OctoAwesome
+namespace OctoAwesome.Definitions
 {
     /// <summary>
     /// Basisinterface für einen DefinitionManager, der z.B. Erweiterungen behandelt
@@ -11,19 +11,20 @@ namespace OctoAwesome
         /// Liefert eine Liste von Definitions.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IDefinition> GetDefinitions();
+        IDefinition[] Definitions { get; }
 
         /// <summary>
         /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IItemDefinition> GetItemDefinitions();
-        
+        IItemDefinition[] ItemDefinitions { get; }
+
         /// <summary>
         /// Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IBlockDefinition> GetBlockDefinitions();
+        IBlockDefinition[] BlockDefinitions { get; }
+        IMaterialDefinition[] MaterialDefinitions { get; }
 
         /// <summary>
         /// Liefert die BlockDefinition zum angegebenen Index.
@@ -51,6 +52,6 @@ namespace OctoAwesome
         /// </summary>
         /// <typeparam name="T">Typ der Definition</typeparam>
         /// <returns>Auflistung von Instanzen</returns>
-        IEnumerable<T> GetDefinitions<T>() where T : IDefinition;
+        IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition;
     }
 }

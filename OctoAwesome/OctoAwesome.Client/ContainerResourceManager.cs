@@ -1,4 +1,5 @@
-﻿using OctoAwesome.Network;
+﻿using OctoAwesome.Definitions;
+using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
@@ -164,7 +165,7 @@ namespace OctoAwesome.Client
         public IEnumerable<Guid> GetEntityIds()
             => resourceManager.GetEntityIds();
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : EntityComponent, new()
             => resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

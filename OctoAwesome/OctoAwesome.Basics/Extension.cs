@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 using engenious;
 using OctoAwesome.Services;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics
 {
@@ -26,10 +27,10 @@ namespace OctoAwesome.Basics
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {
 
-            foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(
-                t => !t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t)))
-            {
-                extensionLoader.RegisterDefinition((IDefinition)Activator.CreateInstance(t));
+            foreach (var t in Assembly.GetExecutingAssembly().GetTypes())
+            {                
+                if (!t.IsAbstract && typeof(IDefinition).IsAssignableFrom(t))
+                    extensionLoader.RegisterDefinition(t);
             }
 
             extensionLoader.RegisterMapGenerator(new ComplexPlanetGenerator());

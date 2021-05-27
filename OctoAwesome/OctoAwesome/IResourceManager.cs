@@ -1,3 +1,4 @@
+using OctoAwesome.Definitions;
 using OctoAwesome.Notifications;
 using System;
 using System.Collections.Concurrent;
@@ -86,6 +87,6 @@ namespace OctoAwesome
         IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : EntityComponent;
         IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent;
         IEnumerable<Guid> GetEntityIds();
-        IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new();
+        (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : EntityComponent, new();
     }
 }

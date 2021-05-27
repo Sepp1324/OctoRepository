@@ -10,6 +10,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -18,6 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Components\buttonLong_brown_disabled.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Components\buttonLong_brown_disabled.png" />
     <EngeniousContentReference Include="Content\Content.ecp" />
   </ItemGroup>
   <ItemGroup>
@@ -55,9 +61,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="engenious" Version="0.4.0.6-alpha" />
+    <PackageReference Include="engenious" Version="0.4.0.14-alpha" />
     <PackageReference Include="engenious.ContentTool" Version="0.4.0.3-alpha" />
-    <PackageReference Include="engenious.UI" Version="0.4.0-alpha" />
+    <PackageReference Include="engenious.UI" Version="0.4.0.10-alpha" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.IO" Version="4.3.0" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
@@ -65,12 +71,15 @@
     <PackageReference Include="System.Resources.Extensions" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OctoAwesome.Database\OctoAwesome.Database.csproj" />
     <ProjectReference Include="..\OctoAwesome.Network\OctoAwesome.Network.csproj" />
     <ProjectReference Include="..\OctoAwesome.Runtime\OctoAwesome.Runtime.csproj" />
     <ProjectReference Include="..\OctoAwesome\OctoAwesome.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="WindowsBase" />
+    <Reference Include="engenious.CreatedContent.Content">
+      <HintPath>F:\Repos\octoawesome\OctoAwesome\OctoAwesome.Client\Content\engenious.CreatedContent.Content.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

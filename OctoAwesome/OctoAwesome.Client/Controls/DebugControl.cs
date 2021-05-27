@@ -182,8 +182,8 @@ namespace OctoAwesome.Client.Controls
                 assets.LoadedTextures);
 
             //Get Number of Loaded Items/Blocks
-            loadedInfo.Text = "" + manager.Game.DefinitionManager.GetItemDefinitions().Count() + " " + Languages.OctoClient.Items + " - " +
-                manager.Game.DefinitionManager.GetBlockDefinitions().Count() + " " + Languages.OctoClient.Blocks;
+            loadedInfo.Text = "" + manager.Game.DefinitionManager.ItemDefinitions.Count() + " " + Languages.OctoClient.Items + " - " +
+                manager.Game.DefinitionManager.BlockDefinitions.Count() + " " + Languages.OctoClient.Blocks;
 
             //Additional Play Information
 
@@ -213,8 +213,8 @@ namespace OctoAwesome.Client.Controls
                 string selection = "box: " +
                     Player.SelectedBox.Value.ToString() + " on " +
                     Player.SelectedSide.ToString() + " (" +
-                    Player.SelectedPoint.Value.X.ToString("0.00") + "/" +
-                    Player.SelectedPoint.Value.Y.ToString("0.00") + ") -> " +
+                    Player.SelectedPoint.Value.X.ToString("0.000000") + "/" +
+                    Player.SelectedPoint.Value.Y.ToString("0.000000") + ") -> " +
                     Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
                 box.Text = selection;
             }

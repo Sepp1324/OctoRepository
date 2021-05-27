@@ -1,6 +1,7 @@
 ﻿using OctoAwesome.Database.Checks;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -45,10 +46,6 @@ namespace OctoAwesome.Database
                     EmptyKeys++;
                     continue;
                 }
-
-                //TODO: Temp
-                if (keys.ContainsKey(key.Tag))
-                    continue;
 
                 keys.Add(key.Tag, key);
             }

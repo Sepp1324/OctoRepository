@@ -1,4 +1,6 @@
-﻿using OctoAwesome.Notifications;
+﻿using OctoAwesome.Definitions;
+using OctoAwesome.Notifications;
+using OctoAwesome.Pooling;
 using OctoAwesome.Threading;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace OctoAwesome
         /// </summary>
         private readonly IEntityList entities;
         private readonly LockSemaphore entitieSemaphore;
+        private static ChunkPool chunkPool;
 
 
         public IDefinitionManager DefinitionManager { get; }
@@ -53,6 +56,8 @@ namespace OctoAwesome
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
             globalChunkCache = planet.GlobalChunkCache;
+            if (chunkPool == null)
+                chunkPool = TypeContainer.Get<ChunkPool>();
         }
 
         private void OnChunkChanged(IChunk arg1)
@@ -287,6 +292,7 @@ namespace OctoAwesome
             for (var c = 0; c < Chunks.Length; c++)
             {
                 IChunk chunk = Chunks[c];
+                writer.Write(chunk.Version);
                 for (var i = 0; i < chunk.Blocks.Length; i++)
                 {
                     if (chunk.Blocks[i] == 0)
@@ -357,7 +363,7 @@ namespace OctoAwesome
             for (var i = 0; i < typecount; i++)
             {
                 var typeName = reader.ReadString();
-                IDefinition[] definitions = DefinitionManager.GetDefinitions().ToArray();
+                IDefinition[] definitions = DefinitionManager.Definitions.ToArray();
                 IDefinition blockDefinition = definitions.FirstOrDefault(d => d.GetType().FullName == typeName);
                 types.Add(blockDefinition);
 
@@ -368,6 +374,7 @@ namespace OctoAwesome
             for (var c = 0; c < Chunks.Length; c++)
             {
                 IChunk chunk = Chunks[c] = new Chunk(new Index3(Index, c), Planet);
+                chunk.Version = reader.ReadInt32();
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
 
