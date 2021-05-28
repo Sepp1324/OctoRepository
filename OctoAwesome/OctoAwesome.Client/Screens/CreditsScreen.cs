@@ -44,8 +44,6 @@ namespace OctoAwesome.Client.Screens
 
                 crewList.Controls.Add(memberButton);
             }
-
-
             Controls.Add(crewScroll);
         }
     }

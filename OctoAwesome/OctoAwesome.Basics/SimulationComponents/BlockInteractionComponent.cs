@@ -8,20 +8,16 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(ControllableComponent), typeof(InventoryComponent))]
     public class BlockInteractionComponent : SimulationComponent<ControllableComponent, InventoryComponent>
     {
-        private readonly BlockCollectionService service;
-        private readonly Simulation simulation;
-
+        private readonly BlockCollectionService _service;
+        private readonly Simulation _simulation;
 
         public BlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
         {
-            this.simulation = simulation;
-            service = interactionService;
+            _simulation = simulation;
+            _service = interactionService;
         }
 
-        protected override bool AddEntity(Entity entity)
-        {
-            return true;
-        }
+        protected override bool AddEntity(Entity entity) => true;
 
         protected override void RemoveEntity(Entity entity)
         {
@@ -44,7 +40,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                     else
                         activeItem = toolbar.HandSlot.Item as IItem;
 
-                    var blockHitInformation = service.Hit(lastBlock, activeItem, cache);
+                    var blockHitInformation = _service.Hit(lastBlock, activeItem, cache);
 
                     if (blockHitInformation.Valid)
                         foreach (var (Quantity, Definition) in blockHitInformation.List)
@@ -123,7 +119,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                         if (!intersects)
                             if (inventory.RemoveUnit(toolbar.ActiveTool))
                             {
-                                cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
+                                cache.SetBlock(idx, _simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 cache.SetBlockMeta(idx, (int) controller.ApplySide);
                                 if (toolbar.ActiveTool.Amount <= 0)
                                     toolbar.RemoveSlot(toolbar.ActiveTool);

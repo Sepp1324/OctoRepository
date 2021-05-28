@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class PlankBlockDefinition : BlockDefinition
     {
-        public PlankBlockDefinition(WoodMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public PlankBlockDefinition(WoodMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Plank;
 

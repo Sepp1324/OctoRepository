@@ -8,7 +8,7 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(ForceComponent), typeof(MoveableComponent))]
     public sealed class ForceAggregatorComponent : SimulationComponent
     {
-        private readonly List<ForcedEntity> forcedEntities = new List<ForcedEntity>();
+        private readonly List<ForcedEntity> _forcedEntities = new();
 
         protected override bool AddEntity(Entity entity)
         {
@@ -19,20 +19,20 @@ namespace OctoAwesome.Basics.SimulationComponents
                 Forces = entity.Components.OfType<ForceComponent>().ToArray()
             };
 
-            forcedEntities.Add(forcedEntity);
+            _forcedEntities.Add(forcedEntity);
             return true;
         }
 
         protected override void RemoveEntity(Entity entity)
         {
-            var forcedEntity = forcedEntities.FirstOrDefault(e => e.Entity == entity);
+            var forcedEntity = _forcedEntities.FirstOrDefault(e => e.Entity == entity);
             if (forcedEntity != null)
-                forcedEntities.Remove(forcedEntity);
+                _forcedEntities.Remove(forcedEntity);
         }
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var entity in forcedEntities)
+            foreach (var entity in _forcedEntities)
                 entity.Moveable.ExternalForces =
                     entity.Forces.Aggregate(Vector3.Zero, (s, f) => s + f.Force);
         }

@@ -18,10 +18,10 @@ namespace OctoAwesome.Client.Controls
     internal sealed class SceneControl : Control, IDisposable
     {
         public const int TextureSize = 64;
-        public static int VIEW_RANGE = 4; // Anzahl Chunks als Potenz (Volle Sichtweite)
-        public static int MASK;
-        public static int SPAN;
-        public static int SPAN_OVER_2;
+        public static int ViewRange = 4; // Anzahl Chunks als Potenz (Volle Sichtweite)
+        private static int mask;
+        private static int Span;
+        private static int SpanOver2;
 
         private readonly Thread[] _additionalRegenerationThreads;
 
@@ -32,7 +32,6 @@ namespace OctoAwesome.Client.Controls
         private readonly Thread _backgroundThread2;
         private readonly VertexBuffer _billboardVertexbuffer;
 
-        //private Texture2D blockTextures;
         private readonly Texture2DArray _blockTextures;
 
         private readonly AutoResetEvent _fillResetEvent = new(false);
@@ -71,9 +70,9 @@ namespace OctoAwesome.Client.Controls
         public SceneControl(ScreenComponent manager, string style = "") :
             base(manager, style)
         {
-            MASK = (int) Math.Pow(2, VIEW_RANGE) - 1;
-            SPAN = (int) Math.Pow(2, VIEW_RANGE);
-            SPAN_OVER_2 = SPAN >> 1;
+            mask = (int) Math.Pow(2, ViewRange) - 1;
+            Span = (int) Math.Pow(2, ViewRange);
+            SpanOver2 = Span >> 1;
 
             _player = manager.Player;
             _camera = manager.Camera;
@@ -82,7 +81,7 @@ namespace OctoAwesome.Client.Controls
             Manager = manager;
 
             var chunkDiag = (float) Math.Sqrt(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_X + Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Y + Chunk.CHUNKSIZE_Z * Chunk.CHUNKSIZE_Z);
-            var tmpSphereRadius = (float) (Math.Sqrt(SPAN * Chunk.CHUNKSIZE_X * SPAN * Chunk.CHUNKSIZE_X * 3) / 3 + _camera.NearPlaneDistance + chunkDiag / 2);
+            var tmpSphereRadius = (float) (Math.Sqrt(Span * Chunk.CHUNKSIZE_X * Span * Chunk.CHUNKSIZE_X * 3) / 3 + _camera.NearPlaneDistance + chunkDiag / 2);
             _sphereRadius = tmpSphereRadius - chunkDiag / 2;
             _sphereRadiusSquared = tmpSphereRadius * tmpSphereRadius;
 
@@ -113,14 +112,14 @@ namespace OctoAwesome.Client.Controls
 
             // TODO: evtl. Cache-Size (Dimensions) VIEWRANGE + 1
 
-            var range = ((int) Math.Pow(2, VIEW_RANGE) - 2) / 2;
-            _localChunkCache = new LocalChunkCache(_planet.GlobalChunkCache, VIEW_RANGE, range);
+            var range = ((int) Math.Pow(2, ViewRange) - 2) / 2;
+            _localChunkCache = new LocalChunkCache(_planet.GlobalChunkCache, ViewRange, range);
 
             _chunkRenderer = new ChunkRenderer[
-                (int) Math.Pow(2, VIEW_RANGE) * (int) Math.Pow(2, VIEW_RANGE),
+                (int) Math.Pow(2, ViewRange) * (int) Math.Pow(2, ViewRange),
                 _planet.Size.Z];
             _orderedChunkRenderer = new List<ChunkRenderer>(
-                (int) Math.Pow(2, VIEW_RANGE) * (int) Math.Pow(2, VIEW_RANGE) * _planet.Size.Z);
+                (int) Math.Pow(2, ViewRange) * (int) Math.Pow(2, ViewRange) * _planet.Size.Z);
 
             for (var i = 0; i < _chunkRenderer.GetLength(0); i++)
             for (var j = 0; j < _chunkRenderer.GetLength(1); j++)
@@ -222,7 +221,7 @@ namespace OctoAwesome.Client.Controls
         }
 
         public RenderTarget2D MiniMapTexture { get; set; }
-        public RenderTarget2D ControlTexture { get; set; }
+        private RenderTarget2D ControlTexture { get; set; }
 
         private ScreenComponent Manager { get; }
 
@@ -536,16 +535,16 @@ namespace OctoAwesome.Client.Controls
                         }
                     });
 
-                for (var x = 0; x < SPAN; x++)
-                for (var y = 0; y < SPAN; y++)
+                for (var x = 0; x < Span; x++)
+                for (var y = 0; y < Span; y++)
                 {
-                    var local = new Index2(x - SPAN_OVER_2, y - SPAN_OVER_2) + destinationChunk;
+                    var local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
                     local.NormalizeXY(_planet.Size);
 
-                    var virtualX = local.X & MASK;
-                    var virtualY = local.Y & MASK;
+                    var virtualX = local.X & mask;
+                    var virtualY = local.Y & mask;
 
-                    var rendererIndex = virtualX + (virtualY << VIEW_RANGE);
+                    var rendererIndex = virtualX + (virtualY << ViewRange);
 
                     for (var z = 0; z < _planet.Size.Z; z++)
                         _chunkRenderer[rendererIndex, z].SetChunk(_localChunkCache, new Index3(local.X, local.Y, z), _player.Position.Planet);

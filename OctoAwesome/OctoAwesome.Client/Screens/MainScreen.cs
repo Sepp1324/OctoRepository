@@ -8,11 +8,9 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class MainScreen : BaseScreen
     {
-        private readonly AssetComponent assets;
-
         public MainScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             Padding = new Border(0, 0, 0, 0);
 

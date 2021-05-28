@@ -8,18 +8,15 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class MessageScreen : Screen
     {
-        private readonly AssetComponent assets;
-        private readonly Panel panel;
-
         public MessageScreen(ScreenComponent manager, string title, string content, string buttonText = "OK", Action<Control, MouseEventArgs> buttonClick = null) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.5f);
             Title = title;
 
-            panel = new Panel(manager)
+            var panel = new Panel(manager)
             {
                 Padding = Border.All(20),
                 HorizontalAlignment = HorizontalAlignment.Center,

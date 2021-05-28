@@ -15,7 +15,7 @@ namespace OctoAwesome.Client.Components
 
         public HeadComponent CurrentEntityHead { get; private set; }
 
-        public ControllableComponent CurrentController { get; private set; }
+        private ControllableComponent CurrentController { get; set; }
 
         public InventoryComponent Inventory { get; private set; }
 

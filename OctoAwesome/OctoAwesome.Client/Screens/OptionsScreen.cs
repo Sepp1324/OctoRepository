@@ -8,13 +8,11 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class OptionsScreen : BaseScreen
     {
-        private readonly AssetComponent assets;
-
-        private readonly Button exitButton;
+        private readonly Button _exitButton;
 
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             Padding = new Border(0, 0, 0, 0);
 
@@ -50,8 +48,7 @@ namespace OctoAwesome.Client.Screens
 
             #region BindingsPage
 
-            var bindingsPage = new TabPage(manager, OctoClient.KeyBindings);
-            bindingsPage.Padding = Border.All(10);
+            var bindingsPage = new TabPage(manager, OctoClient.KeyBindings) {Padding = Border.All(10)};
             tabs.Pages.Add(bindingsPage);
 
             var bindingsOptions = new BindingsOptionControl(manager)
@@ -92,20 +89,22 @@ namespace OctoAwesome.Client.Screens
             #endregion
 
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
-            exitButton = new TextButton(manager, OctoClient.RestartGameToApplyChanges);
-            exitButton.VerticalAlignment = VerticalAlignment.Top;
-            exitButton.HorizontalAlignment = HorizontalAlignment.Right;
-            exitButton.Enabled = false;
-            exitButton.Visible = false;
-            exitButton.LeftMouseClick += (s, e) => Program.Restart();
-            exitButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(exitButton);
+            _exitButton = new TextButton(manager, OctoClient.RestartGameToApplyChanges)
+            {
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Enabled = false,
+                Visible = false
+            };
+            _exitButton.LeftMouseClick += (s, e) => Program.Restart();
+            _exitButton.Margin = new Border(10, 10, 10, 10);
+            Controls.Add(_exitButton);
         }
 
         public void NeedRestart()
         {
-            exitButton.Visible = true;
-            exitButton.Enabled = true;
+            _exitButton.Visible = true;
+            _exitButton.Enabled = true;
         }
     }
 }

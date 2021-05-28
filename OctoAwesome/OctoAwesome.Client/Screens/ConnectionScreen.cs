@@ -9,11 +9,9 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class ConnectionScreen : BaseScreen
     {
-        private readonly OctoGame game;
-
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
-            game = Manager.Game;
+            var game = Manager.Game;
             Padding = new Border(0, 0, 0, 0);
 
             Title = OctoClient.CreateUniverse;
@@ -76,7 +74,7 @@ namespace OctoAwesome.Client.Screens
             grid.AddControl(createButton, 1, grid.Rows.Count - 1);
         }
 
-        public new ScreenComponent Manager => (ScreenComponent) base.Manager;
+        private new ScreenComponent Manager => (ScreenComponent) base.Manager;
 
         private void PlayMultiplayer(ScreenComponent manager, string playerName)
         {

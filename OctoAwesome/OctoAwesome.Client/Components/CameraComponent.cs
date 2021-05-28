@@ -6,20 +6,16 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class CameraComponent : DrawableGameComponent
     {
-        private readonly PlayerComponent player;
+        private readonly PlayerComponent _player;
 
 
-        public CameraComponent(OctoGame game)
-            : base(game)
-        {
-            player = game.Player;
-        }
+        public CameraComponent(OctoGame game) : base(game) => _player = game.Player;
 
         public Index3 CameraChunk { get; private set; }
 
-        public Vector3 CameraPosition { get; private set; }
+        private Vector3 CameraPosition { get; set; }
 
-        public Vector3 CameraUpVector { get; private set; }
+        private Vector3 CameraUpVector { get; set; }
 
         public Matrix View { get; private set; }
 
@@ -29,7 +25,7 @@ namespace OctoAwesome.Client.Components
 
         public Ray PickRay { get; private set; }
 
-        public BoundingFrustum Frustum { get; private set; }
+        private BoundingFrustum Frustum { get; set; }
         public float NearPlaneDistance => 0.1f;
         public float FarPlaneDistance => 10000.0f;
 
@@ -51,12 +47,12 @@ namespace OctoAwesome.Client.Components
             if (!Enabled)
                 return;
 
-            if (player == null || player.CurrentEntity == null)
+            if (_player == null || _player.CurrentEntity == null)
                 return;
 
-            var entity = player.CurrentEntity;
-            var head = player.CurrentEntityHead;
-            var position = player.Position;
+            var entity = _player.CurrentEntity;
+            var head = _player.CurrentEntityHead;
+            var position = _player.Position;
 
             CameraChunk = position.Position.ChunkIndex;
 

@@ -6,7 +6,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public abstract class BiomeBase : IBiome
     {
-        public BiomeBase(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
+        protected BiomeBase(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
         {
             SubBiomes = new List<IBiome>();
             Planet = planet;
@@ -16,7 +16,7 @@ namespace OctoAwesome.Basics.Biomes
             ValueRange = valueRange;
         }
 
-        public List<IBiome> SubBiomes { get; protected set; }
+        protected List<IBiome> SubBiomes { get; set; }
         public IPlanet Planet { get; }
 
         public INoise BiomeNoiseGenerator { get; protected set; }

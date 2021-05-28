@@ -9,11 +9,9 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class PauseScreen : Screen
     {
-        private readonly AssetComponent assets;
-
         public PauseScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             // IsOverlay = true;
             // Background = new BorderBrush(new Color(Color.Black, 0.5f));

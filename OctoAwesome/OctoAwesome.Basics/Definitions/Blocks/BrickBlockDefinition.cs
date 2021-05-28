@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class BrickBlockDefinition : BlockDefinition
     {
-        public BrickBlockDefinition(BrickMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public BrickBlockDefinition(BrickMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Brick;
 

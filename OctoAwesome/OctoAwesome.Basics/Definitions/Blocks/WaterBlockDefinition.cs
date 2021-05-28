@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class WaterBlockDefinition : BlockDefinition
     {
-        public WaterBlockDefinition(WaterMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public WaterBlockDefinition(WaterMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Water;
 

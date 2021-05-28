@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTK" Version="5.0.0-pre.4" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
   </ItemGroup>
 

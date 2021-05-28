@@ -6,7 +6,7 @@ namespace OctoAwesome.Basics.Entities
 {
     public class WauziEntity : UpdateableEntity
     {
-        public int JumpTime { get; set; }
+        private int JumpTime { get; set; }
 
         protected override void OnInitialize(IResourceManager manager)
         {

@@ -18,10 +18,7 @@ namespace OctoAwesome.Client.Cache
             }
         }
 
-        public VerticesForChunk Get(Index3 key)
-        {
-            return Get(new Index3Tag(key));
-        }
+        public VerticesForChunk Get(Index3 key) => Get(new Index3Tag(key));
 
         public override VerticesForChunk Get(Index3Tag key)
         {
@@ -29,13 +26,11 @@ namespace OctoAwesome.Client.Cache
                 return null;
 
             var verticesForChunk = new VerticesForChunk();
-            using (var stream = new MemoryStream(Database.GetValue(key).Content))
-            using (var buffered = new BufferedStream(stream))
-            using (var reader = new BinaryReader(buffered))
-            {
-                verticesForChunk.Deserialize(reader);
-                return verticesForChunk;
-            }
+            using var stream = new MemoryStream(Database.GetValue(key).Content);
+            using var buffered = new BufferedStream(stream);
+            using var reader = new BinaryReader(buffered);
+            verticesForChunk.Deserialize(reader);
+            return verticesForChunk;
         }
 
         public override void Remove(VerticesForChunk value)

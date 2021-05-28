@@ -6,7 +6,7 @@ using OctoAwesome.Network;
 
 namespace OctoAwesome.GameServer
 {
-    internal class Program
+    internal static class Program
     {
         private static ManualResetEvent manualResetEvent;
         private static ILogger logger;

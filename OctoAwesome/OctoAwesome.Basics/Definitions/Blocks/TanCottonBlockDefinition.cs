@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class TanCottonBlockDefinition : BlockDefinition
     {
-        public TanCottonBlockDefinition(CottonMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public TanCottonBlockDefinition(CottonMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.TanCotton;
 

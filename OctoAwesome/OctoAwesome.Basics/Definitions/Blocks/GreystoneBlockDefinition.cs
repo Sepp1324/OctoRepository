@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GreystoneBlockDefinition : BlockDefinition
     {
-        public GreystoneBlockDefinition(StoneMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public GreystoneBlockDefinition(StoneMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Greystone;
 

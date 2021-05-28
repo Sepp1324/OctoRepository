@@ -38,10 +38,7 @@ namespace OctoAwesome.Client
         ///     Erzeugt eine neue Instanz der Klasse Settings, die auf die Konfigurationsdatei der aktuell laufenden Anwendung
         ///     zugreift.
         /// </summary>
-        public Settings()
-        {
-            _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
-        }
+        public Settings() => _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
 
         /// <summary>
         ///     Gibt den Wert einer Einstellung zurück.
@@ -87,10 +84,7 @@ namespace OctoAwesome.Client
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns></returns>
-        public bool KeyExists(string key)
-        {
-            return _config.AppSettings.Settings.AllKeys.Contains(key);
-        }
+        public bool KeyExists(string key) => _config.AppSettings.Settings.AllKeys.Contains(key);
 
         /// <summary>
         ///     Setzt den Wert einer Eigenschaft.
@@ -111,20 +105,14 @@ namespace OctoAwesome.Client
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, int value)
-        {
-            Set(key, Convert.ToString(value));
-        }
+        public void Set(string key, int value) => Set(key, Convert.ToString(value));
 
         /// <summary>
         ///     Setzt den Wert einer Eigenschaft.
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, bool value)
-        {
-            Set(key, Convert.ToString(value));
-        }
+        public void Set(string key, bool value) => Set(key, Convert.ToString(value));
 
         /// <summary>
         ///     Setzt den Wert einer Eigenschaft.

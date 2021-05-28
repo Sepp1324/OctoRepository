@@ -37,25 +37,20 @@ namespace OctoAwesome.Client.Crew
 
         internal static List<CrewMember> getCrew(ScreenComponent manager)
         {
-            using (var stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml"))
+            using var stream = manager.Game.Assets.LoadStream(typeof(CrewMember), "crew", "xml");
+            try
             {
-                try
-                {
-                    var serializer = new XmlSerializer(typeof(List<CrewMember>));
-                    return (List<CrewMember>) serializer.Deserialize(stream);
-                }
-                catch (Exception)
-                {
-                }
-
-                return new List<CrewMember>();
+                var serializer = new XmlSerializer(typeof(List<CrewMember>));
+                return (List<CrewMember>) serializer.Deserialize(stream);
             }
+            catch (Exception)
+            {
+            }
+
+            return new List<CrewMember>();
         }
 
-        public override string ToString()
-        {
-            return Username;
-        }
+        public override string ToString() => Username;
 
         public class Link
         {

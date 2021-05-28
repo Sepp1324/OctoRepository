@@ -9,10 +9,7 @@ namespace OctoAwesome.Basics
     {
         private static readonly Polynomial polynomial;
 
-        static Pickaxe()
-        {
-            polynomial = new Polynomial(150, 0, -1f / 400f);
-        }
+        static Pickaxe() => polynomial = new Polynomial(150, 0, -1f / 400f);
 
         public Pickaxe(PickaxeDefinition pickaxeDefinition, IMaterialDefinition materialDefinition)
             : base(pickaxeDefinition, materialDefinition)

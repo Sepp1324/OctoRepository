@@ -10,8 +10,6 @@ namespace OctoAwesome.Basics
         // Die Gravitationskonstante ist absichtlich so "groß", vgl. Issue #220
         private const double GravitationalConstant = 6.67e-7;
 
-        public int HEIGHTMAPDETAILS = 8;
-
         /// <summary>
         ///     Konstruktor des komplexen Map-Generators
         /// </summary>
@@ -24,8 +22,7 @@ namespace OctoAwesome.Basics
         ///     Durchschnittliche Dichte des Planeten zur Berechnung der Gravitation in kg/m³. Erd- und
         ///     Standardwert: 5510
         /// </param>
-        public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed, int averageDensity = 5510)
-            : base(id, universe, size, seed)
+        public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed, int averageDensity = 5510) : base(id, universe, size, seed)
         {
             Generator = generator;
 

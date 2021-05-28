@@ -10,7 +10,8 @@ namespace OctoAwesome.Definitions
     /// </summary>
     public abstract class BlockDefinition : IBlockDefinition
     {
-        public virtual int VolumePerHit => 25;
+        private int VolumePerHit => 25;
+        
         public virtual uint SolidWall => 0x3f;
 
         /// <summary>
@@ -71,24 +72,12 @@ namespace OctoAwesome.Definitions
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
-        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return new[] {new BoundingBox(new Vector3(0, 0), new Vector3(1, 1, 1))};
-        }
+        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z) => new[] {new BoundingBox(new Vector3(0, 0), new Vector3(1, 1, 1))};
 
-        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
 
-        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
 
-        public bool IsSolidWall(Wall wall)
-        {
-            return (SolidWall & (1 << (int) wall)) != 0;
-        }
+        public bool IsSolidWall(Wall wall) => (SolidWall & (1 << (int) wall)) != 0;
     }
 }

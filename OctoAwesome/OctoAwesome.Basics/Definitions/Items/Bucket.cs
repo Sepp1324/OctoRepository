@@ -5,11 +5,7 @@ namespace OctoAwesome.Basics.Definitions.Items
 {
     internal class Bucket : Item, IFluidInventory
     {
-        public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition)
-            : base(definition, materialDefinition)
-        {
-            MaxQuantity = 125;
-        }
+        public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition) => MaxQuantity = 125;
 
         public int Quantity { get; private set; }
         public IBlockDefinition FluidBlock { get; private set; }

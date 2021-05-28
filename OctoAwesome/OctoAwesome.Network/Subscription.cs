@@ -11,8 +11,9 @@ namespace OctoAwesome.Network
             Observer = observer;
         }
 
-        public IAsyncObservable<T> Observable { get; }
-        public IAsyncObserver<T> Observer { get; }
+        private IAsyncObservable<T> Observable { get; }
+
+        private IAsyncObserver<T> Observer { get; }
 
         public void Dispose()
         {

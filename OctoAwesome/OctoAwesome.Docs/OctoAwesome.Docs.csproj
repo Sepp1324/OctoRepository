@@ -24,5 +24,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="OpenTK" Version="5.0.0-pre.4" />
   </ItemGroup>
 </Project>

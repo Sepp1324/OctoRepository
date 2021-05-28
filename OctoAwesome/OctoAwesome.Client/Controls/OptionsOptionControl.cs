@@ -16,16 +16,15 @@ namespace OctoAwesome.Client.Controls
 {
     internal sealed class OptionsOptionControl : Panel
     {
-        private readonly Textbox mapPath;
-        private readonly OptionsScreen optionsScreen;
-        private readonly Label rangeTitle;
+        private readonly OptionsScreen _optionsScreen;
+        private readonly Label _rangeTitle;
 
-        private readonly ISettings settings;
+        private readonly ISettings _settings;
 
         public OptionsOptionControl(ScreenComponent manager, OptionsScreen optionsScreen) : base(manager)
         {
-            settings = manager.Game.Settings;
-            this.optionsScreen = optionsScreen;
+            _settings = manager.Game.Settings;
+            _optionsScreen = optionsScreen;
 
             ////////////////////////////////////////////Settings Stack////////////////////////////////////////////
             var settingsStack = new StackPanel(manager)
@@ -38,13 +37,13 @@ namespace OctoAwesome.Client.Controls
             Controls.Add(settingsStack);
 
             //////////////////////Viewrange//////////////////////
-            var viewrange = settings.Get<string>("Viewrange");
+            var viewrange = _settings.Get<string>("Viewrange");
 
-            rangeTitle = new Label(manager)
+            _rangeTitle = new Label(manager)
             {
                 Text = OctoClient.Viewrange + ": " + viewrange
             };
-            settingsStack.Controls.Add(rangeTitle);
+            settingsStack.Controls.Add(_rangeTitle);
 
             var viewrangeSlider = new Slider(manager)
             {
@@ -73,7 +72,7 @@ namespace OctoAwesome.Client.Controls
 
             var disablePersistence = new Checkbox(manager)
             {
-                Checked = settings.Get("DisablePersistence", false),
+                Checked = _settings.Get("DisablePersistence", false),
                 HookBrush = new TextureBrush(manager.Game.Assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch)
             };
             disablePersistence.CheckedChanged += state => SetPersistence(state);
@@ -88,9 +87,9 @@ namespace OctoAwesome.Client.Controls
             };
             settingsStack.Controls.Add(mapPathStack);
 
-            mapPath = new Textbox(manager)
+            var mapPath = new Textbox(manager)
             {
-                Text = settings.Get<string>("ChunkRoot"),
+                Text = _settings.Get<string>("ChunkRoot"),
                 Enabled = false,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
@@ -119,7 +118,7 @@ namespace OctoAwesome.Client.Controls
 
             var enableFullscreen = new Checkbox(manager)
             {
-                Checked = settings.Get<bool>("EnableFullscreen"),
+                Checked = _settings.Get<bool>("EnableFullscreen"),
                 HookBrush = new TextureBrush(manager.Game.Assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch)
             };
             enableFullscreen.CheckedChanged += state => SetFullscreen(state);
@@ -141,7 +140,7 @@ namespace OctoAwesome.Client.Controls
 
             var resolutionWidthTextbox = new Textbox(manager)
             {
-                Text = settings.Get<string>("Width"),
+                Text = _settings.Get<string>("Width"),
                 Width = 50,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
             };
@@ -156,7 +155,7 @@ namespace OctoAwesome.Client.Controls
 
             var resolutionHeightTextbox = new Textbox(manager)
             {
-                Text = settings.Get<string>("Height"),
+                Text = _settings.Get<string>("Height"),
                 Width = 50,
                 Background = new BorderBrush(Color.LightGray, LineType.Solid, Color.Gray)
             };
@@ -172,55 +171,41 @@ namespace OctoAwesome.Client.Controls
 
         private void ResolutionWidthTextbox_TextChanged(Control sender, PropertyEventArgs<string> args)
         {
-            settings.Set("Width", args.NewValue);
+            _settings.Set("Width", args.NewValue);
 
-            optionsScreen.NeedRestart();
+            _optionsScreen.NeedRestart();
         }
 
         private void ResolutionHeightTextbox_TextChanged(Control sender, PropertyEventArgs<string> args)
         {
-            settings.Set("Height", args.NewValue);
+            _settings.Set("Height", args.NewValue);
 
-            optionsScreen.NeedRestart();
+            _optionsScreen.NeedRestart();
         }
 
         private void SetViewrange(int newRange)
         {
-            rangeTitle.Text = OctoClient.Viewrange + ": " + newRange;
+            _rangeTitle.Text = OctoClient.Viewrange + ": " + newRange;
 
-            settings.Set("Viewrange", newRange);
+            _settings.Set("Viewrange", newRange);
 
-            optionsScreen.NeedRestart();
+            _optionsScreen.NeedRestart();
         }
 
-        private void ChangePath()
-        {
-            throw new NotSupportedException();
-            /*var folderBrowser = new FolderBrowserDialog();
-            folderBrowser.SelectedPath = settings.Get<string>("ChunkRoot");
-
-            if (folderBrowser.ShowDialog() == DialogResult.OK)
-            {
-                var path = folderBrowser.SelectedPath;
-                settings.Set("ChunkRoot", path);
-                mapPath.Text = path;
-
-                optionsScreen.NeedRestart();
-            }*/
-        }
+        private void ChangePath() => throw new NotSupportedException();
 
         private void SetPersistence(bool state)
         {
-            settings.Set("DisablePersistence", state);
+            _settings.Set("DisablePersistence", state);
 
-            optionsScreen.NeedRestart();
+            _optionsScreen.NeedRestart();
         }
 
         private void SetFullscreen(bool state)
         {
-            settings.Set("EnableFullscreen", state);
+            _settings.Set("EnableFullscreen", state);
 
-            optionsScreen.NeedRestart();
+            _optionsScreen.NeedRestart();
         }
     }
 }

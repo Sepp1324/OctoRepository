@@ -16,7 +16,7 @@ namespace OctoAwesome.Database.Checks
         {
             using (var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
-                var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
+                var keyBuffer = new byte[Key<TTag>.KeySize];
                 var length = 0;
                 do
                 {
@@ -26,7 +26,7 @@ namespace OctoAwesome.Database.Checks
                     if (!key.Validate())
                         throw new KeyInvalidException("Key is not valid", fileStream.Position);
 
-                    if (key.Index != fileStream.Position - Key<TTag>.KEY_SIZE)
+                    if (key.Index != fileStream.Position - Key<TTag>.KeySize)
                         throw new KeyInvalidException("Key is on the wrong Position", fileStream.Position);
 
                     if (key.IsEmpty)

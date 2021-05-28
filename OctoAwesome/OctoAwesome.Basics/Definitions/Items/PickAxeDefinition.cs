@@ -14,16 +14,8 @@ namespace OctoAwesome.Basics.Definitions.Items
         public string Name => "Pickaxe";
 
 
-        public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            if (material is ISolidMaterialDefinition solid) return true;
+        public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
 
-            return false;
-        }
-
-        public Item Create(IMaterialDefinition material)
-        {
-            return new Pickaxe(this, material);
-        }
+        public Item Create(IMaterialDefinition material) => new Pickaxe(this, material);
     }
 }

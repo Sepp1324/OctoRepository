@@ -9,10 +9,7 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(ControllableComponent), typeof(BodyPowerComponent))]
     public class WattMoverComponent : SimulationComponent<ControllableComponent, BodyPowerComponent>
     {
-        protected override bool AddEntity(Entity entity)
-        {
-            return true;
-        }
+        protected override bool AddEntity(Entity entity) => true;
 
         protected override void RemoveEntity(Entity entity)
         {

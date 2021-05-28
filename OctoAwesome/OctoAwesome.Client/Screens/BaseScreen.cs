@@ -8,32 +8,26 @@ namespace OctoAwesome.Client.Screens
 {
     internal abstract class BaseScreen : Screen
     {
-        private readonly AssetComponent assets;
+        private readonly AssetComponent _assets;
 
-        protected Button BackButton;
+        private Button _backButton;
 
-        public BaseScreen(ScreenComponent manager) : base(manager)
-        {
-            assets = manager.Game.Assets;
-        }
+        protected BaseScreen(ScreenComponent manager) : base(manager) => _assets = manager.Game.Assets;
 
         protected override void OnNavigatedTo(NavigationEventArgs args)
         {
             if (Manager.CanGoBack)
             {
-                BackButton = new TextButton(Manager, OctoClient.Back);
-                BackButton.VerticalAlignment = VerticalAlignment.Top;
-                BackButton.HorizontalAlignment = HorizontalAlignment.Left;
-                BackButton.LeftMouseClick += (s, e) => { Manager.NavigateBack(); };
-                BackButton.Margin = new Border(10, 10, 10, 10);
-                Controls.Add(BackButton);
+                _backButton = new TextButton(Manager, OctoClient.Back);
+                _backButton.VerticalAlignment = VerticalAlignment.Top;
+                _backButton.HorizontalAlignment = HorizontalAlignment.Left;
+                _backButton.LeftMouseClick += (s, e) => { Manager.NavigateBack(); };
+                _backButton.Margin = new Border(10, 10, 10, 10);
+                Controls.Add(_backButton);
             }
         }
 
-        protected void SetDefaultBackground()
-        {
-            Background = new TextureBrush(assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
-        }
+        protected void SetDefaultBackground() => Background = new TextureBrush(_assets.LoadTexture(typeof(ScreenComponent), "background_new"), TextureBrushMode.Stretch);
 
         protected override void OnKeyPress(KeyEventArgs args)
         {

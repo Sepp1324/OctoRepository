@@ -6,8 +6,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public class SurfaceBiomeGenerator : LargeBiomeBase
     {
-        public SurfaceBiomeGenerator(IPlanet planet, int seaLevel)
-            : base(planet, 0f, 1f)
+        public SurfaceBiomeGenerator(IPlanet planet, int seaLevel) : base(planet, 0f, 1f)
         {
             SeaLevel = seaLevel;
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed) {FrequencyX = 1f / 10000, FrequencyY = 1f / 10000, Factor = 1f};
@@ -22,10 +21,7 @@ namespace OctoAwesome.Basics.Biomes
 
         public int SeaLevel { get; }
 
-        protected override float CurveFunction(float inputValue)
-        {
-            return CurveFunction(inputValue, -0.08f, 200);
-        }
+        protected override float CurveFunction(float inputValue) => CurveFunction(inputValue, -0.08f, 200);
 
         private float CurveFunction(float inputValue, float brightness, int contrast)
         {

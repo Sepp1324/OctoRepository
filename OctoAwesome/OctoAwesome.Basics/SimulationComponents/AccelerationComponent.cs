@@ -10,16 +10,13 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(MoveableComponent), typeof(BodyComponent))]
     public sealed class AccelerationComponent : SimulationComponent
     {
-        private readonly List<AcceleratedEntity> acceleratedEntities;
+        private readonly List<AcceleratedEntity> _acceleratedEntities;
 
-        public AccelerationComponent()
-        {
-            acceleratedEntities = new List<AcceleratedEntity>();
-        }
+        public AccelerationComponent() => _acceleratedEntities = new List<AcceleratedEntity>();
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var entity in acceleratedEntities.ToArray())
+            foreach (var entity in _acceleratedEntities.ToArray())
             {
                 // Convert external Forces to Powers
                 var power = entity.Move.ExternalForces * entity.Move.ExternalForces / (2 * entity.Body.Mass) *
@@ -72,15 +69,15 @@ namespace OctoAwesome.Basics.SimulationComponents
                 Body = entity.Components.GetComponent<BodyComponent>()
             };
 
-            acceleratedEntities.Add(acceleratedEntity);
+            _acceleratedEntities.Add(acceleratedEntity);
             return true;
         }
 
         protected override void RemoveEntity(Entity entity)
         {
-            var acceleratedEntity = acceleratedEntities.FirstOrDefault(e => e.Entity == entity);
+            var acceleratedEntity = _acceleratedEntities.FirstOrDefault(e => e.Entity == entity);
             if (acceleratedEntity != null)
-                acceleratedEntities.Remove(acceleratedEntity);
+                _acceleratedEntities.Remove(acceleratedEntity);
         }
 
         private class AcceleratedEntity

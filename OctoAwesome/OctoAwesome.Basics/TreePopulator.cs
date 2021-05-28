@@ -8,23 +8,17 @@ namespace OctoAwesome.Basics
     {
         private IEnumerable<ITreeDefinition> treeDefinitions;
 
-        public TreePopulator()
-        {
-            Order = 10;
-        }
+        public TreePopulator() => Order = 10;
 
         private static IChunkColumn getColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
-            IChunkColumn column;
-            if (x >= Chunk.CHUNKSIZE_X && y >= Chunk.CHUNKSIZE_Y)
-                column = column11;
-            else if (x < Chunk.CHUNKSIZE_X && y >= Chunk.CHUNKSIZE_Y)
-                column = column01;
-            else if (x >= Chunk.CHUNKSIZE_X && y < Chunk.CHUNKSIZE_Y)
-                column = column10;
-            else
-                column = column00;
-
+            var column = x switch
+            {
+                >= Chunk.CHUNKSIZE_X when y >= Chunk.CHUNKSIZE_Y => column11,
+                < Chunk.CHUNKSIZE_X when y >= Chunk.CHUNKSIZE_Y => column01,
+                >= Chunk.CHUNKSIZE_X when y < Chunk.CHUNKSIZE_Y => column10,
+                _ => column00
+            };
 
             return column;
         }

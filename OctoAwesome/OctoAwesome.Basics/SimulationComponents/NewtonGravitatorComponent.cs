@@ -9,11 +9,11 @@ namespace OctoAwesome.Basics.SimulationComponents
     [EntityFilter(typeof(GravityComponent), typeof(BodyComponent))]
     public class NewtonGravitatorComponent : SimulationComponent
     {
-        private new readonly List<GravityEntity> entities = new List<GravityEntity>();
+        private new readonly List<GravityEntity> _entities = new();
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var entity in entities)
+            foreach (var entity in _entities)
             {
                 var gravity = 10f;
 
@@ -31,7 +31,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override bool AddEntity(Entity entity)
         {
-            entities.Add(new GravityEntity
+            _entities.Add(new GravityEntity
             {
                 Entity = entity,
                 GravityComponent = entity.Components.GetComponent<GravityComponent>(),
@@ -43,9 +43,9 @@ namespace OctoAwesome.Basics.SimulationComponents
 
         protected override void RemoveEntity(Entity entity)
         {
-            var gravityentity = entities.FirstOrDefault(i => i.Entity == entity);
+            var gravityentity = _entities.FirstOrDefault(i => i.Entity == entity);
             if (gravityentity != null)
-                entities.Remove(gravityentity);
+                _entities.Remove(gravityentity);
         }
 
         private class GravityEntity

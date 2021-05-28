@@ -8,19 +8,14 @@ namespace OctoAwesome.Basics.Definitions.Items
     {
         private static readonly Polynomial polynomial;
 
-        static Axe()
-        {
-            polynomial = new Polynomial(0, 3f / 8f, 1f / 800f, -1f / 320000f);
-        }
+        static Axe() => polynomial = new Polynomial(0, 3f / 8f, 1f / 800f, -1f / 320000f);
 
-        public Axe(AxeDefinition definition, IMaterialDefinition materialDefinition)
-            : base(definition, materialDefinition)
+        public Axe(AxeDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition)
         {
         }
 
         public override int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit)
         {
-            //⁅𝑥^2/800+3𝑥/8+(−𝑥^3)/320000⁆
             var baseEfficiency = base.Hit(material, volumeRemaining, volumePerHit);
 
             if (material is ISolidMaterialDefinition solid && baseEfficiency > 0)

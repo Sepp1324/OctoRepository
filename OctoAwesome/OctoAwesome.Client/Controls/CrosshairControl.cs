@@ -7,27 +7,27 @@ namespace OctoAwesome.Client.Controls
 {
     internal class CrosshairControl : Control
     {
-        private readonly AssetComponent assets;
-        public Color Color;
-        public Texture2D Texture;
-        public float Transparency;
+        private readonly AssetComponent _assets;
+        private readonly Color _color;
+        private readonly Texture2D _texture;
+        private readonly float _transparency;
 
         public CrosshairControl(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            _assets = manager.Game.Assets;
 
-            Transparency = 0.5f;
-            Color = Color.White;
+            _transparency = 0.5f;
+            _color = Color.White;
 
-            Texture = assets.LoadTexture(GetType(), "octocross");
+            _texture = _assets.LoadTexture(GetType(), "octocross");
         }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (!assets.Ready)
+            if (!_assets.Ready)
                 return;
 
-            batch.Draw(Texture, contentArea, Color * Transparency);
+            batch.Draw(_texture, contentArea, _color * _transparency);
         }
     }
 }

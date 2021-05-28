@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class RedPlankBlockDefinition : BlockDefinition
     {
-        public RedPlankBlockDefinition(WoodMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public RedPlankBlockDefinition(WoodMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.RedPlank;
 

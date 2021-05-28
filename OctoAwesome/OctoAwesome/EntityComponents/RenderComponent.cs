@@ -4,10 +4,7 @@ namespace OctoAwesome.EntityComponents
 {
     public class RenderComponent : EntityComponent
     {
-        public RenderComponent()
-        {
-            Sendable = true;
-        }
+        public RenderComponent() => Sendable = true;
 
         public string Name { get; set; }
 

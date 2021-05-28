@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class LeavesBlockDefinition : BlockDefinition
     {
-        public LeavesBlockDefinition(LeaveMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public LeavesBlockDefinition(LeaveMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Leaves;
 

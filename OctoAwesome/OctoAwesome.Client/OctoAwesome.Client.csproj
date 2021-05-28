@@ -62,6 +62,7 @@
     <PackageReference Include="engenious.ContentTool" Version="0.5.0.9-alpha" />
     <PackageReference Include="engenious.UI" Version="0.5.0.4-alpha" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="OpenTK" Version="5.0.0-pre.4" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="System.IO" Version="4.3.0" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />

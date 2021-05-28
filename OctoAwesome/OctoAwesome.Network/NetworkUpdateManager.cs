@@ -11,29 +11,28 @@ namespace OctoAwesome.Network
 {
     public class NetworkUpdateManager : IAsyncObserver<Package>, INotificationObserver
     {
-        private readonly IPool<BlockChangedNotification> blockChangedNotificationPool;
-        private readonly IPool<BlocksChangedNotification> blocksChangedNotificationPool;
-        private readonly Client client;
-        private readonly IDisposable clientSubscription;
-        private readonly IPool<EntityNotification> entityNotificationPool;
-        private readonly IDisposable hubSubscription;
-        private readonly ILogger logger;
-        private readonly PackagePool packagePool;
-        private readonly IUpdateHub updateHub;
+        private readonly IPool<BlockChangedNotification> _blockChangedNotificationPool;
+        private readonly IPool<BlocksChangedNotification> _blocksChangedNotificationPool;
+        private readonly Client _client;
+        private readonly IDisposable _clientSubscription;
+        private readonly IPool<EntityNotification> _entityNotificationPool;
+        private readonly ILogger _logger;
+        private readonly PackagePool _packagePool;
+        private readonly IUpdateHub _updateHub;
 
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
         {
-            this.client = client;
-            this.updateHub = updateHub;
+            _client = client;
+            _updateHub = updateHub;
 
-            logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
-            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
-            blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
-            packagePool = TypeContainer.Get<PackagePool>();
+            _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
+            _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
+            _blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
+            _blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
+            _packagePool = TypeContainer.Get<PackagePool>();
 
-            hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
-            clientSubscription = client.Subscribe(this);
+            updateHub.Subscribe(this, DefaultChannels.Network);
+            _clientSubscription = client.Subscribe(this);
         }
 
         public Task OnNext(Package package)
@@ -41,8 +40,8 @@ namespace OctoAwesome.Network
             switch (package.OfficialCommand)
             {
                 case OfficialCommand.EntityNotification:
-                    var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, package.Payload);
-                    updateHub.Push(entityNotification, DefaultChannels.Simulation);
+                    var entityNotification = Serializer.DeserializePoolElement(_entityNotificationPool, package.Payload);
+                    _updateHub.Push(entityNotification, DefaultChannels.Simulation);
                     entityNotification.Release();
                     break;
                 case OfficialCommand.ChunkNotification:
@@ -51,16 +50,16 @@ namespace OctoAwesome.Network
                     switch (notificationType)
                     {
                         case BlockNotificationType.BlockChanged:
-                            chunkNotification = Serializer.DeserializePoolElement(blockChangedNotificationPool, package.Payload);
+                            chunkNotification = Serializer.DeserializePoolElement(_blockChangedNotificationPool, package.Payload);
                             break;
                         case BlockNotificationType.BlocksChanged:
-                            chunkNotification = Serializer.DeserializePoolElement(blocksChangedNotificationPool, package.Payload);
+                            chunkNotification = Serializer.DeserializePoolElement(_blocksChangedNotificationPool, package.Payload);
                             break;
                         default:
                             throw new NotSupportedException($"This Type is not supported: {notificationType}");
                     }
 
-                    updateHub.Push(chunkNotification, DefaultChannels.Chunk);
+                    _updateHub.Push(chunkNotification, DefaultChannels.Chunk);
                     chunkNotification.Release();
                     break;
             }
@@ -70,13 +69,13 @@ namespace OctoAwesome.Network
 
         public Task OnError(Exception error)
         {
-            logger.Error(error.Message, error);
+            _logger.Error(error.Message, error);
             return Task.CompletedTask;
         }
 
         public Task OnCompleted()
         {
-            clientSubscription.Dispose();
+            _clientSubscription.Dispose();
             return Task.CompletedTask;
         }
 
@@ -98,10 +97,10 @@ namespace OctoAwesome.Network
                     return;
             }
 
-            var package = packagePool.Get();
+            var package = _packagePool.Get();
             package.Command = command;
             package.Payload = payload;
-            client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelase(package);
         }
 
         void INotificationObserver.OnCompleted()
@@ -109,9 +108,6 @@ namespace OctoAwesome.Network
             //hubSubscription.Dispose();
         }
 
-        void INotificationObserver.OnError(Exception error)
-        {
-            logger.Error(error.Message, error);
-        }
+        void INotificationObserver.OnError(Exception error) => _logger.Error(error.Message, error);
     }
 }

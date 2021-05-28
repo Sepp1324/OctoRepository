@@ -4,19 +4,16 @@ using engenious.Graphics;
 
 namespace OctoAwesome.Client.Components
 {
-    internal struct VertexPositionNormalTexturePacked : IVertexType
+    internal readonly struct VertexPositionNormalTexturePacked : IVertexType
     {
         //uv:(0,0),(0,1),(1,0),(1,1)
         //normal:(1,0,0),(-1,0,0)
         //      (0,1,0),(0,-1,0)
         //      (0,0,1),(0,0,-1)
 
-        public static readonly VertexDeclaration VertexDeclaration;
+        private static readonly VertexDeclaration VertexDeclaration;
 
-        static VertexPositionNormalTexturePacked()
-        {
-            VertexDeclaration = new VertexDeclaration(sizeof(uint) * 2, new VertexElement(0, VertexElementFormat.Rgba32, VertexElementUsage.Position, 0), new VertexElement(sizeof(uint), VertexElementFormat.Rgba32, VertexElementUsage.Normal, 0));
-        }
+        static VertexPositionNormalTexturePacked() => VertexDeclaration = new VertexDeclaration(sizeof(uint) * 2, new VertexElement(0, VertexElementFormat.Rgba32, VertexElementUsage.Position, 0), new VertexElement(sizeof(uint), VertexElementFormat.Rgba32, VertexElementUsage.Normal, 0));
 
         public VertexPositionNormalTexturePacked(Vector3 position, Vector3 normal, Vector2 uv)
         {
@@ -30,30 +27,16 @@ namespace OctoAwesome.Client.Components
 
             var normalExpanded = (normalX + 1) * 100 + (normalY + 1) * 10 + normalZ + 1;
 
-            uint normalPacked;
-            switch (normalExpanded)
+            uint normalPacked = normalExpanded switch
             {
-                case 211:
-                    normalPacked = 0;
-                    break;
-                case 11:
-                    normalPacked = 1;
-                    break;
-                case 121:
-                    normalPacked = 2;
-                    break;
-                case 101:
-                    normalPacked = 3;
-                    break;
-                case 112:
-                    normalPacked = 4;
-                    break;
-                case 110:
-                    normalPacked = 5;
-                    break;
-                default:
-                    throw new Exception("Expected error happened.");
-            }
+                211 => 0,
+                11 => 1,
+                121 => 2,
+                101 => 3,
+                112 => 4,
+                110 => 5,
+                _ => throw new Exception("Expected error happened.")
+            };
 
             var uvExpanded = ((uint) uv.X << 1) | (uint) uv.Y;
 
@@ -61,8 +44,8 @@ namespace OctoAwesome.Client.Components
             PackedValue2 = ((uint) (uv.X * 65536) << 16) | (uint) (uv.Y * 65536);
         }
 
-        public uint PackedValue { get; }
-        public uint PackedValue2 { get; }
+        private uint PackedValue { get; }
+        private uint PackedValue2 { get; }
 
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
     }

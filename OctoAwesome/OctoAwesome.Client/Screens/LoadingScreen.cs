@@ -14,22 +14,21 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class LoadingScreen : BaseScreen
     {
-        private static readonly QuoteProvider loadingQuoteProvider;
+        private static readonly QuoteProvider LoadingQuoteProvider;
 
-        private readonly GameScreen gameScreen;
-        private readonly Task quoteUpdate;
-        private readonly CancellationTokenSource tokenSource;
+        private readonly GameScreen _gameScreen;
+        private readonly CancellationTokenSource _tokenSource;
 
         static LoadingScreen()
         {
             var settings = TypeContainer.Get<ISettings>();
-            loadingQuoteProvider = new QuoteProvider(new FileInfo(Path.Combine(settings.Get<string>("LoadingScreenQuotesPath"))));
+            LoadingQuoteProvider = new QuoteProvider(new FileInfo(Path.Combine(settings.Get<string>("LoadingScreenQuotesPath"))));
         }
 
         public LoadingScreen(ScreenComponent manager) : base(manager)
         {
             Padding = new Border(0, 0, 0, 0);
-            tokenSource = new CancellationTokenSource();
+            _tokenSource = new CancellationTokenSource();
 
             Title = "Loading";
 
@@ -78,7 +77,7 @@ namespace OctoAwesome.Client.Screens
                 Padding = Border.All(10)
             };
 
-            quoteUpdate = Task.Run(async () => await UpdateLabel(text, loadingQuoteProvider, TimeSpan.FromSeconds(1.5), tokenSource.Token));
+            Task.Run(async () => await UpdateLabel(text, LoadingQuoteProvider, TimeSpan.FromSeconds(1.5), _tokenSource.Token));
             mainGrid.AddControl(text, 1, 1);
 
 
@@ -95,17 +94,17 @@ namespace OctoAwesome.Client.Screens
             buttonStack.Controls.Add(cancelButton);
 
             Debug.WriteLine("Create GameScreen");
-            gameScreen = new GameScreen(manager);
-            gameScreen.Update(new GameTime());
-            gameScreen.OnCenterChanged += SwitchToGame;
+            _gameScreen = new GameScreen(manager);
+            _gameScreen.Update(new GameTime());
+            _gameScreen.OnCenterChanged += SwitchToGame;
 
             cancelButton.LeftMouseClick += (s, e) =>
             {
-                tokenSource.Cancel();
-                tokenSource.Dispose();
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
                 manager.Player.SetEntity(null);
                 manager.Game.Simulation.ExitGame();
-                gameScreen.Unload();
+                _gameScreen.Unload();
                 manager.NavigateBack();
             };
         }
@@ -114,10 +113,10 @@ namespace OctoAwesome.Client.Screens
         {
             Manager.Invoke(() =>
             {
-                tokenSource.Cancel();
-                tokenSource.Dispose();
-                Manager.NavigateToScreen(gameScreen);
-                gameScreen.OnCenterChanged -= SwitchToGame;
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
+                Manager.NavigateToScreen(_gameScreen);
+                _gameScreen.OnCenterChanged -= SwitchToGame;
             });
         }
 

@@ -52,9 +52,6 @@ namespace OctoAwesome.Client.Components
             NavigateToScreen(new MainScreen(this));
         }
 
-        public void Exit()
-        {
-            Game.Exit();
-        }
+        public void Exit() => Game.Exit();
     }
 }

@@ -12,11 +12,9 @@ namespace OctoAwesome.Client.Screens
 {
     internal class CrewMemberScreen : BaseScreen
     {
-        private readonly AssetComponent assets;
-
         public CrewMemberScreen(ScreenComponent manager, CrewMember member) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             VerticalAlignment = VerticalAlignment.Stretch;
             HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -57,9 +55,7 @@ namespace OctoAwesome.Client.Screens
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Padding = new Border(0, 0, 10, 0)
             };
-            if (member.PictureFilename == null)
-                profileImage.Texture = assets.LoadTexture(typeof(CrewMember), "base");
-            else profileImage.Texture = assets.LoadTexture(typeof(CrewMember), member.PictureFilename);
+            profileImage.Texture = assets.LoadTexture(typeof(CrewMember), member.PictureFilename ?? "base");
             horizontalStack.Controls.Add(profileImage);
 
             //The Text Stack
@@ -142,10 +138,6 @@ namespace OctoAwesome.Client.Screens
             panel.Width = 700;
         }
 
-        private bool CheckHttpUrl(string url)
-        {
-            Uri tmp;
-            return Uri.TryCreate(url, UriKind.Absolute, out tmp) && (tmp.Scheme == Uri.UriSchemeHttp || tmp.Scheme == Uri.UriSchemeHttps);
-        }
+        private bool CheckHttpUrl(string url) => Uri.TryCreate(url, UriKind.Absolute, out var tmp) && (tmp.Scheme == Uri.UriSchemeHttp || tmp.Scheme == Uri.UriSchemeHttps);
     }
 }

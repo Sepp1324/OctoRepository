@@ -6,15 +6,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class CactusBlockDefinition : BlockDefinition
     {
-        public CactusBlockDefinition()
-        {
-            Textures = new[] {"cactus_inside", "cactus_side", "cactus_top"};
-        }
+        public CactusBlockDefinition() => Textures = new[] {"cactus_inside", "cactus_side", "cactus_top"};
 
-        public CactusBlockDefinition(CactusMaterialDefinition material) : this()
-        {
-            Material = material;
-        }
+        public CactusBlockDefinition(CactusMaterialDefinition material) : this() => Material = material;
 
         public override string Icon => "cactus_inside";
 
@@ -42,13 +36,8 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
                             return 1;
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
                         default:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topblock != 0 ? 0 : 2;
                     }
                 }
                 case Wall.Bottom:
@@ -62,13 +51,8 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
                             return 1;
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
                         default:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topblock != 0 ? 0 : 2;
                     }
                 }
 
@@ -80,14 +64,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                     {
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
+                            return topblock != 0 ? 0 : 2;
                         default:
                             return 1;
                     }
@@ -100,14 +77,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                     {
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
+                            return topblock != 0 ? 0 : 2;
                         default:
                             return 1;
                     }
@@ -121,14 +91,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                     {
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
+                            return topblock != 0 ? 0 : 2;
                         default:
                             return 1;
                     }
@@ -142,14 +105,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                     {
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
+                            return topblock != 0 ? 0 : 2;
                         default:
                             return 1;
                     }
@@ -176,10 +132,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
                             return 1;
-                        case OrientationFlags.SideSouth:
-                        case OrientationFlags.SideNorth:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
                         default:
                             return 0;
                     }
@@ -190,10 +142,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
                             return 1;
-                        case OrientationFlags.SideWest:
-                        case OrientationFlags.SideEast:
-                        case OrientationFlags.SideBottom:
-                        case OrientationFlags.SideTop:
                         default:
                             return 0;
                     }

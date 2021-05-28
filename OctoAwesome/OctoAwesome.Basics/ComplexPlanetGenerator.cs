@@ -10,17 +10,11 @@ namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-        private readonly ChunkPool chunkPool;
+        private readonly ChunkPool _chunkPool;
 
-        public ComplexPlanetGenerator()
-        {
-            chunkPool = TypeContainer.Get<ChunkPool>();
-        }
+        public ComplexPlanetGenerator() => _chunkPool = TypeContainer.Get<ChunkPool>();
 
-        public IPlanet GeneratePlanet(Guid universe, int id, int seed)
-        {
-            return new ComplexPlanet(id, universe, new Index3(13, 13, 4), this, seed);
-        }
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed) => new ComplexPlanet(id, universe, new Index3(13, 13, 4), this, seed);
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
@@ -55,18 +49,14 @@ namespace OctoAwesome.Basics
 
             var chunks = new IChunk[planet.Size.Z];
             for (var i = 0; i < planet.Size.Z; i++)
-                chunks[i] = chunkPool.Get(new Index3(index, i), planet);
-
-            int obersteSchicht;
-            bool surfaceBlock;
-            bool ozeanSurface;
+                chunks[i] = _chunkPool.Get(new Index3(index, i), planet);
 
             for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
             for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
             {
-                obersteSchicht = 5;
-                surfaceBlock = true;
-                ozeanSurface = false;
+                var obersteSchicht = 5;
+                var surfaceBlock = true;
+                var ozeanSurface = false;
 
                 for (var i = chunks.Length - 1; i >= 0; i--)
                 for (var z = Chunk.CHUNKSIZE_Z - 1; z >= 0; z--)
@@ -163,10 +153,8 @@ namespace OctoAwesome.Basics
         public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)
         {
             IChunkColumn column = new ChunkColumn(planet);
-            using (var reader = new BinaryReader(stream))
-            {
-                column.Deserialize(reader);
-            }
+            using var reader = new BinaryReader(stream);
+            column.Deserialize(reader);
 
             return column;
         }

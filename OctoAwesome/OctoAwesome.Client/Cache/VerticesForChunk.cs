@@ -19,9 +19,9 @@ namespace OctoAwesome.Client.Cache
             Vertices = vertices;
         }
 
-        public int Version { get; set; }
+        private int Version { get; set; }
         public Index3 ChunkPosition { get; set; }
-        public VertexPositionNormalTextureLight[] Vertices { get; set; }
+        private VertexPositionNormalTextureLight[] Vertices { get; set; }
 
         public void Dispose()
         {

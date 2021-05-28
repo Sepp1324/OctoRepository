@@ -7,10 +7,7 @@ namespace OctoAwesome.EntityComponents
 {
     public class InventoryComponent : EntityComponent
     {
-        public InventoryComponent()
-        {
-            Inventory = new List<InventorySlot>();
-        }
+        public InventoryComponent() => Inventory = new List<InventorySlot>();
 
         /// <summary>
         ///     Das Inventar der Entity

@@ -21,27 +21,25 @@ namespace OctoAwesome.Client
         [STAThread]
         private static void Main()
         {
-            using (var typeContainer = TypeContainer.Get<ITypeContainer>())
+            using var typeContainer = TypeContainer.Get<ITypeContainer>();
+            Startup.Register(typeContainer);
+            Startup.ConfigureLogger(ClientType.DesktopClient);
+            Network.Startup.Register(typeContainer);
+
+            var logger = (typeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As("OctoAwesome.Client");
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                Startup.Register(typeContainer);
-                Startup.ConfigureLogger(ClientType.DesktopClient);
-                Network.Startup.Register(typeContainer);
+                File.WriteAllText(
+                    Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"),
+                    e.ExceptionObject.ToString());
 
-                var logger = (typeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As("OctoAwesome.Client");
-                AppDomain.CurrentDomain.UnhandledException += (s, e) =>
-                {
-                    File.WriteAllText(
-                        Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"),
-                        e.ExceptionObject.ToString());
+                logger.Fatal($"Unhandled Exception: {e.ExceptionObject}", e.ExceptionObject as Exception);
+                logger.Flush();
+            };
 
-                    logger.Fatal($"Unhandled Exception: {e.ExceptionObject}", e.ExceptionObject as Exception);
-                    logger.Flush();
-                };
-
-                using (game = new OctoGame())
-                {
-                    game.Run(60, 60);
-                }
+            using (game = new OctoGame())
+            {
+                game.Run(60, 60);
             }
         }
 

@@ -14,42 +14,36 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class InventoryScreen : Screen
     {
-        private readonly AssetComponent assets;
+        private readonly Image[] _images;
 
-        private readonly Brush backgroundBrush;
+        private readonly InventoryControl _inventory;
 
-        private readonly Brush hoverBrush;
+        private readonly Label _massLabel;
 
-        private readonly Image[] images;
+        private readonly Label _nameLabel;
 
-        private readonly InventoryControl inventory;
+        private readonly PlayerComponent _player;
+        private readonly Dictionary<string, Texture2D> _toolTextures = new();
 
-        private readonly Label massLabel;
-
-        private readonly Label nameLabel;
-
-        private readonly PlayerComponent player;
-        private readonly Dictionary<string, Texture2D> toolTextures = new Dictionary<string, Texture2D>();
-
-        private readonly Label volumeLabel;
+        private readonly Label _volumeLabel;
 
         public InventoryScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             foreach (var item in manager.Game.DefinitionManager.Definitions)
             {
                 var texture = manager.Game.Assets.LoadTexture(item.GetType(), item.Icon);
-                toolTextures.Add(item.GetType().FullName, texture);
+                _toolTextures.Add(item.GetType().FullName, texture);
             }
 
-            player = manager.Player;
+            _player = manager.Player;
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.3f);
 
-            backgroundBrush = new BorderBrush(Color.Black);
-            hoverBrush = new BorderBrush(Color.Brown);
+            Brush backgroundBrush = new BorderBrush(Color.Black);
+            Brush hoverBrush = new BorderBrush(Color.Brown);
 
             var panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
 
@@ -66,7 +60,7 @@ namespace OctoAwesome.Client.Screens
 
             Controls.Add(grid);
 
-            inventory = new InventoryControl(manager)
+            _inventory = new InventoryControl(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -74,7 +68,7 @@ namespace OctoAwesome.Client.Screens
                 Padding = Border.All(20)
             };
 
-            grid.AddControl(inventory, 0, 0);
+            grid.AddControl(_inventory, 0, 0);
 
             var infoPanel = new StackPanel(manager)
             {
@@ -85,12 +79,12 @@ namespace OctoAwesome.Client.Screens
                 Margin = Border.All(10, 0, 0, 0)
             };
 
-            nameLabel = new Label(manager);
-            infoPanel.Controls.Add(nameLabel);
-            massLabel = new Label(manager);
-            infoPanel.Controls.Add(massLabel);
-            volumeLabel = new Label(manager);
-            infoPanel.Controls.Add(volumeLabel);
+            _nameLabel = new Label(manager);
+            infoPanel.Controls.Add(_nameLabel);
+            _massLabel = new Label(manager);
+            infoPanel.Controls.Add(_massLabel);
+            _volumeLabel = new Label(manager);
+            infoPanel.Controls.Add(_volumeLabel);
             grid.AddControl(infoPanel, 1, 0);
 
             var toolbar = new Grid(manager)
@@ -103,15 +97,15 @@ namespace OctoAwesome.Client.Screens
             };
 
             toolbar.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
                 toolbar.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 50});
             toolbar.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
             toolbar.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
 
-            images = new Image[ToolBarComponent.TOOLCOUNT];
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            _images = new Image[ToolBarComponent.Toolcount];
+            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
             {
-                var image = images[i] = new Image(manager)
+                var image = _images[i] = new Image(manager)
                 {
                     Width = 42,
                     Height = 42,
@@ -123,11 +117,11 @@ namespace OctoAwesome.Client.Screens
 
                 image.StartDrag += e =>
                 {
-                    var slot = player.Toolbar.Tools[(int) image.Tag];
+                    var slot = _player.Toolbar.Tools[(int) image.Tag];
                     if (slot != null)
                     {
                         e.Handled = true;
-                        e.Icon = toolTextures[slot.Definition.GetType().FullName];
+                        e.Icon = _toolTextures[slot.Definition.GetType().FullName];
                         e.Content = slot;
                         e.Sender = toolbar;
                     }
@@ -143,19 +137,19 @@ namespace OctoAwesome.Client.Screens
                     {
                         // Swap
                         var targetIndex = (int) image.Tag;
-                        var targetSlot = player.Toolbar.Tools[targetIndex];
+                        var targetSlot = _player.Toolbar.Tools[targetIndex];
 
                         var sourceSlot = e.Content as InventorySlot;
-                        var sourceIndex = player.Toolbar.GetSlotIndex(sourceSlot);
+                        var sourceIndex = _player.Toolbar.GetSlotIndex(sourceSlot);
 
-                        player.Toolbar.SetTool(sourceSlot, targetIndex);
-                        player.Toolbar.SetTool(targetSlot, sourceIndex);
+                        _player.Toolbar.SetTool(sourceSlot, targetIndex);
+                        _player.Toolbar.SetTool(targetSlot, sourceIndex);
                     }
                     else
                     {
                         // Inventory Drop
                         var slot = e.Content as InventorySlot;
-                        player.Toolbar.SetTool(slot, (int) image.Tag);
+                        _player.Toolbar.SetTool(slot, (int) image.Tag);
                     }
                 };
 
@@ -173,7 +167,7 @@ namespace OctoAwesome.Client.Screens
             if (args.Sender is Grid)
             {
                 var slot = args.Content as InventorySlot;
-                player.Toolbar.RemoveSlot(slot);
+                _player.Toolbar.RemoveSlot(slot);
             }
         }
 
@@ -183,7 +177,7 @@ namespace OctoAwesome.Client.Screens
             if ((int) args.Key >= (int) Keys.D0 && (int) args.Key <= (int) Keys.D9)
             {
                 var offset = (int) args.Key - (int) Keys.D0;
-                player.Toolbar.SetTool(inventory.HoveredSlot, offset);
+                _player.Toolbar.SetTool(_inventory.HoveredSlot, offset);
                 args.Handled = true;
             }
 
@@ -200,23 +194,23 @@ namespace OctoAwesome.Client.Screens
         {
             base.OnUpdate(gameTime);
 
-            var name = inventory.HoveredSlot?.Definition?.Name;
+            var name = _inventory.HoveredSlot?.Definition?.Name;
 
-            if (inventory.HoveredSlot?.Item is IItem item)
+            if (_inventory.HoveredSlot?.Item is IItem item)
                 name += " (" + item.Material.Name + ")";
 
-            nameLabel.Text = name ?? "";
-            massLabel.Text = volumeLabel.Text = inventory.HoveredSlot?.Amount.ToString() ?? "";
+            _nameLabel.Text = name ?? "";
+            _massLabel.Text = _volumeLabel.Text = _inventory.HoveredSlot?.Amount.ToString() ?? "";
 
             // Aktualisierung des aktiven Buttons
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
-                if (player.Toolbar.Tools != null &&
-                    player.Toolbar.Tools.Length > i &&
-                    player.Toolbar.Tools[i] != null &&
-                    player.Toolbar.Tools[i].Item != null)
-                    images[i].Texture = toolTextures[player.Toolbar.Tools[i].Definition.GetType().FullName];
+            for (var i = 0; i < ToolBarComponent.Toolcount; i++)
+                if (_player.Toolbar.Tools != null &&
+                    _player.Toolbar.Tools.Length > i &&
+                    _player.Toolbar.Tools[i] != null &&
+                    _player.Toolbar.Tools[i].Item != null)
+                    _images[i].Texture = _toolTextures[_player.Toolbar.Tools[i].Definition.GetType().FullName];
                 else
-                    images[i].Texture = null;
+                    _images[i].Texture = null;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs args)
