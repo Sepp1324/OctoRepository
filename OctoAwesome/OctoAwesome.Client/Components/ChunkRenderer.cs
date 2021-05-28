@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using engenious;
 using engenious.Graphics;
-using engenious.UserDefined;
+using engenious.Helper;
 using OctoAwesome.Client.Controls;
 using OctoAwesome.Definitions;
 using OctoAwesome.Runtime;
@@ -25,7 +25,7 @@ namespace OctoAwesome.Client.Components
         private readonly object ibLock = new object();
         private readonly LockSemaphore semaphore = new LockSemaphore(1, 1);
 
-        private readonly simple simple;
+        private readonly Effect simple;
         private readonly Dictionary<IBlockDefinition, int> textureOffsets;
         private readonly List<VertexPositionNormalTextureLight> vertices;
         private Index3 _cameraPos;
@@ -62,7 +62,7 @@ namespace OctoAwesome.Client.Components
             };
         }
 
-        public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, simple simpleShader, GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
+        public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, Effect simpleShader, GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
         {
             _sceneControl = sceneControl;
             this.definitionManager = definitionManager;
@@ -72,30 +72,26 @@ namespace OctoAwesome.Client.Components
             GenerateIndexBuffer();
 
             vertices = new List<VertexPositionNormalTextureLight>();
-            var textureColumns = textures.Width / SceneControl.TEXTURESIZE;
-            textureSizeGap = 1f / SceneControl.TEXTURESIZE;
-            // BlockTypes sammlen
+            var textureColumns = textures.Width / SceneControl.TextureSize;
+            textureSizeGap = 1f / SceneControl.TextureSize;
             var localBlockDefinitions = definitionManager.BlockDefinitions;
             textureOffsets = new Dictionary<IBlockDefinition, int>(localBlockDefinitions.Length);
-            // Dictionary<Type, BlockDefinition> definitionMapping = new Dictionary<Type, BlockDefinition>();
             var definitionIndex = 0;
+            
             foreach (var definition in localBlockDefinitions)
             {
                 var textureCount = definition.Textures.Count();
                 textureOffsets.Add(definition, definitionIndex);
-                // definitionMapping.Add(definition.GetBlockType(), definition);
                 definitionIndex += textureCount;
             }
 
             chunks = new IChunk[27];
             blockDefinitions = new IBlockDefinition[27];
 
-            simple.Ambient.Pass1.Apply();
-            simple.Ambient.BlockTextures = textures;
-            simple.Ambient.AmbientIntensity = 0.4f;
-            simple.Ambient.AmbientColor = Color.White.ToVector4();
-
-            //dbProvier = new DatabaseProvider(Path.Combine("cache", "chunkverticescache"), null);
+            //simple.Ambient.Pass1.Apply();
+            //simple.Ambient.BlockTextures = textures;
+            //simple.Ambient.AmbientIntensity = 0.4f;
+            //simple.Ambient.AmbientColor = Color.White.ToVector4();
         }
 
         public VertexBuffer VertexBuffer { get; private set; }
@@ -190,9 +186,14 @@ namespace OctoAwesome.Client.Components
                 shift.Y * Chunk.CHUNKSIZE_Y,
                 shift.Z * Chunk.CHUNKSIZE_Z);
 
-            simple.Ambient.OverrideLightLevel = OverrideLightLevel;
-            simple.Ambient.WorldViewProj = worldViewProj;
+            //simple.Ambient.OverrideLightLevel = OverrideLightLevel;
+            //simple.Ambient.WorldViewProj = worldViewProj;
 
+            simple.Parameters["OverrideLightLevel"].SetValue(OverrideLightLevel);
+            simple.Parameters["WorldViewProj"].SetValue(worldViewProj);
+            simple.Parameters["BlockTextures"].SetValue(textures);
+            simple.Parameters["AmbientIntensity"].SetValue(0.4f);
+            simple.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
 
             lock (this)
             {
@@ -306,7 +307,7 @@ namespace OctoAwesome.Client.Components
             indexCount = vertices.Count * 6 / 4;
 
             if (VertexCount > 0)
-                Dispatch(() =>
+                ThreadingHelper.OnUiThread((t) =>
                 {
                     if (VertexBuffer == null || IndexBuffer == null) VertexBuffer = new VertexBuffer(graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, VertexCount);
 
@@ -315,7 +316,7 @@ namespace OctoAwesome.Client.Components
 
 
                     VertexBuffer.SetData(vertices.ToArray());
-                });
+                }, null);
 
             lock (this)
             {

@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+﻿using System;
 using engenious;
 using engenious.UI;
 using engenious.UI.Controls;
@@ -195,7 +195,8 @@ namespace OctoAwesome.Client.Controls
 
         private void ChangePath()
         {
-            var folderBrowser = new FolderBrowserDialog();
+            throw new NotSupportedException();
+            /*var folderBrowser = new FolderBrowserDialog();
             folderBrowser.SelectedPath = settings.Get<string>("ChunkRoot");
 
             if (folderBrowser.ShowDialog() == DialogResult.OK)
@@ -205,7 +206,7 @@ namespace OctoAwesome.Client.Controls
                 mapPath.Text = path;
 
                 optionsScreen.NeedRestart();
-            }
+            }*/
         }
 
         private void SetPersistence(bool state)

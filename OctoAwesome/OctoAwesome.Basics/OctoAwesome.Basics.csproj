@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     
     <DocumentationFile>..\bin\Debug\OctoAwesome.Basics.XML</DocumentationFile>
   </PropertyGroup>
@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="engenious" Version="0.4.0.14-alpha" />
+    <PackageReference Include="engenious" Version="0.5.0.10-alpha" />
+    <PackageReference Include="engenious.UI" Version="0.5.0.4-alpha" />
   </ItemGroup>
 
   <ItemGroup>

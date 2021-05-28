@@ -21,12 +21,6 @@ namespace OctoAwesome.Client
 
         public OctoGame()
         {
-            //graphics = new GraphicsDeviceManager(this);
-            //graphics.PreferredBackBufferWidth = 1080;
-            //graphics.PreferredBackBufferHeight = 720;
-
-            //Content.RootDirectory = "Content";
-
             Title = "OctoAwesome";
             IsMouseVisible = true;
 
@@ -36,14 +30,12 @@ namespace OctoAwesome.Client
             typeContainer = TypeContainer.Get<ITypeContainer>();
             Register(typeContainer);
 
-            //Window.AllowUserResizing = true;
             Settings = TypeContainer.Get<Settings>();
 
             ExtensionLoader = TypeContainer.Get<ExtensionLoader>();
             ExtensionLoader.LoadExtensions();
 
             Service = TypeContainer.Get<GameService>();
-            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             var width = Settings.Get("Width", 1080);
             var height = Settings.Get("Height", 720);
@@ -58,18 +50,14 @@ namespace OctoAwesome.Client
                 if (viewrange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneControl.VIEWRANGE = viewrange;
+                SceneControl.VIEW_RANGE = viewrange;
             }
 
             Assets = new AssetComponent(this);
             Components.Add(Assets);
 
-
-            Screen = new ScreenComponent(this);
-            Screen.UpdateOrder = 1;
-            Screen.DrawOrder = 1;
+            Screen = new ScreenComponent(this) {UpdateOrder = 1, DrawOrder = 1};
             Components.Add(Screen);
-
 
             KeyMapper = new KeyMapper(Screen, Settings);
 
@@ -78,45 +66,26 @@ namespace OctoAwesome.Client
 
             DefinitionManager = TypeContainer.Get<DefinitionManager>();
 
-            //var persistenceManager = new DiskPersistenceManager(ExtensionLoader, DefinitionManager, Settings);
-            //ResourceManager = new ResourceManager(ExtensionLoader, DefinitionManager, Settings, persistenceManager);
             ResourceManager = TypeContainer.Get<ContainerResourceManager>();
 
-
-            Player = new PlayerComponent(this, ResourceManager);
-            Player.UpdateOrder = 2;
+            Player = new PlayerComponent(this, ResourceManager) {UpdateOrder = 2};
             Components.Add(Player);
 
-            Simulation = new Components.SimulationComponent(this,
-                ExtensionLoader, ResourceManager);
+            Simulation = new Components.SimulationComponent(this, ExtensionLoader, ResourceManager);
 
-            Entity = new Components.EntityComponent(this, Simulation);
-            Entity.UpdateOrder = 2;
+            Entity = new Components.EntityComponent(this, Simulation) {UpdateOrder = 2};
             Components.Add(Entity);
 
-            Camera = new CameraComponent(this);
-            Camera.UpdateOrder = 3;
+            Camera = new CameraComponent(this) {UpdateOrder = 3};
             Components.Add(Camera);
 
             Simulation.UpdateOrder = 4;
             Components.Add(Simulation);
 
             #endregion GameComponents
-
-            /*Resize += (s, e) =>
-            {
-                //if (Window.ClientBounds.Height == graphics.PreferredBackBufferHeight &&
-                //   Window.ClientBounds.Width == graphics.PreferredBackBufferWidth)
-                //    return;
-
-                //graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-                //graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-                //graphics.ApplyChanges();
-            };*/
+            
             SetKeyBindings();
         }
-
-        //GraphicsDeviceManager graphics;
 
         public CameraComponent Camera { get; }
 

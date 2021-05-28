@@ -7,15 +7,9 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class PlayerComponent : GameComponent
     {
-        private readonly IResourceManager resourceManager;
-        private new OctoGame Game;
+        private readonly IResourceManager _resourceManager;
 
-        public PlayerComponent(OctoGame game, IResourceManager resourceManager)
-            : base(game)
-        {
-            this.resourceManager = resourceManager;
-            Game = game;
-        }
+        public PlayerComponent(IGame game, IResourceManager resourceManager) : base(game) => _resourceManager = resourceManager;
 
         public Entity CurrentEntity { get; private set; }
 
@@ -29,8 +23,6 @@ namespace OctoAwesome.Client.Components
 
         public PositionComponent Position { get; private set; }
 
-        // public ActorHost ActorHost { get; private set; }
-
         public Index3? SelectedBox { get; set; }
 
         public Vector2? SelectedPoint { get; set; }
@@ -43,9 +35,7 @@ namespace OctoAwesome.Client.Components
 
         public void SetEntity(Entity entity)
         {
-            CurrentEntity = entity;
-
-            if (CurrentEntity == null)
+            if (entity == null)
             {
                 CurrentEntityHead = null;
             }
@@ -53,20 +43,14 @@ namespace OctoAwesome.Client.Components
             {
                 // Map other Components
 
-                CurrentController = CurrentEntity.Components.GetComponent<ControllableComponent>();
-
-                CurrentEntityHead = CurrentEntity.Components.GetComponent<HeadComponent>();
-                if (CurrentEntityHead == null) CurrentEntityHead = new HeadComponent();
-
-                Inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
-                if (Inventory == null) Inventory = new InventoryComponent();
-
-                Toolbar = CurrentEntity.Components.GetComponent<ToolBarComponent>();
-                if (Toolbar == null) Toolbar = new ToolBarComponent();
-
-                Position = CurrentEntity.Components.GetComponent<PositionComponent>();
-                if (Position == null) Position = new PositionComponent {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0))};
+                CurrentController = entity.Components.GetComponent<ControllableComponent>();
+                CurrentEntityHead = entity.Components.GetComponent<HeadComponent>() ?? new HeadComponent {Offset = new Vector3(0, 0, 3.2f)};
+                Inventory = entity.Components.GetComponent<InventoryComponent>() ?? new InventoryComponent();
+                Toolbar = entity.Components.GetComponent<ToolBarComponent>() ?? new ToolBarComponent();
+                Position = entity.Components.GetComponent<PositionComponent>() ?? new PositionComponent {Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0))};
             }
+
+            CurrentEntity = entity;
         }
 
         public override void Update(GameTime gameTime)
@@ -128,16 +112,19 @@ namespace OctoAwesome.Client.Components
         internal void AllBlocksDebug()
         {
             var inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
+            
             if (inventory == null)
                 return;
 
-            var blockDefinitions = resourceManager.DefinitionManager.BlockDefinitions;
+            var blockDefinitions = _resourceManager.DefinitionManager.BlockDefinitions;
+            
             foreach (var blockDefinition in blockDefinitions)
                 inventory.AddUnit(blockDefinition.VolumePerUnit, blockDefinition);
 
-            var itemDefinitions = resourceManager.DefinitionManager.ItemDefinitions;
-            var wood = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Wood");
-            var stone = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Stone");
+            var itemDefinitions = _resourceManager.DefinitionManager.ItemDefinitions;
+            var wood = _resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Wood");
+            var stone = _resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Stone");
+            
             foreach (var itemDefinition in itemDefinitions)
             {
                 var woodItem = itemDefinition.Create(wood);
@@ -159,7 +146,7 @@ namespace OctoAwesome.Client.Components
 
         public bool JumpInput { get; set; }
 
-        public bool FlymodeInput { get; set; }
+        public bool FlyModeInput { get; set; }
 
         public bool[] SlotInput { get; } = new bool[10];
 
