@@ -576,7 +576,7 @@ namespace OctoAwesome.Client.Controls
             for (var index = start; index < _orderedChunkRenderer.Count; index += _fillIncrement)
             {
                 var renderer = _orderedChunkRenderer[index];
-                if (renderer.NeedsUpdate) renderer.RegenerateVertexBuffer();
+                if (renderer.NEEDS_UPDATE) renderer.RegenerateVertexBuffer();
             }
         }
 
