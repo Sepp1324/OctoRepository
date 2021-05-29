@@ -11,10 +11,7 @@ namespace OctoAwesome.Serialization
     {
         private readonly IPool<BlockChangedNotification> _notificationBlockPool;
 
-        public ChunkDiffDbContext(Database<ChunkDiffTag> database, IPool<BlockChangedNotification> blockPool) : base(database)
-        {
-            _notificationBlockPool = blockPool;
-        }
+        public ChunkDiffDbContext(Database<ChunkDiffTag> database, IPool<BlockChangedNotification> blockPool) : base(database) => _notificationBlockPool = blockPool;
 
         public override void AddOrUpdate(BlockChangedNotification value)
         {
@@ -32,20 +29,11 @@ namespace OctoAwesome.Serialization
             }
         }
 
-        public IReadOnlyList<ChunkDiffTag> GetAllKeys()
-        {
-            return Database.Keys;
-        }
+        public IReadOnlyList<ChunkDiffTag> GetAllKeys() => Database.Keys;
 
-        public override void Remove(BlockChangedNotification value)
-        {
-            InternalRemove(new ChunkDiffTag(value.ChunkPos, Chunk.GetFlatIndex(value.BlockInfo.Position)));
-        }
+        public override void Remove(BlockChangedNotification value) => InternalRemove(new ChunkDiffTag(value.ChunkPos, Chunk.GetFlatIndex(value.BlockInfo.Position)));
 
-        public void Remove(BlocksChangedNotification value)
-        {
-            value.BlockInfos.ForEach(b => InternalRemove(new ChunkDiffTag(value.ChunkPos, Chunk.GetFlatIndex(b.Position))));
-        }
+        public void Remove(BlocksChangedNotification value) => value.BlockInfos.ForEach(b => InternalRemove(new ChunkDiffTag(value.ChunkPos, Chunk.GetFlatIndex(b.Position))));
 
         public void Remove(params ChunkDiffTag[] tags)
         {
@@ -69,22 +57,18 @@ namespace OctoAwesome.Serialization
 
         private void InternalAddOrUpdate(ChunkDiffTag tag, BlockInfo blockInfo)
         {
-            using (var memory = new MemoryStream())
-            using (var writer = new BinaryWriter(memory))
-            {
-                BlockInfo.Serialize(writer, blockInfo);
-                Database.AddOrUpdate(tag, new Value(memory.ToArray()));
-            }
+            using var memory = new MemoryStream();
+            using var writer = new BinaryWriter(memory);
+            BlockInfo.Serialize(writer, blockInfo);
+            Database.AddOrUpdate(tag, new Value(memory.ToArray()));
         }
 
         private BlockInfo InternalGet(ChunkDiffTag tag)
         {
             var value = Database.GetValue(tag);
-            using (var memory = new MemoryStream(value.Content))
-            using (var reader = new BinaryReader(memory))
-            {
-                return BlockInfo.Deserialize(reader);
-            }
+            using var memory = new MemoryStream(value.Content);
+            using var reader = new BinaryReader(memory);
+            return BlockInfo.Deserialize(reader);
         }
 
         public override BlockChangedNotification Get(ChunkDiffTag key)

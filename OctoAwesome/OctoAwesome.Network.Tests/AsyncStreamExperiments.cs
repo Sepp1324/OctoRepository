@@ -33,27 +33,21 @@ namespace OctoAwesome.Network.Tests
             var r = new Random();
 
             r.NextBytes(writeData);
-            var readTask = new Task(() =>
+            var readTask = new Task(async () =>
             {
                 var o = 0;
                 while (test.Read(readData, o, 100) != 0)
                 {
-                    Thread.Sleep(200);
+                    await Task.Delay(200);
                     o += 100;
                 }
             });
             test.Write(writeData, 0, writeData.Length);
 
-            Thread.Sleep(100);
+            await Task.Delay(100);
             readTask.Start();
 
-            //Task writeTask = new Task(() => {
-            //    for (int i = 0; i < 5; i++)
-            //    {
-            //        Thread.Sleep(1000);
-            //    }
-
-            //});
+            await readTask;
             Assert.IsTrue(writeData.SequenceEqual(readData));
         }
     }

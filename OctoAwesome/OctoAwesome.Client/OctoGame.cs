@@ -17,8 +17,6 @@ namespace OctoAwesome.Client
     /// </summary>
     internal class OctoGame : Game
     {
-        private readonly ITypeContainer typeContainer;
-
         public OctoGame()
         {
             Title = "OctoAwesome";
@@ -27,7 +25,7 @@ namespace OctoAwesome.Client
             //TODO: REVIEW THIS ERROR
             //Icon = Properties.Resources.octoawesome;
 
-            typeContainer = TypeContainer.Get<ITypeContainer>();
+            ITypeContainer typeContainer = TypeContainer.Get<ITypeContainer>();
             Register(typeContainer);
 
             Settings = TypeContainer.Get<Settings>();
@@ -45,12 +43,12 @@ namespace OctoAwesome.Client
 
             if (Settings.KeyExists("Viewrange"))
             {
-                var viewrange = Settings.Get<int>("Viewrange");
+                var viewRange = Settings.Get<int>("Viewrange");
 
-                if (viewrange < 1)
+                if (viewRange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneControl.ViewRange = viewrange;
+                SceneControl.ViewRange = viewRange;
             }
 
             Assets = new AssetComponent(this);

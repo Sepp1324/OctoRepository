@@ -302,9 +302,9 @@ namespace OctoAwesome.Client.Controls
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
-            for (var z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
-            for (var y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
-            for (var x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
+            for (var z = -Player.SelectionRange; z < Player.SelectionRange; z++)
+            for (var y = -Player.SelectionRange; y < Player.SelectionRange; y++)
+            for (var x = -Player.SelectionRange; x < Player.SelectionRange; x++)
             {
                 var range = new Index3(x, y, z);
                 var pos = range + centerBlock;

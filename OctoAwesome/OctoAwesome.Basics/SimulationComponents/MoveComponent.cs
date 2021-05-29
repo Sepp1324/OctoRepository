@@ -127,17 +127,17 @@ namespace OctoAwesome.Basics.SimulationComponents
                     float vy;
                     float vz;
 
-                    if (plane.BlockPlane.normal.X != 0 && (movecomp.Velocity.X > 0 && diff.X >= 0 && subvelocity.X >= 0 || movecomp.Velocity.X < 0 && diff.X <= 0 && subvelocity.X <= 0))
+                    if (plane.BlockPlane.NORMAL.X != 0 && (movecomp.Velocity.X > 0 && diff.X >= 0 && subvelocity.X >= 0 || movecomp.Velocity.X < 0 && diff.X <= 0 && subvelocity.X <= 0))
                         vx = subvelocity.X;
                     else
                         vx = movecomp.Velocity.X;
 
-                    if (plane.BlockPlane.normal.Y != 0 && (movecomp.Velocity.Y > 0 && diff.Y >= 0 && subvelocity.Y >= 0 || movecomp.Velocity.Y < 0 && diff.Y <= 0 && subvelocity.Y <= 0))
+                    if (plane.BlockPlane.NORMAL.Y != 0 && (movecomp.Velocity.Y > 0 && diff.Y >= 0 && subvelocity.Y >= 0 || movecomp.Velocity.Y < 0 && diff.Y <= 0 && subvelocity.Y <= 0))
                         vy = subvelocity.Y;
                     else
                         vy = movecomp.Velocity.Y;
 
-                    if (plane.BlockPlane.normal.Z != 0 && (movecomp.Velocity.Z > 0 && diff.Z >= 0 && subvelocity.Z >= 0 || movecomp.Velocity.Z < 0 && diff.Z <= 0 && subvelocity.Z <= 0))
+                    if (plane.BlockPlane.NORMAL.Z != 0 && (movecomp.Velocity.Z > 0 && diff.Z >= 0 && subvelocity.Z >= 0 || movecomp.Velocity.Z < 0 && diff.Z <= 0 && subvelocity.Z <= 0))
                         vz = subvelocity.Z;
                     else
                         vz = movecomp.Velocity.Z;

@@ -14,7 +14,7 @@ namespace OctoAwesome
         /// <summary>
         ///     Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
-        public Entity()
+        protected Entity()
         {
             Components = new ComponentList<EntityComponent>(
                 ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
@@ -105,10 +105,7 @@ namespace OctoAwesome
         {
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {

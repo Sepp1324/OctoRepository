@@ -99,19 +99,19 @@ namespace OctoAwesome.Runtime
                     float vy;
                     float vz;
 
-                    if (blockPlane.normal.X != 0 && (velocity.X > 0 && diff.X >= 0 && subvelocity.X >= 0 ||
+                    if (blockPlane.NORMAL.X != 0 && (velocity.X > 0 && diff.X >= 0 && subvelocity.X >= 0 ||
                                                      velocity.X < 0 && diff.X <= 0 && subvelocity.X <= 0))
                         vx = subvelocity.X;
                     else
                         vx = velocity.X;
 
-                    if (blockPlane.normal.Y != 0 && (velocity.Y > 0 && diff.Y >= 0 && subvelocity.Y >= 0 ||
+                    if (blockPlane.NORMAL.Y != 0 && (velocity.Y > 0 && diff.Y >= 0 && subvelocity.Y >= 0 ||
                                                      velocity.Y < 0 && diff.Y <= 0 && subvelocity.Y <= 0))
                         vy = subvelocity.Y;
                     else
                         vy = velocity.Y;
 
-                    if (blockPlane.normal.Z != 0 && (velocity.Z > 0 && diff.Z >= 0 && subvelocity.Z >= 0 ||
+                    if (blockPlane.NORMAL.Z != 0 && (velocity.Z > 0 && diff.Z >= 0 && subvelocity.Z >= 0 ||
                                                      velocity.Z < 0 && diff.Z <= 0 && subvelocity.Z <= 0))
                         vz = subvelocity.Z;
                     else

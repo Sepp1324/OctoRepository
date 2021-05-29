@@ -11,22 +11,22 @@ namespace OctoAwesome
         /// <summary>
         ///     Normalenvector der Fläche
         /// </summary>
-        public Vector3 normal;
+        public Vector3 NORMAL;
 
         /// <summary>
         ///     Mittelpunkt der Fläche
         /// </summary>
-        public Vector3 pos;
+        public Vector3 POS;
 
         /// <summary>
         ///     Erste Ecke der Fläche
         /// </summary>
-        public Vector3 edgepos1;
+        public Vector3 EDGE_POS_1;
 
         /// <summary>
         ///     Zweite Ecke der Fläche
         /// </summary>
-        public Vector3 edgepos2;
+        public Vector3 EDGE_POS_2;
 
         /// <summary>
         ///     Konstruktur
@@ -36,11 +36,11 @@ namespace OctoAwesome
         /// <param name="normal">Normalenvektor</param>
         public CollisionPlane(Vector3 pos1, Vector3 pos2, Vector3 normal)
         {
-            this.normal = normal;
-            edgepos1 = pos1;
-            edgepos2 = pos2;
+            NORMAL = normal;
+            EDGE_POS_1 = pos1;
+            EDGE_POS_2 = pos2;
 
-            pos = (pos2 - pos1) / 2f + pos1;
+            POS = (pos2 - pos1) / 2f + pos1;
         }
 
         /// <summary>
@@ -149,50 +149,50 @@ namespace OctoAwesome
         public static bool Intersect(CollisionPlane p1, CollisionPlane p2)
         {
             //TODO: Erweitern auf schräge Fläche
-            var vec = p1.normal * p2.normal;
+            var vec = p1.NORMAL * p2.NORMAL;
 
             var result = false;
 
             if (vec.X < 0)
             {
-                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y ||
-                         p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y ||
-                         p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y ||
-                         p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
+                var ry = p2.EDGE_POS_1.Y > p1.EDGE_POS_1.Y && p2.EDGE_POS_1.Y < p1.EDGE_POS_2.Y ||
+                         p2.EDGE_POS_2.Y < p1.EDGE_POS_2.Y && p2.EDGE_POS_2.Y > p1.EDGE_POS_1.Y ||
+                         p1.EDGE_POS_1.Y > p2.EDGE_POS_1.Y && p1.EDGE_POS_1.Y < p2.EDGE_POS_2.Y ||
+                         p1.EDGE_POS_2.Y < p2.EDGE_POS_2.Y && p1.EDGE_POS_2.Y > p2.EDGE_POS_1.Y;
 
-                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z ||
-                         p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z ||
-                         p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z ||
-                         p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
+                var rz = p2.EDGE_POS_1.Z > p1.EDGE_POS_1.Z && p2.EDGE_POS_1.Z < p1.EDGE_POS_2.Z ||
+                         p2.EDGE_POS_2.Z < p1.EDGE_POS_2.Z && p2.EDGE_POS_2.Z > p1.EDGE_POS_1.Z ||
+                         p1.EDGE_POS_1.Z > p2.EDGE_POS_1.Z && p1.EDGE_POS_1.Z < p2.EDGE_POS_2.Z ||
+                         p1.EDGE_POS_2.Z < p2.EDGE_POS_2.Z && p1.EDGE_POS_2.Z > p2.EDGE_POS_1.Z;
 
                 result = rz && ry;
             }
             else if (vec.Y < 0)
             {
-                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X ||
-                         p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X ||
-                         p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X ||
-                         p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
+                var rx = p2.EDGE_POS_1.X > p1.EDGE_POS_1.X && p2.EDGE_POS_1.X < p1.EDGE_POS_2.X ||
+                         p2.EDGE_POS_2.X < p1.EDGE_POS_2.X && p2.EDGE_POS_2.X > p1.EDGE_POS_1.X ||
+                         p1.EDGE_POS_1.X > p2.EDGE_POS_1.X && p1.EDGE_POS_1.X < p2.EDGE_POS_2.X ||
+                         p1.EDGE_POS_2.X < p2.EDGE_POS_2.X && p1.EDGE_POS_2.X > p2.EDGE_POS_1.X;
 
-                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z ||
-                         p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z ||
-                         p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z ||
-                         p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
+                var rz = p2.EDGE_POS_1.Z > p1.EDGE_POS_1.Z && p2.EDGE_POS_1.Z < p1.EDGE_POS_2.Z ||
+                         p2.EDGE_POS_2.Z < p1.EDGE_POS_2.Z && p2.EDGE_POS_2.Z > p1.EDGE_POS_1.Z ||
+                         p1.EDGE_POS_1.Z > p2.EDGE_POS_1.Z && p1.EDGE_POS_1.Z < p2.EDGE_POS_2.Z ||
+                         p1.EDGE_POS_2.Z < p2.EDGE_POS_2.Z && p1.EDGE_POS_2.Z > p2.EDGE_POS_1.Z;
 
 
                 result = rx && rz;
             }
             else if (vec.Z < 0)
             {
-                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X ||
-                         p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X ||
-                         p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X ||
-                         p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
+                var rx = p2.EDGE_POS_1.X > p1.EDGE_POS_1.X && p2.EDGE_POS_1.X < p1.EDGE_POS_2.X ||
+                         p2.EDGE_POS_2.X < p1.EDGE_POS_2.X && p2.EDGE_POS_2.X > p1.EDGE_POS_1.X ||
+                         p1.EDGE_POS_1.X > p2.EDGE_POS_1.X && p1.EDGE_POS_1.X < p2.EDGE_POS_2.X ||
+                         p1.EDGE_POS_2.X < p2.EDGE_POS_2.X && p1.EDGE_POS_2.X > p2.EDGE_POS_1.X;
 
-                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y ||
-                         p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y ||
-                         p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y ||
-                         p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
+                var ry = p2.EDGE_POS_1.Y > p1.EDGE_POS_1.Y && p2.EDGE_POS_1.Y < p1.EDGE_POS_2.Y ||
+                         p2.EDGE_POS_2.Y < p1.EDGE_POS_2.Y && p2.EDGE_POS_2.Y > p1.EDGE_POS_1.Y ||
+                         p1.EDGE_POS_1.Y > p2.EDGE_POS_1.Y && p1.EDGE_POS_1.Y < p2.EDGE_POS_2.Y ||
+                         p1.EDGE_POS_2.Y < p2.EDGE_POS_2.Y && p1.EDGE_POS_2.Y > p2.EDGE_POS_1.Y;
 
                 result = rx && ry;
             }
@@ -208,7 +208,7 @@ namespace OctoAwesome
         /// <returns>Abstand der Flächen zueinander</returns>
         public static Vector3 GetDistance(CollisionPlane p1, CollisionPlane p2)
         {
-            var alpha = p1.normal * p2.normal;
+            var alpha = p1.NORMAL * p2.NORMAL;
 
 
             var dvector = new Vector3();
@@ -216,7 +216,7 @@ namespace OctoAwesome
             dvector.Y = alpha.Y != 0 ? 1 : 0;
             dvector.Z = alpha.Z != 0 ? 1 : 0;
 
-            var distance = (p1.pos - p2.pos) * dvector;
+            var distance = (p1.POS - p2.POS) * dvector;
 
             return distance;
         }

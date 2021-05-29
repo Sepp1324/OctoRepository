@@ -19,7 +19,7 @@ namespace OctoAwesome
         public static float? Intersect(BoundingBox[] collisionBoxes, Index3 boxPosition, Ray ray, out Axis? collisionAxis)
         {
             var min = new Vector3(1, 1, 1);
-            var raylength = Player.SELECTIONRANGE * 2;
+            var rayLength = Player.SelectionRange * 2;
             float? minDistance = null;
             var collided = false;
 
@@ -40,7 +40,7 @@ namespace OctoAwesome
                     ray.Direction.Y > 0 ? box.Min.Y : box.Max.Y,
                     ray.Direction.Z > 0 ? box.Min.Z : box.Max.Z);
 
-                var n = (boxCorner - ray.Position) / (ray.Direction * raylength);
+                var n = (boxCorner - ray.Position) / (ray.Direction * rayLength);
                 min = new Vector3(Math.Min(min.X, n.X), Math.Min(min.Y, n.Y), Math.Min(min.Z, n.Z));
                 collided = true;
             }
@@ -78,7 +78,7 @@ namespace OctoAwesome
             collisionAxis = axis;
 
             if (axis.HasValue)
-                return max * raylength;
+                return max * rayLength;
 
             return null;
         }
@@ -98,8 +98,6 @@ namespace OctoAwesome
                 move.X > 0 ? player.Max.X : player.Min.X,
                 move.Y > 0 ? player.Max.Y : player.Min.Y,
                 move.Z > 0 ? player.Max.Z : player.Min.Z);
-
-            var targetPosition = playerCorner + move;
 
             var playerMin = player.Min + move;
             var playerMax = player.Max + move;

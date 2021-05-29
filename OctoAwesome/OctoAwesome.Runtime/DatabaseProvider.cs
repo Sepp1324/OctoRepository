@@ -49,7 +49,7 @@ namespace OctoAwesome.Runtime
                 {
                     tmpDatabase.Dispose();
                     _logger.Error($"Can not Open Database for global, {typeof(T).Name}", ex);
-                    throw ex;
+                    throw;
                 }
 
                 _globalDatabaseRegister.Add(key, tmpDatabase);
@@ -75,7 +75,7 @@ namespace OctoAwesome.Runtime
                 {
                     tmpDatabase.Dispose();
                     _logger.Error($"Can not Open Database for [{universeGuid}], {typeof(T).Name}", ex);
-                    throw ex;
+                    throw;
                 }
 
                 _universeDatabaseRegister.Add(key, tmpDatabase);
@@ -144,10 +144,7 @@ namespace OctoAwesome.Runtime
             {
                 var firstType = type.GenericTypeArguments.FirstOrDefault();
 
-                if (firstType != default)
-                    name = $"{typeName}_{firstType.Name}";
-                else
-                    name = typeName;
+                name = firstType != default ? $"{typeName}_{firstType.Name}" : typeName;
             }
             else
             {

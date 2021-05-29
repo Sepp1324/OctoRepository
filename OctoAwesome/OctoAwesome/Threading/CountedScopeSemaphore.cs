@@ -75,40 +75,19 @@ namespace OctoAwesome.Threading
 
             private readonly CountedScopeSemaphore _internalSemaphore;
 
-            public CountScope(CountedScopeSemaphore countingSemaphore)
-            {
-                _internalSemaphore = countingSemaphore;
-            }
+            public CountScope(CountedScopeSemaphore countingSemaphore) => _internalSemaphore = countingSemaphore;
 
-            public void Dispose()
-            {
-                _internalSemaphore?.LeaveMainScope();
-            }
+            public void Dispose() => _internalSemaphore?.LeaveMainScope();
 
-            public override bool Equals(object obj)
-            {
-                return obj is CountScope scope && Equals(scope);
-            }
+            public override bool Equals(object obj) => obj is CountScope scope && Equals(scope);
 
-            public bool Equals(CountScope other)
-            {
-                return EqualityComparer<CountedScopeSemaphore>.Default.Equals(_internalSemaphore, other._internalSemaphore);
-            }
+            public bool Equals(CountScope other) => EqualityComparer<CountedScopeSemaphore>.Default.Equals(_internalSemaphore, other._internalSemaphore);
 
-            public override int GetHashCode()
-            {
-                return 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalSemaphore);
-            }
+            public override int GetHashCode() => 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalSemaphore);
 
-            public static bool operator ==(CountScope left, CountScope right)
-            {
-                return left.Equals(right);
-            }
+            public static bool operator ==(CountScope left, CountScope right) => left.Equals(right);
 
-            public static bool operator !=(CountScope left, CountScope right)
-            {
-                return !(left == right);
-            }
+            public static bool operator !=(CountScope left, CountScope right) => !(left == right);
         }
 
         public readonly struct SuperScope : IDisposable, IEquatable<SuperScope>
@@ -117,40 +96,19 @@ namespace OctoAwesome.Threading
 
             private readonly CountedScopeSemaphore _internalSemaphore;
 
-            public SuperScope(CountedScopeSemaphore semaphore)
-            {
-                _internalSemaphore = semaphore;
-            }
+            public SuperScope(CountedScopeSemaphore semaphore) => _internalSemaphore = semaphore;
 
-            public void Dispose()
-            {
-                _internalSemaphore?.LeaveSuperScope();
-            }
+            public void Dispose() => _internalSemaphore?.LeaveSuperScope();
 
-            public override bool Equals(object obj)
-            {
-                return obj is SuperScope scope && Equals(scope);
-            }
+            public override bool Equals(object obj) => obj is SuperScope scope && Equals(scope);
 
-            public bool Equals(SuperScope other)
-            {
-                return EqualityComparer<CountedScopeSemaphore>.Default.Equals(_internalSemaphore, other._internalSemaphore);
-            }
+            public bool Equals(SuperScope other) => EqualityComparer<CountedScopeSemaphore>.Default.Equals(_internalSemaphore, other._internalSemaphore);
 
-            public override int GetHashCode()
-            {
-                return 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalSemaphore);
-            }
+            public override int GetHashCode() => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalSemaphore);
 
-            public static bool operator ==(SuperScope left, SuperScope right)
-            {
-                return left.Equals(right);
-            }
+            public static bool operator ==(SuperScope left, SuperScope right) => left.Equals(right);
 
-            public static bool operator !=(SuperScope left, SuperScope right)
-            {
-                return !(left == right);
-            }
+            public static bool operator !=(SuperScope left, SuperScope right) => !(left == right);
         }
     }
 }

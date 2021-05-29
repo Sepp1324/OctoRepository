@@ -9,11 +9,11 @@ namespace OctoAwesome
     /// </summary>
     public class Planet : IPlanet
     {
-        private IDisposable chunkSubscription;
+        private IDisposable _chunkSubscription;
 
-        private bool disposed;
+        private bool _disposed;
 
-        private IUpdateHub updateHub;
+        private IUpdateHub _updateHub;
 
         /// <summary>
         ///     Initialisierung des Planeten.
@@ -36,10 +36,7 @@ namespace OctoAwesome
         /// <summary>
         ///     Erzeugt eine neue Instanz eines Planeten.
         /// </summary>
-        public Planet()
-        {
-            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
-        }
+        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
 
         /// <summary>
         ///     ID des Planeten.
@@ -80,12 +77,12 @@ namespace OctoAwesome
 
         public IUpdateHub UpdateHub
         {
-            get => updateHub;
+            get => _updateHub;
             set
             {
-                chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
+                _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
                 GlobalChunkCache.InsertUpdateHub(value);
-                updateHub = value;
+                _updateHub = value;
             }
         }
 
@@ -115,22 +112,21 @@ namespace OctoAwesome
             Gravity = reader.ReadSingle();
             Size = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Universe = new Guid(reader.ReadBytes(16));
-            //var name = reader.ReadString();
         }
 
         public void Dispose()
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
-            disposed = true;
+            _disposed = true;
 
-            chunkSubscription.Dispose();
+            _chunkSubscription.Dispose();
 
             if (GlobalChunkCache is IDisposable disposable)
                 disposable.Dispose();
 
-            chunkSubscription = null;
+            _chunkSubscription = null;
             GlobalChunkCache = null;
         }
     }

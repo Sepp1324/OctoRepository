@@ -6,7 +6,7 @@ namespace OctoAwesome.Serialization
         where TTag : ITag, new()
         where TObject : ISerializable, new()
     {
-        public SerializableDatabaseContext(Database<TTag> database) : base(database)
+        protected SerializableDatabaseContext(Database<TTag> database) : base(database)
         {
         }
 

@@ -90,10 +90,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Koordinate des Blocks innerhalb des Chunkgs</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        public ushort GetBlock(Index3 index)
-        {
-            return GetBlock(index.X, index.Y, index.Z);
-        }
+        public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
         ///     Liefet den Block an der angegebenen Koordinate zurück.
@@ -143,10 +140,7 @@ namespace OctoAwesome
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
         /// <param name="meta">(Optional) Metainformationen für den Block</param>
-        public void SetBlock(Index3 index, ushort block, int meta = 0)
-        {
-            SetBlock(index.X, index.Y, index.Z, block, meta);
-        }
+        public void SetBlock(Index3 index, ushort block, int meta = 0) => SetBlock(index.X, index.Y, index.Z, block, meta);
 
         /// <summary>
         ///     Überschreibt den Block an der angegebenen Koordinate.
@@ -205,13 +199,12 @@ namespace OctoAwesome
         {
             // Definitionen sammeln
             var definitions = new List<IBlockDefinition>();
-            for (var c = 0; c < Chunks.Length; c++)
+            foreach (var chunk in Chunks)
             {
-                var chunk = Chunks[c];
-                for (var i = 0; i < chunk.Blocks.Length; i++)
-                    if (chunk.Blocks[i] != 0)
+                foreach (var t in chunk.Blocks)
+                    if (t != 0)
                     {
-                        var definition = DefinitionManager.GetBlockDefinitionByIndex(chunk.Blocks[i]);
+                        var definition = DefinitionManager.GetBlockDefinitionByIndex(t);
                         if (!definitions.Contains(definition))
                             definitions.Add(definition);
                     }
@@ -241,9 +234,8 @@ namespace OctoAwesome
                 writer.Write(definition.GetType().FullName);
 
             // Schreibe Phase 3 (Chunk Infos)
-            for (var c = 0; c < Chunks.Length; c++)
+            foreach (var chunk in Chunks)
             {
-                var chunk = Chunks[c];
                 writer.Write(chunk.Version);
                 for (var i = 0; i < chunk.Blocks.Length; i++)
                     if (chunk.Blocks[i] == 0)
@@ -271,11 +263,9 @@ namespace OctoAwesome
             }
 
             var resManager = TypeContainer.Get<IResourceManager>();
-            using (var lockObj = _entitieSemaphore.Wait())
-            {
-                foreach (var entity in _entities)
-                    resManager.SaveEntity(entity);
-            }
+            using var lockObj = _entitieSemaphore.Wait();
+            foreach (var entity in _entities)
+                resManager.SaveEntity(entity);
         }
 
         /// <summary>
