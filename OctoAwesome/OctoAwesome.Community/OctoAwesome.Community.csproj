@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Nullable>warnings</Nullable>
 
   </PropertyGroup>
 
@@ -35,10 +36,6 @@
     <Content Include="Resources\TomTexturePack\packinfo.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="OpenTK" Version="5.0.0-pre.4" />
   </ItemGroup>
 
 </Project>

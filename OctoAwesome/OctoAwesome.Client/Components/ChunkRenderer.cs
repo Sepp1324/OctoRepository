@@ -35,7 +35,7 @@ namespace OctoAwesome.Client.Components
         /// <summary>
         ///     Referenz auf den aktuellen Chunk (falls vorhanden)
         /// </summary>
-        private IChunk centerChunk;
+        private IChunk _centerChunk;
 
         private int _indexCount;
 
@@ -121,10 +121,10 @@ namespace OctoAwesome.Client.Components
                 VertexBuffer = null;
             }
 
-            if (centerChunk != null)
+            if (_centerChunk != null)
             {
-                centerChunk.Changed -= OnChunkChanged;
-                centerChunk = null;
+                _centerChunk.Changed -= OnChunkChanged;
+                _centerChunk = null;
             }
         }
 
@@ -152,12 +152,12 @@ namespace OctoAwesome.Client.Components
             _manager = manager;
             ChunkPosition = newPosition;
 
-            if (centerChunk != null)
+            if (_centerChunk != null)
             {
                 //CacheCurrentChunkVerticesData();
 
-                centerChunk.Changed -= OnChunkChanged;
-                centerChunk = null;
+                _centerChunk.Changed -= OnChunkChanged;
+                _centerChunk = null;
             }
 
             Loaded = false;
@@ -239,15 +239,15 @@ namespace OctoAwesome.Client.Components
                 return false;
             using (_semaphore.Wait())
             {
-                var chunk = centerChunk;
+                var chunk = _centerChunk;
                 // Chunk nachladen
                 if (chunk == null)
                 {
                     chunk = _manager.GetChunk(ChunkPosition.Value);
                     if (chunk == null) return false;
 
-                    centerChunk = chunk;
-                    centerChunk.Changed += OnChunkChanged;
+                    _centerChunk = chunk;
+                    _centerChunk.Changed += OnChunkChanged;
                 }
 
                 _vertices.Clear();
@@ -318,7 +318,7 @@ namespace OctoAwesome.Client.Components
                 if (chunk != null && chunk.Index != ChunkPosition) return Loaded;
 
                 Loaded = true;
-                NEEDS_UPDATE |= chunk != centerChunk;
+                NEEDS_UPDATE |= chunk != _centerChunk;
                 return !NEEDS_UPDATE;
             }
         }
