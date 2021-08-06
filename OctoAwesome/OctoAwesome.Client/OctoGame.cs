@@ -51,27 +51,19 @@ namespace OctoAwesome.Client
 
         public OctoGame() : base()
         {
-            //graphics = new GraphicsDeviceManager(this);
-            //graphics.PreferredBackBufferWidth = 1080;
-            //graphics.PreferredBackBufferHeight = 720;
-
-            //Content.RootDirectory = "Content";
-            
             Title = "OctoAwesome";
             IsMouseVisible = true;
-            Icon = Properties.Resources.octoawesome;
+            // Icon = Properties.Resources.octoawesome;
 
             typeContainer = TypeContainer.Get<ITypeContainer>();
             Register(typeContainer);
 
-            //Window.AllowUserResizing = true;
             Settings = TypeContainer.Get<Settings>();
 
             ExtensionLoader = TypeContainer.Get<ExtensionLoader>();
             ExtensionLoader.LoadExtensions();
 
             Service = TypeContainer.Get<GameService>();
-            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
             int width = Settings.Get("Width", 1080);
             int height = Settings.Get("Height", 720);

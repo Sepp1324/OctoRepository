@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace OctoAwesome.Runtime
 {
@@ -65,34 +66,37 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void LoadExtensions()
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
             var tempAssembly = Assembly.GetEntryAssembly();
 
             if (tempAssembly == null)
                 tempAssembly = Assembly.GetAssembly(GetType());
 
-            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
+            var dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
             assemblies.AddRange(LoadAssemblies(dir));
 
-            DirectoryInfo plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
+            var plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
+            
             if (plugins.Exists)
                 assemblies.AddRange(LoadAssemblies(plugins));
 
-            var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : new string[0];
+            var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : Array.Empty<string>();
 
             var result = new List<Type>();
+            
             foreach (var assembly in assemblies)
             {
-                var types = assembly
-                    .GetTypes();
+                var types = assembly.GetTypes();
 
                 foreach (var type in types)
                 {
+
+
                     if (typeof(IExtension).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
                     {
                         try
                         {
-                            IExtension extension = (IExtension)Activator.CreateInstance(type);
+                            var extension = (IExtension)Activator.CreateInstance(type);
                             extension.Register(typeContainer);
                             extension.Register(this, typeContainer);
 
@@ -112,12 +116,13 @@ namespace OctoAwesome.Runtime
 
         private IEnumerable<Assembly> LoadAssemblies(DirectoryInfo directory)
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
+            
             foreach (var file in directory.GetFiles("*.dll"))
             {
                 try
                 {
-                    var assembly = Assembly.LoadFile(file.FullName);
+                    var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(file.FullName);
                     assemblies.Add(assembly);
                 }
                 catch (Exception)
