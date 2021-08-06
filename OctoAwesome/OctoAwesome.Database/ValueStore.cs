@@ -1,29 +1,31 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
     internal class ValueStore : IDisposable
     {
-        public bool FixedValueLength { get;  }
+        private readonly Reader reader;
 
         private readonly Writer writer;
-        private readonly Reader reader;
 
         public ValueStore(Writer writer, Reader reader, bool fixedValueLength)
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            this.reader = reader ?? throw new ArgumentNullException(nameof(reader)); 
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
             FixedValueLength = fixedValueLength;
         }
+
         public ValueStore(Writer writer, Reader reader) : this(writer, reader, false)
         {
-
         }
-        
+
+        public bool FixedValueLength { get; }
+
+        public void Dispose()
+        {
+            writer.Dispose(); //TODO: Move to owner
+        }
+
         public Value GetValue<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
             var byteArray = reader.Read(key.Index + Key<TTag>.KEY_SIZE, key.ValueLength);
@@ -40,12 +42,12 @@ namespace OctoAwesome.Database
         }
 
         /// <summary>
-        /// Update a value on the exact <paramref name="key"/> index <see cref="Key{TTag}.Index"/> 
+        ///     Update a value on the exact <paramref name="key" /> index <see cref="Key{TTag}.Index" />
         /// </summary>
         /// <typeparam name="TTag"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <exception cref="NotSupportedException">If <see cref="FixedValueLength"/> is false</exception>
+        /// <exception cref="NotSupportedException">If <see cref="FixedValueLength" /> is false</exception>
         internal void Update<TTag>(Key<TTag> key, Value value) where TTag : ITag, new()
         {
             if (!FixedValueLength)
@@ -57,7 +59,8 @@ namespace OctoAwesome.Database
         internal void Remove<TTag>(Key<TTag> key) where TTag : ITag, new()
         {
             writer.Write(Key<TTag>.Empty.GetBytes(), 0, Key<TTag>.KEY_SIZE, key.Index);
-            writer.WriteAndFlush(BitConverter.GetBytes(key.ValueLength), 0, sizeof(int), key.Index + Key<TTag>.KEY_SIZE);
+            writer.WriteAndFlush(BitConverter.GetBytes(key.ValueLength), 0, sizeof(int),
+                key.Index + Key<TTag>.KEY_SIZE);
         }
 
         internal void Open()
@@ -69,11 +72,5 @@ namespace OctoAwesome.Database
         {
             writer.Close();
         }
-
-        public void Dispose()
-        {
-            writer.Dispose(); //TODO: Move to owner
-        }
-        
     }
 }

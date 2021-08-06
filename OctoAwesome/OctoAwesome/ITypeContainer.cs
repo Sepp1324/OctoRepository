@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Logging;
-using System;
+﻿using System;
 
 namespace OctoAwesome
 {

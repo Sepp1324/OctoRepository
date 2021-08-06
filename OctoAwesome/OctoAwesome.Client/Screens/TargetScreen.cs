@@ -1,15 +1,16 @@
-﻿using engenious;
-using engenious.Graphics;
+﻿using System;
+using engenious;
+using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using System;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class TargetScreen : Screen
     {
-        private AssetComponent assets;
+        private readonly AssetComponent assets;
 
         public TargetScreen(ScreenComponent manager, Action<int, int> tp, int x, int y) : base(manager)
         {
@@ -17,10 +18,10 @@ namespace OctoAwesome.Client.Screens
 
             IsOverlay = true;
             Background = new BorderBrush(Color.Black * 0.5f);
-            Title = Languages.OctoClient.SelectTarget;
+            Title = OctoClient.SelectTarget;
 
-            Texture2D panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
-            Panel panel = new Panel(manager)
+            var panelBackground = assets.LoadTexture(typeof(ScreenComponent), "panel");
+            var panel = new Panel(manager)
             {
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
                 Padding = Border.All(20),
@@ -29,10 +30,10 @@ namespace OctoAwesome.Client.Screens
             };
             Controls.Add(panel);
 
-            StackPanel spanel = new StackPanel(manager);
+            var spanel = new StackPanel(manager);
             panel.Controls.Add(spanel);
 
-            Label headLine = new Label(manager)
+            var headLine = new Label(manager)
             {
                 Text = Title,
                 Font = Skin.Current.HeadlineFont,
@@ -40,19 +41,19 @@ namespace OctoAwesome.Client.Screens
             };
             spanel.Controls.Add(headLine);
 
-            StackPanel vstack = new StackPanel(manager);
+            var vstack = new StackPanel(manager);
             vstack.Orientation = Orientation.Vertical;
             spanel.Controls.Add(vstack);
 
-            StackPanel xStack = new StackPanel(manager);
+            var xStack = new StackPanel(manager);
             xStack.Orientation = Orientation.Horizontal;
             vstack.Controls.Add(xStack);
 
-            Label xLabel = new Label(manager);
+            var xLabel = new Label(manager);
             xLabel.Text = "X:";
             xStack.Controls.Add(xLabel);
 
-            Textbox xText = new Textbox(manager)
+            var xText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
@@ -61,15 +62,15 @@ namespace OctoAwesome.Client.Screens
             };
             xStack.Controls.Add(xText);
 
-            StackPanel yStack = new StackPanel(manager);
+            var yStack = new StackPanel(manager);
             yStack.Orientation = Orientation.Horizontal;
             vstack.Controls.Add(yStack);
 
-            Label yLabel = new Label(manager);
+            var yLabel = new Label(manager);
             yLabel.Text = "Y:";
             yStack.Controls.Add(yLabel);
 
-            Textbox yText = new Textbox(manager)
+            var yText = new Textbox(manager)
             {
                 Background = new BorderBrush(Color.Gray),
                 Width = 150,
@@ -78,7 +79,7 @@ namespace OctoAwesome.Client.Screens
             };
             yStack.Controls.Add(yText);
 
-            Button closeButton = new TextButton(manager, Languages.OctoClient.Teleport);
+            Button closeButton = new TextButton(manager, OctoClient.Teleport);
             closeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             closeButton.LeftMouseClick += (s, e) =>
             {
@@ -91,7 +92,7 @@ namespace OctoAwesome.Client.Screens
 
             KeyDown += (s, e) =>
             {
-                if (e.Key == engenious.Input.Keys.Escape)
+                if (e.Key == Keys.Escape)
                     manager.NavigateBack();
                 e.Handled = true;
             };

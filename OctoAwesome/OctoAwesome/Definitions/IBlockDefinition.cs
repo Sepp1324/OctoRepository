@@ -1,34 +1,38 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using OctoAwesome.Information;
 using OctoAwesome.Services;
-using System;
 
 namespace OctoAwesome.Definitions
 {
     /// <summary>
-    /// Basisinterface für eine Blockdefinition
+    ///     Basisinterface für eine Blockdefinition
     /// </summary>
     public interface IBlockDefinition : IInventoryable, IDefinition
     {
         /// <summary>
-        /// Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
+        ///     Array, das alle Texturen für alle Seiten des Blocks enthält
+        /// </summary>
+        string[] Textures { get; }
+
+        /// <summary>
+        ///     Zeigt, ob der Block-Typ Metadaten besitzt
+        /// </summary>
+        bool HasMetaData { get; }
+
+        uint SolidWall { get; }
+        TimeSpan TimeToVolumeReset { get; }
+        IMaterialDefinition Material { get; }
+
+        /// <summary>
+        ///     Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
         /// </summary>
         /// <param name="block">Der Block-Typ des interagierenden Elements</param>
         /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
         BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition);
 
         /// <summary>
-        /// Array, das alle Texturen für alle Seiten des Blocks enthält
-        /// </summary>
-        string[] Textures { get; }
-
-        /// <summary>
-        /// Zeigt, ob der Block-Typ Metadaten besitzt
-        /// </summary>
-        bool HasMetaData { get; }
-
-        /// <summary>
-        /// Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die
+        ///     Liefert die Kollisionsbox für den Block. Da ein Array zurück gegeben wird, lässt sich die
         /// </summary>
         /// <param name="manager">[Bitte ergänzen]</param>
         /// <param name="x">X-Anteil der Koordinate des Blocks</param>
@@ -50,7 +54,7 @@ namespace OctoAwesome.Definitions
         int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z);
 
         /// <summary>
-        /// Rotation der Textur in 90° Schritten für die Oberseite (Positiv Z) des Blocks
+        ///     Rotation der Textur in 90° Schritten für die Oberseite (Positiv Z) des Blocks
         /// </summary>
         /// <param name="manager">[Bitte ergänzen]</param>
         /// <param name="x">X-Anteil der Koordinate des Blocks</param>
@@ -58,10 +62,6 @@ namespace OctoAwesome.Definitions
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Rotation der Textur in 90° Schritten</returns>
         int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z);
-
-        uint SolidWall { get; }
-        TimeSpan TimeToVolumeReset { get; }
-        IMaterialDefinition Material { get; }
 
         bool IsSolidWall(Wall wall);
     }

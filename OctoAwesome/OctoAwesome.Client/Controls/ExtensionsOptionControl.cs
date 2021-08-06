@@ -1,58 +1,59 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using System;
+using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Controls
 {
     internal sealed class ExtensionsOptionControl : Panel
     {
-        private Button enableButton;
-        private Button disableButton;
-        private Button applyButton;
-        private Listbox<IExtension> loadedExtensionsList;
-        private Listbox<IExtension> activeExtensionsList;
-        private Label infoLabel;
+        private readonly Listbox<IExtension> activeExtensionsList;
+        private readonly Button applyButton;
+        private readonly Button disableButton;
+        private readonly Button enableButton;
+        private readonly Label infoLabel;
+        private readonly Listbox<IExtension> loadedExtensionsList;
 
         public ExtensionsOptionControl(ScreenComponent manager) : base(manager)
         {
-            Grid grid = new Grid(manager)
+            var grid = new Grid(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                Margin = Border.All(15),
+                Margin = Border.All(15)
             };
             Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 100 });
-            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Fixed, Width = 100});
+            grid.Columns.Add(new ColumnDefinition {ResizeMode = ResizeMode.Parts, Width = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Parts, Height = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Auto, Height = 1});
+            grid.Rows.Add(new RowDefinition {ResizeMode = ResizeMode.Auto, Height = 1});
 
-            StackPanel buttons = new StackPanel(manager)
+            var buttons = new StackPanel(manager)
             {
-                VerticalAlignment = VerticalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
             };
             grid.AddControl(buttons, 1, 0);
 
             #region Manipulationsbuttons
 
-            enableButton = new TextButton(manager, Languages.OctoClient.Enable);
+            enableButton = new TextButton(manager, OctoClient.Enable);
             enableButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             enableButton.Visible = false;
             buttons.Controls.Add(enableButton);
 
-            disableButton = new TextButton(manager, Languages.OctoClient.Disable);
+            disableButton = new TextButton(manager, OctoClient.Disable);
             disableButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             disableButton.Visible = false;
             buttons.Controls.Add(disableButton);
 
             #endregion
 
-            applyButton = new TextButton(manager, Languages.OctoClient.Apply);
+            applyButton = new TextButton(manager, OctoClient.Apply);
             applyButton.HorizontalAlignment = HorizontalAlignment.Right;
             applyButton.VerticalAlignment = VerticalAlignment.Bottom;
             grid.AddControl(applyButton, 0, 2, 3);
@@ -62,7 +63,7 @@ namespace OctoAwesome.Client.Controls
                 HorizontalTextAlignment = HorizontalAlignment.Left,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Top,
-                WordWrap = true,
+                WordWrap = true
             };
             grid.AddControl(infoLabel, 0, 1, 3);
 
@@ -73,7 +74,7 @@ namespace OctoAwesome.Client.Controls
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 SelectedItemBrush = new BorderBrush(Color.SaddleBrown * 0.7f),
-                TemplateGenerator = ListTemplateGenerator,
+                TemplateGenerator = ListTemplateGenerator
             };
 
             grid.AddControl(loadedExtensionsList, 0, 0);
@@ -83,7 +84,7 @@ namespace OctoAwesome.Client.Controls
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 SelectedItemBrush = new BorderBrush(Color.SaddleBrown * 0.7f),
-                TemplateGenerator = ListTemplateGenerator,
+                TemplateGenerator = ListTemplateGenerator
             };
 
             grid.AddControl(activeExtensionsList, 2, 0);
@@ -95,7 +96,7 @@ namespace OctoAwesome.Client.Controls
 
             enableButton.LeftMouseClick += (s, e) =>
             {
-                IExtension ext = loadedExtensionsList.SelectedItem;
+                var ext = loadedExtensionsList.SelectedItem;
                 loadedExtensionsList.Items.Remove(ext);
                 activeExtensionsList.Items.Add(ext);
                 activeExtensionsList.SelectedItem = ext;
@@ -103,12 +104,12 @@ namespace OctoAwesome.Client.Controls
 
             disableButton.LeftMouseClick += (s, e) =>
             {
-                IExtension ext = activeExtensionsList.SelectedItem;
+                var ext = activeExtensionsList.SelectedItem;
                 activeExtensionsList.Items.Remove(ext);
                 loadedExtensionsList.Items.Add(ext);
                 loadedExtensionsList.SelectedItem = ext;
             };
-            
+
             applyButton.LeftMouseClick += (s, e) =>
             {
                 //TODO: Apply

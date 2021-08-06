@@ -1,20 +1,14 @@
-﻿using OctoAwesome.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Threading;
 using NUnit.Framework;
+using OctoAwesome.Runtime;
+using Timer = System.Timers.Timer;
 
 namespace OctoAwesome.Network.Tests
 {
     [TestOf(typeof(SimulationManager))]
     public class SimulationManagerTests
     {
-        private SimulationManager simulationManager;
+        private readonly SimulationManager simulationManager;
 
         public SimulationManagerTests()
         {
@@ -32,7 +26,7 @@ namespace OctoAwesome.Network.Tests
         public void RuntimeTest()
         {
             var reset = new ManualResetEvent(false);
-            var timer = new System.Timers.Timer
+            var timer = new Timer
             {
                 Interval = 30000
             };
@@ -46,7 +40,6 @@ namespace OctoAwesome.Network.Tests
             reset.WaitOne();
 
             simulationManager.Stop();
-            
         }
     }
 }

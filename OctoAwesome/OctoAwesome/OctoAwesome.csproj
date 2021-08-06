@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
 
-    <DocumentationFile>..\bin\Release\OctoAwesome.xml</DocumentationFile>
-  </PropertyGroup>
+		<DocumentationFile>..\bin\Release\OctoAwesome.xml</DocumentationFile>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\Debug\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>..\bin\Debug\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\Release\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>..\bin\Release\</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="engenious" Version="0.5.0.10-alpha" />
-    <PackageReference Include="NLog" Version="4.7.5" />
-    <PackageReference Include="System.Interactive" Version="5.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="engenious" Version="0.5.0.10-alpha" />
+		<PackageReference Include="NLog" Version="4.7.5" />
+		<PackageReference Include="System.Interactive" Version="5.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OctoAwesome.Database\OctoAwesome.Database.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\OctoAwesome.Database\OctoAwesome.Database.csproj" />
+	</ItemGroup>
 
 </Project>
