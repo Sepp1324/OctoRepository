@@ -1,27 +1,30 @@
-﻿using System;
+﻿using OctoAwesome.Database.Checks;
+using OctoAwesome.Database.Threading;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
-using OctoAwesome.Database.Checks;
-using OctoAwesome.Database.Threading;
 
 namespace OctoAwesome.Database
 {
     public abstract class Database : IDisposable
     {
+        public Type TagType { get; }
+
         protected Database(Type tagType)
         {
             TagType = tagType;
         }
 
-        public Type TagType { get; }
-        public abstract void Dispose();
-
         public abstract void Open();
         public abstract void Close();
-
+        public abstract void Dispose();
         /// <summary>
-        ///     Locks this Database for the specific operation
+        /// Locks this Database for the specific operation
         /// </summary>
         /// <param name="mode">Indicates witch operation is currently performed</param>
         /// <returns>A new database lock</returns>
@@ -30,17 +33,36 @@ namespace OctoAwesome.Database
 
     public sealed class Database<TTag> : Database where TTag : ITag, new()
     {
-        private readonly Action checkFunc;
-        private readonly DatabaseLockMonitor databaseLockMonitor;
-        private readonly SemaphoreSlim dbLockSemaphore;
+        public bool FixedValueLength => valueStore.FixedValueLength;
+        public IReadOnlyList<TTag> Keys
+        {
+            get
+            {
+                using (databaseLockMonitor.StartOperation(Operation.Read))
+                    return keyStore.Tags;
+            }
+        }
+
+        public bool IsOpen { get; private set; }
+
+        /// <summary>
+        /// This Threshold handels the auto defragmenation. 
+        /// If the Database have more Empty Values than this Threshold the <see cref="Defragmentation"/> is executed.
+        /// Use -1 to deactivate the deframentation for this Database.
+        /// Default Value is 1000.
+        /// </summary>
+        public int Threshold { get; set; }
+
+        private Action startDefragFunc;
+        private Action checkFunc;
+        private readonly KeyStore<TTag> keyStore;
+        private readonly ValueStore valueStore;
         private readonly Defragmentation<TTag> defragmentation;
         private readonly ValueFileCheck<TTag> fileCheck;
         private readonly FileInfo keyFile;
-        private readonly KeyStore<TTag> keyStore;
-
-        private readonly Action startDefragFunc;
         private readonly FileInfo valueFile;
-        private readonly ValueStore valueStore;
+        private readonly DatabaseLockMonitor databaseLockMonitor;
+        private readonly SemaphoreSlim dbLockSemaphore;
 
         public Database(FileInfo keyFile, FileInfo valueFile, bool fixedValueLength) : base(typeof(TTag))
         {
@@ -56,33 +78,10 @@ namespace OctoAwesome.Database
             startDefragFunc = defragmentation.StartDefragmentation;
             checkFunc = fileCheck.Check;
         }
-
         public Database(FileInfo keyFile, FileInfo valueFile) : this(keyFile, valueFile, false)
         {
+
         }
-
-        public bool FixedValueLength => valueStore.FixedValueLength;
-
-        public IReadOnlyList<TTag> Keys
-        {
-            get
-            {
-                using (databaseLockMonitor.StartOperation(Operation.Read))
-                {
-                    return keyStore.Tags;
-                }
-            }
-        }
-
-        public bool IsOpen { get; private set; }
-
-        /// <summary>
-        ///     This Threshold handels the auto defragmenation.
-        ///     If the Database have more Empty Values than this Threshold the <see cref="Defragmentation" /> is executed.
-        ///     Use -1 to deactivate the deframentation for this Database.
-        ///     Default Value is 1000.
-        /// </summary>
-        public int Threshold { get; set; }
 
         public override void Open()
         {
@@ -117,14 +116,10 @@ namespace OctoAwesome.Database
         }
 
         public void Validate()
-        {
-            ExecuteOperationOnKeyValueStore(checkFunc);
-        }
+            => ExecuteOperationOnKeyValueStore(checkFunc);
 
         public void Defragmentation()
-        {
-            ExecuteOperationOnKeyValueStore(startDefragFunc);
-        }
+            => ExecuteOperationOnKeyValueStore(startDefragFunc);
 
         public Value GetValue(TTag tag)
         {
@@ -145,9 +140,13 @@ namespace OctoAwesome.Database
                     var key = keyStore.GetKey(tag);
 
                     if (FixedValueLength)
+                    {
                         valueStore.Update(key, value);
+                    }
                     else
+                    {
                         valueStore.Remove(key);
+                    }
                 }
 
                 var newKey = valueStore.AddValue(tag, value);
@@ -162,9 +161,7 @@ namespace OctoAwesome.Database
         public bool ContainsKey(TTag tag)
         {
             using (databaseLockMonitor.StartOperation(Operation.Read))
-            {
                 return keyStore.Contains(tag);
-            }
         }
 
         public void Remove(TTag tag)
@@ -186,7 +183,10 @@ namespace OctoAwesome.Database
             dbLockSemaphore.Wait();
             try
             {
-                if (!databaseLockMonitor.CheckLock(mode)) databaseLockMonitor.Wait(mode);
+                if (!databaseLockMonitor.CheckLock(mode))
+                {
+                    databaseLockMonitor.Wait(mode);
+                }
 
                 var dbLock = new DatabaseLock(databaseLockMonitor, mode);
                 dbLock.Enter();

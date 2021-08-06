@@ -1,6 +1,10 @@
-﻿using System;
+﻿using OctoAwesome.Threading;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using OctoAwesome.Threading;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Screens
 {
@@ -8,10 +12,10 @@ namespace OctoAwesome.Client.Screens
     {
         private readonly FileInfo fileInfo;
         private readonly Random random;
-
-        private readonly LockSemaphore semaphoreExtended;
         private bool loaded;
         private string[] quotes;
+
+        private readonly LockSemaphore semaphoreExtended;
 
         public QuoteProvider(FileInfo fileInfo)
         {

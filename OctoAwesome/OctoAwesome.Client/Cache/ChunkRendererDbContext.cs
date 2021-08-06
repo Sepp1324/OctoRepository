@@ -1,6 +1,11 @@
-﻿using System.IO;
-using OctoAwesome.Database;
+﻿using OctoAwesome.Database;
 using OctoAwesome.Serialization;
+
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Cache
 {
@@ -13,15 +18,11 @@ namespace OctoAwesome.Client.Cache
         public override void AddOrUpdate(VerticesForChunk value)
         {
             using (Database.Lock(Operation.Write))
-            {
                 Database.AddOrUpdate(new Index3Tag(value.ChunkPosition), new Value(Serializer.Serialize(value)));
-            }
         }
 
         public VerticesForChunk Get(Index3 key)
-        {
-            return Get(new Index3Tag(key));
-        }
+            => Get(new Index3Tag(key));
 
         public override VerticesForChunk Get(Index3Tag key)
         {
@@ -41,9 +42,7 @@ namespace OctoAwesome.Client.Cache
         public override void Remove(VerticesForChunk value)
         {
             using (Database.Lock(Operation.Write))
-            {
                 Database.Remove(new Index3Tag(value.ChunkPosition));
-            }
         }
     }
 }

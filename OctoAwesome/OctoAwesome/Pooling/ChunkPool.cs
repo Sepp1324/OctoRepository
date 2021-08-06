@@ -1,54 +1,63 @@
-﻿using System;
+﻿using OctoAwesome.Threading;
+
+using System;
 using System.Collections.Generic;
-using OctoAwesome.Threading;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Pooling
 {
     public sealed class ChunkPool : IPool<Chunk>
     {
-        private readonly Stack<Chunk> _internalStack;
-        private readonly LockSemaphore _semaphoreExtended;
+        private readonly Stack<Chunk> internalStack;
+        private readonly LockSemaphore semaphoreExtended;
 
         public ChunkPool()
         {
-            _internalStack = new Stack<Chunk>();
-            _semaphoreExtended = new LockSemaphore(1, 1);
+            internalStack = new Stack<Chunk>();
+            semaphoreExtended = new LockSemaphore(1, 1);
         }
 
         [Obsolete("Can not be used. Use Get(Index3, IPlanet) instead.", true)]
         public Chunk Get()
         {
-            throw new NotSupportedException("Use Get(Index3, IPlanet) instead.");
+            throw new NotSupportedException($"Use Get(Index3, IPlanet) instead.");
         }
-
-
-        public void Push(Chunk obj)
-        {
-            using (_semaphoreExtended.Wait())
-            {
-                _internalStack.Push(obj);
-            }
-        }
-
-        public void Push(IPoolElement obj)
-        {
-            if (obj is Chunk chunk)
-                Push(chunk);
-            else
-                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
-        }
-
         public Chunk Get(Index3 position, IPlanet planet)
         {
             Chunk obj;
 
-            using (_semaphoreExtended.Wait())
+            using (semaphoreExtended.Wait())
             {
-                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new Chunk(position, planet);
+                if (internalStack.Count > 0)
+                    obj = internalStack.Pop();
+                else
+                    obj = new Chunk(position, planet);
             }
 
             obj.Init(position, planet);
             return obj;
         }
+   
+
+        public void Push(Chunk obj)
+        {
+            using (semaphoreExtended.Wait())
+                internalStack.Push(obj);
+        }
+
+        public void Push(IPoolElement obj)
+        {
+            if (obj is Chunk chunk)
+            {
+                Push(chunk);
+            }
+            else
+            {
+                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
+            }
+        }
+     
     }
 }

@@ -1,44 +1,34 @@
-﻿using System.Linq;
+﻿using engenious.UI;
+using System.Collections.Generic;
+using OctoAwesome.Runtime;
+using OctoAwesome.Client.Components;
+using System;
 using engenious;
 using engenious.Graphics;
+using System.Linq;
 using engenious.Helper;
-using engenious.UI;
 using engenious.UI.Controls;
-using OctoAwesome.Client.Components;
-using OctoAwesome.Client.Languages;
 
 namespace OctoAwesome.Client.Controls
 {
     internal class DebugControl : Panel
     {
-        private readonly Label activeTool;
+        private int buffersize = 10;
+        private float[] framebuffer;
+        private int bufferindex = 0;
 
-        private readonly AssetComponent assets;
-        private readonly Label box;
-        private readonly int buffersize = 10;
-        private readonly Label controlInfo;
-        private readonly Label devText;
-        private readonly Label flyInfo;
-        private readonly Label fps;
-        private readonly float[] framebuffer;
-        private readonly Label gravityInfo;
+        private int framecount = 0;
+        private double seconds = 0;
+        private double lastfps = 0f;
 
-        private readonly StackPanel leftView;
-        private readonly Label loadedChunks;
-        private readonly Label loadedInfo;
-        private readonly Label loadedTextures;
+        AssetComponent assets;
+
+        public PlayerComponent Player { get; set; }
+
         private readonly ScreenComponent manager;
-        private readonly Label position;
-        private readonly Label precipitationInfo;
-        private readonly StackPanel rightView;
-        private readonly Label rotation;
-        private readonly Label temperatureInfo;
-        private readonly Label toolCount;
-        private int bufferindex;
 
-        private int framecount;
-        private double lastfps;
-        private double seconds;
+        StackPanel leftView, rightView;
+        Label devText, position, rotation, fps, box, controlInfo, loadedChunks, loadedTextures, activeTool, toolCount, loadedInfo, flyInfo, temperatureInfo, precipitationInfo, gravityInfo;
 
         public DebugControl(ScreenComponent screenManager)
             : base(screenManager)
@@ -49,14 +39,14 @@ namespace OctoAwesome.Client.Controls
             assets = screenManager.Game.Assets;
 
             //Brush for Debug Background
-            var bg = new BorderBrush(Color.Black * 0.2f);
+            BorderBrush bg = new BorderBrush(Color.Black * 0.2f);
 
             //The left side of the Screen
             leftView = new StackPanel(ScreenManager)
             {
                 Background = bg,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top
+                VerticalAlignment = VerticalAlignment.Top,
             };
 
             //The right Side of the Screen
@@ -64,12 +54,12 @@ namespace OctoAwesome.Client.Controls
             {
                 Background = bg,
                 HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Top
+                VerticalAlignment = VerticalAlignment.Top,
             };
 
             //Creating all Labels
             devText = new Label(ScreenManager);
-            devText.Text = OctoClient.DevelopmentVersion;
+            devText.Text = Languages.OctoClient.DevelopmentVersion;
             leftView.Controls.Add(devText);
 
             loadedChunks = new Label(ScreenManager);
@@ -123,20 +113,24 @@ namespace OctoAwesome.Client.Controls
             Controls.Add(rightView);
 
             //Label Setup - Set Settings for all Labels in one place
-            foreach (var control in leftView.Controls)
+            foreach (Control control in leftView.Controls)
             {
                 control.HorizontalAlignment = HorizontalAlignment.Left;
-                if (control is Label) ((Label) control).TextColor = Color.White;
+                if (control is Label)
+                {
+                    ((Label)control).TextColor = Color.White;
+                }
             }
-
-            foreach (var control in rightView.Controls)
+            foreach (Control control in rightView.Controls)
             {
                 control.HorizontalAlignment = HorizontalAlignment.Right;
-                if (control is Label) ((Label) control).TextColor = Color.White;
+                if (control is Label)
+                {
+                    ((Label)control).TextColor = Color.White;
+
+                }
             }
         }
-
-        public PlayerComponent Player { get; set; }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
@@ -156,30 +150,30 @@ namespace OctoAwesome.Client.Controls
                 seconds = 0;
             }
 
-            framebuffer[bufferindex++] = (float) gameTime.ElapsedGameTime.TotalSeconds;
+            framebuffer[bufferindex++] = (float)gameTime.ElapsedGameTime.TotalSeconds;
             bufferindex %= buffersize;
 
             //Draw Control Info
-            controlInfo.Text = OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
+            controlInfo.Text = Languages.OctoClient.ActiveControls + ": " + ScreenManager.ActiveScreen.Controls.Count;
 
             //Draw Position
-            var pos = "pos: " + Player.Position.Position;
+            string pos = "pos: " + Player.Position.Position.ToString();
             position.Text = pos;
 
             //Draw Rotation
-            var grad = Player.CurrentEntityHead.Angle / MathHelper.TwoPi * 360;
-            var rot = "rot: " +
-                      (Player.CurrentEntityHead.Angle / MathHelper.TwoPi * 360 % 360).ToString("0.00") + " / " +
-                      (Player.CurrentEntityHead.Tilt / MathHelper.TwoPi * 360).ToString("0.00");
+            float grad = (Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360;
+            string rot = "rot: " +
+                (((Player.CurrentEntityHead.Angle / MathHelper.TwoPi) * 360) % 360).ToString("0.00") + " / " +
+                ((Player.CurrentEntityHead.Tilt / MathHelper.TwoPi) * 360).ToString("0.00");
             rotation.Text = rot;
 
             //Draw Fps
-            var fpsString = "fps: " + (1f / lastfps).ToString("0.00");
+            string fpsString = "fps: " + (1f / lastfps).ToString("0.00");
             fps.Text = fpsString;
 
             //Draw Loaded Chunks
             loadedChunks.Text = string.Format("{0}: {1}/{2}",
-                OctoClient.LoadedChunks,
+                Languages.OctoClient.LoadedChunks,
                 manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet).GlobalChunkCache.DirtyChunkColumn,
                 manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet).GlobalChunkCache.LoadedChunkColumns);
 
@@ -188,24 +182,24 @@ namespace OctoAwesome.Client.Controls
                 assets.LoadedTextures);
 
             //Get Number of Loaded Items/Blocks
-            loadedInfo.Text = "" + manager.Game.DefinitionManager.ItemDefinitions.Count() + " " + OctoClient.Items + " - " +
-                              manager.Game.DefinitionManager.BlockDefinitions.Count() + " " + OctoClient.Blocks;
+            loadedInfo.Text = "" + manager.Game.DefinitionManager.ItemDefinitions.Count() + " " + Languages.OctoClient.Items + " - " +
+                manager.Game.DefinitionManager.BlockDefinitions.Count() + " " + Languages.OctoClient.Blocks;
 
             //Additional Play Information
 
             //Active Tool
             if (Player.Toolbar.ActiveTool != null)
-                activeTool.Text = OctoClient.ActiveItemTool + ": " + Player.Toolbar.ActiveTool.Definition.Name + " | " + Player.Toolbar.GetSlotIndex(Player.Toolbar.ActiveTool);
+                activeTool.Text = Languages.OctoClient.ActiveItemTool + ": " + Player.Toolbar.ActiveTool.Definition.Name + " | " + Player.Toolbar.GetSlotIndex(Player.Toolbar.ActiveTool);
 
-            toolCount.Text = OctoClient.ToolCount + ": " + Player.Toolbar.Tools.Count(slot => slot != null);
+            toolCount.Text = Languages.OctoClient.ToolCount + ": " + Player.Toolbar.Tools.Count(slot => slot != null);
 
             ////Fly Info
             //if (Player.ActorHost.Player.FlyMode) flyInfo.Text = Languages.OctoClient.FlymodeEnabled;
             //else flyInfo.Text = "";
 
-            var planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
+            IPlanet planet = manager.Game.ResourceManager.GetPlanet(Player.Position.Position.Planet);
             // Temperature Info
-            temperatureInfo.Text = OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.Position.Position.GlobalBlockIndex);
+            temperatureInfo.Text = Languages.OctoClient.Temperature + ": " + planet.ClimateMap.GetTemperature(Player.Position.Position.GlobalBlockIndex);
 
             // Precipitation Info
             precipitationInfo.Text = "Precipitation: " + planet.ClimateMap.GetPrecipitation(Player.Position.Position.GlobalBlockIndex);
@@ -216,18 +210,17 @@ namespace OctoAwesome.Client.Controls
             //Draw Box Information
             if (Player.SelectedBox.HasValue)
             {
-                var selection = "box: " +
-                                Player.SelectedBox.Value + " on " +
-                                Player.SelectedSide + " (" +
-                                Player.SelectedPoint.Value.X.ToString("0.000000") + "/" +
-                                Player.SelectedPoint.Value.Y.ToString("0.000000") + ") -> " +
-                                Player.SelectedEdge + " -> " + Player.SelectedCorner;
+                string selection = "box: " +
+                    Player.SelectedBox.Value.ToString() + " on " +
+                    Player.SelectedSide.ToString() + " (" +
+                    Player.SelectedPoint.Value.X.ToString("0.000000") + "/" +
+                    Player.SelectedPoint.Value.Y.ToString("0.000000") + ") -> " +
+                    Player.SelectedEdge.ToString() + " -> " + Player.SelectedCorner.ToString();
                 box.Text = selection;
             }
             else
-            {
                 box.Text = "";
-            }
+
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Database
 {
@@ -20,7 +23,7 @@ namespace OctoAwesome.Database
             var newValueStoreFile = new FileInfo(Path.GetTempFileName());
             var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
 
-            var keys = DefragmentValues(newValueStoreFile, keyBuffer);
+            IEnumerable<Key<TTag>> keys = DefragmentValues(newValueStoreFile, keyBuffer);
 
             keyStoreFile.Delete();
             WriteKeyFile(keys);
@@ -33,7 +36,7 @@ namespace OctoAwesome.Database
         {
             var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
 
-            var keys = GetKeys(keyBuffer);
+            IEnumerable<Key<TTag>> keys = GetKeys(keyBuffer);
 
             keyStoreFile.Delete();
             WriteKeyFile(keys);
@@ -41,17 +44,17 @@ namespace OctoAwesome.Database
 
         private void WriteKeyFile(IEnumerable<Key<TTag>> keyList)
         {
-            using (var newKeyStoreFile = keyStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            using (FileStream newKeyStoreFile = keyStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
-                foreach (var key in keyList)
+                foreach (Key<TTag> key in keyList)
                     newKeyStoreFile.Write(key.GetBytes(), 0, Key<TTag>.KEY_SIZE);
             }
         }
 
         private IEnumerable<Key<TTag>> DefragmentValues(FileInfo newValueStoreFile, byte[] keyBuffer)
         {
-            using (var newValueStoreStream = newValueStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            using (var currentValueStoreStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+            using (FileStream newValueStoreStream = newValueStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            using (FileStream currentValueStoreStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 do
                 {
@@ -84,7 +87,7 @@ namespace OctoAwesome.Database
 
         private IEnumerable<Key<TTag>> GetKeys(byte[] keyBuffer)
         {
-            using (var fileStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+            using (FileStream fileStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 do
                 {
@@ -104,7 +107,6 @@ namespace OctoAwesome.Database
                     {
                         length = key.ValueLength;
                     }
-
                     if (length < 0)
                         throw new DataMisalignedException();
                     fileStream.Seek(length, SeekOrigin.Current);

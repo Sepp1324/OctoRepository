@@ -1,19 +1,24 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    internal class Bucket : Item, IFluidInventory
+    class Bucket : Item, IFluidInventory
     {
+        public int Quantity { get; private set; }
+        public IBlockDefinition FluidBlock { get; private set; }
+        public int MaxQuantity { get; }
+
         public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)
         {
             MaxQuantity = 125;
         }
-
-        public int Quantity { get; private set; }
-        public IBlockDefinition FluidBlock { get; private set; }
-        public int MaxQuantity { get; }
 
         public void AddFluid(int quantity, IBlockDefinition fluidBlock)
         {

@@ -1,44 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using OctoAwesome.Definitions;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OctoAwesome.Definitions;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
     public class InventoryComponent : EntityComponent
     {
+        /// <summary>
+        /// Das Inventar der Entity
+        /// </summary>
+        public List<InventorySlot> Inventory { get; set; }
+
         public InventoryComponent()
         {
             Inventory = new List<InventorySlot>();
         }
 
-        /// <summary>
-        ///     Das Inventar der Entity
-        /// </summary>
-        public List<InventorySlot> Inventory { get; set; }
-
         public override void Deserialize(BinaryReader reader)
         {
-            if (!TypeContainer.TryResolve(out IDefinitionManager definitionManager))
+            IDefinitionManager definitionManager;
+
+            if (!TypeContainer.TryResolve(out definitionManager))
                 return;
 
             base.Deserialize(reader);
 
             var count = reader.ReadInt32();
-
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var name = reader.ReadString();
+                string name = reader.ReadString();
                 var definition = definitionManager.Definitions.FirstOrDefault(d => d.GetType().FullName == name);
                 var amount = reader.ReadDecimal();
 
                 if (definition == null || !(definition is IInventoryable))
                     continue;
 
-                var slot = new InventorySlot
+                var slot = new InventorySlot()
                 {
                     Amount = amount,
-                    Item = (IInventoryable) definition
+                    Item = (IInventoryable)definition,
                 };
 
                 Inventory.Add(slot);
@@ -58,21 +62,21 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        ///     Fügt ein Element des angegebenen Definitionstyps hinzu.
+        /// Fügt ein Element des angegebenen Definitionstyps hinzu.
         /// </summary>
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
         {
             var slot = Inventory.FirstOrDefault(s => s.Item == item &&
-                                                     s.Amount < item.VolumePerUnit * item.StackLimit);
+                s.Amount < item.VolumePerUnit * item.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
             {
-                slot = new InventorySlot
+                slot = new InventorySlot()
                 {
                     Item = item,
-                    Amount = quantity
+                    Amount = quantity,
                 };
                 Inventory.Add(slot);
             }
@@ -80,16 +84,14 @@ namespace OctoAwesome.EntityComponents
             {
                 slot.Amount += quantity;
             }
+            
         }
 
         /// <summary>
-        ///     Entfernt eine Einheit vom angegebenen Slot.
+        /// Entfernt eine Einheit vom angegebenen Slot.
         /// </summary>
         /// <param name="slot">Der Slot, aus dem entfernt werden soll.</param>
-        /// <returns>
-        ///     Gibt an, ob das entfernen der Einheit aus dem Inventar funktioniert hat. False, z.B. wenn nicht genügend
-        ///     Volumen (weniger als VolumePerUnit) übrig ist-
-        /// </returns>
+        /// <returns>Gibt an, ob das entfernen der Einheit aus dem Inventar funktioniert hat. False, z.B. wenn nicht genügend Volumen (weniger als VolumePerUnit) übrig ist-</returns>
         public bool RemoveUnit(InventorySlot slot)
         {
             if (!(slot.Item is IInventoryable definition))
@@ -102,7 +104,6 @@ namespace OctoAwesome.EntityComponents
                     Inventory.Remove(slot);
                 return true;
             }
-
             return false;
         }
     }

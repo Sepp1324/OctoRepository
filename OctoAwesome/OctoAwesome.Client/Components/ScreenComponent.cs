@@ -1,23 +1,43 @@
-﻿using System;
-using engenious;
-using engenious.UI;
+﻿using engenious.UI;
 using OctoAwesome.Client.Screens;
+using System;
+using engenious;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class ScreenComponent : BaseScreenComponent, IAssetRelatedComponent
     {
+        public new OctoGame Game { get; private set; }
+
+        public PlayerComponent Player { get { return Game.Player; } }
+
+        public CameraComponent Camera => Game.Camera;
+
         public ScreenComponent(OctoGame game) : base(game)
         {
             Game = game;
             TitlePrefix = "OctoAwesome";
         }
 
-        public new OctoGame Game { get; }
+        protected override void LoadContent()
+        {
+            base.LoadContent();
 
-        public PlayerComponent Player => Game.Player;
+            ReloadAssets();
 
-        public CameraComponent Camera => Game.Camera;
+            Frame.Background = new BorderBrush(Color.CornflowerBlue);
+
+            NavigateFromTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 0f);
+            NavigateToTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 1f);
+
+            NavigateToScreen(new MainScreen(this));
+
+        }
+
+        public void Exit()
+        {
+            Game.Exit();
+        }
 
         public void UnloadAssets()
         {
@@ -36,25 +56,6 @@ namespace OctoAwesome.Client.Components
             Skin.Current.ButtonDisabledBrush = NineTileBrush.FromSingleTexture(Game.Assets.LoadTexture(typeof(ScreenComponent), "buttonLong_brown_disabled"), 15, 15);
             Skin.Current.ProgressBarBrush = NineTileBrush.FromSingleTexture(Game.Assets.LoadTexture(typeof(ScreenComponent), "progress_red"), 10, 8);
             Skin.Current.HorizontalScrollBackgroundBrush = NineTileBrush.FromSingleTexture(Game.Assets.LoadTexture(typeof(ScreenComponent), "progress_background"), 10, 8);
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-
-            ReloadAssets();
-
-            Frame.Background = new BorderBrush(Color.CornflowerBlue);
-
-            NavigateFromTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 0f);
-            NavigateToTransition = new AlphaTransition(Frame, Transition.Linear, TimeSpan.FromMilliseconds(200), 1f);
-
-            NavigateToScreen(new MainScreen(this));
-        }
-
-        public void Exit()
-        {
-            Game.Exit();
         }
     }
 }

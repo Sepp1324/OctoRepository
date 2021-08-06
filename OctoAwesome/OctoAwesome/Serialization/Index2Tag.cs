@@ -1,5 +1,6 @@
-﻿using System;
-using OctoAwesome.Database;
+﻿using OctoAwesome.Database;
+using System;
+using System.Security.Cryptography;
 
 namespace OctoAwesome.Serialization
 {
@@ -9,15 +10,11 @@ namespace OctoAwesome.Serialization
 
         public Index2 Index { get; private set; }
 
-        public Index2Tag(Index2 index)
-        {
-            Index = index;
-        }
+        public Index2Tag(Index2 index) => Index = index;
 
         public void FromBytes(byte[] array, int startIndex)
-        {
-            Index = new Index2(BitConverter.ToInt32(array, startIndex), BitConverter.ToInt32(array, startIndex + sizeof(int)));
-        }
+            => Index = new Index2(BitConverter.ToInt32(array, startIndex),
+                                  BitConverter.ToInt32(array, startIndex + sizeof(int)));
 
         public byte[] GetBytes()
         {
@@ -27,32 +24,24 @@ namespace OctoAwesome.Serialization
             return byteArray;
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is Index2Tag tag && Equals(tag);
-        }
+        public override bool Equals(object obj) 
+            => obj is Index2Tag tag && Equals(tag);
 
-        public bool Equals(Index2Tag other)
-        {
-            return Length == other.Length && Index.Equals(other.Index);
-        }
+        public bool Equals(Index2Tag other) 
+            => Length == other.Length && Index.Equals(other.Index);
 
         public override int GetHashCode()
         {
-            var hashCode = 802246856;
+            int hashCode = 802246856;
             hashCode = hashCode * -1521134295 + Length.GetHashCode();
             hashCode = hashCode * -1521134295 + Index.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(Index2Tag left, Index2Tag right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(Index2Tag left, Index2Tag right) 
+            => left.Equals(right);
 
-        public static bool operator !=(Index2Tag left, Index2Tag right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(Index2Tag left, Index2Tag right) 
+            => !(left == right);
     }
 }

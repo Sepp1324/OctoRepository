@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace OctoAwesome.Database.Threading
 {
@@ -24,15 +25,10 @@ namespace OctoAwesome.Database.Threading
         }
 
         public override bool Equals(object obj)
-        {
-            return obj is DatabaseOperation @lock && Equals(@lock);
-        }
-
+            => obj is DatabaseOperation @lock && Equals(@lock);
         public bool Equals(DatabaseOperation other)
-        {
-            return EqualityComparer<DatabaseLockMonitor>.Default.Equals(lockMonitor, other.lockMonitor)
-                   && currentOperation == other.currentOperation;
-        }
+            => EqualityComparer<DatabaseLockMonitor>.Default.Equals(lockMonitor, other.lockMonitor)
+            && currentOperation == other.currentOperation;
 
         public override int GetHashCode()
         {
@@ -43,13 +39,8 @@ namespace OctoAwesome.Database.Threading
         }
 
         public static bool operator ==(DatabaseOperation left, DatabaseOperation right)
-        {
-            return left.Equals(right);
-        }
-
+            => left.Equals(right);
         public static bool operator !=(DatabaseOperation left, DatabaseOperation right)
-        {
-            return !(left == right);
-        }
+            => !(left == right);
     }
 }

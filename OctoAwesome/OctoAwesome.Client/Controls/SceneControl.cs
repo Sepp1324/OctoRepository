@@ -1,113 +1,106 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Threading;
+using OctoAwesome.Client.Components;
+using System.Drawing.Imaging;
 using engenious;
 using engenious.Graphics;
 using engenious.Helper;
 using engenious.UI;
 using engenious.UserDefined;
-using OctoAwesome.Client.Components;
-using EventArgs = System.EventArgs;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Client.Controls
 {
     internal sealed class SceneControl : Control, IDisposable
     {
-        public const int TEXTURESIZE = 64;
         public static int VIEWRANGE = 4; // Anzahl Chunks als Potenz (Volle Sichtweite)
+        public const int TEXTURESIZE = 64;
         public static int Mask;
         public static int Span;
         public static int SpanOver2;
 
-        private readonly Thread[] _additionalRegenerationThreads;
+        private PlayerComponent player;
+        private CameraComponent camera;
+        private AssetComponent assets;
+        private Components.EntityComponent entities;
 
-        private readonly int _fillIncrement;
-        private readonly AutoResetEvent[] additionalFillResetEvents;
+        private ChunkRenderer[,] chunkRenderer;
+        private List<ChunkRenderer> orderedChunkRenderer;
 
-        private readonly Thread backgroundThread;
-        private readonly Thread backgroundThread2;
-        private readonly VertexBuffer billboardVertexbuffer;
-
-        private readonly VertexPositionTexture[] billboardVertices =
-        {
-            new VertexPositionTexture(new Vector3(-0.5f, 0.5f), new Vector2(0, 0)),
-            new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
-            new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1)),
-            new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
-            new VertexPositionTexture(new Vector3(0.5f, -0.5f), new Vector2(1, 1)),
-            new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1))
-        };
-
-        //private Texture2D blockTextures;
-        private readonly Texture2DArray blockTextures;
-
-        private readonly AutoResetEvent fillResetEvent = new AutoResetEvent(false);
-
-        private readonly ConcurrentQueue<ChunkRenderer> forcedRenders = new ConcurrentQueue<ChunkRenderer>();
-        private readonly AutoResetEvent forceResetEvent = new AutoResetEvent(false);
-        private readonly Matrix miniMapProjectionMatrix;
-        private readonly List<ChunkRenderer> orderedChunkRenderer;
-        private readonly BasicEffect selectionEffect;
-
-        private readonly IndexBuffer selectionIndexBuffer;
-
-        private readonly ushort[] selectionIndices =
-        {
-            0, 1, 0, 2, 1, 3, 2, 3,
-            4, 5, 4, 6, 5, 7, 6, 7,
-            0, 4, 1, 5, 2, 6, 3, 7
-        };
-
-        private readonly VertexBuffer selectionLines;
-
-        private readonly VertexPositionColor[] selectionVertices =
-        {
-            new VertexPositionColor(new Vector3(-0.001f, +1.001f, +1.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(+1.001f, +1.001f, +1.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(-0.001f, -0.001f, +1.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(+1.001f, -0.001f, +1.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(-0.001f, +1.001f, -0.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(+1.001f, +1.001f, -0.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(-0.001f, -0.001f, -0.001f), Color.Black * 0.5f),
-            new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Color.Black * 0.5f)
-        };
-
-        private readonly simple simpleShader;
-
-        private readonly float sphereRadius;
-        private readonly float sphereRadiusSquared;
+        private IPlanet planet;
 
         // private List<Index3> distances = new List<Index3>();
 
-        private readonly BasicEffect sunEffect;
-        private readonly Texture2D sunTexture;
-        private AssetComponent assets;
-        private CameraComponent camera;
+        private BasicEffect sunEffect;
+        private BasicEffect selectionEffect;
+        private Matrix miniMapProjectionMatrix;
 
-        private ChunkRenderer[,] chunkRenderer;
+        //private Texture2D blockTextures;
+        private Texture2DArray blockTextures;
+        private Texture2D sunTexture;
+
+        private IndexBuffer selectionIndexBuffer;
+        private VertexBuffer selectionLines;
+        private VertexBuffer billboardVertexbuffer;
         //private VertexPositionColor[] selectionLines;
         //private VertexPositionTexture[] billboardVertices;
 
         private Index2 currentChunk = new Index2(-1, -1);
-        private bool disposed;
-        private Components.EntityComponent entities;
+
+        private Thread backgroundThread;
+        private Thread backgroundThread2;
         private ILocalChunkCache localChunkCache;
+        private simple simpleShader;
 
-        private IPlanet planet;
+        private Thread[] _additionalRegenerationThreads;
 
-        private PlayerComponent player;
+        public RenderTarget2D MiniMapTexture { get; set; }
+        public RenderTarget2D ControlTexture { get; set; }
 
-        private float sunPosition;
+        private float sunPosition = 0f;
+
+        public event EventHandler OnCenterChanged;
+
+        private readonly VertexPositionColor[] selectionVertices =
+        {
+                new VertexPositionColor(new Vector3(-0.001f, +1.001f, +1.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(+1.001f, +1.001f, +1.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(-0.001f, -0.001f, +1.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(+1.001f, -0.001f, +1.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(-0.001f, +1.001f, -0.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(+1.001f, +1.001f, -0.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(-0.001f, -0.001f, -0.001f), Color.Black * 0.5f),
+                new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Color.Black * 0.5f),
+        };
+        private readonly VertexPositionTexture[] billboardVertices =
+        {
+                new VertexPositionTexture(new Vector3(-0.5f, 0.5f, 0), new Vector2(0, 0)),
+                new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
+                new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(0.5f, -0.5f, 0), new Vector2(1, 1)),
+                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
+        };
+        private readonly ushort[] selectionIndices =
+        {
+                0, 1, 0, 2, 1, 3, 2, 3,
+                4, 5, 4, 6, 5, 7, 6, 7,
+                0, 4, 1, 5, 2, 6, 3, 7
+        };
+        private readonly float sphereRadius;
+        private readonly float sphereRadiusSquared;
+
+        private ScreenComponent Manager { get; set; }
+
+        private int _fillIncrement;
 
         public SceneControl(ScreenComponent manager, string style = "") :
             base(manager, style)
         {
-            Mask = (int) Math.Pow(2, VIEWRANGE) - 1;
-            Span = (int) Math.Pow(2, VIEWRANGE);
+            Mask = (int)Math.Pow(2, VIEWRANGE) - 1;
+            Span = (int)Math.Pow(2, VIEWRANGE);
             SpanOver2 = Span >> 1;
 
             player = manager.Player;
@@ -116,9 +109,9 @@ namespace OctoAwesome.Client.Controls
             entities = manager.Game.Entity;
             Manager = manager;
 
-            var chunkDiag = (float) Math.Sqrt(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_X + Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Y + Chunk.CHUNKSIZE_Z * Chunk.CHUNKSIZE_Z);
-            var tmpSphereRadius = (float) (Math.Sqrt(Span * Chunk.CHUNKSIZE_X * Span * Chunk.CHUNKSIZE_X * 3) / 3 + camera.NearPlaneDistance + chunkDiag / 2);
-            sphereRadius = tmpSphereRadius - chunkDiag / 2;
+            var chunkDiag = (float)Math.Sqrt((Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_X) + (Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Y) + (Chunk.CHUNKSIZE_Z * Chunk.CHUNKSIZE_Z));
+            var tmpSphereRadius = (float)(((Math.Sqrt((Span * Chunk.CHUNKSIZE_X) * (Span * Chunk.CHUNKSIZE_X) * 3)) / 3) + camera.NearPlaneDistance + (chunkDiag / 2));
+            sphereRadius = tmpSphereRadius - (chunkDiag / 2);
             sphereRadiusSquared = tmpSphereRadius * tmpSphereRadius;
 
             simpleShader = manager.Game.Content.Load<simple>("simple");
@@ -126,45 +119,51 @@ namespace OctoAwesome.Client.Controls
 
             //List<Bitmap> bitmaps = new List<Bitmap>();
             var definitions = Manager.Game.DefinitionManager.BlockDefinitions;
-            var textureCount = 0;
-            foreach (var definition in definitions) textureCount += definition.Textures.Length;
-
-            var bitmapSize = 128;
-            blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
-            var layer = 0;
+            int textureCount = 0;
             foreach (var definition in definitions)
-            foreach (var bitmap in definition.Textures)
             {
-                var texture = manager.Game.Assets.LoadBitmap(definition.GetType(), bitmap);
+                textureCount += definition.Textures.Length;
+            }
+            int bitmapSize = 128;
+            blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
+            int layer = 0;
+            foreach (var definition in definitions)
+            {
+                foreach (var bitmap in definition.Textures)
+                {
+                    System.Drawing.Bitmap texture = manager.Game.Assets.LoadBitmap(definition.GetType(), bitmap);
 
-                var scaled = texture; //new Bitmap(bitmap, new System.Drawing.Size(bitmapSize, bitmapSize));
-                var data = new int[scaled.Width * scaled.Height];
-                var bitmapData = scaled.LockBits(new System.Drawing.Rectangle(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
-                blockTextures.SetData(data, layer);
-                scaled.UnlockBits(bitmapData);
-                layer++;
+                    var scaled = texture;//new Bitmap(bitmap, new System.Drawing.Size(bitmapSize, bitmapSize));
+                    int[] data = new int[scaled.Width * scaled.Height];
+                    var bitmapData = scaled.LockBits(new System.Drawing.Rectangle(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
+                    blockTextures.SetData(data, layer);
+                    scaled.UnlockBits(bitmapData);
+                    layer++;
+                }
             }
 
             planet = Manager.Game.ResourceManager.GetPlanet(player.Position.Position.Planet);
 
             // TODO: evtl. Cache-Size (Dimensions) VIEWRANGE + 1
 
-            var range = ((int) Math.Pow(2, VIEWRANGE) - 2) / 2;
+            int range = ((int)Math.Pow(2, VIEWRANGE) - 2) / 2;
             localChunkCache = new LocalChunkCache(planet.GlobalChunkCache, VIEWRANGE, range);
 
             chunkRenderer = new ChunkRenderer[
-                (int) Math.Pow(2, VIEWRANGE) * (int) Math.Pow(2, VIEWRANGE),
+                (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE),
                 planet.Size.Z];
             orderedChunkRenderer = new List<ChunkRenderer>(
-                (int) Math.Pow(2, VIEWRANGE) * (int) Math.Pow(2, VIEWRANGE) * planet.Size.Z);
+                (int)Math.Pow(2, VIEWRANGE) * (int)Math.Pow(2, VIEWRANGE) * planet.Size.Z);
 
-            for (var i = 0; i < chunkRenderer.GetLength(0); i++)
-            for (var j = 0; j < chunkRenderer.GetLength(1); j++)
+            for (int i = 0; i < chunkRenderer.GetLength(0); i++)
             {
-                var renderer = new ChunkRenderer(this, Manager.Game.DefinitionManager, simpleShader, manager.GraphicsDevice, camera.Projection, blockTextures);
-                chunkRenderer[i, j] = renderer;
-                orderedChunkRenderer.Add(renderer);
+                for (int j = 0; j < chunkRenderer.GetLength(1); j++)
+                {
+                    ChunkRenderer renderer = new ChunkRenderer(this, Manager.Game.DefinitionManager, simpleShader, manager.GraphicsDevice, camera.Projection, blockTextures);
+                    chunkRenderer[i, j] = renderer;
+                    orderedChunkRenderer.Add(renderer);
+                }
             }
 
             backgroundThread = new Thread(BackgroundLoop)
@@ -191,7 +190,7 @@ namespace OctoAwesome.Client.Controls
             _fillIncrement = additional + 1;
             additionalFillResetEvents = new AutoResetEvent[additional];
             _additionalRegenerationThreads = new Thread[additional];
-            for (var i = 0; i < additional; i++)
+            for (int i = 0; i < additional; i++)
             {
                 var t = new Thread(AdditionalFillerBackgroundLoop)
                 {
@@ -199,10 +198,12 @@ namespace OctoAwesome.Client.Controls
                     IsBackground = true
                 };
                 var are = new AutoResetEvent(false);
-                t.Start(new object[] {are, i});
+                t.Start(new object[] { are, i });
                 additionalFillResetEvents[i] = are;
                 _additionalRegenerationThreads[i] = t;
+
             }
+
 
 
             var selectionVertices = new[]
@@ -214,17 +215,17 @@ namespace OctoAwesome.Client.Controls
                 new VertexPositionColor(new Vector3(-0.001f, +1.001f, -0.001f), Color.Black * 0.5f),
                 new VertexPositionColor(new Vector3(+1.001f, +1.001f, -0.001f), Color.Black * 0.5f),
                 new VertexPositionColor(new Vector3(-0.001f, -0.001f, -0.001f), Color.Black * 0.5f),
-                new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Color.Black * 0.5f)
+                new VertexPositionColor(new Vector3(+1.001f, -0.001f, -0.001f), Color.Black * 0.5f),
             };
 
             var billboardVertices = new[]
             {
-                new VertexPositionTexture(new Vector3(-0.5f, 0.5f), new Vector2(0, 0)),
-                new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
-                new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1)),
-                new VertexPositionTexture(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
-                new VertexPositionTexture(new Vector3(0.5f, -0.5f), new Vector2(1, 1)),
-                new VertexPositionTexture(new Vector3(-0.5f, -0.5f), new Vector2(0, 1))
+                new VertexPositionTexture(new Vector3(-0.5f, 0.5f, 0), new Vector2(0, 0)),
+                new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
+                new VertexPositionTexture(new Vector3(0.5f, 0.5f, 0), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(0.5f, -0.5f, 0), new Vector2(1, 1)),
+                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), new Vector2(0, 1)),
             };
 
             var selectionIndices = new short[]
@@ -258,57 +259,6 @@ namespace OctoAwesome.Client.Controls
             miniMapProjectionMatrix = Matrix.CreateOrthographic(128, 128, 1, 10000);
         }
 
-        public RenderTarget2D MiniMapTexture { get; set; }
-        public RenderTarget2D ControlTexture { get; set; }
-
-        private ScreenComponent Manager { get; }
-
-        public void Dispose()
-        {
-            if (disposed)
-                return;
-
-            disposed = true;
-
-            backgroundThread.Abort();
-            backgroundThread2.Abort();
-
-            foreach (var thread in _additionalRegenerationThreads)
-                thread.Abort();
-
-            foreach (var cr in chunkRenderer)
-                cr.Dispose();
-
-            foreach (var cr in orderedChunkRenderer)
-                cr.Dispose();
-
-            foreach (var renderer in chunkRenderer)
-                renderer.SetChunk(null, null, null);
-
-            chunkRenderer = null;
-            orderedChunkRenderer.Clear();
-
-            localChunkCache = null;
-
-            selectionIndexBuffer.Dispose();
-            selectionLines.Dispose();
-            billboardVertexbuffer.Dispose();
-
-            player = null;
-            camera = null;
-            assets = null;
-            entities = null;
-            planet = null;
-
-            sunEffect.Dispose();
-            selectionEffect.Dispose();
-
-            blockTextures.Dispose();
-            sunTexture.Dispose();
-        }
-
-        public event EventHandler OnCenterChanged;
-
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
             if (ControlTexture != null)
@@ -333,36 +283,40 @@ namespace OctoAwesome.Client.Controls
             if (disposed || player?.CurrentEntity == null)
                 return;
 
-            sunPosition += (float) gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
+            sunPosition += (float)gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
 
-            var centerblock = player.Position.Position.GlobalBlockIndex;
-            var renderOffset = player.Position.Position.ChunkIndex * Chunk.CHUNKSIZE;
+            Index3 centerblock = player.Position.Position.GlobalBlockIndex;
+            Index3 renderOffset = player.Position.Position.ChunkIndex * Chunk.CHUNKSIZE;
 
             Index3? selected = null;
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
-            for (var z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
-            for (var y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
-            for (var x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
+            for (int z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
             {
-                var range = new Index3(x, y, z);
-                var pos = range + centerblock;
-                var block = localChunkCache.GetBlock(pos);
-                if (block == 0)
-                    continue;
-
-                var blockDefinition = Manager.Game.DefinitionManager.GetBlockDefinitionByIndex(block);
-
-                var distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out var collisionAxis);
-
-                if (distance.HasValue && distance.Value < bestDistance)
+                for (int y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
                 {
-                    pos.NormalizeXY(planet.Size * Chunk.CHUNKSIZE);
-                    selected = pos;
-                    selectedAxis = collisionAxis;
-                    bestDistance = distance.Value;
-                    selectionPoint = camera.PickRay.Position + camera.PickRay.Direction * distance - (selected - renderOffset);
+                    for (int x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
+                    {
+                        Index3 range = new Index3(x, y, z);
+                        Index3 pos = range + centerblock;
+                        ushort block = localChunkCache.GetBlock(pos);
+                        if (block == 0)
+                            continue;
+
+                        IBlockDefinition blockDefinition = Manager.Game.DefinitionManager.GetBlockDefinitionByIndex(block);
+
+                        float? distance = Block.Intersect(blockDefinition.GetCollisionBoxes(localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, camera.PickRay, out Axis? collisionAxis);
+
+                        if (distance.HasValue && distance.Value < bestDistance)
+                        {
+                            pos.NormalizeXY(planet.Size * Chunk.CHUNKSIZE);
+                            selected = pos;
+                            selectedAxis = collisionAxis;
+                            bestDistance = distance.Value;
+                            selectionPoint = (camera.PickRay.Position + (camera.PickRay.Direction * distance)) - (selected - renderOffset);
+                        }
+                    }
                 }
             }
 
@@ -371,15 +325,9 @@ namespace OctoAwesome.Client.Controls
                 player.SelectedBox = selected;
                 switch (selectedAxis)
                 {
-                    case Axis.X:
-                        player.SelectedSide = camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast;
-                        break;
-                    case Axis.Y:
-                        player.SelectedSide = camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth;
-                        break;
-                    case Axis.Z:
-                        player.SelectedSide = camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop;
-                        break;
+                    case Axis.X: player.SelectedSide = (camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast); break;
+                    case Axis.Y: player.SelectedSide = (camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth); break;
+                    case Axis.Z: player.SelectedSide = (camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop); break;
                 }
 
                 player.SelectedPoint = new Vector2();
@@ -430,13 +378,20 @@ namespace OctoAwesome.Client.Controls
                 player.SelectedCorner = OrientationFlags.None;
             }
 
-            var destinationChunk = new Index2(player.Position.Position.ChunkIndex);
+            Index2 destinationChunk = new Index2(player.Position.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
-            if (destinationChunk != currentChunk) fillResetEvent.Set();
+            if (destinationChunk != currentChunk)
+            {
+                fillResetEvent.Set();
+            }
 
             base.OnUpdate(gameTime);
         }
+
+        private AutoResetEvent fillResetEvent = new AutoResetEvent(false);
+        private AutoResetEvent[] additionalFillResetEvents;
+        private AutoResetEvent forceResetEvent = new AutoResetEvent(false);
 
         protected override void OnPreDraw(GameTime gameTime)
         {
@@ -447,22 +402,22 @@ namespace OctoAwesome.Client.Controls
                 ControlTexture = new RenderTarget2D(Manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
 
 
-            var octoDaysPerEarthDay = 360f;
-            var inclinationVariance = MathHelper.Pi / 3f;
+            float octoDaysPerEarthDay = 360f;
+            float inclinationVariance = MathHelper.Pi / 3f;
 
-            var playerPosX = player.Position.Position.GlobalPosition.X / (planet.Size.X * Chunk.CHUNKSIZE_X) * MathHelper.TwoPi;
-            var playerPosY = player.Position.Position.GlobalPosition.Y / (planet.Size.Y * Chunk.CHUNKSIZE_Y) * MathHelper.TwoPi;
+            float playerPosX = player.Position.Position.GlobalPosition.X / (planet.Size.X * Chunk.CHUNKSIZE_X) * MathHelper.TwoPi;
+            float playerPosY = player.Position.Position.GlobalPosition.Y / (planet.Size.Y * Chunk.CHUNKSIZE_Y) * MathHelper.TwoPi;
 
-            var diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
+            TimeSpan diff = DateTime.UtcNow - new DateTime(1888, 8, 8);
 
-            var inclination = (float) Math.Sin(playerPosY) * inclinationVariance + MathHelper.Pi / 6f;
+            float inclination = ((float)Math.Sin(playerPosY) * inclinationVariance) + MathHelper.Pi / 6f;
             //Console.WriteLine("Stand: " + (MathHelper.Pi + playerPosX) + " Neigung: " + inclination);
-            var sunMovement =
+            Matrix sunMovement =
                 Matrix.CreateRotationX(inclination) *
                 //Matrix.CreateRotationY((((float)gameTime.TotalGameTime.TotalMinutes * MathHelper.TwoPi) + playerPosX) * -1); 
-                Matrix.CreateRotationY((float) (MathHelper.TwoPi - diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi % MathHelper.TwoPi));
+                Matrix.CreateRotationY((float)(MathHelper.TwoPi - ((diff.TotalDays * octoDaysPerEarthDay * MathHelper.TwoPi) % MathHelper.TwoPi)));
 
-            var sunDirection = Vector3.Transform(new Vector3(0, 0, 1), sunMovement);
+            Vector3 sunDirection = Vector3.Transform(new Vector3(0, 0, 1), sunMovement);
 
             simpleShader.Ambient.Pass1.Apply();
             simpleShader.Ambient.DiffuseColor = new Color(190, 190, 190);
@@ -472,8 +427,8 @@ namespace OctoAwesome.Client.Controls
             // Console.WriteLine(sunDirection);
 
             // Index3 chunkOffset = player.ActorHost.Position.ChunkIndex;
-            var chunkOffset = camera.CameraChunk;
-            var background = new Color(181, 224, 255);
+            Index3 chunkOffset = camera.CameraChunk;
+            Color background = new Color(181, 224, 255);
 
             Manager.GraphicsDevice.SetRenderTarget(MiniMapTexture);
             Manager.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -486,9 +441,9 @@ namespace OctoAwesome.Client.Controls
                 if (!renderer.ChunkPosition.HasValue || !renderer.Loaded || renderer.VertexCount == 0)
                     continue;
 
-                var shift = renderer.GetShift(chunkOffset, planet);
+                Index3 shift = renderer.GetShift(chunkOffset, planet);
 
-                var range = 6;
+                int range = 6;
                 if (shift.X >= -range && shift.X <= range &&
                     shift.Y >= -range && shift.Y <= range)
                     renderer.Draw(viewProj, shift);
@@ -529,17 +484,17 @@ namespace OctoAwesome.Client.Controls
             if (player.SelectedBox.HasValue)
             {
                 // Index3 offset = player.ActorHost.Position.ChunkIndex * Chunk.CHUNKSIZE;
-                var offset = camera.CameraChunk * Chunk.CHUNKSIZE;
-                var planetSize = planet.Size * Chunk.CHUNKSIZE;
-                var relativePosition = new Index3(
+                Index3 offset = camera.CameraChunk * Chunk.CHUNKSIZE;
+                Index3 planetSize = planet.Size * Chunk.CHUNKSIZE;
+                Index3 relativePosition = new Index3(
                     Index2.ShortestDistanceOnAxis(offset.X, player.SelectedBox.Value.X, planetSize.X),
                     Index2.ShortestDistanceOnAxis(offset.Y, player.SelectedBox.Value.Y, planetSize.Y),
                     player.SelectedBox.Value.Z - offset.Z);
 
-                var selectedBoxPosition = new Vector3(
-                    player.SelectedBox.Value.X - chunkOffset.X * Chunk.CHUNKSIZE_X,
-                    player.SelectedBox.Value.Y - chunkOffset.Y * Chunk.CHUNKSIZE_Y,
-                    player.SelectedBox.Value.Z - chunkOffset.Z * Chunk.CHUNKSIZE_Z);
+                Vector3 selectedBoxPosition = new Vector3(
+                    player.SelectedBox.Value.X - (chunkOffset.X * Chunk.CHUNKSIZE_X),
+                    player.SelectedBox.Value.Y - (chunkOffset.Y * Chunk.CHUNKSIZE_Y),
+                    player.SelectedBox.Value.Z - (chunkOffset.Z * Chunk.CHUNKSIZE_Z));
                 // selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
                 selectionEffect.World = Matrix.CreateTranslation(relativePosition);
                 selectionEffect.View = camera.View;
@@ -560,19 +515,19 @@ namespace OctoAwesome.Client.Controls
 
         private void DrawChunks(Index3 chunkOffset, Matrix viewProj)
         {
-            var spherePos = camera.PickRay.Position + camera.PickRay.Direction * sphereRadius;
-
+            var spherePos = camera.PickRay.Position + (camera.PickRay.Direction * sphereRadius);
+  
             foreach (var renderer in chunkRenderer)
             {
                 if (!renderer.ChunkPosition.HasValue || !renderer.Loaded || renderer.VertexCount == 0)
                     continue;
 
-                var shift = renderer.GetShift(chunkOffset, planet);
+                Index3 shift = renderer.GetShift(chunkOffset, planet);
 
                 var chunkPos = new Vector3(
-                    shift.X * Chunk.CHUNKSIZE_X + Chunk.CHUNKSIZE_X / 2,
-                    shift.Y * Chunk.CHUNKSIZE_Y + Chunk.CHUNKSIZE_Y / 2,
-                    shift.Z * Chunk.CHUNKSIZE_Z + Chunk.CHUNKSIZE_Z / 2);
+                    (shift.X * Chunk.CHUNKSIZE_X) + (Chunk.CHUNKSIZE_X / 2),
+                    (shift.Y * Chunk.CHUNKSIZE_Y) + (Chunk.CHUNKSIZE_Y / 2),
+                    (shift.Z * Chunk.CHUNKSIZE_Z) + (Chunk.CHUNKSIZE_Z / 2));
 
                 var frustumDist = spherePos - chunkPos;
                 if (frustumDist.LengthSquared < sphereRadiusSquared)
@@ -585,7 +540,7 @@ namespace OctoAwesome.Client.Controls
             if (player?.CurrentEntity == null)
                 return;
 
-            var destinationChunk = new Index2(player.Position.Position.ChunkIndex);
+            Index2 destinationChunk = new Index2(player.Position.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
             if (destinationChunk != currentChunk)
@@ -597,33 +552,38 @@ namespace OctoAwesome.Client.Controls
                         if (b)
                         {
                             fillResetEvent.Set();
-                            OnCenterChanged?.Invoke(this, EventArgs.Empty);
+                            OnCenterChanged?.Invoke(this, System.EventArgs.Empty);
                         }
                     });
 
-                for (var x = 0; x < Span; x++)
-                for (var y = 0; y < Span; y++)
+                for (int x = 0; x < Span; x++)
                 {
-                    var local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
-                    local.NormalizeXY(planet.Size);
+                    for (int y = 0; y < Span; y++)
+                    {
+                        Index2 local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
+                        local.NormalizeXY(planet.Size);
 
-                    var virtualX = local.X & Mask;
-                    var virtualY = local.Y & Mask;
+                        int virtualX = local.X & Mask;
+                        int virtualY = local.Y & Mask;
 
-                    var rendererIndex = virtualX +
-                                        (virtualY << VIEWRANGE);
+                        int rendererIndex = virtualX +
+                            (virtualY << VIEWRANGE);
 
-                    for (var z = 0; z < planet.Size.Z; z++) chunkRenderer[rendererIndex, z].SetChunk(localChunkCache, new Index3(local.X, local.Y, z), player.Position.Planet);
+                        for (int z = 0; z < planet.Size.Z; z++)
+                        {
+                            chunkRenderer[rendererIndex, z].SetChunk(localChunkCache, new Index3(local.X, local.Y, z), player.Position.Planet);
+                        }
+                    }
                 }
 
-                var comparationIndex = player.Position.Position.ChunkIndex;
+                Index3 comparationIndex = player.Position.Position.ChunkIndex;
                 orderedChunkRenderer.Sort((x, y) =>
                 {
                     if (!x.ChunkPosition.HasValue) return 1;
                     if (!y.ChunkPosition.HasValue) return -1;
 
-                    var distX = comparationIndex.ShortestDistanceXYZ(x.ChunkPosition.Value, planet.Size);
-                    var distY = comparationIndex.ShortestDistanceXYZ(y.ChunkPosition.Value, planet.Size);
+                    Index3 distX = comparationIndex.ShortestDistanceXYZ(x.ChunkPosition.Value, planet.Size);
+                    Index3 distY = comparationIndex.ShortestDistanceXYZ(y.ChunkPosition.Value, planet.Size);
                     return distX.LengthSquared().CompareTo(distY.LengthSquared());
                 });
 
@@ -641,7 +601,10 @@ namespace OctoAwesome.Client.Controls
             for (var index = start; index < orderedChunkRenderer.Count; index += _fillIncrement)
             {
                 var renderer = orderedChunkRenderer[index];
-                if (renderer.NeedsUpdate) renderer.RegenerateVertexBuffer();
+                if (renderer.NeedsUpdate)
+                {
+                    renderer.RegenerateVertexBuffer();
+                }
             }
         }
 
@@ -656,9 +619,9 @@ namespace OctoAwesome.Client.Controls
 
         private void AdditionalFillerBackgroundLoop(object oArr)
         {
-            var arr = (object[]) oArr;
-            var are = (AutoResetEvent) arr[0];
-            var n = (int) arr[1];
+            var arr = (object[])oArr;
+            var are = (AutoResetEvent)arr[0];
+            var n = (int)arr[1];
             while (true)
             {
                 are.WaitOne();
@@ -673,15 +636,13 @@ namespace OctoAwesome.Client.Controls
                 forceResetEvent.WaitOne();
 
                 while (!forcedRenders.IsEmpty)
-                while (forcedRenders.TryDequeue(out var r))
-                    r.RegenerateVertexBuffer();
+                {
+                    while (forcedRenders.TryDequeue(out ChunkRenderer r))
+                    {
+                        r.RegenerateVertexBuffer();
+                    }
+                }
             }
-        }
-
-        public void Enqueue(ChunkRenderer chunkRenderer1)
-        {
-            forcedRenders.Enqueue(chunkRenderer1);
-            forceResetEvent.Set();
         }
 
         #region Converter
@@ -691,11 +652,13 @@ namespace OctoAwesome.Client.Controls
             if (point.X > point.Y)
             {
                 if (1f - point.X > point.Y) return upper;
-                return right;
+                else return right;
             }
-
-            if (1f - point.X > point.Y) return left;
-            return lower;
+            else
+            {
+                if (1f - point.X > point.Y) return left;
+                else return lower;
+            }
         }
 
         private static OrientationFlags FindCorner(Vector2 point, OrientationFlags upperLeftCorner, OrientationFlags upperRightCorner, OrientationFlags lowerLeftCorner, OrientationFlags lowerRightCorner)
@@ -703,13 +666,68 @@ namespace OctoAwesome.Client.Controls
             if (point.X < 0.5f)
             {
                 if (point.Y < 0.5f) return upperLeftCorner;
-                return lowerLeftCorner;
+                else return lowerLeftCorner;
             }
-
-            if (point.Y < 0.5f) return upperRightCorner;
-            return lowerRightCorner;
+            else
+            {
+                if (point.Y < 0.5f) return upperRightCorner;
+                else return lowerRightCorner;
+            }
         }
 
         #endregion
+
+        private ConcurrentQueue<ChunkRenderer> forcedRenders = new ConcurrentQueue<ChunkRenderer>();
+        private bool disposed;
+
+        public void Enqueue(ChunkRenderer chunkRenderer1)
+        {
+            forcedRenders.Enqueue(chunkRenderer1);
+            forceResetEvent.Set();
+        }
+
+        public void Dispose()
+        {
+            if (disposed)
+                return;
+
+            disposed = true;
+
+            backgroundThread.Abort();
+            backgroundThread2.Abort();
+
+            foreach (var thread in _additionalRegenerationThreads)
+                thread.Abort();
+
+            foreach (var cr in chunkRenderer)
+                cr.Dispose();
+
+            foreach (var cr in orderedChunkRenderer)
+                cr.Dispose();
+
+            foreach (var renderer in chunkRenderer)
+                renderer.SetChunk(null, null, null);
+
+            chunkRenderer = null;
+            orderedChunkRenderer.Clear();
+
+            localChunkCache = null;
+
+            selectionIndexBuffer.Dispose();
+            selectionLines.Dispose();
+            billboardVertexbuffer.Dispose();
+
+            player = null;
+            camera = null;
+            assets = null;
+            entities = null;
+            planet = null;
+
+            sunEffect.Dispose();
+            selectionEffect.Dispose();
+
+            blockTextures.Dispose();
+            sunTexture.Dispose();
+        }
     }
 }

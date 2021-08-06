@@ -1,78 +1,76 @@
-﻿using System;
+﻿using OctoAwesome.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using OctoAwesome.Database;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization.Entities
 {
     public sealed class EntityDbContext : IDatabaseContext<GuidTag<Entity>, Entity>
     {
-        private readonly EntityComponentsDbContext _componentsDbContext;
-        private readonly EntityDefinition.EntityDefinitionContext _entityDefinitionContext;
-        private readonly MethodInfo _getComponentMethod;
-        private readonly MethodInfo _removeComponentMethod;
+        private readonly EntityDefinition.EntityDefinitionContext entityDefinitionContext;
+        private readonly EntityComponentsDbContext componentsDbContext;
+        private readonly MethodInfo getComponentMethod;
+        private readonly MethodInfo removeComponentMethod;
 
         public EntityDbContext(IDatabaseProvider databaseProvider, Guid universe)
         {
-            var database = databaseProvider.GetDatabase<GuidTag<EntityDefinition>>(universe, false);
-            _entityDefinitionContext = new EntityDefinition.EntityDefinitionContext(database);
-            _componentsDbContext = new EntityComponentsDbContext(databaseProvider, universe);
-            _getComponentMethod = typeof(EntityComponentsDbContext).GetMethod(nameof(EntityComponentsDbContext.Get), new[] {typeof(Entity)});
-            _removeComponentMethod = typeof(EntityComponentsDbContext).GetMethod(nameof(EntityComponentsDbContext.Remove));
+            var database = databaseProvider.GetDatabase<GuidTag<EntityDefinition>>(universeGuid: universe, fixedValueSize: false);
+            entityDefinitionContext = new EntityDefinition.EntityDefinitionContext(database);
+            componentsDbContext = new EntityComponentsDbContext(databaseProvider, universe);
+            getComponentMethod = typeof(EntityComponentsDbContext).GetMethod(nameof(EntityComponentsDbContext.Get), new[] { typeof(Entity) });
+            removeComponentMethod = typeof(EntityComponentsDbContext).GetMethod(nameof(EntityComponentsDbContext.Remove));
         }
 
         public void AddOrUpdate(Entity value)
         {
-            _entityDefinitionContext.AddOrUpdate(new EntityDefinition(value));
+            entityDefinitionContext.AddOrUpdate(new EntityDefinition(value));
 
             foreach (dynamic component in value.Components) //dynamic so tyepof<T> in get database returns correct type 
-                _componentsDbContext.AddOrUpdate(component, value);
+                componentsDbContext.AddOrUpdate(component, value);
         }
 
         public Entity Get(GuidTag<Entity> key)
         {
-            var definition = _entityDefinitionContext.Get(new GuidTag<EntityDefinition>(key.Tag));
-            var entity = (Entity) Activator.CreateInstance(definition.Type);
+            EntityDefinition definition = entityDefinitionContext.Get(new GuidTag<EntityDefinition>(key.Tag));
+            var entity = (Entity)Activator.CreateInstance(definition.Type);
             entity.Id = definition.Id;
 
-            foreach (var component in definition.Components)
+            foreach (Type component in definition.Components)
             {
-                var genericMethod = _getComponentMethod.MakeGenericMethod(component);
-                entity.Components.AddComponent((EntityComponent) genericMethod.Invoke(_componentsDbContext, new object[] {entity}));
+                MethodInfo genericMethod = getComponentMethod.MakeGenericMethod(component);
+                entity.Components.AddComponent((EntityComponent)genericMethod.Invoke(componentsDbContext, new object[] { entity }));
             }
 
             return entity;
         }
 
-        public void Remove(Entity value)
-        {
-            var definition = _entityDefinitionContext.Get(new GuidTag<EntityDefinition>(value.Id));
-            _entityDefinitionContext.Remove(definition);
-
-            foreach (var component in definition.Components)
-            {
-                var genericMethod = _removeComponentMethod.MakeGenericMethod(component);
-                genericMethod.Invoke(_componentsDbContext, new object[] {value});
-            }
-        }
-
         public IEnumerable<Entity> GetEntitiesWithComponent<T>() where T : EntityComponent
         {
-            var entities = _componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
+            IEnumerable<GuidTag<Entity>> entities = componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
 
-            foreach (var entityId in entities)
+            foreach (GuidTag<Entity> entityId in entities)
                 yield return Get(entityId);
         }
 
         public IEnumerable<GuidTag<Entity>> GetEntityIdsFromComponent<T>() where T : EntityComponent
-        {
-            return _componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
-        }
+            => componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<Entity>(t.Tag));
 
         public IEnumerable<GuidTag<Entity>> GetAllKeys()
+            => entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<Entity>(e.Tag));
+
+        public void Remove(Entity value)
         {
-            return _entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<Entity>(e.Tag));
+            EntityDefinition definition = entityDefinitionContext.Get(new GuidTag<EntityDefinition>(value.Id));
+            entityDefinitionContext.Remove(definition);
+
+            foreach (Type component in definition.Components)
+            {
+                MethodInfo genericMethod = removeComponentMethod.MakeGenericMethod(component);
+                genericMethod.Invoke(componentsDbContext, new object[] { value });
+            }
         }
     }
 }

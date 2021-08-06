@@ -1,6 +1,10 @@
-﻿using System.IO;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Database.Tests
 {
@@ -16,7 +20,7 @@ namespace OctoAwesome.Database.Tests
             var valueFile = new FileInfo(Path.Combine(temp, valuePath));
 
             var database = new Database<IdTag<int>>(keyFile, valueFile);
-
+            
 
             try
             {

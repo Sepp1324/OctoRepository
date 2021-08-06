@@ -1,6 +1,10 @@
-﻿using System;
+﻿using OctoAwesome.Database;
+
+using System;
 using System.Collections.Generic;
-using OctoAwesome.Database;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
@@ -9,7 +13,6 @@ namespace OctoAwesome.Serialization
         public int Length => sizeof(int) * 4;
 
         public Index3 ChunkPositon { get; set; }
-
         public int FlatIndex { get; set; }
 
         public ChunkDiffTag(Index3 chunkPosition, int flatIndex)
@@ -40,19 +43,17 @@ namespace OctoAwesome.Serialization
         }
 
         public override bool Equals(object obj)
-        {
-            return obj is ChunkDiffTag tag && Equals(tag);
-        }
+            => obj is ChunkDiffTag tag && Equals(tag);
 
         public bool Equals(ChunkDiffTag other)
-        {
-            return Length == other.Length && FlatIndex == other.FlatIndex && EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
-        }
+            => Length == other.Length &&
+                FlatIndex == other.FlatIndex && 
+                EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
 
 
         public override int GetHashCode()
         {
-            var hashCode = 1893591923;
+            int hashCode = 1893591923;
             hashCode = hashCode * -1521134295 + Length.GetHashCode();
             hashCode = hashCode * -1521134295 + ChunkPositon.GetHashCode();
             hashCode = hashCode * -1521134295 + FlatIndex.GetHashCode();

@@ -1,13 +1,17 @@
-﻿using System;
-using System.IO;
-using CommandManagementSystem.Attributes;
+﻿using CommandManagementSystem.Attributes;
 using OctoAwesome.Network;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
     public class ChunkCommands
     {
-        [Command((ushort) OfficialCommand.LoadColumn)]
+        [Command((ushort)OfficialCommand.LoadColumn)]
         public static byte[] LoadColumn(CommandParameter parameter)
         {
             Guid guid;
@@ -21,7 +25,7 @@ namespace OctoAwesome.GameServer.Commands
                 planetId = reader.ReadInt32();
                 index2 = new Index2(reader.ReadInt32(), reader.ReadInt32());
             }
-
+                      
             var column = TypeContainer.Get<SimulationManager>().LoadColumn(planetId, index2);
 
             using (var memoryStream = new MemoryStream())
@@ -32,7 +36,7 @@ namespace OctoAwesome.GameServer.Commands
             }
         }
 
-        [Command((ushort) OfficialCommand.SaveColumn)]
+        [Command((ushort)OfficialCommand.SaveColumn)]
         public static byte[] SaveColumn(CommandParameter parameter)
         {
             var chunkColumn = new ChunkColumn(null);

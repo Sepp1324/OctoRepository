@@ -1,11 +1,17 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 using OctoAwesome.OctoMath;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
     public class Axe : Item
     {
+
         private static readonly Polynomial polynomial;
 
         static Axe()
@@ -16,6 +22,7 @@ namespace OctoAwesome.Basics.Definitions.Items
         public Axe(AxeDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)
         {
+
         }
 
         public override int Hit(IMaterialDefinition material, decimal volumeRemaining, int volumePerHit)
@@ -25,8 +32,8 @@ namespace OctoAwesome.Basics.Definitions.Items
 
             if (material is ISolidMaterialDefinition solid && baseEfficiency > 0)
             {
-                var fractureEfficiency = polynomial.Evaluate(solid.FractureToughness);
-                return (int) (baseEfficiency * fractureEfficiency / 100);
+                var fractureEfficiency = polynomial.Evaluate(solid.FractureToughness); 
+                return (int)(baseEfficiency * (fractureEfficiency) / 100);
             }
 
             return baseEfficiency;

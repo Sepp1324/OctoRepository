@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace OctoAwesome.Database.Checks
 {
@@ -17,17 +19,17 @@ namespace OctoAwesome.Database.Checks
             using (var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
-                var length = 0;
+                int length = 0;
                 do
                 {
                     fileStream.Read(keyBuffer, 0, keyBuffer.Length);
                     var key = Key<TTag>.FromBytes(keyBuffer, 0);
 
                     if (!key.Validate())
-                        throw new KeyInvalidException("Key is not valid", fileStream.Position);
+                        throw new KeyInvalidException($"Key is not valid", fileStream.Position);
 
                     if (key.Index != fileStream.Position - Key<TTag>.KEY_SIZE)
-                        throw new KeyInvalidException("Key is on the wrong Position", fileStream.Position);
+                        throw new KeyInvalidException($"Key is on the wrong Position", fileStream.Position);
 
                     if (key.IsEmpty)
                     {
@@ -41,6 +43,7 @@ namespace OctoAwesome.Database.Checks
                     }
 
                     fileStream.Seek(length, SeekOrigin.Current);
+
                 } while (fileStream.Position != fileStream.Length);
             }
         }

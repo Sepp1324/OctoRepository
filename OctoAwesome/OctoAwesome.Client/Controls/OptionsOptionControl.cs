@@ -1,26 +1,18 @@
-﻿using System.Windows.Forms;
-using engenious;
+﻿using engenious;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using OctoAwesome.Client.Languages;
 using OctoAwesome.Client.Screens;
-using Button = engenious.UI.Controls.Button;
-using Control = engenious.UI.Control;
-using HorizontalAlignment = engenious.UI.HorizontalAlignment;
-using Label = engenious.UI.Controls.Label;
-using Orientation = engenious.UI.Orientation;
-using Panel = engenious.UI.Controls.Panel;
 
 namespace OctoAwesome.Client.Controls
 {
     internal sealed class OptionsOptionControl : Panel
     {
-        private readonly Textbox mapPath;
-        private readonly OptionsScreen optionsScreen;
-        private readonly Label rangeTitle;
+        private Label rangeTitle;
+        private Textbox mapPath;
 
-        private readonly ISettings settings;
+        private ISettings settings;
+        private OptionsScreen optionsScreen;
 
         public OptionsOptionControl(ScreenComponent manager, OptionsScreen optionsScreen) : base(manager)
         {
@@ -28,7 +20,7 @@ namespace OctoAwesome.Client.Controls
             this.optionsScreen = optionsScreen;
 
             ////////////////////////////////////////////Settings Stack////////////////////////////////////////////
-            var settingsStack = new StackPanel(manager)
+            StackPanel settingsStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Vertical,
                 VerticalAlignment = VerticalAlignment.Top,
@@ -38,49 +30,49 @@ namespace OctoAwesome.Client.Controls
             Controls.Add(settingsStack);
 
             //////////////////////Viewrange//////////////////////
-            var viewrange = settings.Get<string>("Viewrange");
+            string viewrange = settings.Get<string>("Viewrange");
 
             rangeTitle = new Label(manager)
             {
-                Text = OctoClient.Viewrange + ": " + viewrange
+                Text = Languages.OctoClient.Viewrange + ": " + viewrange
             };
             settingsStack.Controls.Add(rangeTitle);
 
-            var viewrangeSlider = new Slider(manager)
+            Slider viewrangeSlider = new Slider(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Height = 20,
                 Range = 9,
                 Value = int.Parse(viewrange) - 1
             };
-            viewrangeSlider.ValueChanged += value => SetViewrange(value + 1);
+            viewrangeSlider.ValueChanged += (value) => SetViewrange(value + 1);
             settingsStack.Controls.Add(viewrangeSlider);
 
 
             //////////////////////Persistence//////////////////////
-            var persistenceStack = new StackPanel(manager)
+            StackPanel persistenceStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Horizontal,
                 Margin = new Border(0, 20, 0, 0)
             };
             settingsStack.Controls.Add(persistenceStack);
 
-            var persistenceTitle = new Label(manager)
+            Label persistenceTitle = new Label(manager)
             {
-                Text = OctoClient.DisablePersistence + ":"
+                Text = Languages.OctoClient.DisablePersistence + ":"
             };
             persistenceStack.Controls.Add(persistenceTitle);
 
-            var disablePersistence = new Checkbox(manager)
+            Checkbox disablePersistence = new Checkbox(manager)
             {
                 Checked = settings.Get("DisablePersistence", false),
-                HookBrush = new TextureBrush(manager.Game.Assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch)
+                HookBrush = new TextureBrush(manager.Game.Assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch),
             };
-            disablePersistence.CheckedChanged += state => SetPersistence(state);
+            disablePersistence.CheckedChanged += (state) => SetPersistence(state);
             persistenceStack.Controls.Add(disablePersistence);
 
             //////////////////////Map Path//////////////////////
-            var mapPathStack = new StackPanel(manager)
+            StackPanel mapPathStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Vertical,
                 Margin = new Border(0, 20, 0, 0),
@@ -97,49 +89,49 @@ namespace OctoAwesome.Client.Controls
             };
             mapPathStack.Controls.Add(mapPath);
 
-            Button changePath = new TextButton(manager, OctoClient.ChangePath);
+            Button changePath = new TextButton(manager, Languages.OctoClient.ChangePath);
             changePath.HorizontalAlignment = HorizontalAlignment.Center;
             changePath.Height = 40;
             changePath.LeftMouseClick += (s, e) => ChangePath();
             mapPathStack.Controls.Add(changePath);
 
             //////////////////////Fullscreen//////////////////////
-            var fullscreenStack = new StackPanel(manager)
+            StackPanel fullscreenStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Horizontal,
                 Margin = new Border(0, 20, 0, 0)
             };
             settingsStack.Controls.Add(fullscreenStack);
 
-            var fullscreenTitle = new Label(manager)
+            Label fullscreenTitle = new Label(manager)
             {
-                Text = OctoClient.EnableFullscreenOnStartup + ":"
+                Text = Languages.OctoClient.EnableFullscreenOnStartup + ":"
             };
             fullscreenStack.Controls.Add(fullscreenTitle);
 
-            var enableFullscreen = new Checkbox(manager)
+            Checkbox enableFullscreen = new Checkbox(manager)
             {
                 Checked = settings.Get<bool>("EnableFullscreen"),
-                HookBrush = new TextureBrush(manager.Game.Assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch)
+                HookBrush = new TextureBrush(manager.Game.Assets.LoadTexture(typeof(ScreenComponent), "iconCheck_brown"), TextureBrushMode.Stretch),
             };
-            enableFullscreen.CheckedChanged += state => SetFullscreen(state);
+            enableFullscreen.CheckedChanged += (state) => SetFullscreen(state);
             fullscreenStack.Controls.Add(enableFullscreen);
 
             //////////////////////Auflösung//////////////////////
-            var resolutionStack = new StackPanel(manager)
+            StackPanel resolutionStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Horizontal,
                 Margin = new Border(0, 20, 0, 0)
             };
             settingsStack.Controls.Add(resolutionStack);
 
-            var resolutionTitle = new Label(manager)
+            Label resolutionTitle = new Label(manager)
             {
-                Text = OctoClient.Resolution + ":"
+                Text = Languages.OctoClient.Resolution + ":"
             };
             resolutionStack.Controls.Add(resolutionTitle);
 
-            var resolutionWidthTextbox = new Textbox(manager)
+            Textbox resolutionWidthTextbox = new Textbox(manager)
             {
                 Text = settings.Get<string>("Width"),
                 Width = 50,
@@ -148,13 +140,13 @@ namespace OctoAwesome.Client.Controls
             resolutionWidthTextbox.TextChanged += ResolutionWidthTextbox_TextChanged;
             resolutionStack.Controls.Add(resolutionWidthTextbox);
 
-            var xLabel = new Label(manager)
+            Label xLabel = new Label(manager)
             {
                 Text = "x"
             };
             resolutionStack.Controls.Add(xLabel);
 
-            var resolutionHeightTextbox = new Textbox(manager)
+            Textbox resolutionHeightTextbox = new Textbox(manager)
             {
                 Text = settings.Get<string>("Height"),
                 Width = 50,
@@ -163,9 +155,9 @@ namespace OctoAwesome.Client.Controls
             resolutionHeightTextbox.TextChanged += ResolutionHeightTextbox_TextChanged;
             resolutionStack.Controls.Add(resolutionHeightTextbox);
 
-            var pxLabel = new Label(manager)
+            Label pxLabel = new Label(manager)
             {
-                Text = OctoClient.Pixels
+                Text = Languages.OctoClient.Pixels
             };
             resolutionStack.Controls.Add(pxLabel);
         }
@@ -186,7 +178,7 @@ namespace OctoAwesome.Client.Controls
 
         private void SetViewrange(int newRange)
         {
-            rangeTitle.Text = OctoClient.Viewrange + ": " + newRange;
+            rangeTitle.Text = Languages.OctoClient.Viewrange + ": " + newRange;
 
             settings.Set("Viewrange", newRange);
 
@@ -195,12 +187,12 @@ namespace OctoAwesome.Client.Controls
 
         private void ChangePath()
         {
-            var folderBrowser = new FolderBrowserDialog();
+            System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             folderBrowser.SelectedPath = settings.Get<string>("ChunkRoot");
 
-            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var path = folderBrowser.SelectedPath;
+                string path = folderBrowser.SelectedPath;
                 settings.Set("ChunkRoot", path);
                 mapPath.Text = path;
 
