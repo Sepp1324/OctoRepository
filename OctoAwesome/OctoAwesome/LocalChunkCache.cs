@@ -17,16 +17,16 @@ namespace OctoAwesome
         /// <summary>
         ///     Die im lokalen Cache gespeicherten Chunks
         /// </summary>
-        private readonly IChunkColumn[] chunkColumns;
+        private readonly IChunkColumn[] _chunkColumns;
 
         /// <summary>
         ///     Referenz auf den Globalen Cache
         /// </summary>
-        private readonly IGlobalChunkCache globalCache;
+        private readonly IGlobalChunkCache _globalCache;
 
-        private readonly ILogger logger;
-        private readonly LockSemaphore semaphore;
-        private readonly LockSemaphore taskSemaphore;
+        private readonly ILogger _logger;
+        private readonly LockSemaphore _semaphore;
+        private readonly LockSemaphore _taskSemaphore;
 
         /// <summary>
         ///     Token, das angibt, ob der Chûnk-nachlade-Task abgebrochen werden soll
@@ -41,18 +41,18 @@ namespace OctoAwesome
         /// <summary>
         ///     Größe des Caches in Zweierpotenzen
         /// </summary>
-        private readonly int limit;
+        private readonly int _limit;
 
         /// <summary>
         ///     Maske, die die Grösse des Caches markiert
         /// </summary>
-        private readonly int mask;
+        private readonly int _mask;
 
         /// <summary>
         ///     Gibt die Range in Chunks in alle Richtungen an (bsp. Range = 1 bedeutet centraler Block + links uns rechts jeweils
         ///     1 = 3)
         /// </summary>
-        private readonly int range;
+        private readonly int _range;
 
         /// <summary>
         ///     Instanziert einen neuen local Chunk Cache.
@@ -66,16 +66,16 @@ namespace OctoAwesome
                 throw new ArgumentException("Range too big");
 
 
-            semaphore = new LockSemaphore(1, 1);
-            taskSemaphore = new LockSemaphore(1, 1);
+            _semaphore = new LockSemaphore(1, 1);
+            _taskSemaphore = new LockSemaphore(1, 1);
             Planet = globalCache.Planet;
-            this.globalCache = globalCache;
-            this.range = range;
+            _globalCache = globalCache;
+            _range = range;
 
-            limit = dimensions;
-            mask = (1 << limit) - 1;
-            chunkColumns = new IChunkColumn[(mask + 1) * (mask + 1)];
-            logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(LocalChunkCache));
+            _limit = dimensions;
+            _mask = (1 << _limit) - 1;
+            _chunkColumns = new IChunkColumn[(_mask + 1) * (_mask + 1)];
+            _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(LocalChunkCache));
         }
 
         public Index2 CenterPosition { get; set; }
@@ -94,21 +94,21 @@ namespace OctoAwesome
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
         public bool SetCenter(Index2 index, Action<bool> successCallback = null)
         {
-            using (taskSemaphore.Wait())
+            using (_taskSemaphore.Wait())
             {
-                var callerName = new StackFrame(1).GetMethod().Name;
-                logger.Debug($"Set Center from {callerName}");
+                var callerName = new StackFrame(1).GetMethod()?.Name;
+                _logger.Debug($"Set Center from {callerName}");
                 CenterPosition = index;
 
                 if (_loadingTask != null && !_loadingTask.IsCompleted)
                 {
-                    logger.Debug("Continue with task on index " + index);
+                    _logger.Debug("Continue with task on index " + index);
                     _loadingTask = _loadingTask.ContinueWith(_ =>
                         InternalSetCenter(_cancellationToken.Token, index, successCallback));
                 }
                 else
                 {
-                    logger.Debug("New task on index " + index);
+                    _logger.Debug("New task on index " + index);
                     _cancellationToken?.Cancel();
                     _cancellationToken?.Dispose();
                     _cancellationToken = new CancellationTokenSource();
@@ -125,10 +125,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Chunk Index</param>
         /// <returns>Instanz des Chunks</returns>
-        public IChunk GetChunk(Index3 index)
-        {
-            return GetChunk(index.X, index.Y, index.Z);
-        }
+        public IChunk GetChunk(Index3 index) => GetChunk(index.X, index.Y, index.Z);
 
         /// <summary>
         ///     Liefert den Chunk an der angegebenen Chunk-Koordinate zurück.
@@ -145,7 +142,7 @@ namespace OctoAwesome
             x = Index2.NormalizeAxis(x, Planet.Size.X);
             y = Index2.NormalizeAxis(y, Planet.Size.Y);
 
-            var chunkColumn = chunkColumns[FlatIndex(x, y)];
+            var chunkColumn = _chunkColumns[FlatIndex(x, y)];
 
             if (chunkColumn != null && chunkColumn.Index.X == x && chunkColumn.Index.Y == y)
                 return chunkColumn.Chunks[z];
@@ -158,10 +155,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block Index</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        public ushort GetBlock(Index3 index)
-        {
-            return GetBlock(index.X, index.Y, index.Z);
-        }
+        public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
         ///     Liefert den Block an der angegebenen Block-Koodinate zurück.
@@ -195,10 +189,7 @@ namespace OctoAwesome
         {
             var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
-            if (chunk != null)
-                return chunk.GetBlock(x, y, z);
-
-            return 0;
+            return chunk?.GetBlock(x, y, z) ?? 0;
         }
 
         /// <summary>
@@ -222,8 +213,7 @@ namespace OctoAwesome
         {
             var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
-            if (chunk != null)
-                chunk.SetBlock(x, y, z, block);
+            chunk?.SetBlock(x, y, z, block);
         }
 
         /// <summary>
@@ -237,10 +227,7 @@ namespace OctoAwesome
         {
             var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
-            if (chunk != null)
-                return chunk.GetBlockMeta(x, y, z);
-
-            return 0;
+            return chunk?.GetBlockMeta(x, y, z) ?? 0;
         }
 
         /// <summary>
@@ -248,10 +235,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
-        public int GetBlockMeta(Index3 index)
-        {
-            return GetBlockMeta(index.X, index.Y, index.Z);
-        }
+        public int GetBlockMeta(Index3 index) => GetBlockMeta(index.X, index.Y, index.Z);
 
         /// <summary>
         ///     Ändert die Metadaten des Blockes an der angegebenen Koordinate.
@@ -264,8 +248,7 @@ namespace OctoAwesome
         {
             var chunk = GetChunk(x >> Chunk.LimitX, y >> Chunk.LimitY, z >> Chunk.LimitZ);
 
-            if (chunk != null)
-                chunk.SetBlockMeta(x, y, z, meta);
+            chunk?.SetBlockMeta(x, y, z, meta);
         }
 
         /// <summary>
@@ -273,25 +256,22 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="meta">Die neuen Metadaten</param>
-        public void SetBlockMeta(Index3 index, int meta)
-        {
-            SetBlockMeta(index.X, index.Y, index.Z, meta);
-        }
+        public void SetBlockMeta(Index3 index, int meta) => SetBlockMeta(index.X, index.Y, index.Z, meta);
 
         /// <summary>
         ///     Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
         /// </summary>
         public void Flush()
         {
-            for (var i = 0; i < chunkColumns.Length; i++)
+            for (var i = 0; i < _chunkColumns.Length; i++)
             {
-                if (chunkColumns[i] == null)
+                if (_chunkColumns[i] == null)
                     continue;
 
-                var chunkColumn = chunkColumns[i];
+                var chunkColumn = _chunkColumns[i];
 
-                globalCache.Release(chunkColumn.Index);
-                chunkColumns[i] = null;
+                _globalCache.Release(chunkColumn.Index);
+                _chunkColumns[i] = null;
             }
         }
 
@@ -313,8 +293,8 @@ namespace OctoAwesome
 
             var requiredChunkColumns = new List<Index2>();
 
-            for (var x = -range; x <= range; x++)
-            for (var y = -range; y <= range; y++)
+            for (var x = -_range; x <= _range; x++)
+            for (var y = -_range; y <= _range; y++)
             {
                 var local = new Index2(index.X + x, index.Y + y);
                 local.NormalizeXY(Planet.Size);
@@ -332,22 +312,22 @@ namespace OctoAwesome
                 .OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size))
                     .LengthSquared()))
             {
-                var localX = chunkColumnIndex.X & mask;
-                var localY = chunkColumnIndex.Y & mask;
+                var localX = chunkColumnIndex.X & _mask;
+                var localY = chunkColumnIndex.Y & _mask;
                 var flatIndex = FlatIndex(localX, localY);
-                var chunkColumn = chunkColumns[flatIndex];
+                var chunkColumn = _chunkColumns[flatIndex];
 
                 // Alten Chunk entfernen, falls notwendig
 
-                using (semaphore.Wait())
+                using (_semaphore.Wait())
                 {
                     if (chunkColumn != null && chunkColumn.Index != chunkColumnIndex)
                     {
                         //logger.Debug($"Remove Chunk: {chunkColumn.Index}, new: {chunkColumnIndex}");
-                        globalCache.Release(chunkColumn.Index);
+                        _globalCache.Release(chunkColumn.Index);
 
 
-                        chunkColumns[flatIndex] = null;
+                        _chunkColumns[flatIndex] = null;
                         chunkColumn = null;
                     }
                 }
@@ -359,20 +339,20 @@ namespace OctoAwesome
                     return;
                 }
 
-                using (semaphore.Wait())
+                using (_semaphore.Wait())
                 {
                     // Neuen Chunk laden
                     if (chunkColumn == null)
                     {
-                        chunkColumn = globalCache.Subscribe(new Index2(chunkColumnIndex));
+                        chunkColumn = _globalCache.Subscribe(new Index2(chunkColumnIndex));
 
                         if (chunkColumn?.Index != chunkColumnIndex)
-                            logger.Error($"Loaded Chunk Index: {chunkColumn?.Index}, wanted: {chunkColumnIndex} ");
-                        if (chunkColumns[flatIndex] != null)
-                            logger.Error($"Chunk in Array!!: {flatIndex}, on index: {chunkColumns[flatIndex].Index} ");
+                            _logger.Error($"Loaded Chunk Index: {chunkColumn?.Index}, wanted: {chunkColumnIndex} ");
+                        if (_chunkColumns[flatIndex] != null)
+                            _logger.Error($"Chunk in Array!!: {flatIndex}, on index: {_chunkColumns[flatIndex].Index} ");
 
 
-                        chunkColumns[flatIndex] = chunkColumn;
+                        _chunkColumns[flatIndex] = chunkColumn;
 
                         if (chunkColumn == null)
                         {
@@ -394,14 +374,11 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        ///     Gibt einen falchen Index um auf das Array <see cref="chunkColumns" /> zu zu greiffen
+        ///     Gibt einen falchen Index um auf das Array <see cref="_chunkColumns" /> zu zu greiffen
         /// </summary>
         /// <param name="x">Die X-Koordinate</param>
         /// <param name="y">Die Y-Koordinate</param>
         /// <returns>Der Abgeflachte index</returns>
-        private int FlatIndex(int x, int y)
-        {
-            return ((y & mask) << limit) | x & mask;
-        }
+        private int FlatIndex(int x, int y) => ((y & _mask) << _limit) | x & _mask;
     }
 }

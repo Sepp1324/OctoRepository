@@ -7,10 +7,7 @@ namespace OctoAwesome.EntityComponents
 {
     public class InventoryComponent : EntityComponent
     {
-        public InventoryComponent()
-        {
-            Inventory = new List<InventorySlot>();
-        }
+        public InventoryComponent() => Inventory = new List<InventorySlot>();
 
         /// <summary>
         ///     Das Inventar der Entity
@@ -19,9 +16,7 @@ namespace OctoAwesome.EntityComponents
 
         public override void Deserialize(BinaryReader reader)
         {
-            IDefinitionManager definitionManager;
-
-            if (!TypeContainer.TryResolve(out definitionManager))
+            if (!TypeContainer.TryResolve(out IDefinitionManager definitionManager))
                 return;
 
             base.Deserialize(reader);
@@ -51,9 +46,10 @@ namespace OctoAwesome.EntityComponents
             base.Serialize(writer);
 
             writer.Write(Inventory.Count);
+
             foreach (var slot in Inventory)
             {
-                writer.Write(slot.Item.GetType().FullName);
+                writer.Write(slot.Item.GetType().FullName!);
                 writer.Write(slot.Amount);
             }
         }
@@ -64,8 +60,7 @@ namespace OctoAwesome.EntityComponents
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
         {
-            var slot = Inventory.FirstOrDefault(s => s.Item == item &&
-                                                     s.Amount < item.VolumePerUnit * item.StackLimit);
+            var slot = Inventory.FirstOrDefault(s => s.Item == item && s.Amount < item.VolumePerUnit * item.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
@@ -99,6 +94,7 @@ namespace OctoAwesome.EntityComponents
             if (slot.Amount >= definition.VolumePerUnit) // Wir können noch einen Block setzen
             {
                 slot.Amount -= definition.VolumePerUnit;
+
                 if (slot.Amount <= 0)
                     Inventory.Remove(slot);
                 return true;

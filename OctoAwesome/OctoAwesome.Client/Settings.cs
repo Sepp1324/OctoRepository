@@ -25,12 +25,11 @@ namespace OctoAwesome.Client
             if (debug)
             {
                 var map = new ExeConfigurationFileMap {ExeConfigFilename = "EXECONFIG_PATH"};
-                _config = ConfigurationManager.OpenMappedExeConfiguration(map,
-                    ConfigurationUserLevel.None);
+                _config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
             }
             else
             {
-                _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
+                _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly()!.Location);
             }
         }
 
@@ -38,20 +37,14 @@ namespace OctoAwesome.Client
         ///     Erzeugt eine neue Instanz der Klasse Settings, die auf die Konfigurationsdatei der aktuell laufenden Anwendung
         ///     zugreift.
         /// </summary>
-        public Settings()
-        {
-            _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly().Location);
-        }
+        public Settings() => _config = ConfigurationManager.OpenExeConfiguration(Assembly.GetEntryAssembly()!.Location);
 
         /// <summary>
         ///     Gibt den Wert einer Einstellung zurück.
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns>Der Wert der Einstellung.</returns>
-        public T Get<T>(string key)
-        {
-            return Get(key, default(T));
-        }
+        public T Get<T>(string key) => Get(key, default(T));
 
         /// <summary>
         ///     Gibt den Wert einer Einstellung zurück.
@@ -62,6 +55,7 @@ namespace OctoAwesome.Client
         public T Get<T>(string key, T defaultValue)
         {
             var settingElement = _config.AppSettings.Settings[key];
+            
             if (settingElement == null)
                 return defaultValue;
             var valueConfig = settingElement.Value;
@@ -87,10 +81,7 @@ namespace OctoAwesome.Client
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <returns></returns>
-        public bool KeyExists(string key)
-        {
-            return _config.AppSettings.Settings.AllKeys.Contains(key);
-        }
+        public bool KeyExists(string key) => _config.AppSettings.Settings.AllKeys.Contains(key);
 
         /// <summary>
         ///     Setzt den Wert einer Eigenschaft.
@@ -111,20 +102,14 @@ namespace OctoAwesome.Client
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, int value)
-        {
-            Set(key, Convert.ToString(value));
-        }
+        public void Set(string key, int value) => Set(key, Convert.ToString(value));
 
         /// <summary>
         ///     Setzt den Wert einer Eigenschaft.
         /// </summary>
         /// <param name="key">Der Schlüssel der Einstellung.</param>
         /// <param name="value">Der Wert der Einstellung.</param>
-        public void Set(string key, bool value)
-        {
-            Set(key, Convert.ToString(value));
-        }
+        public void Set(string key, bool value) => Set(key, Convert.ToString(value));
 
         /// <summary>
         ///     Setzt den Wert einer Eigenschaft.
@@ -150,6 +135,7 @@ namespace OctoAwesome.Client
         public void Set(string key, int[] values)
         {
             var strValues = new string[values.Length];
+
             for (var i = 0; i < values.Length; i++)
                 strValues[i] = Convert.ToString(values[i]);
             Set(key, strValues);
@@ -163,6 +149,7 @@ namespace OctoAwesome.Client
         public void Set(string key, bool[] values)
         {
             var stringValues = new string[values.Length];
+
             for (var i = 0; i < values.Length; i++)
                 stringValues[i] = Convert.ToString(values[i]);
             Set(key, stringValues);
@@ -188,6 +175,7 @@ namespace OctoAwesome.Client
 
             var partsString = arrayString.Split(',');
             var tArray = new T[partsString.Length];
+
             for (var i = 0; i < partsString.Length; i++)
                 tArray[i] = (T) Convert.ChangeType(partsString[i], typeof(T));
 

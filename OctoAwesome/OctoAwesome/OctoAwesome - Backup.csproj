@@ -4,14 +4,12 @@
 		<TargetFramework>net5.0</TargetFramework>
 
 		<DocumentationFile>..\bin\Release\OctoAwesome.xml</DocumentationFile>
-
-		<Nullable>warnings</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<OutputPath>..\bin\Debug\</OutputPath>
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

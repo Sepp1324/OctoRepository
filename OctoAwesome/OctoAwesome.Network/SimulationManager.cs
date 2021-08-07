@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Definitions;
 using OctoAwesome.Runtime;
@@ -8,21 +9,23 @@ namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
-        private readonly Thread backgroundThread;
-        private readonly ExtensionLoader extensionLoader;
-        private readonly object mainLock;
+        private Task _backgroundTask;
+        private readonly ExtensionLoader _extensionLoader;
+        private readonly object _mainLock;
 
-        private readonly ISettings settings;
-        private readonly UpdateHub updateHub;
+        private readonly ISettings _settings;
+        private readonly UpdateHub _updateHub;
 
-        private Simulation simulation;
+        private Simulation _simulation;
+
+        private CancellationTokenSource _cancellationTokenSource;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
-            mainLock = new object();
-            this.settings = settings;
-            this.updateHub = updateHub;
+            _mainLock = new object();
 
+            _settings = settings;
+            _updateHub = updateHub;
 
             TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
@@ -34,21 +37,16 @@ namespace OctoAwesome.Network
             TypeContainer.Register<ResourceManager>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IResourceManager, ResourceManager>(InstanceBehaviour.Singleton);
 
-            extensionLoader = TypeContainer.Get<ExtensionLoader>();
-            extensionLoader.LoadExtensions();
+            _extensionLoader = TypeContainer.Get<ExtensionLoader>();
+            _extensionLoader.LoadExtensions();
 
             ResourceManager = TypeContainer.Get<ResourceManager>();
             ResourceManager.InsertUpdateHub(updateHub);
 
             Service = new GameService(ResourceManager);
-            simulation = new Simulation(ResourceManager, extensionLoader, Service)
+            _simulation = new Simulation(ResourceManager, _extensionLoader, Service)
             {
                 IsServerSide = true
-            };
-            backgroundThread = new Thread(SimulationLoop)
-            {
-                Name = "Simulation Loop",
-                IsBackground = true
             };
         }
 
@@ -58,16 +56,16 @@ namespace OctoAwesome.Network
         {
             get
             {
-                lock (mainLock)
+                lock (_mainLock)
                 {
-                    return simulation;
+                    return _simulation;
                 }
             }
             set
             {
-                lock (mainLock)
+                lock (_mainLock)
                 {
-                    simulation = value;
+                    _simulation = value;
                 }
             }
         }
@@ -81,64 +79,63 @@ namespace OctoAwesome.Network
         {
             IsRunning = true;
             GameTime = new GameTime();
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            var token = _cancellationTokenSource.Token;
+            _backgroundTask = new Task(SimulationLoop, token, token, TaskCreationOptions.LongRunning);
 
             //TODO: Load and Save logic for Server (Multiple games etc.....)
-            var universe = settings.Get<string>("LastUniverse");
+            var universe = _settings.Get<string>("LastUniverse");
 
             if (string.IsNullOrWhiteSpace(universe))
             {
-                var guid = simulation.NewGame("melmack", new Random().Next().ToString());
-                settings.Set("LastUniverse", guid.ToString());
+                var guid = _simulation.NewGame("melmack", new Random().Next().ToString());
+                _settings.Set("LastUniverse", guid.ToString());
             }
             else
             {
-                if (!simulation.TryLoadGame(new Guid(universe)))
+                if (!_simulation.TryLoadGame(new Guid(universe)))
                 {
-                    var guid = simulation.NewGame("melmack", new Random().Next().ToString());
-                    settings.Set("LastUniverse", guid.ToString());
+                    var guid = _simulation.NewGame("melmack", new Random().Next().ToString());
+                    _settings.Set("LastUniverse", guid.ToString());
                 }
             }
 
-            backgroundThread.Start();
+            _backgroundTask.Start();
         }
 
         public void Stop()
         {
             IsRunning = false;
-            simulation.ExitGame();
-            backgroundThread.Abort();
+            _simulation.ExitGame();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
         }
 
-        public IUniverse GetUniverse()
-        {
-            return ResourceManager.CurrentUniverse;
-        }
+        public IUniverse GetUniverse() => ResourceManager.CurrentUniverse;
 
-        public IUniverse NewUniverse()
-        {
-            throw new NotImplementedException();
-        }
+        public IUniverse NewUniverse() => throw new NotImplementedException();
 
         public IPlanet GetPlanet(int planetId)
         {
             var planet = ResourceManager.GetPlanet(planetId);
-            planet.UpdateHub = updateHub;
+            planet.UpdateHub = _updateHub;
             return planet;
         }
 
-        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2)
-        {
-            return ResourceManager.LoadChunkColumn(planet, index2);
-        }
+        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2) => ResourceManager.LoadChunkColumn(planet, index2);
 
-        public IChunkColumn LoadColumn(int planetId, Index2 index2)
-        {
-            return LoadColumn(GetPlanet(planetId), index2);
-        }
+        public IChunkColumn LoadColumn(int planetId, Index2 index2) => LoadColumn(GetPlanet(planetId), index2);
 
-        private void SimulationLoop()
+        private void SimulationLoop(object state)
         {
-            while (IsRunning) Simulation.Update(GameTime);
+            var token = state is CancellationToken stateToken ? stateToken : CancellationToken.None;
+
+            while (true)
+            {
+                token.ThrowIfCancellationRequested();
+                Simulation.Update(GameTime);
+            }
         }
     }
 }

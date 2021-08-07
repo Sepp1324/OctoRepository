@@ -2,8 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using engenious;
 using engenious.Graphics;
 using engenious.Helper;
@@ -22,44 +24,15 @@ namespace OctoAwesome.Client.Controls
         public static int Span;
         public static int SpanOver2;
 
-        private readonly VertexPositionTexture[] billboardVertices =
-        {
-            new(new Vector3(-0.5f, 0.5f), new Vector2(0, 0)),
-            new(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
-            new(new Vector3(-0.5f, -0.5f), new Vector2(0, 1)),
-            new(new Vector3(0.5f, 0.5f), new Vector2(1, 0)),
-            new(new Vector3(0.5f, -0.5f), new Vector2(1, 1)),
-            new(new Vector3(-0.5f, -0.5f), new Vector2(0, 1))
-        };
+        private readonly float _sphereRadius;
+        private readonly float _sphereRadiusSquared;
 
-        private readonly ushort[] selectionIndices =
-        {
-            0, 1, 0, 2, 1, 3, 2, 3,
-            4, 5, 4, 6, 5, 7, 6, 7,
-            0, 4, 1, 5, 2, 6, 3, 7
-        };
-
-        private readonly VertexPositionColor[] selectionVertices =
-        {
-            new(new Vector3(-0.001f, +1.001f, +1.001f), Color.Black * 0.5f),
-            new(new Vector3(+1.001f, +1.001f, +1.001f), Color.Black * 0.5f),
-            new(new Vector3(-0.001f, -0.001f, +1.001f), Color.Black * 0.5f),
-            new(new Vector3(+1.001f, -0.001f, +1.001f), Color.Black * 0.5f),
-            new(new Vector3(-0.001f, +1.001f, -0.001f), Color.Black * 0.5f),
-            new(new Vector3(+1.001f, +1.001f, -0.001f), Color.Black * 0.5f),
-            new(new Vector3(-0.001f, -0.001f, -0.001f), Color.Black * 0.5f),
-            new(new Vector3(+1.001f, -0.001f, -0.001f), Color.Black * 0.5f)
-        };
-
-        private readonly float sphereRadius;
-        private readonly float sphereRadiusSquared;
-
-        private readonly Thread[] _additionalRegenerationThreads;
+        private readonly Task[] _additionalRegenerationThreads;
         private AssetComponent _assets;
 
-        private readonly Thread _backgroundThread;
-        private readonly Thread _backgroundThread2;
-        private readonly VertexBuffer _billboardVertexbuffer;
+        private readonly Task _backgroundTask;
+        private readonly Task _backgroundTask2;
+        private readonly VertexBuffer _billboardVertexBuffer;
 
         private readonly Texture2DArray _blockTextures;
         private CameraComponent _camera;
@@ -70,6 +43,8 @@ namespace OctoAwesome.Client.Controls
         private Components.EntityComponent _entities;
 
         private readonly int _fillIncrement;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+
         private ILocalChunkCache _localChunkCache;
         private readonly Matrix _miniMapProjectionMatrix;
         private readonly List<ChunkRenderer> _orderedChunkRenderer;
@@ -87,16 +62,15 @@ namespace OctoAwesome.Client.Controls
 
         private float _sunPosition;
         private readonly Texture2D _sunTexture;
-        private readonly AutoResetEvent[] additionalFillResetEvents;
-        private bool disposed;
+        private readonly AutoResetEvent[] _additionalFillResetEvents;
+        private bool _disposed;
 
-        private readonly AutoResetEvent fillResetEvent = new(false);
+        private readonly AutoResetEvent _fillResetEvent = new(false);
 
-        private readonly ConcurrentQueue<ChunkRenderer> forcedRenders = new();
-        private readonly AutoResetEvent forceResetEvent = new(false);
+        private readonly ConcurrentQueue<ChunkRenderer> _forcedRenders = new();
+        private readonly AutoResetEvent _forceResetEvent = new(false);
 
-        public SceneControl(ScreenComponent manager, string style = "") :
-            base(manager, style)
+        public SceneControl(ScreenComponent manager, string style = "") : base(manager, style)
         {
             Mask = (int) Math.Pow(2, VIEWRANGE) - 1;
             Span = (int) Math.Pow(2, VIEWRANGE);
@@ -108,22 +82,21 @@ namespace OctoAwesome.Client.Controls
             _entities = manager.Game.Entity;
             Manager = manager;
 
+            _cancellationTokenSource = new CancellationTokenSource();
+
             var chunkDiag = (float) Math.Sqrt(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_X +
                                               Chunk.CHUNKSIZE_Y * Chunk.CHUNKSIZE_Y +
                                               Chunk.CHUNKSIZE_Z * Chunk.CHUNKSIZE_Z);
             var tmpSphereRadius = (float) (Math.Sqrt(Span * Chunk.CHUNKSIZE_X * Span * Chunk.CHUNKSIZE_X * 3) / 3 +
                                            _camera.NearPlaneDistance + chunkDiag / 2);
-            sphereRadius = tmpSphereRadius - chunkDiag / 2;
-            sphereRadiusSquared = tmpSphereRadius * tmpSphereRadius;
+            _sphereRadius = tmpSphereRadius - chunkDiag / 2;
+            _sphereRadiusSquared = tmpSphereRadius * tmpSphereRadius;
 
             _simpleShader = manager.Game.Content.Load<Effect>("simple");
             _sunTexture = _assets.LoadTexture(typeof(ScreenComponent), "sun");
 
             var definitions = Manager.Game.DefinitionManager.BlockDefinitions;
-            var textureCount = 0;
-
-            foreach (var definition in definitions)
-                textureCount += definition.Textures.Length;
+            var textureCount = definitions.Sum(definition => definition.Textures.Length);
 
             var bitmapSize = 128;
             _blockTextures = new Texture2DArray(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
@@ -166,19 +139,13 @@ namespace OctoAwesome.Client.Controls
                 _orderedChunkRenderer.Add(renderer);
             }
 
-            _backgroundThread = new Thread(BackgroundLoop)
-            {
-                Priority = ThreadPriority.Lowest,
-                IsBackground = true
-            };
-            _backgroundThread.Start();
+            var token = _cancellationTokenSource.Token;
 
-            _backgroundThread2 = new Thread(ForceUpdateBackgroundLoop)
-            {
-                Priority = ThreadPriority.Lowest,
-                IsBackground = true
-            };
-            _backgroundThread2.Start();
+            _backgroundTask = new Task(BackgroundLoop, token, token, TaskCreationOptions.LongRunning);
+            _backgroundTask.Start();
+
+            _backgroundTask2 = new Task(ForceUpdateBackgroundLoop, token, token, TaskCreationOptions.LongRunning);
+            _backgroundTask2.Start();
 
             int additional;
 
@@ -186,23 +153,21 @@ namespace OctoAwesome.Client.Controls
                 additional = Environment.ProcessorCount / 3;
             else
                 additional = Environment.ProcessorCount - 4;
+
             additional = additional == 0 ? 1 : additional;
             _fillIncrement = additional + 1;
-            additionalFillResetEvents = new AutoResetEvent[additional];
-            _additionalRegenerationThreads = new Thread[additional];
+            _additionalFillResetEvents = new AutoResetEvent[additional];
+            _additionalRegenerationThreads = new Task[additional];
+
             for (var i = 0; i < additional; i++)
             {
-                var t = new Thread(AdditionalFillerBackgroundLoop)
-                {
-                    Priority = ThreadPriority.Lowest,
-                    IsBackground = true
-                };
                 var are = new AutoResetEvent(false);
-                t.Start(new object[] {are, i});
-                additionalFillResetEvents[i] = are;
+                var t = new Task(AdditionalFillerBackgroundLoop, (are, i, token), token, TaskCreationOptions.LongRunning);
+                
+                t.Start();
+                _additionalFillResetEvents[i] = are;
                 _additionalRegenerationThreads[i] = t;
             }
-
 
             var selectionVertices = new[]
             {
@@ -241,9 +206,9 @@ namespace OctoAwesome.Client.Controls
                 selectionIndices.Length);
             _selectionIndexBuffer.SetData(selectionIndices);
 
-            _billboardVertexbuffer = new VertexBuffer(manager.GraphicsDevice, VertexPositionTexture.VertexDeclaration,
+            _billboardVertexBuffer = new VertexBuffer(manager.GraphicsDevice, VertexPositionTexture.VertexDeclaration,
                 billboardVertices.Length);
-            _billboardVertexbuffer.SetData(billboardVertices);
+            _billboardVertexBuffer.SetData(billboardVertices);
 
 
             _sunEffect = new BasicEffect(manager.GraphicsDevice)
@@ -256,10 +221,7 @@ namespace OctoAwesome.Client.Controls
                 VertexColorEnabled = true
             };
 
-            MiniMapTexture =
-                new RenderTarget2D(manager.GraphicsDevice, 128, 128,
-                    PixelInternalFormat
-                        .Rgb8); 
+            MiniMapTexture = new RenderTarget2D(manager.GraphicsDevice, 128, 128, PixelInternalFormat.Rgb8); 
             _miniMapProjectionMatrix = Matrix.CreateOrthographic(128, 128, 1, 10000);
         }
 
@@ -271,16 +233,13 @@ namespace OctoAwesome.Client.Controls
 
         public void Dispose()
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
-            disposed = true;
+            _disposed = true;
 
-            _backgroundThread.Abort();
-            _backgroundThread2.Abort();
-
-            foreach (var thread in _additionalRegenerationThreads)
-                thread.Abort();
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
 
             foreach (var cr in _chunkRenderer)
                 cr.Dispose();
@@ -298,7 +257,7 @@ namespace OctoAwesome.Client.Controls
 
             _selectionIndexBuffer.Dispose();
             _selectionLines.Dispose();
-            _billboardVertexbuffer.Dispose();
+            _billboardVertexBuffer.Dispose();
 
             _player = null;
             _camera = null;
@@ -336,24 +295,25 @@ namespace OctoAwesome.Client.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (disposed || _player?.CurrentEntity == null)
+            if (_disposed || _player?.CurrentEntity == null)
                 return;
 
             _sunPosition += (float) gameTime.ElapsedGameTime.TotalMinutes * MathHelper.TwoPi;
 
-            var centerblock = _player.Position.Position.GlobalBlockIndex;
+            var centerBlock = _player.Position.Position.GlobalBlockIndex;
             var renderOffset = _player.Position.Position.ChunkIndex * Chunk.CHUNKSIZE;
 
             Index3? selected = null;
             Axis? selectedAxis = null;
             Vector3? selectionPoint = null;
             float bestDistance = 9999;
+
             for (var z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
             for (var y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
             for (var x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
             {
                 var range = new Index3(x, y, z);
-                var pos = range + centerblock;
+                var pos = range + centerBlock;
                 var block = _localChunkCache.GetBlock(pos);
                 if (block == 0)
                     continue;
@@ -369,32 +329,20 @@ namespace OctoAwesome.Client.Controls
                     selected = pos;
                     selectedAxis = collisionAxis;
                     bestDistance = distance.Value;
-                    selectionPoint = _camera.PickRay.Position + _camera.PickRay.Direction * distance -
-                                     (selected - renderOffset);
+                    selectionPoint = _camera.PickRay.Position + _camera.PickRay.Direction * distance - (selected - renderOffset);
                 }
             }
 
-            if (selected.HasValue)
+            if (selected.HasValue && selectionPoint.HasValue)
             {
                 _player.SelectedBox = selected;
-                switch (selectedAxis)
+                _player.SelectedSide = selectedAxis switch
                 {
-                    case Axis.X:
-                        _player.SelectedSide = _camera.PickRay.Direction.X > 0
-                            ? OrientationFlags.SideWest
-                            : OrientationFlags.SideEast;
-                        break;
-                    case Axis.Y:
-                        _player.SelectedSide = _camera.PickRay.Direction.Y > 0
-                            ? OrientationFlags.SideSouth
-                            : OrientationFlags.SideNorth;
-                        break;
-                    case Axis.Z:
-                        _player.SelectedSide = _camera.PickRay.Direction.Z > 0
-                            ? OrientationFlags.SideBottom
-                            : OrientationFlags.SideTop;
-                        break;
-                }
+                    Axis.X => _camera.PickRay.Direction.X > 0 ? OrientationFlags.SideWest : OrientationFlags.SideEast,
+                    Axis.Y => _camera.PickRay.Direction.Y > 0 ? OrientationFlags.SideSouth : OrientationFlags.SideNorth,
+                    Axis.Z => _camera.PickRay.Direction.Z > 0 ? OrientationFlags.SideBottom : OrientationFlags.SideTop,
+                    _ => _player.SelectedSide
+                };
 
                 _player.SelectedPoint = new Vector2();
                 switch (_player.SelectedSide)
@@ -464,7 +412,7 @@ namespace OctoAwesome.Client.Controls
             var destinationChunk = new Index2(_player.Position.Position.ChunkIndex);
 
             // Nur ausführen wenn der Spieler den Chunk gewechselt hat
-            if (destinationChunk != _currentChunk) fillResetEvent.Set();
+            if (destinationChunk != _currentChunk) _fillResetEvent.Set();
 
             base.OnUpdate(gameTime);
         }
@@ -474,10 +422,7 @@ namespace OctoAwesome.Client.Controls
             if (_player?.CurrentEntity == null)
                 return;
 
-            if (ControlTexture == null)
-                ControlTexture = new RenderTarget2D(Manager.GraphicsDevice, ActualClientArea.Width,
-                    ActualClientArea.Height, PixelInternalFormat.Rgb8);
-
+            ControlTexture ??= new RenderTarget2D(Manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
 
             var octoDaysPerEarthDay = 360f;
             var inclinationVariance = MathHelper.Pi / 3f;
@@ -530,22 +475,10 @@ namespace OctoAwesome.Client.Controls
             Manager.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             Manager.GraphicsDevice.DepthStencilState = DepthStencilState.None;
 
-            // Draw Sun
-            // GraphicsDevice.RasterizerState = RasterizerState.CullNone;
-
             if (_camera.View == new Matrix())
                 return;
 
-            //sunEffect.Texture = sunTexture;
-            //Matrix billboard = Matrix.Invert(camera.View);
-            //billboard.Translation = player.Position.Position.LocalPosition + (sunDirection * -10);
-            //sunEffect.World = billboard;
-            //sunEffect.View = camera.View;
-            //sunEffect.Projection = camera.Projection;
-            //sunEffect.CurrentTechnique.Passes[0].Apply();
-
-
-            Manager.GraphicsDevice.VertexBuffer = _billboardVertexbuffer;
+            Manager.GraphicsDevice.VertexBuffer = _billboardVertexBuffer;
             Manager.GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, 2);
 
             Manager.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -570,7 +503,6 @@ namespace OctoAwesome.Client.Controls
                     _player.SelectedBox.Value.X - chunkOffset.X * Chunk.CHUNKSIZE_X,
                     _player.SelectedBox.Value.Y - chunkOffset.Y * Chunk.CHUNKSIZE_Y,
                     _player.SelectedBox.Value.Z - chunkOffset.Z * Chunk.CHUNKSIZE_Z);
-                // selectionEffect.World = Matrix.CreateTranslation(selectedBoxPosition);
                 _selectionEffect.World = Matrix.CreateTranslation(relativePosition);
                 _selectionEffect.View = _camera.View;
                 _selectionEffect.Projection = _camera.Projection;
@@ -580,7 +512,6 @@ namespace OctoAwesome.Client.Controls
                 {
                     pass.Apply();
                     Manager.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.Lines, 0, 0, 8, 0, 12);
-                    //Manager.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.Lines, selectionLines, 0, 8, selectionIndeces, 0, 12);
                 }
             }
 
@@ -590,7 +521,7 @@ namespace OctoAwesome.Client.Controls
 
         private void DrawChunks(Index3 chunkOffset, Matrix viewProj)
         {
-            var spherePos = _camera.PickRay.Position + _camera.PickRay.Direction * sphereRadius;
+            var spherePos = _camera.PickRay.Position + _camera.PickRay.Direction * _sphereRadius;
 
             foreach (var renderer in _chunkRenderer)
             {
@@ -605,7 +536,7 @@ namespace OctoAwesome.Client.Controls
                     shift.Z * Chunk.CHUNKSIZE_Z + Chunk.CHUNKSIZE_Z / 2);
 
                 var frustumDist = spherePos - chunkPos;
-                if (frustumDist.LengthSquared < sphereRadiusSquared)
+                if (frustumDist.LengthSquared < _sphereRadiusSquared)
                     renderer.Draw(viewProj, shift);
             }
         }
@@ -626,7 +557,7 @@ namespace OctoAwesome.Client.Controls
                     {
                         if (b)
                         {
-                            fillResetEvent.Set();
+                            _fillResetEvent.Set();
                             OnCenterChanged?.Invoke(this, EventArgs.Empty);
                         }
                     });
@@ -662,7 +593,7 @@ namespace OctoAwesome.Client.Controls
                 _currentChunk = destinationChunk;
             }
 
-            foreach (var e in additionalFillResetEvents)
+            foreach (var e in _additionalFillResetEvents)
                 e.Set();
 
             RegenerateAll(0);
@@ -677,71 +608,68 @@ namespace OctoAwesome.Client.Controls
             }
         }
 
-        private void BackgroundLoop()
+        private void BackgroundLoop(object state)
         {
+            var token = state is CancellationToken stateToken ? stateToken : CancellationToken.None;
+
             while (true)
             {
-                fillResetEvent.WaitOne();
+                token.ThrowIfCancellationRequested();
+                _fillResetEvent.WaitOne();
                 FillChunkRenderer();
             }
         }
 
-        private void AdditionalFillerBackgroundLoop(object oArr)
+        private void AdditionalFillerBackgroundLoop(object state)
         {
-            var arr = (object[]) oArr;
-            var are = (AutoResetEvent) arr[0];
-            var n = (int) arr[1];
+            var (@event, n, token) = ((AutoResetEvent resetEvent, int n, CancellationToken cancellationToken))state;
+
             while (true)
             {
-                are.WaitOne();
+                token.ThrowIfCancellationRequested();
+                @event.WaitOne();
                 RegenerateAll(n + 1);
             }
         }
 
-        private void ForceUpdateBackgroundLoop()
+        private void ForceUpdateBackgroundLoop(object state)
         {
+            var token = state is CancellationToken stateToken ? stateToken : CancellationToken.None;
+
             while (true)
             {
-                forceResetEvent.WaitOne();
+                token.ThrowIfCancellationRequested();
+                _forceResetEvent.WaitOne();
 
-                while (!forcedRenders.IsEmpty)
-                while (forcedRenders.TryDequeue(out var r))
+                while (!_forcedRenders.IsEmpty)
+                while (_forcedRenders.TryDequeue(out var r))
                     r.RegenerateVertexBuffer();
             }
         }
 
         public void Enqueue(ChunkRenderer chunkRenderer1)
         {
-            forcedRenders.Enqueue(chunkRenderer1);
-            forceResetEvent.Set();
+            _forcedRenders.Enqueue(chunkRenderer1);
+            _forceResetEvent.Set();
         }
 
         #region Converter
 
-        private static OrientationFlags FindEdge(Vector2 point, OrientationFlags upper, OrientationFlags lower,
-            OrientationFlags left, OrientationFlags right)
+        private static OrientationFlags FindEdge(Vector2 point, OrientationFlags upper, OrientationFlags lower, OrientationFlags left, OrientationFlags right)
         {
             if (point.X > point.Y)
-            {
-                if (1f - point.X > point.Y) return upper;
-                return right;
-            }
+                return 1f - point.X > point.Y ? upper : right;
 
-            if (1f - point.X > point.Y) return left;
-            return lower;
+            return 1f - point.X > point.Y ? left : lower;
         }
 
         private static OrientationFlags FindCorner(Vector2 point, OrientationFlags upperLeftCorner,
             OrientationFlags upperRightCorner, OrientationFlags lowerLeftCorner, OrientationFlags lowerRightCorner)
         {
             if (point.X < 0.5f)
-            {
-                if (point.Y < 0.5f) return upperLeftCorner;
-                return lowerLeftCorner;
-            }
+                return point.Y < 0.5f ? upperLeftCorner : lowerLeftCorner;
 
-            if (point.Y < 0.5f) return upperRightCorner;
-            return lowerRightCorner;
+            return point.Y < 0.5f ? upperRightCorner : lowerRightCorner;
         }
 
         #endregion

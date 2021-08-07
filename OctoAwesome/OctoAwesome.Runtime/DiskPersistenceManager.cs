@@ -19,51 +19,50 @@ namespace OctoAwesome.Runtime
     public class DiskPersistenceManager : IPersistenceManager, IDisposable, INotificationObserver
     {
         private const string UniverseFilename = "universe.info";
-
         private const string PlanetGeneratorInfo = "generator.info";
-
         private const string PlanetFilename = "planet.info";
-        private readonly IPool<Awaiter> awaiterPool;
-        private readonly IPool<BlockChangedNotification> blockChangedNotificationPool;
-        private readonly IDisposable chunkSubscription;
-        private readonly DatabaseProvider databaseProvider;
-        private readonly IExtensionResolver extensionResolver;
-        private readonly ISettings settings;
-        private IUniverse currentUniverse;
 
-        private DirectoryInfo root;
+        private readonly IPool<Awaiter> _awaiterPool;
+        private readonly IPool<BlockChangedNotification> _blockChangedNotificationPool;
+        private readonly IDisposable _chunkSubscription;
+        private readonly DatabaseProvider _databaseProvider;
+        private readonly IExtensionResolver _extensionResolver;
+        private readonly ISettings _settings;
+        private IUniverse _currentUniverse;
+
+        private DirectoryInfo _root;
 
         public DiskPersistenceManager(IExtensionResolver extensionResolver, ISettings Settings, IUpdateHub updateHub)
         {
-            this.extensionResolver = extensionResolver;
-            settings = Settings;
-            databaseProvider = new DatabaseProvider(GetRoot(), TypeContainer.Get<ILogger>());
-            awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
-            blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
-            chunkSubscription = updateHub.Subscribe(this, DefaultChannels.Chunk);
+            _extensionResolver = extensionResolver;
+            _settings = Settings;
+            _databaseProvider = new DatabaseProvider(GetRoot(), TypeContainer.Get<ILogger>());
+            _awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
+            _blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
+            _chunkSubscription = updateHub.Subscribe(this, DefaultChannels.Chunk);
         }
 
         public void Dispose()
         {
-            databaseProvider.Dispose();
-            chunkSubscription.Dispose();
+            _databaseProvider.Dispose();
+            _chunkSubscription.Dispose();
         }
 
-        public void OnCompleted()
-        {
-        }
+        public void OnCompleted() { }
 
-        public void OnError(Exception error)
-        {
-            throw error;
-        }
+        public void OnError(Exception error) => throw error;
 
         public void OnNext(Notification notification)
         {
-            if (notification is BlockChangedNotification blockChanged)
-                SaveChunk(blockChanged);
-            else if (notification is BlocksChangedNotification blocksChanged)
-                SaveChunk(blocksChanged);
+            switch (notification)
+            {
+                case BlockChangedNotification blockChanged:
+                    SaveChunk(blockChanged);
+                    break;
+                case BlocksChangedNotification blocksChanged:
+                    SaveChunk(blocksChanged);
+                    break;
+            }
         }
 
         /// <summary>
@@ -74,8 +73,9 @@ namespace OctoAwesome.Runtime
         {
             var path = Path.Combine(GetRoot(), universe.Id.ToString());
             Directory.CreateDirectory(path);
-            currentUniverse = universe;
+            _currentUniverse = universe;
             var file = Path.Combine(path, UniverseFilename);
+
             using (Stream stream = File.Open(file, FileMode.Create, FileAccess.Write))
             using (var zip = new GZipStream(stream, CompressionMode.Compress))
             using (var writer = new BinaryWriter(zip))
@@ -109,7 +109,7 @@ namespace OctoAwesome.Runtime
             {
                 using (var bw = new BinaryWriter(stream))
                 {
-                    bw.Write(planet.Generator.GetType().FullName);
+                    bw.Write(planet.Generator.GetType().FullName!);
                 }
             }
 
@@ -130,10 +130,8 @@ namespace OctoAwesome.Runtime
         /// <param name="column">Zu serialisierende ChunkColumn.</param>
         public void SaveColumn(Guid universeGuid, IPlanet planet, IChunkColumn column)
         {
-            var chunkColumContext =
-                new ChunkColumnDbContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false),
-                    planet);
-            chunkColumContext.AddOrUpdate(column);
+            var chunkColumnContext = new ChunkColumnDbContext(_databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
+            chunkColumnContext.AddOrUpdate(column);
         }
 
         /// <summary>
@@ -159,7 +157,7 @@ namespace OctoAwesome.Runtime
 
         public void SaveEntity(Entity entity, Guid universe)
         {
-            var context = new EntityDbContext(databaseProvider, universe);
+            var context = new EntityDbContext(_databaseProvider, universe);
             context.AddOrUpdate(entity);
         }
 
@@ -170,12 +168,14 @@ namespace OctoAwesome.Runtime
         public Awaiter Load(out SerializableCollection<IUniverse> universes)
         {
             var root = GetRoot();
-            var awaiter = awaiterPool.Get();
+            var awaiter = _awaiterPool.Get();
             universes = new SerializableCollection<IUniverse>();
             awaiter.Serializable = universes;
+            
             foreach (var folder in Directory.GetDirectories(root))
             {
                 var id = Path.GetFileNameWithoutExtension(folder); //folder.Replace(root + "\\", "");
+                
                 if (Guid.TryParse(id, out var guid))
                 {
                     Load(out var universe, guid).WaitOnAndRelease();
@@ -197,7 +197,8 @@ namespace OctoAwesome.Runtime
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
             universe = new Universe();
-            currentUniverse = universe;
+            _currentUniverse = universe;
+            
             if (!File.Exists(file))
                 return null;
 
@@ -205,7 +206,7 @@ namespace OctoAwesome.Runtime
             using (var zip = new GZipStream(stream, CompressionMode.Decompress))
             using (var reader = new BinaryReader(zip))
             {
-                var awaiter = awaiterPool.Get();
+                var awaiter = _awaiterPool.Get();
                 universe.Deserialize(reader);
                 awaiter.SetResult(universe);
                 return awaiter;
@@ -221,9 +222,9 @@ namespace OctoAwesome.Runtime
         public Awaiter Load(out IPlanet planet, Guid universeGuid, int planetId)
         {
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetFilename);
-            var generatorInfo =
-                Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
+            var generatorInfo = Path.Combine(GetRoot(), universeGuid.ToString(), planetId.ToString(), PlanetGeneratorInfo);
             planet = new Planet();
+            
             if (!File.Exists(generatorInfo) || !File.Exists(file))
                 return null;
 
@@ -233,20 +234,18 @@ namespace OctoAwesome.Runtime
                 using (var bw = new BinaryReader(stream))
                 {
                     var generatorName = bw.ReadString();
-                    generator = extensionResolver.GetMapGenerator()
-                        .FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
+                    generator = _extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName!.Equals(generatorName));
                 }
             }
 
             if (generator == null)
                 throw new Exception("Unknown Generator");
 
-
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
                 using (var zip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    var awaiter = awaiterPool.Get();
+                    var awaiter = _awaiterPool.Get();
                     planet = generator.GeneratePlanet(zip);
                     awaiter.SetResult(planet);
                     return awaiter;
@@ -263,33 +262,29 @@ namespace OctoAwesome.Runtime
         /// <returns>Die neu geladene ChunkColumn.</returns>
         public Awaiter Load(out IChunkColumn column, Guid universeGuid, IPlanet planet, Index2 columnIndex)
         {
-            var chunkColumContext =
-                new ChunkColumnDbContext(databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false),
-                    planet);
+            var chunkColumnContext = new ChunkColumnDbContext(_databaseProvider.GetDatabase<Index2Tag>(universeGuid, planet.Id, false), planet);
 
-            column = chunkColumContext.Get(columnIndex);
+            column = chunkColumnContext.Get(columnIndex);
 
             if (column == null)
                 return null;
-            //var localColumn = column;
 
             ApplyChunkDiff(column, universeGuid, planet);
 
-            var awaiter = awaiterPool.Get();
+            var awaiter = _awaiterPool.Get();
             awaiter.SetResult(column);
             return awaiter;
         }
 
         public Awaiter Load(out Entity entity, Guid universeGuid, Guid entityId)
         {
-            var entityContext = new EntityDbContext(databaseProvider, universeGuid);
+            var entityContext = new EntityDbContext(_databaseProvider, universeGuid);
             entity = entityContext.Get(new GuidTag<Entity>(entityId));
 
-            var awaiter = awaiterPool.Get();
+            var awaiter = _awaiterPool.Get();
             awaiter.SetResult(entity);
             return awaiter;
         }
-
 
         /// <summary>
         ///     Lädt einen Player.
@@ -302,6 +297,7 @@ namespace OctoAwesome.Runtime
             //TODO: Später durch Playername ersetzen
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
             player = new Player();
+           
             if (!File.Exists(file))
                 return null;
 
@@ -311,7 +307,7 @@ namespace OctoAwesome.Runtime
                 {
                     try
                     {
-                        var awaiter = awaiterPool.Get();
+                        var awaiter = _awaiterPool.Get();
                         awaiter.Serializable = player;
                         player.Deserialize(reader);
                         awaiter.SetResult(player);
@@ -327,73 +323,59 @@ namespace OctoAwesome.Runtime
             return null;
         }
 
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>(Guid universeGuid) where T : EntityComponent
-        {
-            return new EntityDbContext(databaseProvider, universeGuid).GetEntitiesWithComponent<T>();
-        }
+        public IEnumerable<Entity> LoadEntitiesWithComponent<T>(Guid universeGuid) where T : EntityComponent => new EntityDbContext(_databaseProvider, universeGuid).GetEntitiesWithComponent<T>();
 
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent
-        {
-            return new EntityDbContext(databaseProvider, universeGuid).GetEntityIdsFromComponent<T>()
-                .Select(i => i.Tag);
-        }
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent => new EntityDbContext(_databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
 
-        public IEnumerable<Guid> GetEntityIds(Guid universeGuid)
-        {
-            return new EntityDbContext(databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
-        }
+        public IEnumerable<Guid> GetEntityIds(Guid universeGuid) => new EntityDbContext(_databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds)
-            where T : EntityComponent, new()
-        {
-            foreach (var entityId in entityIds)
-                yield return (entityId, new EntityComponentsDbContext(databaseProvider, universeGuid).Get<T>(entityId));
-        }
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds) where T : EntityComponent, new() => entityIds.Select(entityId => (entityId, new EntityComponentsDbContext(_databaseProvider, universeGuid).Get<T>(entityId)));
 
         private string GetRoot()
         {
-            if (root != null)
-                return root.FullName;
+            if (_root != null)
+                return _root.FullName;
 
-            var appconfig = settings.Get<string>("ChunkRoot");
-            if (!string.IsNullOrEmpty(appconfig))
+            var appConfig = _settings.Get<string>("ChunkRoot");
+
+            if (!string.IsNullOrEmpty(appConfig))
             {
-                root = new DirectoryInfo(appconfig);
-                if (!root.Exists) root.Create();
-                return root.FullName;
+                _root = new DirectoryInfo(appConfig);
+                if (!_root.Exists) _root.Create();
+                return _root.FullName;
             }
 
             var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
-            if (!root.Exists) root.Create();
-            return root.FullName;
+            _root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
+
+            if (!_root.Exists) _root.Create();
+            return _root.FullName;
         }
 
         private void SaveChunk(BlockChangedNotification chunkNotification)
         {
-            var database =
-                databaseProvider.GetDatabase<ChunkDiffTag>(currentUniverse.Id, chunkNotification.Planet, true);
-            var databaseContext = new ChunkDiffDbContext(database, blockChangedNotificationPool);
+            var database = _databaseProvider.GetDatabase<ChunkDiffTag>(_currentUniverse.Id, chunkNotification.Planet, true);
+            var databaseContext = new ChunkDiffDbContext(database, _blockChangedNotificationPool);
             databaseContext.AddOrUpdate(chunkNotification);
         }
 
         private void SaveChunk(BlocksChangedNotification chunkNotification)
         {
-            var database =
-                databaseProvider.GetDatabase<ChunkDiffTag>(currentUniverse.Id, chunkNotification.Planet, true);
-            var databaseContext = new ChunkDiffDbContext(database, blockChangedNotificationPool);
+            var database = _databaseProvider.GetDatabase<ChunkDiffTag>(_currentUniverse.Id, chunkNotification.Planet, true);
+            var databaseContext = new ChunkDiffDbContext(database, _blockChangedNotificationPool);
             databaseContext.AddOrUpdate(chunkNotification);
         }
 
         private void ApplyChunkDiff(IChunkColumn column, Guid universeGuid, IPlanet planet)
         {
-            var database = databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id, true);
-            var databaseContext = new ChunkDiffDbContext(database, blockChangedNotificationPool);
+            var database = _databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id, true);
+            var databaseContext = new ChunkDiffDbContext(database, _blockChangedNotificationPool);
             var keys = databaseContext.GetAllKeys();
 
             for (var i = 0; i < keys.Count; i++)
             {
                 var key = keys[i];
+                
                 if (key.ChunkPositon.X == column.Index.X && key.ChunkPositon.Y == column.Index.Y)
                 {
                     var block = databaseContext.Get(key);

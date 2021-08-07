@@ -21,13 +21,13 @@ namespace OctoAwesome
 
         /// <summary>
         ///     Array das alle Blöcke eines Chunks enthält. Jeder eintrag entspricht einer Block-ID.
-        ///     Der Index ist derselbe wie bei <see cref="MetaData" /> und <see cref="Resources" />.
+        ///     Der Index ist derselbe wie bei <see cref="MetaData" />
         /// </summary>
         ushort[] Blocks { get; }
 
         /// <summary>
         ///     Array, das die Metadaten zu den Blöcken eines Chunks enthält.
-        ///     Der Index ist derselbe wie bei <see cref="Blocks" /> und <see cref="Resources" />.
+        ///     Der Index ist derselbe wie bei <see cref="Blocks" />
         /// </summary>
         int[] MetaData { get; }
 
@@ -106,11 +106,15 @@ namespace OctoAwesome
         void SetBlockResources(int x, int y, int z, ushort[] resources);
 
         void SetColumn(IChunkColumn chunkColumn);
+
         void Update(SerializableNotification notification);
+        
         void OnUpdate(SerializableNotification notification);
+        
         void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos);
 
         event Action<IChunk> Changed;
+        
         void FlagDirty();
     }
 }

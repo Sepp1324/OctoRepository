@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
 
     <LogFile>../bin/Doc/log.txt</LogFile>
+
+    <Nullable>warnings</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

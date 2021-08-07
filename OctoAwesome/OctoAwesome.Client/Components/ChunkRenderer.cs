@@ -13,10 +13,10 @@ namespace OctoAwesome.Client.Components
 {
     internal sealed class ChunkRenderer : IDisposable
     {
-        private static readonly Vector2[] uvOffsets;
-        private static readonly RasterizerState _wireFrameState;
+        private static readonly Vector2[] UvOffsets;
+        private static readonly RasterizerState WireFrameState;
 
-        private readonly SceneControl __sceneControl;
+        private readonly SceneControl _sceneControl;
 
         private readonly IBlockDefinition[] _blockDefinitions;
         private readonly IChunk[] _chunks;
@@ -42,19 +42,16 @@ namespace OctoAwesome.Client.Components
         private readonly Dictionary<IBlockDefinition, int> _textureOffsets;
 
         private readonly Texture2DArray _textures;
-        private float _textureSizeGap;
         private readonly List<VertexPositionNormalTextureLight> _vertices;
-        private DatabaseProvider dbProvier;
 
         public bool NeedsUpdate;
 
-
         static ChunkRenderer()
         {
-            _wireFrameState = new RasterizerState {FillMode = PolygonMode.Line, CullMode = CullMode.CounterClockwise};
+            WireFrameState = new RasterizerState {FillMode = PolygonMode.Line, CullMode = CullMode.CounterClockwise};
             OverrideLightLevel = 0;
             WireFrame = false;
-            uvOffsets = new[]
+            UvOffsets = new[]
             {
                 new Vector2(0, 0),
                 new Vector2(1, 0),
@@ -63,10 +60,9 @@ namespace OctoAwesome.Client.Components
             };
         }
 
-        public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, Effect simpleShader,
-            GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
+        public ChunkRenderer(SceneControl sceneControl, IDefinitionManager definitionManager, Effect simpleShader, GraphicsDevice graphicsDevice, Matrix projection, Texture2DArray textures)
         {
-            __sceneControl = sceneControl;
+            _sceneControl = sceneControl;
             _definitionManager = definitionManager;
             _graphicsDevice = graphicsDevice;
             _textures = textures;
@@ -74,8 +70,6 @@ namespace OctoAwesome.Client.Components
             GenerateIndexBuffer();
 
             _vertices = new List<VertexPositionNormalTextureLight>();
-            var textureColumns = textures.Width / SceneControl.TEXTURESIZE;
-            _textureSizeGap = 1f / SceneControl.TEXTURESIZE;
 
             // BlockTypes sammlen
             var localBlockDefinitions = definitionManager.BlockDefinitions;
@@ -84,7 +78,7 @@ namespace OctoAwesome.Client.Components
 
             foreach (var definition in localBlockDefinitions)
             {
-                var textureCount = definition.Textures.Count();
+                var textureCount = definition.Textures.Length;
                 _textureOffsets.Add(definition, definitionIndex);
                 definitionIndex += textureCount;
             }
@@ -136,10 +130,7 @@ namespace OctoAwesome.Client.Components
             if (chunkOffset == _cameraPos)
                 return _shift;
 
-            _shift = chunkOffset.ShortestDistanceXY(
-                _chunkPosition.Value, new Index2(
-                    planet.Size.X,
-                    planet.Size.Y));
+            _shift = chunkOffset.ShortestDistanceXY(_chunkPosition!.Value, new Index2(planet.Size.X, planet.Size.Y));
             _cameraPos = chunkOffset;
             return _shift;
         }
@@ -171,7 +162,7 @@ namespace OctoAwesome.Client.Components
         private void OnChunkChanged(IChunk c)
         {
             NeedsUpdate = true;
-            __sceneControl.Enqueue(this);
+            _sceneControl.Enqueue(this);
         }
 
         public void Draw(Matrix viewProj, Index3 shift)
@@ -195,7 +186,7 @@ namespace OctoAwesome.Client.Components
                 if (VertexBuffer == null)
                     return;
 
-                _graphicsDevice.RasterizerState = WireFrame ? _wireFrameState : RasterizerState.CullCounterClockwise;
+                _graphicsDevice.RasterizerState = WireFrame ? WireFrameState : RasterizerState.CullCounterClockwise;
                 _graphicsDevice.VertexBuffer = VertexBuffer;
 
                 foreach (var pass in _simple.CurrentTechnique.Passes)
@@ -257,6 +248,7 @@ namespace OctoAwesome.Client.Components
                 _vertices.Clear();
 
                 var chunkPos = ChunkPosition.Value;
+
                 for (var x = -1; x < 2; x++)
                 for (var y = -1; y < 2; y++)
                 for (var z = -1; z < 2; z++)
@@ -276,22 +268,22 @@ namespace OctoAwesome.Client.Components
                 for (var z = Chunk.CHUNKSIZE_Z - 1; z >= 0; z -= Chunk.CHUNKSIZE.Z - 1)
                 for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
-                    GenerateVertices(chunk, _chunks, uvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
+                    GenerateVertices(chunk, _chunks, UvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
 
                 for (var z = 0; z < Chunk.CHUNKSIZE_Z; z++)
                 for (var y = Chunk.CHUNKSIZE_Y - 1; y >= 0; y -= Chunk.CHUNKSIZE.Y - 1)
                 for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
-                    GenerateVertices(chunk, _chunks, uvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
+                    GenerateVertices(chunk, _chunks, UvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
 
                 for (var z = 0; z < Chunk.CHUNKSIZE_Z; z++)
                 for (var y = 0; y < Chunk.CHUNKSIZE_Y; y++)
                 for (var x = Chunk.CHUNKSIZE_X - 1; x >= 0; x -= Chunk.CHUNKSIZE.X - 1)
-                    GenerateVertices(chunk, _chunks, uvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
+                    GenerateVertices(chunk, _chunks, UvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
 
                 for (var z = 1; z < Chunk.CHUNKSIZE_Z - 1; z++)
                 for (var y = 1; y < Chunk.CHUNKSIZE_Y - 1; y++)
                 for (var x = 1; x < Chunk.CHUNKSIZE_X - 1; x++)
-                    GenerateVertices(chunk, _chunks, uvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
+                    GenerateVertices(chunk, _chunks, UvOffsets, x, y, z, chunkPos, _blockDefinitions, true);
 
                 return RegisterNewVertices(chunk);
             }
@@ -309,8 +301,7 @@ namespace OctoAwesome.Client.Components
                 ThreadingHelper.OnUiThread(t =>
                 {
                     if (VertexBuffer == null || IndexBuffer == null)
-                        VertexBuffer = new VertexBuffer(_graphicsDevice,
-                            VertexPositionNormalTextureLight.VertexDeclaration, VertexCount);
+                        VertexBuffer = new VertexBuffer(_graphicsDevice, VertexPositionNormalTextureLight.VertexDeclaration, VertexCount);
 
                     if (VertexCount > VertexBuffer.VertexCount)
                         VertexBuffer.Resize(VertexCount);
@@ -328,20 +319,21 @@ namespace OctoAwesome.Client.Components
             }
         }
 #if DEBUG
-        private void GenerateVertices(IChunk centerChunk, IChunk[] chunks, Vector2[] uvOffsets, int z, int y, int x,
-            Index3 chunkPosition, IBlockDefinition[] blockDefinitions, bool getFromManager)
+        private void GenerateVertices(IChunk centerChunk, IChunk[] chunks, Vector2[] uvOffsets, int z, int y, int x, Index3 chunkPosition, IBlockDefinition[] blockDefinitions, bool getFromManager)
 #else
         private unsafe void GenerateVertices(IChunk chunk, IChunk[] chunks, int x, int y, int z, IBlockDefinition[] blockDefinitions, bool getFromManager)
 #endif
         {
             var block = centerChunk.GetBlock(x, y, z);
 
-            if (block == 0)
+            var manager = _manager;
+
+            if (block == 0 || manager is null)
                 return;
 
             var blockDefinition = _definitionManager.GetBlockDefinitionByIndex(block);
 
-            if (blockDefinition == null)
+            if (blockDefinition is null)
                 return;
 
             if (!_textureOffsets.TryGetValue(blockDefinition, out var textureIndex))
@@ -363,12 +355,8 @@ namespace OctoAwesome.Client.Components
                 for (var yOffset = -1; yOffset <= 1; yOffset++)
                 for (var xOffset = -1; xOffset <= 1; xOffset++)
                 {
-                    chunk = chunks[
-                        GetIndex(IsBorder(z) * OutsiteOfChunkBorderInDirection(z, zOffset),
-                            IsBorder(y) * OutsiteOfChunkBorderInDirection(y, yOffset),
-                            IsBorder(x) * OutsiteOfChunkBorderInDirection(x, xOffset))];
-                    blocks[GetIndex(zOffset, yOffset, xOffset)] = _manager.GetBlock(
-                        ChunkPosition.Value * Chunk.CHUNKSIZE + new Index3(x + xOffset, y + yOffset, z + zOffset));
+                    chunk = chunks[GetIndex(IsBorder(z) * OutsiteOfChunkBorderInDirection(z, zOffset), IsBorder(y) * OutsiteOfChunkBorderInDirection(y, yOffset), IsBorder(x) * OutsiteOfChunkBorderInDirection(x, xOffset))];
+                    blocks[GetIndex(zOffset, yOffset, xOffset)] = manager.GetBlock(chunkPosition * Chunk.CHUNKSIZE + new Index3(x + xOffset, y + yOffset, z + zOffset));
                 }
             }
             else
@@ -377,8 +365,7 @@ namespace OctoAwesome.Client.Components
                 for (var yOffset = -1; yOffset <= 1; yOffset++)
                 for (var xOffset = -1; xOffset <= 1; xOffset++)
                     blocks[GetIndex(zOffset, yOffset, xOffset)] = centerChunk.Blocks[
-                        Chunk.GetFlatIndex(ChunkPosition.Value * Chunk.CHUNKSIZE +
-                                           new Index3(x + xOffset, y + yOffset, z + zOffset))];
+                        Chunk.GetFlatIndex(chunkPosition * Chunk.CHUNKSIZE + new Index3(x + xOffset, y + yOffset, z + zOffset))];
             }
 
 

@@ -6,21 +6,19 @@ namespace OctoAwesome.Services
 {
     public sealed class BlockVolumeState : IPoolElement
     {
-        private IPool pool;
-        public BlockInfo BlockInfo { get; protected set; }
-        public IBlockDefinition BlockDefinition { get; protected set; }
+        private IPool _pool;
+
+        public BlockInfo BlockInfo { get; set; }
+
+        public IBlockDefinition BlockDefinition { get; set; }
+
         public decimal VolumeRemaining { get; internal set; }
+
         public DateTimeOffset ValidUntil { get; set; }
 
-        public void Init(IPool pool)
-        {
-            this.pool = pool;
-        }
+        public void Init(IPool pool) => _pool = pool;
 
-        public void Release()
-        {
-            pool.Push(this);
-        }
+        public void Release() => _pool.Push(this);
 
         public void Initialize(BlockInfo info, IBlockDefinition blockDefinition, DateTimeOffset validUntil)
         {
@@ -39,9 +37,6 @@ namespace OctoAwesome.Services
             return true;
         }
 
-        internal void RestoreTime()
-        {
-            ValidUntil = DateTimeOffset.Now.Add(BlockDefinition.TimeToVolumeReset);
-        }
+        internal void RestoreTime() => ValidUntil = DateTimeOffset.Now.Add(BlockDefinition.TimeToVolumeReset);
     }
 }

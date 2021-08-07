@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
     
     <DocumentationFile>..\bin\Debug\OctoAwesome.Basics.XML</DocumentationFile>
+
+    <Nullable>warnings</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
