@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoAwesome.Components;
+using OctoAwesome.Definitions;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
@@ -57,7 +60,7 @@ namespace OctoAwesome.Runtime
         /// <param name="extensionResolver">ExetnsionResolver</param>
         /// <param name="definitionManager">DefinitionManager</param>
         /// <param name="settings">Einstellungen</param>
-        public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, IPersistenceManager persistenceManager)
+        public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, IPersistenceManager persistenceManager, IUpdateHub updateHub)
         {
             semaphoreSlim = new LockSemaphore(1, 1);
             loadingSemaphore = new CountedScopeSemaphore();
@@ -70,13 +73,9 @@ namespace OctoAwesome.Runtime
             populators = extensionResolver.GetMapPopulator().OrderBy(p => p.Order).ToList();
 
             Planets = new ConcurrentDictionary<int, IPlanet>();
+            UpdateHub = updateHub;
 
             bool.TryParse(settings.Get<string>("DisablePersistence"), out disablePersistence);
-        }
-
-        public void InsertUpdateHub(UpdateHub updateHub)
-        {
-            UpdateHub = updateHub;
         }
 
         /// <summary>
@@ -404,7 +403,7 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : EntityComponent
+        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
         {
             using (loadingSemaphore.EnterScope())
             {
@@ -413,7 +412,7 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
         {
             using (loadingSemaphore.EnterScope())
             {
@@ -431,12 +430,12 @@ namespace OctoAwesome.Runtime
             }
         }
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
         {
             using (loadingSemaphore.EnterScope())
             {
                 currentToken.ThrowIfCancellationRequested();
-                return persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds);
+                return persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds).ToArray(); //Hack wird noch geänder
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OctoAwesome.Database.Expressions;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +40,7 @@ namespace OctoAwesome.Database
         /// <summary>
         /// Returns true if the Key is not valid. Comparing with default should have the same result
         /// </summary>
-        public bool IsEmpty => Tag == null && ValueLength == 0;
+        public bool IsEmpty => ValueLength == 0 && Tag == null;
 
         public Key(TTag tag, long index, int length, long position)
         {
@@ -64,11 +66,42 @@ namespace OctoAwesome.Database
             return byteArray;
         }
 
+        public void WriteBytes(Writer writer, long position, bool flush = false)
+        {
+            Span<byte> byteArray = stackalloc byte[KEY_SIZE];
+
+            BitConverter.TryWriteBytes(byteArray, Index);
+            BitConverter.TryWriteBytes(byteArray[sizeof(long)..], ValueLength);
+
+            if (Tag is not null)
+                Tag.WriteBytes(byteArray[BASE_KEY_SIZE..(BASE_KEY_SIZE + Tag.Length)]);
+
+            if (flush)
+                    writer.WriteAndFlush(byteArray, position);
+            else
+                    writer.Write(byteArray, position);
+        }
+        public void WriteBytes(Writer writer, bool flush = false)
+        {
+            Span<byte> byteArray = stackalloc byte[KEY_SIZE];
+
+            BitConverter.TryWriteBytes(byteArray, Index);
+            BitConverter.TryWriteBytes(byteArray[sizeof(long)..], ValueLength);
+
+            if (Tag != null)
+                Tag.WriteBytes(byteArray[BASE_KEY_SIZE..(BASE_KEY_SIZE + Tag.Length)]);
+
+            if (flush)
+                    writer.WriteAndFlush(byteArray);
+            else
+                    writer.Write(byteArray);
+        }
+
         public static Key<TTag> FromBytes(byte[] array, int index)
         {
             var localIndex = BitConverter.ToInt64(array, index);
             var length = BitConverter.ToInt32(array, index + sizeof(long));
-            var tag = new TTag();
+            var tag = InstanceCreator<TTag>.CreateInstance();
             tag.FromBytes(array, index + BASE_KEY_SIZE);
 
             return new Key<TTag>(tag, localIndex, length, index);

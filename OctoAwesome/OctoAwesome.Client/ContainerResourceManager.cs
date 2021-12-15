@@ -1,4 +1,8 @@
-﻿using OctoAwesome.Network;
+﻿
+using OctoAwesome.Components;
+using OctoAwesome.Definitions;
+using OctoAwesome.EntityComponents;
+using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
@@ -29,16 +33,19 @@ namespace OctoAwesome.Client
         private readonly IExtensionResolver extensionResolver;
         private readonly IDefinitionManager definitionManager;
         private readonly ISettings settings;
+        private readonly ITypeContainer typeContainer;
 
         private ResourceManager resourceManager;
         private NetworkUpdateManager networkUpdateManager;
 
-        public ContainerResourceManager(IUpdateHub updateHub, IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
+        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub, IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
         {
             UpdateHub = updateHub;
+            this.typeContainer = typeContainer;
             this.extensionResolver = extensionResolver;
             this.definitionManager = definitionManager;
             this.settings = settings;
+
         }
 
         public void CreateManager(bool multiplayer)
@@ -69,7 +76,7 @@ namespace OctoAwesome.Client
                     if (rawIpAddress[0] == '[') // IPV6 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
-                        stringIpAddress = rawIpAddress.Substring(1, rawIpAddress.IndexOf(']') - 1);
+                        stringIpAddress = rawIpAddress[1..rawIpAddress.IndexOf(']')];
                     }
                     else if (rawIpAddress.Contains(':') && 
                         IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
@@ -95,7 +102,7 @@ namespace OctoAwesome.Client
 
                 var client = new Network.Client();
                 client.Connect(host, port > 0 ? (ushort)port : (ushort)8888);
-                persistenceManager = new NetworkPersistenceManager(client);
+                persistenceManager = new NetworkPersistenceManager(typeContainer, client);
                 networkUpdateManager = new NetworkUpdateManager(client, UpdateHub);
             }
             else
@@ -103,8 +110,7 @@ namespace OctoAwesome.Client
                 persistenceManager = new DiskPersistenceManager(extensionResolver, settings, UpdateHub);
             }
 
-            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
-            resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
+            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager, UpdateHub);
 
             
 
@@ -124,12 +130,7 @@ namespace OctoAwesome.Client
 
         public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);
 
-        public IPlanet GetPlanet(int planetId)
-        {
-            var planet = resourceManager.GetPlanet(planetId);
-            planet.UpdateHub = UpdateHub;
-            return planet;
-        }
+        public IPlanet GetPlanet(int planetId) => resourceManager.GetPlanet(planetId);
 
         public IUniverse GetUniverse() => resourceManager.GetUniverse();
 
@@ -157,14 +158,14 @@ namespace OctoAwesome.Client
 
         public Entity LoadEntity(Guid entityId) 
             => resourceManager.LoadEntity(entityId);
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : EntityComponent
+        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
             => resourceManager.LoadEntitiesWithComponent<T>();
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : EntityComponent
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
             => resourceManager.GetEntityIdsFromComponent<T>();       
         public IEnumerable<Guid> GetEntityIds()
             => resourceManager.GetEntityIds();
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
             => resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

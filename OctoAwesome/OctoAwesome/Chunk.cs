@@ -48,13 +48,13 @@ namespace OctoAwesome
 
         /// <summary>
         /// Array, das alle Blöcke eines Chunks enthält. Jeder eintrag entspricht einer Block-ID.
-        /// Der Index ist derselbe wie bei <see cref="MetaData"/> und <see cref="Resources"/>.
+        /// Der Index ist derselbe wie bei <see cref="MetaData"/>.
         /// </summary>
         public ushort[] Blocks { get; private set; }
 
         /// <summary>
         /// Array, das die Metadaten zu den Blöcken eines Chunks enthält.
-        /// Der Index ist derselbe wie bei <see cref="Blocks"/> und <see cref="Resources"/>.
+        /// Der Index ist derselbe wie bei <see cref="Blocks"/>.
         /// </summary>
         public int[] MetaData { get; private set; }
 
@@ -67,6 +67,7 @@ namespace OctoAwesome
         /// Referenz auf den Planeten.
         /// </summary>
         public IPlanet Planet { get; private set; }
+        public int Version { get; set; }
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Chunk
@@ -129,7 +130,7 @@ namespace OctoAwesome
             Blocks[flatIndex] = blockInfo.Block;
             MetaData[flatIndex] = blockInfo.Meta;
             Changed?.Invoke(this);
-
+            Version++;
             BlockChanged(blockInfo);
         }
 
@@ -145,6 +146,7 @@ namespace OctoAwesome
             {
                 Changed?.Invoke(this);
 
+                Version++;
                 BlocksChanged(blockInfos);
             }
         }
@@ -282,6 +284,29 @@ namespace OctoAwesome
             return ((position.Z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
                    | ((position.Y & (CHUNKSIZE_Y - 1)) << LimitX)
                    | (position.X & (CHUNKSIZE_X - 1));
+        }
+
+        public void Init(Index3 position, IPlanet planet)
+        {
+            Index = position;
+            Planet = planet;
+
+            for (int i = 0; i < Blocks.Length; i++)
+                Blocks[i] = 0;
+                
+            for (int i = 0; i < MetaData.Length; i++)
+                MetaData[i] = 0;
+        }
+
+        public void Init(IPool pool)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Release()
+        {
+            Index = default;
+            Planet = default;
         }
     }
 }

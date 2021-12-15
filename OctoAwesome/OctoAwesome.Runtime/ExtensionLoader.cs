@@ -1,8 +1,10 @@
-﻿using System;
+﻿using OctoAwesome.Definitions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace OctoAwesome.Runtime
 {
@@ -12,8 +14,6 @@ namespace OctoAwesome.Runtime
     public sealed class ExtensionLoader : IExtensionLoader, IExtensionResolver
     {
         private const string SETTINGSKEY = "DisabledExtensions";
-
-        private List<IDefinition> definitions;
 
         private List<Type> entities;
 
@@ -35,8 +35,11 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public List<IExtension> ActiveExtensions { get; private set; }
 
+        private readonly Dictionary<Type, List<Type>> definitionsLookup;
+
         private readonly ISettings settings;
         private readonly ITypeContainer typeContainer;
+        private readonly ITypeContainer definitionTypeContainer;
 
         /// <summary>
         /// Constructor
@@ -46,7 +49,8 @@ namespace OctoAwesome.Runtime
         {
             this.settings = settings;
             this.typeContainer = typeContainer;
-            definitions = new List<IDefinition>();
+            definitionTypeContainer = new StandaloneTypeContainer();
+            definitionsLookup = new Dictionary<Type, List<Type>>();
             entities = new List<Type>();
             entityExtender = new Dictionary<Type, List<Action<Entity>>>();
             simulationExtender = new List<Action<Simulation>>();
@@ -62,44 +66,46 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public void LoadExtensions()
         {
-            List<Assembly> assemblies = new List<Assembly>();
+            List<Assembly> assemblies = new();
             var tempAssembly = Assembly.GetEntryAssembly();
 
             if (tempAssembly == null)
                 tempAssembly = Assembly.GetAssembly(GetType());
 
-            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(tempAssembly.Location));
+            DirectoryInfo dir = new (Path.GetDirectoryName(tempAssembly!.Location!)!);
             assemblies.AddRange(LoadAssemblies(dir));
 
-            DirectoryInfo plugins = new DirectoryInfo(Path.Combine(dir.FullName, "plugins"));
+            DirectoryInfo plugins = new (Path.Combine(dir.FullName, "plugins"));
             if (plugins.Exists)
                 assemblies.AddRange(LoadAssemblies(plugins));
 
-            var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : new string[0];
+            var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : Array.Empty<string>();
 
-            var result = new List<Type>();
             foreach (var assembly in assemblies)
             {
                 var types = assembly
-                    .GetTypes()
-                    .Where(t => typeof(IExtension).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+                    .GetTypes();
 
                 foreach (var type in types)
                 {
-                    try
+                    if (typeof(IExtension).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
                     {
-                        IExtension extension = (IExtension)Activator.CreateInstance(type);
-                        extension.Register(typeContainer);
-                        extension.Register(this, typeContainer);
+                        try
+                        {
+                            IExtension extension = (IExtension)Activator.CreateInstance(type)!;
 
-                        if (disabledExtensions.Contains(type.FullName))
-                            LoadedExtensions.Add(extension);
-                        else
-                            ActiveExtensions.Add(extension);
-                    }
-                    catch (Exception ex)
-                    {
-                        // TODO: Logging
+                            extension.Register(typeContainer);
+                            extension.Register(this, typeContainer);
+
+                            if (disabledExtensions.Contains(type.FullName))
+                                LoadedExtensions.Add(extension);
+                            else
+                                ActiveExtensions.Add(extension);
+                        }
+                        catch 
+                        {
+                            // TODO: Logging
+                        }
                     }
                 }
             }
@@ -112,7 +118,7 @@ namespace OctoAwesome.Runtime
             {
                 try
                 {
-                    var assembly = Assembly.LoadFile(file.FullName);
+                    var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(file.FullName);
                     assemblies.Add(assembly);
                 }
                 catch (Exception)
@@ -139,16 +145,26 @@ namespace OctoAwesome.Runtime
         /// Registers a new Definition.
         /// </summary>
         /// <param name="definition">Definition Instance</param>
-        public void RegisterDefinition(IDefinition definition)
+        public void RegisterDefinition(Type definition)
         {
             if (definition == null)
                 throw new ArgumentNullException(nameof(definition));
 
-            // TODO: Replace? Ignore?
-            if (definitions.Any(d => d.GetType() == definition.GetType()))
-                throw new ArgumentException("Already registered");
+            var interfaceTypes = definition.GetInterfaces();
 
-            definitions.Add(definition);
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (definitionsLookup.TryGetValue(interfaceType, out var typeList))
+                {
+                    typeList.Add(definition);
+                }
+                else
+                {
+                    definitionsLookup.Add(interfaceType, new List<Type> { definition });
+                }
+            }
+
+            definitionTypeContainer.Register(definition, definition, InstanceBehaviour.Singleton);
         }
 
         /// <summary>
@@ -157,9 +173,7 @@ namespace OctoAwesome.Runtime
         /// <typeparam name="T">Definition Type</typeparam>
         public void RemoveDefinition<T>() where T : IDefinition
         {
-            var definition = definitions.FirstOrDefault(d => d.GetType() == typeof(T));
-            if (definition != null)
-                definitions.Remove(definition);
+            throw new NotSupportedException("Currently not supported by TypeContainer");
         }
 
         /// <summary>
@@ -192,7 +206,7 @@ namespace OctoAwesome.Runtime
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : Entity 
+        public void RegisterDefaultEntityExtender<T>() where T : Entity
             => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>
@@ -268,7 +282,7 @@ namespace OctoAwesome.Runtime
             stack.Add(t);
             do
             {
-                t = t.BaseType;
+                t = t!.BaseType;
                 stack.Add(t);
             }
             while (t != typeof(Entity));
@@ -290,9 +304,13 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Definitiontype</typeparam>
         /// <returns>List</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : IDefinition
+        public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
         {
-            return definitions.OfType<T>();
+            if (definitionsLookup.TryGetValue(typeof(T), out var definitionTypes))
+            {
+                foreach (var type in definitionTypes)
+                    yield return (T)definitionTypeContainer.Get(type);
+            }
         }
 
         /// <summary>

@@ -1,9 +1,13 @@
-﻿using OctoAwesome.Database;
+﻿using OctoAwesome.Components;
+using OctoAwesome.Database;
+using OctoAwesome.EntityComponents;
 using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
+using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
 using OctoAwesome.Serialization.Entities;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +21,7 @@ namespace OctoAwesome.Runtime
     /// <summary>
     /// Persistiert Chunks auf die Festplatte.
     /// </summary>
-    public class DiskPersistenceManager : IPersistenceManager, IDisposable, INotificationObserver
+    public class DiskPersistenceManager : IPersistenceManager, IDisposable
     {
         private const string UniverseFilename = "universe.info";
 
@@ -41,7 +45,7 @@ namespace OctoAwesome.Runtime
             databaseProvider = new DatabaseProvider(GetRoot(), TypeContainer.Get<ILogger>());
             awaiterPool = TypeContainer.Get<IPool<Awaiter>>();
             blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
-            chunkSubscription = updateHub.Subscribe(this, DefaultChannels.Chunk);
+            chunkSubscription = updateHub.ListenOn(DefaultChannels.Chunk).Subscribe(OnNext);
         }
 
         private string GetRoot()
@@ -108,7 +112,7 @@ namespace OctoAwesome.Runtime
             {
                 using (BinaryWriter bw = new BinaryWriter(stream))
                 {
-                    bw.Write(planet.Generator.GetType().FullName);
+                    bw.Write(planet.Generator.GetType().FullName!);
                 }
             }
 
@@ -154,7 +158,7 @@ namespace OctoAwesome.Runtime
 
         public void SaveEntity(Entity entity, Guid universe)
         {
-            var context = new EntityDbContext(databaseProvider, universe);
+            var context = new ComponentContainerDbContext<IEntityComponent>(databaseProvider, universe);
             context.AddOrUpdate(entity);
         }
 
@@ -227,7 +231,7 @@ namespace OctoAwesome.Runtime
                 using (BinaryReader bw = new BinaryReader(stream))
                 {
                     string generatorName = bw.ReadString();
-                    generator = extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName.Equals(generatorName));
+                    generator = extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName!.Equals(generatorName));
                 }
             }
 
@@ -273,8 +277,8 @@ namespace OctoAwesome.Runtime
 
         public Awaiter Load(out Entity entity, Guid universeGuid, Guid entityId)
         {
-            var entityContext = new EntityDbContext(databaseProvider, universeGuid);
-            entity = entityContext.Get(new GuidTag<Entity>(entityId));
+            var entityContext = new ComponentContainerDbContext<IEntityComponent>(databaseProvider, universeGuid);
+            entity = (Entity)entityContext.Get(new GuidTag<ComponentContainer<IEntityComponent>>(entityId));
 
             var awaiter = awaiterPool.Get();
             awaiter.SetResult(entity);
@@ -308,7 +312,7 @@ namespace OctoAwesome.Runtime
                         awaiter.SetResult(player);
                         return awaiter;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         // File.Delete(file);
                     }
@@ -318,18 +322,18 @@ namespace OctoAwesome.Runtime
             return null;
         }
 
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>(Guid universeGuid) where T : EntityComponent
-            => new EntityDbContext(databaseProvider, universeGuid).GetEntitiesWithComponent<T>();
+        public IEnumerable<Entity> LoadEntitiesWithComponent<T>(Guid universeGuid) where T : IEntityComponent
+            => new ComponentContainerDbContext<IEntityComponent>(databaseProvider, universeGuid).GetComponentContainerWithComponent<T>().OfType<Entity>();
 
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : EntityComponent
-            => new EntityDbContext(databaseProvider, universeGuid).GetEntityIdsFromComponent<T>().Select(i => i.Tag);
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>(Guid universeGuid) where T : IEntityComponent
+            => new ComponentContainerDbContext<IEntityComponent>(databaseProvider, universeGuid).GetComponentContainerIdsFromComponent<T>().Select(i => i.Tag);
         public IEnumerable<Guid> GetEntityIds(Guid universeGuid)
-            => new EntityDbContext(databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
+            => new ComponentContainerDbContext<IEntityComponent>(databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, IEnumerable<Guid> entityIds) where T : EntityComponent, new()
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds) where T : IEntityComponent, new()
         {
             foreach (var entityId in entityIds)
-                yield return (entityId, new EntityComponentsDbContext(databaseProvider, universeGuid).Get<T>(entityId));
+                yield return (entityId, new ComponentContainerComponentDbContext<T>(databaseProvider, universeGuid).Get<T>(entityId));
         }
 
         public void Dispose()
@@ -337,11 +341,6 @@ namespace OctoAwesome.Runtime
             databaseProvider.Dispose();
             chunkSubscription.Dispose();
         }
-
-        public void OnCompleted() { }
-
-        public void OnError(Exception error)
-            => throw error;
 
         public void OnNext(Notification notification)
         {
@@ -369,19 +368,20 @@ namespace OctoAwesome.Runtime
         {
             var database = databaseProvider.GetDatabase<ChunkDiffTag>(universeGuid, planet.Id, true);
             var databaseContext = new ChunkDiffDbContext(database, blockChangedNotificationPool);
-            var keys = databaseContext
-                .GetAllKeys()
-                .Where(t => t.ChunkPositon.X == column.Index.X && t.ChunkPositon.Y == column.Index.Y)
-                .ToArray();
+            var keys = databaseContext.GetAllKeys();
 
-            foreach (var key in keys)
+            for (int i = 0; i < keys.Count; i++)
             {
-                var block = databaseContext.Get(key);
-                column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.BlockInfo.Block;
-                column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.BlockInfo.Meta;
+                ChunkDiffTag key = keys[i];
+                if (key.ChunkPositon.X == column.Index.X && key.ChunkPositon.Y == column.Index.Y)
+                {
+                    var block = databaseContext.Get(key);
+                    column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.BlockInfo.Block;
+                    column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.BlockInfo.Meta;
+                }
             }
 
-            if (keys.Length > 1000)
+            if (keys.Count > 1000)
             {
                 SaveColumn(universeGuid, planet, column);
                 databaseContext.Remove(keys);

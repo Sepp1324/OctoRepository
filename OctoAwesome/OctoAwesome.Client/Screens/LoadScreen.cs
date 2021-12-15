@@ -30,7 +30,7 @@ namespace OctoAwesome.Client.Screens
 
             Padding = new Border(0, 0, 0, 0);
 
-            Title = Languages.OctoClient.SelectUniverse;
+            Title = UI.Languages.OctoClient.SelectUniverse;
 
             SetDefaultBackground();
 
@@ -69,7 +69,14 @@ namespace OctoAwesome.Client.Screens
             {
                 seedLabel.Text = "";
                 if (levelList.SelectedItem != null)
+                {
                     seedLabel.Text = "Seed: " + levelList.SelectedItem.Seed;
+                    deleteButton.Enabled = true;
+                }
+                else
+                {
+                    deleteButton.Enabled = false;
+                }
             };
             mainStack.AddControl(levelList, 0, 0);
 
@@ -98,18 +105,11 @@ namespace OctoAwesome.Client.Screens
             //renameButton = getButton("Rename");
             //buttonStack.Controls.Add(renameButton);
 
-            deleteButton = GetButton(Languages.OctoClient.Delete);
+            deleteButton = GetButton(UI.Languages.OctoClient.Delete);
+            deleteButton.Enabled = false;
             buttonStack.Controls.Add(deleteButton);
             deleteButton.LeftMouseClick += (s, e) =>
             {
-                if (levelList.SelectedItem == null)
-                {
-                    MessageScreen msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
-                    manager.NavigateToScreen(msg);
-
-                    return;
-                }
-
                 // Sicherstellen, dass universe nicht geladen ist
                 if (Manager.Game.ResourceManager.CurrentUniverse != null &&
                     Manager.Game.ResourceManager.CurrentUniverse.Id == levelList.SelectedItem.Id)
@@ -122,16 +122,16 @@ namespace OctoAwesome.Client.Screens
                 settings.Set("LastUniverse", "");
             };
 
-            createButton = GetButton(Languages.OctoClient.Create);
+            createButton = GetButton(UI.Languages.OctoClient.Create);
             createButton.LeftMouseClick += (s, e) => manager.NavigateToScreen(new CreateUniverseScreen(manager));
             buttonStack.Controls.Add(createButton);
 
-            playButton = GetButton(Languages.OctoClient.Play);
+            playButton = GetButton(UI.Languages.OctoClient.Play);
             playButton.LeftMouseClick += (s, e) =>
             {
                 if (levelList.SelectedItem == null)
                 {
-                    MessageScreen msg = new MessageScreen(manager, Languages.OctoClient.Error, Languages.OctoClient.SelectUniverseFirst);
+                    MessageScreen msg = new MessageScreen(manager, manager.Game.Assets, UI.Languages.OctoClient.Error, UI.Languages.OctoClient.SelectUniverseFirst);
                     manager.NavigateToScreen(msg);
 
                     return;

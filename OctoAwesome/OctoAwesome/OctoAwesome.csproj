@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>warnings</Nullable>
 
     <DocumentationFile>..\bin\Release\OctoAwesome.xml</DocumentationFile>
+
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,13 +17,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="engenious" Version="0.4.0.6-alpha" />
-    <PackageReference Include="NLog" Version="4.7.2" />
-    <PackageReference Include="System.Interactive" Version="4.1.1" />
+    <PackageReference Include="dotVariant" Version="0.3.1" />
+    <PackageReference Include="engenious" Version="0.5.1.4-alpha" />
+    <PackageReference Include="NLog" Version="4.7.7" />
+    <PackageReference Include="System.Interactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Database\OctoAwesome.Database.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  
 </Project>
