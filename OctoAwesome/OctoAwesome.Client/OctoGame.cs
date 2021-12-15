@@ -74,7 +74,7 @@ namespace OctoAwesome.Client
             Settings = typeContainer.Get<Settings>();
 
             KeyMapper = new KeyMapper(Screen, Settings);
-            Assets = new AssetComponent(this, Settings);
+            Assets = new AssetComponent(Screen, Settings);
 
             typeContainer.Register(Assets);
 
@@ -156,6 +156,7 @@ namespace OctoAwesome.Client
         {
             typeContainer.Register<Settings>(InstanceBehaviour.Singleton);
             typeContainer.Register<ISettings, Settings>(InstanceBehaviour.Singleton);
+            typeContainer.Register<SerializationIdTypeProvider>(InstanceBehaviour.Singleton);
             typeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             typeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
             typeContainer.Register<IExtensionResolver, ExtensionLoader>(InstanceBehaviour.Singleton);
