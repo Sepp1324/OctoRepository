@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29319.158
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoAwesome", "OctoAwesome\OctoAwesome.csproj", "{93601DB8-F134-418E-8B35-11E30CFEC31C}"
 EndProject
@@ -33,6 +33,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoAwesome.Database.Tests", "Tests\OctoAwesome.Database.Tests\OctoAwesome.Database.Tests.csproj", "{6592E6FB-A005-45B7-A526-6598D7CF26BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoAwesome.UI", "OctoAwesome.Client.UI\OctoAwesome.UI.csproj", "{91D82287-0C1A-4C5B-B0E5-83153DB78EC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.PoC", "PoC\OctoAwesome.PoC.csproj", "{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoAwesome.Poc.Test", "OctoAwesome.Poc.Test\OctoAwesome.Poc.Test.csproj", "{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,6 +149,22 @@ Global
 		{91D82287-0C1A-4C5B-B0E5-83153DB78EC6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91D82287-0C1A-4C5B-B0E5-83153DB78EC6}.Release|x86.ActiveCfg = Release|Any CPU
 		{91D82287-0C1A-4C5B-B0E5-83153DB78EC6}.Release|x86.Build.0 = Release|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Debug|x86.Build.0 = Debug|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Release|x86.ActiveCfg = Release|Any CPU
+		{867D9DB1-3A66-4EC8-B687-4DBAC3B54C92}.Release|x86.Build.0 = Release|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Debug|x86.Build.0 = Debug|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Release|x86.ActiveCfg = Release|Any CPU
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,6 +173,7 @@ Global
 		{0468B67C-E076-4B19-833C-382513606A5A} = {D269F5F0-2B6A-471A-8A44-253DEF5D98A1}
 		{762E8B0C-2EF8-4EC6-BF47-8926871973D6} = {D269F5F0-2B6A-471A-8A44-253DEF5D98A1}
 		{6592E6FB-A005-45B7-A526-6598D7CF26BC} = {D269F5F0-2B6A-471A-8A44-253DEF5D98A1}
+		{B77FACC1-1DA7-405F-91FF-0938D2BE0F93} = {D269F5F0-2B6A-471A-8A44-253DEF5D98A1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0BE45E2B-9F0C-49A7-AC90-A9B87EC9D7EA}
