@@ -3,7 +3,6 @@ using OctoAwesome.Basics.FunctionBlocks;
 using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 using OctoAwesome.Notifications;
-using OctoAwesome.Rx;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,23 +11,19 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    public class ChestItem : Item, IDisposable
+    public class ChestItem : Item
     {
         public override int VolumePerUnit => base.VolumePerUnit;
 
         public override int StackLimit => base.StackLimit;
 
 
-        private readonly Relay<Notification> simulationRelay;
-        private readonly IDisposable simulationSource;
+        private readonly IUpdateHub updateHub;
 
         public ChestItem(ChestItemDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)
         {
-            var updateHub = TypeContainer.Get<IUpdateHub>();
-            simulationRelay = new Relay<Notification>();
-
-            simulationSource = updateHub.AddSource(simulationRelay, DefaultChannels.Simulation);
+            updateHub = TypeContainer.Get<IUpdateHub>();
         }
 
         public override int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining, int volumePerHit)
@@ -42,14 +37,8 @@ namespace OctoAwesome.Basics.Definitions.Items
                 Type = FunctionalBlockNotification.ActionType.Add
             };
 
-            simulationRelay.OnNext(notification);
+            updateHub.Push(notification, DefaultChannels.Simulation);
             return 0;
-        }
-
-        public void Dispose()
-        {
-            simulationSource.Dispose();
-            simulationRelay?.Dispose();
         }
     }
 }

@@ -22,7 +22,8 @@ namespace OctoAwesome.Basics.SimulationComponents
             var positionComponent = gravityEntity.Entity.Components.GetComponent<PositionComponent>();
             if (positionComponent != null)
             {
-                var planet = positionComponent.Planet;
+                var id = positionComponent.Position.Planet;
+                var planet = gravityEntity.Entity.Simulation.ResourceManager.GetPlanet(id);
                 gravity = planet.Gravity;
             }
 

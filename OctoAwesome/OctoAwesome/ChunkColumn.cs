@@ -1,5 +1,4 @@
-﻿using OctoAwesome.Components;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Threading;
@@ -64,6 +63,7 @@ namespace OctoAwesome
         private void OnChunkChanged(IChunk arg1)
         {
             ChangeCounter++;
+            Changed?.Invoke(this, arg1);
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace OctoAwesome
             using (var lockObj = entitieSemaphore.Wait())
             {
                 foreach (var entity in entities)
-                    resManager.SaveComponentContainer<Entity, IEntityComponent>(entity);
+                    resManager.SaveEntity(entity);
             }
         }
 
@@ -396,6 +396,8 @@ namespace OctoAwesome
                 }
             }
         }
+
+        public event Action<IChunkColumn, IChunk> Changed;
 
         public void OnUpdate(SerializableNotification notification)
         {

@@ -19,7 +19,6 @@ namespace OctoAwesome
         private readonly LockSemaphore semaphore;
         private bool alreadyDeserialized;
         private IPool pool;
-        private bool isPooled;
 
         public Awaiter()
         {
@@ -30,7 +29,7 @@ namespace OctoAwesome
         public ISerializable WaitOn()
         {
             if (!alreadyDeserialized)
-                Timeouted = !manualReset.Wait(10000);
+                Timeouted = !manualReset.Wait(3000);
 
             return Serializable;
         }
@@ -53,40 +52,27 @@ namespace OctoAwesome
 
         public bool TrySetResult(byte[] bytes)
         {
-            try
+            using (semaphore.Wait())
             {
-                using (semaphore.Wait())
+                if (Timeouted)
+                    return false;
+
+                if (Serializable == null)
+                    throw new ArgumentNullException(nameof(Serializable));
+
+                using (var stream = new MemoryStream(bytes))
+                using (var reader = new BinaryReader(stream))
                 {
-                    if (Timeouted)
-                        return false;
-
-                    if (Serializable == null)
-                        throw new ArgumentNullException(nameof(Serializable));
-
-                    using (var stream = new MemoryStream(bytes))
-                    using (var reader = new BinaryReader(stream))
-                    {
-                        Serializable.Deserialize(reader);
-                    }
-                    manualReset.Set();
-                    return alreadyDeserialized = true;
+                    Serializable.Deserialize(reader);
                 }
-
-            }
-            catch (Exception ex)
-            {
-                ;
-                return false;
+                manualReset.Set();
+                return alreadyDeserialized = true;
             }
         }
 
         public void Init(IPool pool)
         {
             this.pool = pool;
-            Timeouted = false;
-            isPooled = false;
-            alreadyDeserialized = false;
-            Serializable = null;
             manualReset.Reset();
         }
 
@@ -97,7 +83,9 @@ namespace OctoAwesome
                 if (!manualReset.IsSet)
                     manualReset.Set();
 
-                isPooled = true;
+                alreadyDeserialized = false;
+                Timeouted = false;
+                Serializable = null;
 
                 pool.Push(this);
             }

@@ -38,29 +38,29 @@ namespace OctoAwesome
         void RemoveDefinition<T>() where T : IDefinition;
 
         /// <summary>
-        /// Registers a Type with the required SerializationId attribute.
+        /// Registers a new Entity.
         /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        void RegisterSerializationType<T>();
+        /// <typeparam name="T">Entity Type</typeparam>
+        void RegisterEntity<T>() where T : Entity;
 
         /// <summary>
         /// Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
-        void RemoveEntity<T>() where T : ComponentContainer;
+        void RemoveEntity<T>() where T : Entity;
 
         /// <summary>
         /// Adds a new Extender for the given Entity Type.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
         /// <param name="extenderDelegate">Extender Delegate</param>
-        void RegisterEntityExtender<T>(Action<ComponentContainer> extenderDelegate) where T : ComponentContainer;
+        void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity;
 
         /// <summary>
         /// Adds the Default Extender for the given Entity Type.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
-        void RegisterDefaultEntityExtender<T>() where T : ComponentContainer;
+        void RegisterDefaultEntityExtender<T>() where T : Entity;
 
         /// <summary>
         /// Adds a new Extender for the simulation.

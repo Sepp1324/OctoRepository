@@ -51,6 +51,8 @@ namespace OctoAwesome
         /// <returns>Block-ID der angegebenen Koordinate</returns>
         ushort GetBlock(int x, int y, int z);
 
+        event Action<IChunkColumn, IChunk> Changed;
+
         /// <summary>
         /// Überschreibt den Block an der angegebenen Position.
         /// </summary>

@@ -1,4 +1,4 @@
-﻿using dotVariant;
+﻿using NonSucking.Framework.Extension.Rx.SumTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +7,29 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome.SumTypes
 {
-    [Variant]
-    public partial class Selection
+    public class Selection : Variant<BlockInfo, FunctionalBlock, Entity>
     {
-        static partial void VariantOf(BlockInfo blockinfo, FunctionalBlock functionalBlock, Entity entity);
+        public Selection(BlockInfo value) : base(value)
+        {
+
+        }
+        public Selection(FunctionalBlock value) : base(value)
+        {
+
+        }
+        public Selection(Entity value) : base(value)
+        {
+
+        }
+
+        public static implicit operator Selection(BlockInfo obj) 
+            => new(obj);
+
+        public static implicit operator Selection(FunctionalBlock obj)
+            => new(obj);
+
+        public static implicit operator Selection(Entity obj)
+            => new(obj);
+
     }
 }

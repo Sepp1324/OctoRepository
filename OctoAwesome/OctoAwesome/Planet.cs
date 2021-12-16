@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using OctoAwesome.Notifications;
@@ -11,7 +10,6 @@ namespace OctoAwesome
     /// </summary>
     public class Planet : IPlanet
     {
-
         /// <summary>
         /// ID des Planeten.
         /// </summary>
@@ -47,14 +45,22 @@ namespace OctoAwesome
         /// </summary>
         public IMapGenerator Generator { get; set; }
 
-        public IGlobalChunkCache GlobalChunkCache { get; }
+        public IGlobalChunkCache GlobalChunkCache { get; set; }
+        public IUpdateHub UpdateHub
+        {
+            get => updateHub; set
+            {
+
+                chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.Chunk);
+                GlobalChunkCache.InsertUpdateHub(value);
+                updateHub = value;
+            }
+        }
+
+        private IUpdateHub updateHub;
+        private IDisposable chunkSubscription;
 
         private bool disposed;
-
-        private static int NextId => ++nextId;
-        private static int nextId = 0;
-
-        private int secretId = NextId;
 
         /// <summary>
         /// Initialisierung des Planeten.
@@ -65,6 +71,7 @@ namespace OctoAwesome
         /// <param name="seed">Seed des Zufallsgenerators.</param>
         public Planet(int id, Guid universe, Index3 size, int seed) : this()
         {
+
             Id = id;
             Universe = universe;
             Size = new Index3(
@@ -79,7 +86,7 @@ namespace OctoAwesome
         /// </summary>
         public Planet()
         {
-            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>(), TypeContainer.Get<IUpdateHub>(), TypeContainer.Get<SerializationIdTypeProvider>());
+            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
         }
 
         /// <summary>
@@ -118,9 +125,13 @@ namespace OctoAwesome
 
             disposed = true;
 
+            chunkSubscription.Dispose();
+
             if (GlobalChunkCache is IDisposable disposable)
                 disposable.Dispose();
 
+            chunkSubscription = null;
+            GlobalChunkCache = null;
         }
     }
 }

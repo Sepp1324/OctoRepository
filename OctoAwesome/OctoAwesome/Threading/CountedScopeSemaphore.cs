@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Threading
 {
@@ -22,18 +23,17 @@ namespace OctoAwesome.Threading
             countLockObject = new object();
         }
 
-        public SuperScope EnterExclusivScope()
+        public SuperScope Wait()
         {
             lock (lockObject)
             {
                 mainLock.Wait();
-                superLock.Wait();
                 superLock.Reset();
             }
             return new SuperScope(this);
         }
 
-        public CountScope EnterCountScope()
+        public CountScope EnterScope()
         {
             lock (lockObject)
             {

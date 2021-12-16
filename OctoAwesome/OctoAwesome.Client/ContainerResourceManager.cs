@@ -76,7 +76,7 @@ namespace OctoAwesome.Client
                     if (rawIpAddress[0] == '[') // IPV6 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
-                        stringIpAddress = rawIpAddress[1..rawIpAddress.IndexOf(']')];
+                        stringIpAddress = rawIpAddress.Substring(1, rawIpAddress.IndexOf(']') - 1);
                     }
                     else if (rawIpAddress.Contains(':') && 
                         IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
@@ -110,7 +110,8 @@ namespace OctoAwesome.Client
                 persistenceManager = new DiskPersistenceManager(extensionResolver, settings, UpdateHub);
             }
 
-            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager, UpdateHub);
+            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
+            resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
 
             
 
@@ -130,7 +131,12 @@ namespace OctoAwesome.Client
 
         public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);
 
-        public IPlanet GetPlanet(int planetId) => resourceManager.GetPlanet(planetId);
+        public IPlanet GetPlanet(int planetId)
+        {
+            var planet = resourceManager.GetPlanet(planetId);
+            planet.UpdateHub = UpdateHub;
+            return planet;
+        }
 
         public IUniverse GetUniverse() => resourceManager.GetUniverse();
 
@@ -142,11 +148,7 @@ namespace OctoAwesome.Client
 
         public Guid NewUniverse(string name, int seed) => resourceManager.NewUniverse(name, seed);
 
-        public void SaveComponentContainer<TContainer, TComponent>(TContainer container)
-           where TContainer : ComponentContainer<TComponent>
-           where TComponent : IComponent
-            => resourceManager.SaveComponentContainer<TContainer, TComponent>(container);
-
+        public void SaveEntity(Entity entity) => resourceManager.SaveEntity(entity);
 
         public void SavePlayer(Player player) => resourceManager.SavePlayer(player);
 
@@ -162,25 +164,14 @@ namespace OctoAwesome.Client
 
         public Entity LoadEntity(Guid entityId) 
             => resourceManager.LoadEntity(entityId);
-
-        public TContainer LoadComponentContainer<TContainer, TComponent>(Guid id)
-           where TContainer : ComponentContainer<TComponent>
-           where TComponent : IComponent
-            => resourceManager.LoadComponentContainer<TContainer, TComponent>(id);
-
         public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
             => resourceManager.LoadEntitiesWithComponent<T>();
         public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
             => resourceManager.GetEntityIdsFromComponent<T>();       
-       
+        public IEnumerable<Guid> GetEntityIds()
+            => resourceManager.GetEntityIds();
 
         public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
             => resourceManager.GetEntityComponents<T>(entityIds);
-
-        public (Guid Id, T Component)[] GetAllComponents<T>() where T : IComponent, new()
-            => resourceManager.GetAllComponents<T>();
-
-        public T GetComponent<T>(Guid id) where T : IComponent, new()
-            => resourceManager.GetComponent<T>(id);
     }
 }

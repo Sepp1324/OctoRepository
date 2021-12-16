@@ -5,13 +5,11 @@ using OctoAwesome.Network;
 using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
-using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,21 +17,7 @@ namespace OctoAwesome.GameServer.Commands
 {
     public static class PlayerCommands
     {
-        private static readonly ConcurrentRelay<Notification> simulationChannel;
-        private static readonly ConcurrentRelay<Notification> networkChannel;
-        private static readonly IDisposable simulationChannelSub;
-        private static readonly IDisposable networkChannelSub;
 
-        static PlayerCommands()
-        {
-            var updateHub = TypeContainer.Get<IUpdateHub>();
-
-            simulationChannel = new ConcurrentRelay<Notification>();
-            networkChannel = new ConcurrentRelay<Notification>();
-
-            simulationChannelSub = updateHub.AddSource(simulationChannel, DefaultChannels.Simulation);
-            networkChannelSub = updateHub.AddSource(networkChannel, DefaultChannels.Network);
-        }
 
         [Command((ushort)OfficialCommand.Whoami)]
         public static byte[] Whoami(CommandParameter parameter)
@@ -46,7 +30,7 @@ namespace OctoAwesome.GameServer.Commands
             entityNotification.Entity = player;
             entityNotification.Type = EntityNotification.ActionType.Add;
 
-            simulationChannel.OnNext(entityNotification);
+            updateHub.Push(entityNotification, DefaultChannels.Simulation);
             entityNotification.Release();
 
 
@@ -60,7 +44,7 @@ namespace OctoAwesome.GameServer.Commands
             entityNotification.Entity = remotePlayer;
             entityNotification.Type = EntityNotification.ActionType.Add;
 
-            networkChannel.OnNext(entityNotification);
+            updateHub.Push(entityNotification, DefaultChannels.Network);
             entityNotification.Release();
             return Serializer.Serialize(player);
         }

@@ -3,31 +3,30 @@ using OctoAwesome.Network;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
-using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
+using OctoAwesome.Threading;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
-    public class NetworkUpdateManager : IDisposable
+    public class NetworkUpdateManager : IAsyncObserver<Package>, INotificationObserver
     {
         private readonly Client client;
+        private readonly IUpdateHub updateHub;
         private readonly ILogger logger;
         private readonly IDisposable hubSubscription;
-        private readonly IDisposable simulationSource;
-        private readonly IDisposable chunkSource;
         private readonly IDisposable clientSubscription;
         private readonly IPool<EntityNotification> entityNotificationPool;
         private readonly IPool<BlockChangedNotification> blockChangedNotificationPool;
         private readonly IPool<BlocksChangedNotification> blocksChangedNotificationPool;
         private readonly PackagePool packagePool;
 
-        private readonly Relay<Notification> simulation;
-        private readonly Relay<Notification> chunk;
-
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
         {
             this.client = client;
+            this.updateHub = updateHub;
 
             logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
             entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
@@ -35,34 +34,23 @@ namespace OctoAwesome.Network
             blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
             packagePool = TypeContainer.Get<PackagePool>();
 
-            simulation = new Relay<Notification>();
-            chunk = new Relay<Notification>();
-
-            hubSubscription 
-                = updateHub
-                .ListenOn(DefaultChannels.Network)
-                .Subscribe(OnNext, error => logger.Error(error.Message, error));
-
-            simulationSource = updateHub.AddSource(simulation, DefaultChannels.Simulation);
-            chunkSource = updateHub.AddSource(chunk, DefaultChannels.Chunk);
-
-            clientSubscription = client.Packages.Subscribe(package => OnNext(package), err => OnError(err));
+            hubSubscription = updateHub.Subscribe(this, DefaultChannels.Network);
+            clientSubscription = client.Subscribe(this);
             
         }
 
-        public void OnNext(Package package)
+        public Task OnNext(Package package)
         {
             switch (package.OfficialCommand)
             {
                 case OfficialCommand.EntityNotification:
                     var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, package.Payload);
-                    simulation.OnNext(entityNotification);
+                    updateHub.Push(entityNotification, DefaultChannels.Simulation);
                     entityNotification.Release();
                     break;
                 case OfficialCommand.ChunkNotification:
                     var notificationType = (BlockNotificationType)package.Payload[0];
                     Notification chunkNotification;
-
                     switch (notificationType)
                     {
                         case BlockNotificationType.BlockChanged:
@@ -74,14 +62,14 @@ namespace OctoAwesome.Network
                         default:
                             throw new NotSupportedException($"This Type is not supported: {notificationType}");
                     }
-
-                    chunk.OnNext(chunkNotification);
+                    updateHub.Push(chunkNotification, DefaultChannels.Chunk);
                     chunkNotification.Release();
                     break;
                 default:
                     break;
             }
 
+            return Task.CompletedTask;
         }
 
         public void OnNext(Notification value)
@@ -107,19 +95,26 @@ namespace OctoAwesome.Network
             client.SendPackageAndRelase(package);
         }
 
-        public void OnError(Exception error)
+        public Task OnError(Exception error)
         {
             logger.Error(error.Message, error);
+            return Task.CompletedTask;
         }
 
-        public void Dispose()
+        public Task OnCompleted()
         {
-            hubSubscription?.Dispose();
-            simulationSource?.Dispose();
-            chunkSource?.Dispose();
-            chunk?.Dispose();
-            simulation?.Dispose();
-            clientSubscription?.Dispose();
+            clientSubscription.Dispose();
+            return Task.CompletedTask;
+        }
+
+        void INotificationObserver.OnCompleted()
+        {
+            //hubSubscription.Dispose();
+        }
+
+        void INotificationObserver.OnError(Exception error)
+        {
+            logger.Error(error.Message, error);
         }
     }
 }

@@ -6,17 +6,20 @@ using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.EntityComponents;
-using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Basics.Entities
 {
-    [SerializationId(1, 2)]
     public class WauziEntity : UpdateableEntity
     {
         public int JumpTime { get; set; }
 
         public WauziEntity() : base()
         {
+        }
+
+        protected override void OnInitialize(IResourceManager manager)
+        {
+            //Cache = new LocalChunkCache(manager.GlobalChunkCache, true, 2, 1);
         }
 
         public override void Update(GameTime gameTime)

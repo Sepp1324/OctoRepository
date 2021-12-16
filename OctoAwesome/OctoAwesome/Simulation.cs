@@ -7,19 +7,18 @@ using OctoAwesome.EntityComponents;
 using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
-using OctoAwesome.Rx;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Resources;
 
 namespace OctoAwesome
 {
     /// <summary>
     /// Schnittstelle zwischen Applikation und Welt-Modell.
     /// </summary>
-    public sealed class Simulation : IDisposable
+    public sealed class Simulation : INotificationObserver
     {
         public IResourceManager ResourceManager { get; private set; }
 
@@ -53,13 +52,10 @@ namespace OctoAwesome
 
         private readonly IExtensionResolver extensionResolver;
 
-        private readonly List<Entity> entities = new();
-        private readonly List<FunctionalBlock> functionalBlocks = new();
+        private readonly List<Entity> entities = new ();
+        private readonly List<FunctionalBlock> functionalBlocks = new ();
+        private readonly IDisposable simulationSubscription;
         private readonly IPool<EntityNotification> entityNotificationPool;
-        private readonly Relay<Notification> networkRelay;
-
-        private IDisposable simulationSubscription;
-        private IDisposable networkSubscription;
 
         /// <summary>
         /// Erzeugt eine neue Instanz der Klasse Simulation.
@@ -67,8 +63,7 @@ namespace OctoAwesome
         public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver, IGameService service)
         {
             ResourceManager = resourceManager;
-            networkRelay = new Relay<Notification>();
-
+            simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
             entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
 
@@ -146,18 +141,6 @@ namespace OctoAwesome
             if (State != SimulationState.Ready)
                 throw new Exception();
 
-            simulationSubscription
-                = ResourceManager
-                .UpdateHub
-                .ListenOn(DefaultChannels.Simulation)
-                .Subscribe(OnNext);
-
-            networkSubscription
-                = ResourceManager
-                .UpdateHub
-                .AddSource(networkRelay, DefaultChannels.Network);
-
-
             State = SimulationState.Running;
         }
 
@@ -202,7 +185,6 @@ namespace OctoAwesome
 
             //TODO: unschön, Dispose Entity's, Reset Extensions
             entities.ToList().ForEach(entity => Remove(entity));
-            functionalBlocks.ToList().ForEach(functionalBlock => Remove(functionalBlock));
             //while (entites.Count > 0)
             //    RemoveEntity(Entities.First());
 
@@ -211,7 +193,6 @@ namespace OctoAwesome
 
             ResourceManager.UnloadUniverse();
             simulationSubscription?.Dispose();
-            networkSubscription?.Dispose();
         }
 
         /// <summary>
@@ -262,8 +243,7 @@ namespace OctoAwesome
             if (functionalBlocks.Contains(block))
                 return;
 
-
-            extensionResolver.ExtendEntity(block);
+            //extensionResolver.ExtendEntity(entity);
             block.Initialize(ResourceManager);
             block.Simulation = this;
 
@@ -302,7 +282,7 @@ namespace OctoAwesome
             if (!(State == SimulationState.Running || State == SimulationState.Paused))
                 throw new NotSupportedException("Removing Entities only allowed in running or paused state");
 
-            ResourceManager.SaveComponentContainer<Entity, IEntityComponent>(entity);
+            ResourceManager.SaveEntity(entity);
 
             foreach (var component in Components)
             {
@@ -335,8 +315,7 @@ namespace OctoAwesome
             if (!(State == SimulationState.Running || State == SimulationState.Paused))
                 throw new NotSupportedException($"Removing {nameof(FunctionalBlock)} only allowed in running or paused state");
 
-            
-            ResourceManager.SaveComponentContainer<FunctionalBlock, IFunctionalBlockComponent>(block);
+            //ResourceManager.SaveEntity(block);
 
             foreach (var component in Components)
             {
@@ -379,11 +358,19 @@ namespace OctoAwesome
             }
         }
 
+        public void OnError(Exception error)
+        {
+            throw error;
+        }
+
+        public void OnCompleted()
+        {
+        }
 
         public void OnUpdate(SerializableNotification notification)
         {
             if (!IsServerSide)
-                networkRelay.OnNext(notification);
+                ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
         }
 
         private void EntityUpdate(EntityNotification notification)
@@ -394,7 +381,7 @@ namespace OctoAwesome
                 var entityNotification = entityNotificationPool.Get();
                 entityNotification.EntityId = notification.EntityId;
                 entityNotification.Type = EntityNotification.ActionType.Request;
-                networkRelay.OnNext(entityNotification);
+                ResourceManager.UpdateHub.Push(entityNotification, DefaultChannels.Network);
                 entityNotification.Release();
             }
             else
@@ -422,13 +409,9 @@ namespace OctoAwesome
             newEntityNotification.Entity = remoteEntity;
             newEntityNotification.Type = EntityNotification.ActionType.Add;
 
-            networkRelay.OnNext(newEntityNotification);
+            ResourceManager.UpdateHub.Push(newEntityNotification, DefaultChannels.Network);
             newEntityNotification.Release();
         }
 
-        public void Dispose()
-        {
-            networkRelay.Dispose();
-        }
     }
 }

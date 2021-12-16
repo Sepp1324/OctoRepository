@@ -1,5 +1,4 @@
 ﻿using OctoAwesome.Definitions;
-using OctoAwesome.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,15 +15,15 @@ namespace OctoAwesome.Runtime
     {
         private const string SETTINGSKEY = "DisabledExtensions";
 
+        private List<Type> entities;
 
-        private readonly Dictionary<Type, List<Action<ComponentContainer>>> componentContainerExtender;
+        private Dictionary<Type, List<Action<Entity>>> entityExtender;
 
-        private readonly List<Action<Simulation>> simulationExtender;
+        private List<Action<Simulation>> simulationExtender;
 
-        private readonly List<IMapGenerator> mapGenerators;
+        private List<IMapGenerator> mapGenerators;
 
-        private readonly List<IMapPopulator> mapPopulators;
-        private readonly SerializationIdTypeProvider serializationIdTypeProvider;
+        private List<IMapPopulator> mapPopulators;
 
         /// <summary>
         /// List of Loaded Extensions
@@ -46,14 +45,14 @@ namespace OctoAwesome.Runtime
         /// Constructor
         /// </summary>
         /// <param name="settings">Current Gamesettings</param>
-        public ExtensionLoader(ITypeContainer typeContainer, ISettings settings, SerializationIdTypeProvider serializationIdTypeProvider)
+        public ExtensionLoader(ITypeContainer typeContainer, ISettings settings)
         {
             this.settings = settings;
             this.typeContainer = typeContainer;
-            this.serializationIdTypeProvider = serializationIdTypeProvider;
             definitionTypeContainer = new StandaloneTypeContainer();
             definitionsLookup = new Dictionary<Type, List<Type>>();
-            componentContainerExtender = new Dictionary<Type, List<Action<ComponentContainer>>>();
+            entities = new List<Type>();
+            entityExtender = new Dictionary<Type, List<Action<Entity>>>();
             simulationExtender = new List<Action<Simulation>>();
             mapGenerators = new List<IMapGenerator>();
             mapPopulators = new List<IMapPopulator>();
@@ -181,15 +180,13 @@ namespace OctoAwesome.Runtime
         /// Registers a new Entity.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
-        public void RegisterSerializationType<T>()
+        public void RegisterEntity<T>() where T : Entity
         {
             Type type = typeof(T);
-            var serId = type.SerializationId();
+            if (entities.Contains(type))
+                throw new ArgumentException("Already registered");
 
-            if (serId == 0)
-                throw new ArgumentException($"Missing {nameof(SerializationIdAttribute)} on type {type.Name}, so it cant be registered.");
-
-            serializationIdTypeProvider.Register(serId, type);
+            entities.Add(type);
         }
 
         /// <summary>
@@ -197,19 +194,19 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
         /// <param name="extenderDelegate">Extender Delegate</param>
-        public void RegisterEntityExtender<T>(Action<ComponentContainer> extenderDelegate) where T : ComponentContainer
+        public void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity
         {
             Type type = typeof(T);
-            List<Action<ComponentContainer>> list;
-            if (!componentContainerExtender.TryGetValue(type, out list))
+            List<Action<Entity>> list;
+            if (!entityExtender.TryGetValue(type, out list))
             {
-                list = new List<Action<ComponentContainer>>();
-                componentContainerExtender.Add(type, list);
+                list = new List<Action<Entity>>();
+                entityExtender.Add(type, list);
             }
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : ComponentContainer
+        public void RegisterDefaultEntityExtender<T>() where T : Entity
             => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>
@@ -241,9 +238,9 @@ namespace OctoAwesome.Runtime
         /// Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveEntity<T>() where T : ComponentContainer
+        public void RemoveEntity<T>() where T : Entity
         {
-            throw new NotSupportedException();
+            entities.Remove(typeof(T));
         }
 
         /// <summary>
@@ -278,7 +275,7 @@ namespace OctoAwesome.Runtime
         /// Extend a Entity
         /// </summary>
         /// <param name="entity">Entity</param>
-        public void ExtendEntity(ComponentContainer entity)
+        public void ExtendEntity(Entity entity)
         {
             List<Type> stack = new List<Type>();
             Type t = entity.GetType();
@@ -288,13 +285,13 @@ namespace OctoAwesome.Runtime
                 t = t!.BaseType;
                 stack.Add(t);
             }
-            while (t != typeof(ComponentContainer));
+            while (t != typeof(Entity));
             stack.Reverse();
 
             foreach (var type in stack)
             {
-                List<Action<ComponentContainer>> list;
-                if (!componentContainerExtender.TryGetValue(type, out list))
+                List<Action<Entity>> list;
+                if (!entityExtender.TryGetValue(type, out list))
                     continue;
 
                 foreach (var item in list)

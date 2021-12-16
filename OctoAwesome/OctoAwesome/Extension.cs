@@ -18,9 +18,8 @@ namespace OctoAwesome
 
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {
-            extensionLoader.RegisterEntityExtender<Player>((player) =>
+            extensionLoader.RegisterEntityExtender<Player>((p) =>
             {
-                var p = (Player)player;
                 p.Components.AddComponent(new ControllableComponent());
                 p.Components.AddComponent(new HeadComponent() { Offset = new Vector3(0, 0, 3.2f) });
                 p.Components.AddComponent(new InventoryComponent());

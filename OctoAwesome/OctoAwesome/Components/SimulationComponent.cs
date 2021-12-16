@@ -237,7 +237,7 @@ namespace OctoAwesome.Components
         /// <param name="gameTime">Spielzeit</param>
         public override void Update(GameTime gameTime)
         {
-            //TODO: Ändern (Collection was modified in Multiplayer)
+            //TODO: Ändern
             foreach (var value in values)
                 UpdateValue(gameTime, value);
         }

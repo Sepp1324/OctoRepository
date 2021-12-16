@@ -30,7 +30,7 @@ namespace OctoAwesome.Definitions
         public virtual int StackLimit => 100;
 
         /// <summary>
-        /// Gibt das Volumen für eine Einheit an. 1 = 1kg Wasser
+        /// Gibt das Volumen für eine Einheit an.
         /// </summary>
         public virtual int VolumePerUnit => 125;
 
