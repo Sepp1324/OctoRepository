@@ -1,16 +1,10 @@
-﻿using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Notifications
 {
     public abstract class SerializableNotification : Notification, ISerializable
     {
-
         public abstract void Deserialize(BinaryReader reader);
 
         public abstract void Serialize(BinaryWriter writer);

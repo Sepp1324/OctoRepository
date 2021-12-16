@@ -1,20 +1,14 @@
-﻿using OctoAwesome.Pooling;
+﻿using System;
+using System.IO;
+using System.Threading;
+using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using OctoAwesome.Threading;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
     public class Awaiter : IPoolElement, IDisposable
     {
-        public ISerializable Serializable { get; set; }
-        public bool Timeouted { get; private set; }
         private readonly ManualResetEventSlim manualReset;
         private readonly LockSemaphore semaphore;
         private bool alreadyDeserialized;
@@ -24,6 +18,35 @@ namespace OctoAwesome
         {
             manualReset = new ManualResetEventSlim(false);
             semaphore = new LockSemaphore(1, 1);
+        }
+
+        public ISerializable Serializable { get; set; }
+        public bool Timeouted { get; private set; }
+
+        public void Dispose()
+        {
+            manualReset.Dispose();
+        }
+
+        public void Init(IPool pool)
+        {
+            this.pool = pool;
+            manualReset.Reset();
+        }
+
+        public void Release()
+        {
+            using (semaphore.Wait())
+            {
+                if (!manualReset.IsSet)
+                    manualReset.Set();
+
+                alreadyDeserialized = false;
+                Timeouted = false;
+                Serializable = null;
+
+                pool.Push(this);
+            }
         }
 
         public ISerializable WaitOn()
@@ -65,35 +88,10 @@ namespace OctoAwesome
                 {
                     Serializable.Deserialize(reader);
                 }
+
                 manualReset.Set();
                 return alreadyDeserialized = true;
             }
-        }
-
-        public void Init(IPool pool)
-        {
-            this.pool = pool;
-            manualReset.Reset();
-        }
-
-        public void Release()
-        {
-            using (semaphore.Wait())
-            {
-                if (!manualReset.IsSet)
-                    manualReset.Set();
-
-                alreadyDeserialized = false;
-                Timeouted = false;
-                Serializable = null;
-
-                pool.Push(this);
-            }
-        }
-
-        public void Dispose()
-        {
-            manualReset.Dispose();
         }
     }
 }

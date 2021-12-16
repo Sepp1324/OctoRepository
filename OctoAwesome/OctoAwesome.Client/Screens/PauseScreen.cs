@@ -1,15 +1,16 @@
-﻿using engenious.Input;
+﻿using System.Linq;
+using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.UI.Components;
-using System.Linq;
+using OctoAwesome.UI.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class PauseScreen : Screen
     {
-        private AssetComponent assets;
+        private readonly AssetComponent assets;
 
         public PauseScreen(ScreenComponent manager) : base(manager)
         {
@@ -20,38 +21,29 @@ namespace OctoAwesome.Client.Screens
 
             Background = new TextureBrush(assets.LoadTexture("background"), TextureBrushMode.Stretch);
 
-            StackPanel stack = new StackPanel(manager);
+            var stack = new StackPanel(manager);
             Controls.Add(stack);
 
-            Button resumeButton = new TextButton(manager, UI.Languages.OctoClient.Resume);
+            Button resumeButton = new TextButton(manager, OctoClient.Resume);
             resumeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             resumeButton.Margin = new Border(0, 0, 0, 10);
-            resumeButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateBack();
-            };
+            resumeButton.LeftMouseClick += (s, e) => { manager.NavigateBack(); };
             stack.Controls.Add(resumeButton);
 
-            Button optionButton = new TextButton(manager, UI.Languages.OctoClient.Options);
+            Button optionButton = new TextButton(manager, OctoClient.Options);
             optionButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             optionButton.Margin = new Border(0, 0, 0, 10);
             optionButton.MinWidth = 300;
-            optionButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateToScreen(new OptionsScreen(manager));
-            };
+            optionButton.LeftMouseClick += (s, e) => { manager.NavigateToScreen(new OptionsScreen(manager)); };
             stack.Controls.Add(optionButton);
 
-            Button creditsButton = new TextButton(manager, UI.Languages.OctoClient.CreditsCrew);
+            Button creditsButton = new TextButton(manager, OctoClient.CreditsCrew);
             creditsButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             creditsButton.Margin = new Border(0, 0, 0, 10);
-            creditsButton.LeftMouseClick += (s, e) =>
-            {
-                manager.NavigateToScreen(new CreditsScreen(manager));
-            };
+            creditsButton.LeftMouseClick += (s, e) => { manager.NavigateToScreen(new CreditsScreen(manager)); };
             stack.Controls.Add(creditsButton);
 
-            Button mainMenuButton = new TextButton(manager, UI.Languages.OctoClient.ToMainMenu);
+            Button mainMenuButton = new TextButton(manager, OctoClient.ToMainMenu);
             mainMenuButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             mainMenuButton.Margin = new Border(0, 0, 0, 10);
             mainMenuButton.LeftMouseClick += (s, e) =>
@@ -59,10 +51,7 @@ namespace OctoAwesome.Client.Screens
                 manager.Player.SetEntity(null);
                 manager.Game.Simulation.ExitGame();
 
-                foreach (var gameScreen in manager.History.OfType<GameScreen>())
-                {
-                    gameScreen.Unload();
-                }
+                foreach (var gameScreen in manager.History.OfType<GameScreen>()) gameScreen.Unload();
 
                 manager.NavigateHome();
             };
@@ -73,7 +62,7 @@ namespace OctoAwesome.Client.Screens
         {
             if (Manager.CanGoBack && args.Key == Keys.Escape)
             {
-                args.Handled = true;                
+                args.Handled = true;
                 Manager.NavigateBack();
             }
 

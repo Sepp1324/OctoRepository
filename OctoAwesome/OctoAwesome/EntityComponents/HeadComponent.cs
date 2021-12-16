@@ -1,38 +1,28 @@
-﻿using engenious;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
+using engenious;
 using OctoAwesome.Components;
 
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// HeadComponent
+    ///     HeadComponent
     /// </summary>
     public sealed class HeadComponent : Component, IEntityComponent
     {
         /// <summary>
-        /// HeadPosition
+        ///     HeadPosition
         /// </summary>
         public Vector3 Offset { get; set; }
 
         /// <summary>
-        /// Tilt
+        ///     Tilt
         /// </summary>
         public float Tilt { get; set; }
 
         /// <summary>
-        /// Angle
+        ///     Angle
         /// </summary>
         public float Angle { get; set; }
-
-        public HeadComponent()
-        {
-
-        }
 
 
         public override void Serialize(BinaryWriter writer)

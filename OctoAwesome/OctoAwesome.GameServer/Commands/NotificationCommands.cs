@@ -1,13 +1,9 @@
-﻿using CommandManagementSystem.Attributes;
+﻿using System;
+using CommandManagementSystem.Attributes;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -48,7 +44,8 @@ namespace OctoAwesome.GameServer.Commands
                     chunkNotification = Serializer.DeserializePoolElement(blockChangedNotificationPool, parameter.Data);
                     break;
                 case BlockNotificationType.BlocksChanged:
-                    chunkNotification = Serializer.DeserializePoolElement(blocksChangedNotificationPool, parameter.Data);
+                    chunkNotification =
+                        Serializer.DeserializePoolElement(blocksChangedNotificationPool, parameter.Data);
                     break;
                 default:
                     throw new NotSupportedException($"This Type is not supported: {notificationType}");

@@ -1,10 +1,6 @@
-﻿using OctoAwesome.Threading;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Pooling
 {
@@ -22,8 +18,26 @@ namespace OctoAwesome.Pooling
         [Obsolete("Can not be used. Use Get(Index3, IPlanet) instead.", true)]
         public Chunk Get()
         {
-            throw new NotSupportedException($"Use Get(Index3, IPlanet) instead.");
+            throw new NotSupportedException("Use Get(Index3, IPlanet) instead.");
         }
+
+
+        public void Push(Chunk obj)
+        {
+            using (semaphoreExtended.Wait())
+            {
+                internalStack.Push(obj);
+            }
+        }
+
+        public void Push(IPoolElement obj)
+        {
+            if (obj is Chunk chunk)
+                Push(chunk);
+            else
+                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
+        }
+
         public Chunk Get(Index3 position, IPlanet planet)
         {
             Chunk obj;
@@ -39,25 +53,5 @@ namespace OctoAwesome.Pooling
             obj.Init(position, planet);
             return obj;
         }
-   
-
-        public void Push(Chunk obj)
-        {
-            using (semaphoreExtended.Wait())
-                internalStack.Push(obj);
-        }
-
-        public void Push(IPoolElement obj)
-        {
-            if (obj is Chunk chunk)
-            {
-                Push(chunk);
-            }
-            else
-            {
-                throw new InvalidCastException("Can not push object from type: " + obj.GetType());
-            }
-        }
-     
     }
 }

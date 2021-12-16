@@ -3,68 +3,69 @@ using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.UI;
 using OctoAwesome.UI.Components;
+using OctoAwesome.UI.Languages;
 
 namespace OctoAwesome.Client.Controls
 {
     internal sealed class ResourcePacksOptionControl : Panel
     {
-        private readonly Button addButton;
-        private readonly Button removeButton;
-        private readonly Button moveUpButton;
-        private readonly Button moveDownButton;
-        private readonly Button applyButton;
-        private readonly Listbox<ResourcePack> loadedPacksList;
         private readonly Listbox<ResourcePack> activePacksList;
+        private readonly Button addButton;
+        private readonly Button applyButton;
         private readonly Label infoLabel;
+        private readonly Listbox<ResourcePack> loadedPacksList;
+        private readonly Button moveDownButton;
+        private readonly Button moveUpButton;
+        private readonly Button removeButton;
 
         public ResourcePacksOptionControl(BaseScreenComponent manager, AssetComponent asset) : base(manager)
         {
-            Grid grid = new Grid(manager)
+            var grid = new Grid(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                Margin = Border.All(15),
+                Margin = Border.All(15)
             };
             Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 100 });
-            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
-            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto, Height = 1 });
+            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Parts, Width = 1 });
+            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Fixed, Width = 100 });
+            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Parts, Width = 1 });
+            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Parts, Height = 1 });
+            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Auto, Height = 1 });
+            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Auto, Height = 1 });
 
-            StackPanel buttons = new StackPanel(manager)
+            var buttons = new StackPanel(manager)
             {
-                VerticalAlignment = VerticalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
             };
             grid.AddControl(buttons, 1, 0);
 
             #region Manipulationsbuttons
 
-            addButton = new TextButton(manager, UI.Languages.OctoClient.Add);
+            addButton = new TextButton(manager, OctoClient.Add);
             addButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             addButton.Visible = false;
             buttons.Controls.Add(addButton);
 
-            removeButton = new TextButton(manager, UI.Languages.OctoClient.Remove);
+            removeButton = new TextButton(manager, OctoClient.Remove);
             removeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             removeButton.Visible = false;
             buttons.Controls.Add(removeButton);
 
-            moveUpButton = new TextButton(manager, UI.Languages.OctoClient.Up);
+            moveUpButton = new TextButton(manager, OctoClient.Up);
             moveUpButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             moveUpButton.Visible = false;
             buttons.Controls.Add(moveUpButton);
 
-            moveDownButton = new TextButton(manager, UI.Languages.OctoClient.Down);
+            moveDownButton = new TextButton(manager, OctoClient.Down);
             moveDownButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             moveDownButton.Visible = false;
             buttons.Controls.Add(moveDownButton);
 
             #endregion
 
-            applyButton = new TextButton(manager, UI.Languages.OctoClient.Apply);
+            applyButton = new TextButton(manager, OctoClient.Apply);
             applyButton.HorizontalAlignment = HorizontalAlignment.Right;
             applyButton.VerticalAlignment = VerticalAlignment.Bottom;
             grid.AddControl(applyButton, 0, 2, 3);
@@ -74,7 +75,7 @@ namespace OctoAwesome.Client.Controls
                 HorizontalTextAlignment = HorizontalAlignment.Left,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Top,
-                WordWrap = true,
+                WordWrap = true
             };
             grid.AddControl(infoLabel, 0, 1, 3);
 
@@ -85,7 +86,7 @@ namespace OctoAwesome.Client.Controls
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 SelectedItemBrush = new BorderBrush(Color.SaddleBrown * 0.7f),
-                TemplateGenerator = ListTemplateGenerator,
+                TemplateGenerator = ListTemplateGenerator
             };
 
             grid.AddControl(loadedPacksList, 0, 0);
@@ -95,7 +96,7 @@ namespace OctoAwesome.Client.Controls
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 SelectedItemBrush = new BorderBrush(Color.SaddleBrown * 0.7f),
-                TemplateGenerator = ListTemplateGenerator,
+                TemplateGenerator = ListTemplateGenerator
             };
 
             grid.AddControl(activePacksList, 2, 0);
@@ -142,7 +143,7 @@ namespace OctoAwesome.Client.Controls
 
             addButton.LeftMouseClick += (s, e) =>
             {
-                ResourcePack pack = loadedPacksList.SelectedItem;
+                var pack = loadedPacksList.SelectedItem;
                 loadedPacksList.Items.Remove(pack);
                 activePacksList.Items.Add(pack);
                 activePacksList.SelectedItem = pack;
@@ -150,7 +151,7 @@ namespace OctoAwesome.Client.Controls
 
             removeButton.LeftMouseClick += (s, e) =>
             {
-                ResourcePack pack = activePacksList.SelectedItem;
+                var pack = activePacksList.SelectedItem;
                 activePacksList.Items.Remove(pack);
                 loadedPacksList.Items.Add(pack);
                 loadedPacksList.SelectedItem = pack;
@@ -158,11 +159,11 @@ namespace OctoAwesome.Client.Controls
 
             moveUpButton.LeftMouseClick += (s, e) =>
             {
-                ResourcePack pack = activePacksList.SelectedItem;
+                var pack = activePacksList.SelectedItem;
                 if (pack == null)
                     return;
 
-                int index = activePacksList.Items.IndexOf(pack);
+                var index = activePacksList.Items.IndexOf(pack);
                 if (index > 0)
                 {
                     activePacksList.Items.Remove(pack);
@@ -173,10 +174,10 @@ namespace OctoAwesome.Client.Controls
 
             moveDownButton.LeftMouseClick += (s, e) =>
             {
-                ResourcePack pack = activePacksList.SelectedItem;
+                var pack = activePacksList.SelectedItem;
                 if (pack == null) return;
 
-                int index = activePacksList.Items.IndexOf(pack);
+                var index = activePacksList.Items.IndexOf(pack);
                 if (index < activePacksList.Items.Count - 1)
                 {
                     activePacksList.Items.Remove(pack);
@@ -193,7 +194,7 @@ namespace OctoAwesome.Client.Controls
 
             // Daten laden
 
-            AssetComponent assets = asset;
+            var assets = asset;
             foreach (var item in assets.LoadedResourcePacks)
                 loadedPacksList.Items.Add(item);
 
@@ -254,7 +255,8 @@ namespace OctoAwesome.Client.Controls
         private void SetPackInfo(ResourcePack pack)
         {
             if (pack != null)
-                infoLabel.Text = string.Format("{0} ({1})\r\n{2}\r\n{3}", pack.Name, pack.Version, pack.Author, pack.Description);
+                infoLabel.Text = string.Format("{0} ({1})\r\n{2}\r\n{3}", pack.Name, pack.Version, pack.Author,
+                    pack.Description);
             else
                 infoLabel.Text = string.Empty;
         }

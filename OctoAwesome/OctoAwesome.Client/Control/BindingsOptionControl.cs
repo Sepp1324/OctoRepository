@@ -1,29 +1,31 @@
-﻿using engenious;
+﻿using System.Linq;
+using engenious;
 using engenious.Input;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Screens;
 using OctoAwesome.UI.Components;
-using System.Linq;
+using OctoAwesome.UI.Languages;
 
 namespace OctoAwesome.Client.Controls
 {
     internal sealed class BindingsOptionControl : Panel
     {
         private readonly AssetComponent assets;
-        private readonly ISettings settings;
         private readonly KeyMapper keyMapper;
+        private readonly ISettings settings;
 
-        public BindingsOptionControl(BaseScreenComponent manager, AssetComponent assets, KeyMapper keyMapper, ISettings settings) : base(manager)
+        public BindingsOptionControl(BaseScreenComponent manager, AssetComponent assets, KeyMapper keyMapper,
+            ISettings settings) : base(manager)
         {
             this.assets = assets;
             this.settings = settings;
             this.keyMapper = keyMapper;
-            ScrollContainer bindingsScroll = new ScrollContainer(manager);
+            var bindingsScroll = new ScrollContainer(manager);
             Controls.Add(bindingsScroll);
 
-            StackPanel bindingsStack = new StackPanel(manager)
+            var bindingsStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Vertical,
                 Padding = new Border(20, 20, 20, 20),
@@ -35,20 +37,20 @@ namespace OctoAwesome.Client.Controls
             var bindings = keyMapper.GetBindings();
             foreach (var binding in bindings)
             {
-                StackPanel bindingStack = new StackPanel(manager)
+                var bindingStack = new StackPanel(manager)
                 {
                     Orientation = Orientation.Horizontal,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     Height = 35
                 };
 
-                Label lbl = new Label(manager)
+                var lbl = new Label(manager)
                 {
                     Text = binding.DisplayName,
                     Width = 480
                 };
 
-                Label bindingKeyLabel = new Label(manager)
+                var bindingKeyLabel = new Label(manager)
                 {
                     Text = binding.Keys.First().ToString(),
                     HorizontalAlignment = HorizontalAlignment.Right,
@@ -66,17 +68,17 @@ namespace OctoAwesome.Client.Controls
 
         private void BindingKeyLabel_LeftMouseClick(Control sender, MouseEventArgs args)
         {
-            object[] data = (object[])sender.Tag;
+            var data = (object[])sender.Tag;
 
             if (data is null)
                 return;
 
-            string id = (string)data[0];
-            Keys oldKey = (Keys)data[1];
+            var id = (string)data[0];
+            var oldKey = (Keys)data[1];
 
-            Label lbl = (Label)sender;
+            var lbl = (Label)sender;
 
-            MessageScreen screen = new MessageScreen(ScreenManager, assets, UI.Languages.OctoClient.PressKey, "", UI.Languages.OctoClient.Cancel);
+            var screen = new MessageScreen(ScreenManager, assets, OctoClient.PressKey, "", OctoClient.Cancel);
             screen.KeyDown += (s, a) =>
             {
                 keyMapper.RemoveKey(id, oldKey);

@@ -1,9 +1,6 @@
-﻿using OctoAwesome.Database.Expressions;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using OctoAwesome.Database.Expressions;
 
 namespace OctoAwesome.Database
 {
@@ -21,24 +18,27 @@ namespace OctoAwesome.Database
         }
 
         /// <summary>
-        /// The uniqe identification object for this key
+        ///     The uniqe identification object for this key
         /// </summary>
         public TTag Tag { get; }
+
         /// <summary>
-        /// The current position of this Key and the referenced <see cref="Value"/> in the value file
+        ///     The current position of this Key and the referenced <see cref="Value" /> in the value file
         /// </summary>
         public long Index { get; }
+
         /// <summary>
-        /// The length of the referenced <see cref="Value"/> in the value file
+        ///     The length of the referenced <see cref="Value" /> in the value file
         /// </summary>
         public int ValueLength { get; }
+
         /// <summary>
-        /// The current position of the key in the <see cref="KeyStore{TTag}"/> file
+        ///     The current position of the key in the <see cref="KeyStore{TTag}" /> file
         /// </summary>
         public long Position { get; }
 
         /// <summary>
-        /// Returns true if the Key is not valid. Comparing with default should have the same result
+        ///     Returns true if the Key is not valid. Comparing with default should have the same result
         /// </summary>
         public bool IsEmpty => ValueLength == 0 && Tag == null;
 
@@ -77,10 +77,11 @@ namespace OctoAwesome.Database
                 Tag.WriteBytes(byteArray[BASE_KEY_SIZE..(BASE_KEY_SIZE + Tag.Length)]);
 
             if (flush)
-                    writer.WriteAndFlush(byteArray, position);
+                writer.WriteAndFlush(byteArray, position);
             else
-                    writer.Write(byteArray, position);
+                writer.Write(byteArray, position);
         }
+
         public void WriteBytes(Writer writer, bool flush = false)
         {
             Span<byte> byteArray = stackalloc byte[KEY_SIZE];
@@ -92,9 +93,9 @@ namespace OctoAwesome.Database
                 Tag.WriteBytes(byteArray[BASE_KEY_SIZE..(BASE_KEY_SIZE + Tag.Length)]);
 
             if (flush)
-                    writer.WriteAndFlush(byteArray);
+                writer.WriteAndFlush(byteArray);
             else
-                    writer.Write(byteArray);
+                writer.Write(byteArray);
         }
 
         public static Key<TTag> FromBytes(byte[] array, int index)
@@ -108,11 +109,16 @@ namespace OctoAwesome.Database
         }
 
         public override bool Equals(object obj)
-            => obj is Key<TTag> key
-            && Equals(key);
+        {
+            return obj is Key<TTag> key
+                   && Equals(key);
+        }
+
         public bool Equals(Key<TTag> other)
-            => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag)
-               && ValueLength == other.ValueLength;
+        {
+            return EqualityComparer<TTag>.Default.Equals(Tag, other.Tag)
+                   && ValueLength == other.ValueLength;
+        }
 
         public override int GetHashCode()
         {
@@ -123,14 +129,21 @@ namespace OctoAwesome.Database
         }
 
         public bool Validate()
-            => ValueLength >= 0
-               && Position >= 0
-               && Index >= 0
-               && KEY_SIZE > BASE_KEY_SIZE;
+        {
+            return ValueLength >= 0
+                   && Position >= 0
+                   && Index >= 0
+                   && KEY_SIZE > BASE_KEY_SIZE;
+        }
 
         public static bool operator ==(Key<TTag> left, Key<TTag> right)
-            => left.Equals(right);
+        {
+            return left.Equals(right);
+        }
+
         public static bool operator !=(Key<TTag> left, Key<TTag> right)
-            => !(left == right);
+        {
+            return !(left == right);
+        }
     }
 }

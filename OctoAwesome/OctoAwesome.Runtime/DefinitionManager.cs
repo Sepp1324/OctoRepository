@@ -1,13 +1,12 @@
-﻿using OctoAwesome.Definitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Runtime
 {
     /// <summary>
-    /// Definition Manager, der Typen aus Erweiterungen nachlädt.
+    ///     Definition Manager, der Typen aus Erweiterungen nachlädt.
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
@@ -21,7 +20,7 @@ namespace OctoAwesome.Runtime
 
             // collect items
             ItemDefinitions = Definitions.OfType<IItemDefinition>().ToArray();
-            
+
             // collect blocks
             BlockDefinitions = Definitions.OfType<IBlockDefinition>().ToArray();
 
@@ -30,19 +29,19 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Liefert eine Liste von Defintions.
+        ///     Liefert eine Liste von Defintions.
         /// </summary>
         /// <returns></returns>
         public IDefinition[] Definitions { get; }
 
         /// <summary>
-        /// Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
+        ///     Liefert eine Liste aller bekannten Item Definitions (inkl. Blocks, Resources, Tools)
         /// </summary>
         /// <returns></returns>
         public IItemDefinition[] ItemDefinitions { get; }
 
         /// <summary>
-        /// Liefert eine Liste der bekannten Blocktypen.
+        ///     Liefert eine Liste der bekannten Blocktypen.
         /// </summary>
         /// <returns></returns>
         public IBlockDefinition[] BlockDefinitions { get; }
@@ -50,7 +49,7 @@ namespace OctoAwesome.Runtime
         public IMaterialDefinition[] MaterialDefinitions { get; }
 
         /// <summary>
-        /// Liefert die BlockDefinition zum angegebenen Index.
+        ///     Liefert die BlockDefinition zum angegebenen Index.
         /// </summary>
         /// <param name="index">Index der BlockDefinition</param>
         /// <returns>BlockDefinition</returns>
@@ -63,7 +62,7 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Liefert den Index der angegebenen BlockDefinition.
+        ///     Liefert den Index der angegebenen BlockDefinition.
         /// </summary>
         /// <param name="definition">BlockDefinition</param>
         /// <returns>Index der Block Definition</returns>
@@ -73,16 +72,15 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        /// Liefert den Index der angegebenen BlockDefinition.
+        ///     Liefert den Index der angegebenen BlockDefinition.
         /// </summary>
         /// <typeparam name="T">BlockDefinition Type</typeparam>
         /// <returns>Index der Block Definition</returns>
         public ushort GetDefinitionIndex<T>() where T : IDefinition
         {
-            int i = 0;
+            var i = 0;
             IDefinition definition = default;
-            foreach (var  d in Definitions)
-            {
+            foreach (var d in Definitions)
                 if (i > 0 && d.GetType() == typeof(T))
                 {
                     throw new InvalidOperationException("Multiple Object where found that match the condition");
@@ -92,12 +90,12 @@ namespace OctoAwesome.Runtime
                     definition = d;
                     ++i;
                 }
-            }
+
             return GetDefinitionIndex(definition);
         }
 
         /// <summary>
-        /// Gibt die Liste von Instanzen des angegebenen Definition Interfaces zurück.
+        ///     Gibt die Liste von Instanzen des angegebenen Definition Interfaces zurück.
         /// </summary>
         /// <typeparam name="T">Typ der Definition</typeparam>
         /// <returns>Auflistung von Instanzen</returns>
@@ -111,30 +109,19 @@ namespace OctoAwesome.Runtime
         {
             var searchedType = typeof(T);
             if (typeof(IBlockDefinition).IsAssignableFrom(searchedType))
-            {
                 return GetDefinitionFromArrayByTypeName<T>(typeName, BlockDefinitions);
-            }
-            else if (typeof(IItemDefinition).IsAssignableFrom(searchedType))
-            {
+            if (typeof(IItemDefinition).IsAssignableFrom(searchedType))
                 return GetDefinitionFromArrayByTypeName<T>(typeName, ItemDefinitions);
-            }
-            else if (typeof(IMaterialDefinition).IsAssignableFrom(searchedType))
-            {
+            if (typeof(IMaterialDefinition).IsAssignableFrom(searchedType))
                 return GetDefinitionFromArrayByTypeName<T>(typeName, MaterialDefinitions);
-            }
-            else
-            {
-                return default;
-            }
+            return default;
         }
 
         private static T GetDefinitionFromArrayByTypeName<T>(string typeName, IDefinition[] array) where T : IDefinition
         {
             foreach (var definition in array)
-            {
                 if (string.Equals(definition.GetType().FullName, typeName))
                     return (T)definition;
-            }
 
             return default;
         }

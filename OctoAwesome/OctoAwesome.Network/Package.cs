@@ -1,17 +1,41 @@
-﻿using OctoAwesome.Pooling;
-using System;
+﻿using System;
+using OctoAwesome.Pooling;
 
 namespace OctoAwesome.Network
 {
     public sealed class Package : IPoolElement
     {
         /// <summary>
-        /// Bytesize of Header
+        ///     Bytesize of Header
         /// </summary>
         public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(uint);
 
+        private static volatile uint nextUid;
+
+        private int internalOffset;
+        private IPool pool;
+
+        public Package(ushort command, int size) : this()
+        {
+            Command = command;
+            Payload = new byte[size];
+        }
+
+        public Package() : this(true)
+        {
+        }
+
+        public Package(bool setUid)
+        {
+            if (setUid)
+                UId = NextUId;
+        }
+
+        public Package(byte[] data) : this(0, data.Length)
+        {
+        }
+
         public static uint NextUId => nextUid++;
-        private volatile static uint nextUid;
 
         public BaseClient BaseClient { get; set; }
 
@@ -26,25 +50,21 @@ namespace OctoAwesome.Network
 
         public int PayloadRest => Payload.Length - internalOffset;
 
-        private int internalOffset;
-        private IPool pool;
-
-        public Package(ushort command, int size) : this()
+        public void Init(IPool pool)
         {
-            Command = command;
-            Payload = new byte[size];
+            Payload = Array.Empty<byte>();
+            this.pool = pool;
         }
 
-        public Package() : this(true)
-        { }
-        public Package(bool setUid)
+        public void Release()
         {
-            if (setUid)
-                UId = NextUId;
-        }
+            BaseClient = default;
+            Command = default;
+            Payload = default;
+            UId = default;
+            internalOffset = default;
 
-        public Package(byte[] data) : this(0, data.Length)
-        {
+            pool.Push(this);
         }
 
         public bool TryDeserializeHeader(byte[] buffer, int offset)
@@ -69,6 +89,7 @@ namespace OctoAwesome.Network
 
             return count;
         }
+
         public void DeserializePackage(byte[] buffer, int offset)
         {
             TryDeserializeHeader(buffer, offset);
@@ -86,23 +107,6 @@ namespace OctoAwesome.Network
             Buffer.BlockCopy(bytes, 0, buffer, offset + 6, 4);
             Buffer.BlockCopy(Payload, 0, buffer, offset + HEAD_LENGTH, Payload.Length);
             return Payload.Length + HEAD_LENGTH;
-        }
-
-        public void Init(IPool pool)
-        {      
-            Payload = Array.Empty<byte>();
-            this.pool = pool;
-        }
-
-        public void Release()
-        {
-            BaseClient = default;
-            Command = default;
-            Payload = default;
-            UId = default;
-            internalOffset = default;
-
-            pool.Push(this);
         }
     }
 }

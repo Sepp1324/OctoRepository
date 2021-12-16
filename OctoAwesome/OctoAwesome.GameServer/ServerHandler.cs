@@ -1,26 +1,21 @@
-﻿using CommandManagementSystem;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using CommandManagementSystem;
 using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using OctoAwesome.Threading;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer
 {
     public class ServerHandler : IAsyncObserver<Package>
     {
-        public SimulationManager SimulationManager { get; set; }
-        public IUpdateHub UpdateHub { get; private set; }
+        private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
 
         private readonly ILogger logger;
         private readonly Server server;
-        private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
 
         public ServerHandler()
         {
@@ -35,7 +30,55 @@ namespace OctoAwesome.GameServer
             UpdateHub = TypeContainer.Get<IUpdateHub>();
             server = TypeContainer.Get<Server>();
 
-            defaultManager = new DefaultCommandManager<ushort, CommandParameter, byte[]>(typeof(ServerHandler).Namespace + ".Commands");
+            defaultManager =
+                new DefaultCommandManager<ushort, CommandParameter, byte[]>(typeof(ServerHandler).Namespace +
+                                                                            ".Commands");
+        }
+
+        public SimulationManager SimulationManager { get; set; }
+        public IUpdateHub UpdateHub { get; }
+
+        public async Task OnNext(Package value)
+        {
+            if (value.Command == 0 && value.Payload.Length == 0)
+            {
+                logger.Debug("Received null package");
+                return;
+            }
+
+            logger.Trace("Received a new Package with ID: " + value.UId);
+            try
+            {
+                value.Payload = defaultManager.Dispatch(value.Command,
+                    new CommandParameter(value.BaseClient.Id, value.Payload));
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
+                return;
+            }
+
+            logger.Trace(value.OfficialCommand);
+
+            if (value.Payload == null)
+            {
+                logger.Trace(
+                    $"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
+                return;
+            }
+
+            await value.BaseClient.SendPackageAsync(value);
+        }
+
+        public Task OnError(Exception error)
+        {
+            logger.Error(error.Message, error);
+            return Task.CompletedTask;
+        }
+
+        public Task OnCompleted()
+        {
+            return Task.CompletedTask;
         }
 
         public void Start()
@@ -50,46 +93,6 @@ namespace OctoAwesome.GameServer
             logger.Debug("Hurra ein neuer Spieler");
             e.ServerSubscription = e.Subscribe(this);
             e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.Network);
-        }
-
-        public async Task OnNext(Package value)
-        {
-            if (value.Command == 0 && value.Payload.Length == 0)
-            {
-                logger.Debug("Received null package");
-                return;
-            }
-            logger.Trace("Received a new Package with ID: " + value.UId);
-            try
-            {
-                value.Payload = defaultManager.Dispatch(value.Command, new CommandParameter(value.BaseClient.Id, value.Payload));
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
-                return;
-            }
-
-            logger.Trace(value.OfficialCommand);
-
-            if (value.Payload == null)
-            {
-                logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
-                return;
-            }
-
-           await value.BaseClient.SendPackageAsync(value);
-        }
-
-        public Task OnError(Exception error)
-        {
-            logger.Error(error.Message, error);
-            return Task.CompletedTask;
-        }
-
-        public Task OnCompleted()
-        {
-            return Task.CompletedTask;
         }
     }
 }

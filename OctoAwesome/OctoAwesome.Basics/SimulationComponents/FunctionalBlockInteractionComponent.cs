@@ -1,14 +1,7 @@
-﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using engenious;
-using OctoAwesome.Services;
-using OctoAwesome.Definitions.Items;
-using OctoAwesome.Definitions;
+﻿using engenious;
 using OctoAwesome.Components;
+using OctoAwesome.EntityComponents;
+using OctoAwesome.Services;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
@@ -18,8 +11,8 @@ namespace OctoAwesome.Basics.SimulationComponents
         ControllableComponent,
         InventoryComponent>
     {
-        private readonly Simulation simulation;
         private readonly BlockCollectionService service;
+        private readonly Simulation simulation;
 
 
         public FunctionalBlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
@@ -28,7 +21,8 @@ namespace OctoAwesome.Basics.SimulationComponents
             service = interactionService;
         }
 
-        protected override void UpdateValue(GameTime gameTime, SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent> value)
+        protected override void UpdateValue(GameTime gameTime,
+            SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent> value)
         {
             var entity = value.Value;
             var controller = value.Component1;
@@ -36,9 +30,9 @@ namespace OctoAwesome.Basics.SimulationComponents
             controller
                 .Selection?
                 .Map(
-                blockInfo => { },
-                functionalBlock => InternalUpdate(controller, entity, functionalBlock),
-                entity => { }
+                    blockInfo => { },
+                    functionalBlock => InternalUpdate(controller, entity, functionalBlock),
+                    entity => { }
                 );
         }
 

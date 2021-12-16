@@ -1,31 +1,24 @@
-﻿using OctoAwesome.Pooling;
-using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Pooling;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Notifications
 {
     public sealed class EntityNotification : SerializableNotification
     {
-        public ActionType Type { get; set; }
-        public Guid EntityId { get; set; }
-        public Entity Entity
+        public enum ActionType
         {
-            get => entity; set
-            {
-                entity = value;
-                EntityId = value?.Id ?? default;
-            }
+            None,
+            Add,
+            Remove,
+            Update,
+            Request
         }
 
-        public PropertyChangedNotification Notification { get; set; }
+        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
 
         private Entity entity;
-        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
 
         public EntityNotification()
         {
@@ -36,6 +29,21 @@ namespace OctoAwesome.Notifications
         {
             EntityId = id;
         }
+
+        public ActionType Type { get; set; }
+        public Guid EntityId { get; set; }
+
+        public Entity Entity
+        {
+            get => entity;
+            set
+            {
+                entity = value;
+                EntityId = value?.Id ?? default;
+            }
+        }
+
+        public PropertyChangedNotification Notification { get; set; }
 
         public override void Deserialize(BinaryReader reader)
         {
@@ -87,15 +95,6 @@ namespace OctoAwesome.Notifications
             Notification = default;
 
             base.OnRelease();
-        }
-
-        public enum ActionType
-        {
-            None,
-            Add,
-            Remove,
-            Update,
-            Request
         }
     }
 }

@@ -1,64 +1,29 @@
-﻿using engenious;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using engenious;
 using OctoAwesome.Common;
 using OctoAwesome.Components;
-using OctoAwesome.Database;
 using OctoAwesome.EntityComponents;
-using OctoAwesome.Logging;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace OctoAwesome
 {
     /// <summary>
-    /// Schnittstelle zwischen Applikation und Welt-Modell.
+    ///     Schnittstelle zwischen Applikation und Welt-Modell.
     /// </summary>
     public sealed class Simulation : INotificationObserver
     {
-        public IResourceManager ResourceManager { get; private set; }
-
-        public bool IsServerSide { get; set; }
-
-        /// <summary>
-        /// List of all Simulation Components.
-        /// </summary>
-        public ComponentList<SimulationComponent> Components { get; private set; }
-
-        /// <summary>
-        /// Der aktuelle Status der Simulation.
-        /// </summary>
-        public SimulationState State { get; private set; }
-
-        /// <summary>
-        /// Die Guid des aktuell geladenen Universums.
-        /// </summary>
-        public Guid UniverseId { get; private set; }
-
-        /// <summary>
-        /// Dienste des Spiels.
-        /// </summary>
-        public IGameService Service { get; }
-
-        /// <summary>
-        /// List of all Entities.
-        /// </summary>
-        public IReadOnlyList<Entity> Entities => entities;
-        public IReadOnlyList<FunctionalBlock> FunctionalBlocks => functionalBlocks;
-
-        private readonly IExtensionResolver extensionResolver;
-
-        private readonly List<Entity> entities = new ();
-        private readonly List<FunctionalBlock> functionalBlocks = new ();
-        private readonly IDisposable simulationSubscription;
+        private readonly List<Entity> entities = new();
         private readonly IPool<EntityNotification> entityNotificationPool;
 
+        private readonly IExtensionResolver extensionResolver;
+        private readonly List<FunctionalBlock> functionalBlocks = new();
+        private readonly IDisposable simulationSubscription;
+
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse Simulation.
+        ///     Erzeugt eine neue Instanz der Klasse Simulation.
         /// </summary>
         public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver, IGameService service)
         {
@@ -76,7 +41,70 @@ namespace OctoAwesome
                 ValidateAddComponent, ValidateRemoveComponent, null, null);
 
             extensionResolver.ExtendSimulation(this);
+        }
 
+        public IResourceManager ResourceManager { get; }
+
+        public bool IsServerSide { get; set; }
+
+        /// <summary>
+        ///     List of all Simulation Components.
+        /// </summary>
+        public ComponentList<SimulationComponent> Components { get; }
+
+        /// <summary>
+        ///     Der aktuelle Status der Simulation.
+        /// </summary>
+        public SimulationState State { get; private set; }
+
+        /// <summary>
+        ///     Die Guid des aktuell geladenen Universums.
+        /// </summary>
+        public Guid UniverseId { get; }
+
+        /// <summary>
+        ///     Dienste des Spiels.
+        /// </summary>
+        public IGameService Service { get; }
+
+        /// <summary>
+        ///     List of all Entities.
+        /// </summary>
+        public IReadOnlyList<Entity> Entities => entities;
+
+        public IReadOnlyList<FunctionalBlock> FunctionalBlocks => functionalBlocks;
+
+        public void OnNext(Notification value)
+        {
+            if (entities.Count < 1 && !IsServerSide)
+                return;
+
+            switch (value)
+            {
+                case EntityNotification entityNotification:
+                    if (entityNotification.Type == EntityNotification.ActionType.Remove)
+                        RemoveEntity(entityNotification.EntityId);
+                    else if (entityNotification.Type == EntityNotification.ActionType.Add)
+                        Add(entityNotification.Entity);
+                    else if (entityNotification.Type == EntityNotification.ActionType.Update)
+                        EntityUpdate(entityNotification);
+                    else if (entityNotification.Type == EntityNotification.ActionType.Request)
+                        RequestEntity(entityNotification);
+                    break;
+                case FunctionalBlockNotification functionalBlockNotification:
+                    if (functionalBlockNotification.Type == FunctionalBlockNotification.ActionType.Add)
+                        Add(functionalBlockNotification.Block);
+                    break;
+            }
+        }
+
+        public void OnError(Exception error)
+        {
+            throw error;
+        }
+
+        public void OnCompleted()
+        {
         }
 
         private void ValidateAddComponent(SimulationComponent component)
@@ -92,7 +120,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Erzeugt ein neues Spiel (= Universum)
+        ///     Erzeugt ein neues Spiel (= Universum)
         /// </summary>
         /// <param name="name">Name des Universums.</param>
         /// <param name="rawSeed">Seed für den Weltgenerator.</param>
@@ -116,7 +144,7 @@ namespace OctoAwesome
             }
 
 
-            Guid guid = ResourceManager.NewUniverse(name, numericSeed);
+            var guid = ResourceManager.NewUniverse(name, numericSeed);
 
             Start();
 
@@ -124,7 +152,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Lädt ein Spiel (= Universum).
+        ///     Lädt ein Spiel (= Universum).
         /// </summary>
         /// <param name="guid">Die Guid des Universums.</param>
         public bool TryLoadGame(Guid guid)
@@ -145,7 +173,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Updatemethode der Simulation
+        ///     Updatemethode der Simulation
         /// </summary>
         /// <param name="gameTime">Spielzeit</param>
         public void Update(GameTime gameTime)
@@ -174,7 +202,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Beendet das aktuelle Spiel (nicht die Applikation)
+        ///     Beendet das aktuelle Spiel (nicht die Applikation)
         /// </summary>
         public void ExitGame()
         {
@@ -196,7 +224,7 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Fügt eine Entity der Simulation hinzu
+        ///     Fügt eine Entity der Simulation hinzu
         /// </summary>
         /// <param name="entity">Neue Entity</param>
         public void Add(Entity entity)
@@ -223,10 +251,8 @@ namespace OctoAwesome
             entities.Add(entity);
 
             foreach (var component in Components)
-            {
                 if (component is IHoldComponent<Entity> holdComponent)
                     holdComponent.Add(entity);
-            }
         }
 
         public void Add(FunctionalBlock block)
@@ -235,7 +261,8 @@ namespace OctoAwesome
                 throw new ArgumentNullException(nameof(block));
 
             if (!(State == SimulationState.Running || State == SimulationState.Paused))
-                throw new NotSupportedException($"Adding {nameof(FunctionalBlock)} only allowed in running or paused state");
+                throw new NotSupportedException(
+                    $"Adding {nameof(FunctionalBlock)} only allowed in running or paused state");
 
             if (block.Simulation != null && block.Simulation != this)
                 throw new NotSupportedException($"{nameof(FunctionalBlock)} can't be part of more than one simulation");
@@ -253,14 +280,12 @@ namespace OctoAwesome
             functionalBlocks.Add(block);
 
             foreach (var component in Components)
-            {
                 if (component is IHoldComponent<FunctionalBlock> holdComponent)
                     holdComponent.Add(block);
-            }
         }
 
         /// <summary>
-        /// Entfernt eine Entity aus der Simulation
+        ///     Entfernt eine Entity aus der Simulation
         /// </summary>
         /// <param name="entity">Entity die entfert werden soll</param>
         public void Remove(Entity entity)
@@ -285,15 +310,12 @@ namespace OctoAwesome
             ResourceManager.SaveEntity(entity);
 
             foreach (var component in Components)
-            {
                 if (component is IHoldComponent<Entity> holdComponent)
                     holdComponent.Remove(entity);
-            }
 
             entities.Remove(entity);
             entity.Id = Guid.Empty;
             entity.Simulation = null;
-
         }
 
         public void Remove(FunctionalBlock block)
@@ -309,62 +331,28 @@ namespace OctoAwesome
                 if (block.Simulation == null)
                     return;
 
-                throw new NotSupportedException($"{nameof(FunctionalBlock)} can't be removed from a foreign simulation");
+                throw new NotSupportedException(
+                    $"{nameof(FunctionalBlock)} can't be removed from a foreign simulation");
             }
 
             if (!(State == SimulationState.Running || State == SimulationState.Paused))
-                throw new NotSupportedException($"Removing {nameof(FunctionalBlock)} only allowed in running or paused state");
+                throw new NotSupportedException(
+                    $"Removing {nameof(FunctionalBlock)} only allowed in running or paused state");
 
             //ResourceManager.SaveEntity(block);
 
             foreach (var component in Components)
-            {
                 if (component is IHoldComponent<FunctionalBlock> holdComponent)
                     holdComponent.Remove(block);
-            }
 
             functionalBlocks.Remove(block);
             block.Id = Guid.Empty;
             block.Simulation = null;
-
         }
 
         public void RemoveEntity(Guid entityId)
-            => Remove(entities.First(e => e.Id == entityId));
-
-        public void OnNext(Notification value)
         {
-            if (entities.Count < 1 && !IsServerSide)
-                return;
-
-            switch (value)
-            {
-                case EntityNotification entityNotification:
-                    if (entityNotification.Type == EntityNotification.ActionType.Remove)
-                        RemoveEntity(entityNotification.EntityId);
-                    else if (entityNotification.Type == EntityNotification.ActionType.Add)
-                        Add(entityNotification.Entity);
-                    else if (entityNotification.Type == EntityNotification.ActionType.Update)
-                        EntityUpdate(entityNotification);
-                    else if (entityNotification.Type == EntityNotification.ActionType.Request)
-                        RequestEntity(entityNotification);
-                    break;
-                case FunctionalBlockNotification functionalBlockNotification:
-                    if (functionalBlockNotification.Type == FunctionalBlockNotification.ActionType.Add)
-                        Add(functionalBlockNotification.Block);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public void OnError(Exception error)
-        {
-            throw error;
-        }
-
-        public void OnCompleted()
-        {
+            Remove(entities.First(e => e.Id == entityId));
         }
 
         public void OnUpdate(SerializableNotification notification)
@@ -401,9 +389,12 @@ namespace OctoAwesome
                 return;
 
             var remoteEntity = new RemoteEntity(entity);
-            remoteEntity.Components.AddComponent(new BodyComponent() { Mass = 50f, Height = 2f, Radius = 1.5f });
-            remoteEntity.Components.AddComponent(new RenderComponent() { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
-            remoteEntity.Components.AddComponent(new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 78), new Vector3(0, 0, 0)) });
+            remoteEntity.Components.AddComponent(new BodyComponent { Mass = 50f, Height = 2f, Radius = 1.5f });
+            remoteEntity.Components.AddComponent(
+                new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 },
+                true);
+            remoteEntity.Components.AddComponent(new PositionComponent
+                { Position = new Coordinate(0, new Index3(0, 0, 78), new Vector3(0, 0)) });
 
             var newEntityNotification = entityNotificationPool.Get();
             newEntityNotification.Entity = remoteEntity;
@@ -412,6 +403,5 @@ namespace OctoAwesome
             ResourceManager.UpdateHub.Push(newEntityNotification, DefaultChannels.Network);
             newEntityNotification.Release();
         }
-
     }
 }

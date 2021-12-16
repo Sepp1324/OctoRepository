@@ -1,10 +1,6 @@
-﻿using OctoAwesome.Database;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Database;
 
 namespace OctoAwesome.Serialization
 {
@@ -35,34 +31,39 @@ namespace OctoAwesome.Serialization
             var array = new byte[Length];
 
             const int intSize = sizeof(int);
-            BitConverter.TryWriteBytes(array[0..(intSize * 1)], ChunkPositon.X);
+            BitConverter.TryWriteBytes(array[..(intSize * 1)], ChunkPositon.X);
             BitConverter.TryWriteBytes(array[(intSize * 1)..(intSize * 2)], ChunkPositon.Y);
             BitConverter.TryWriteBytes(array[(intSize * 2)..(intSize * 3)], ChunkPositon.Z);
             BitConverter.TryWriteBytes(array[(intSize * 3)..(intSize * 4)], FlatIndex);
 
             return array;
         }
+
         public void WriteBytes(Span<byte> span)
         {
             const int intSize = sizeof(int);
-            BitConverter.TryWriteBytes(span[0..(intSize * 1)], ChunkPositon.X);
+            BitConverter.TryWriteBytes(span[..(intSize * 1)], ChunkPositon.X);
             BitConverter.TryWriteBytes(span[(intSize * 1)..(intSize * 2)], ChunkPositon.Y);
             BitConverter.TryWriteBytes(span[(intSize * 2)..(intSize * 3)], ChunkPositon.Z);
             BitConverter.TryWriteBytes(span[(intSize * 3)..(intSize * 4)], FlatIndex);
         }
 
         public override bool Equals(object obj)
-            => obj is ChunkDiffTag tag && Equals(tag);
+        {
+            return obj is ChunkDiffTag tag && Equals(tag);
+        }
 
         public bool Equals(ChunkDiffTag other)
-            => Length == other.Length &&
-                FlatIndex == other.FlatIndex && 
-                EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
+        {
+            return Length == other.Length &&
+                   FlatIndex == other.FlatIndex &&
+                   EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
+        }
 
 
         public override int GetHashCode()
         {
-            int hashCode = 1893591923;
+            var hashCode = 1893591923;
             hashCode = hashCode * -1521134295 + Length.GetHashCode();
             hashCode = hashCode * -1521134295 + ChunkPositon.GetHashCode();
             hashCode = hashCode * -1521134295 + FlatIndex.GetHashCode();

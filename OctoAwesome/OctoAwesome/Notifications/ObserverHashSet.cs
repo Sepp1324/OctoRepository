@@ -1,10 +1,5 @@
-﻿using OctoAwesome.Threading;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Notifications
 {
@@ -12,12 +7,12 @@ namespace OctoAwesome.Notifications
     {
         private readonly LockSemaphore semaphore;
 
-        public ObserverHashSet() : base()
+        public ObserverHashSet()
         {
             semaphore = new LockSemaphore(1, 1);
         }
 
-        public ObserverHashSet(IEqualityComparer<INotificationObserver> comparer) :  base(comparer)
+        public ObserverHashSet(IEqualityComparer<INotificationObserver> comparer) : base(comparer)
         {
             semaphore = new LockSemaphore(1, 1);
         }
@@ -27,13 +22,16 @@ namespace OctoAwesome.Notifications
             semaphore = new LockSemaphore(1, 1);
         }
 
-        public ObserverHashSet(IEnumerable<INotificationObserver> collection, IEqualityComparer<INotificationObserver> comparer)
+        public ObserverHashSet(IEnumerable<INotificationObserver> collection,
+            IEqualityComparer<INotificationObserver> comparer)
             : base(collection, comparer)
         {
             semaphore = new LockSemaphore(1, 1);
         }
 
-        public LockSemaphore.SemaphoreLock Wait() 
-            => semaphore.Wait();
+        public LockSemaphore.SemaphoreLock Wait()
+        {
+            return semaphore.Wait();
+        }
     }
 }

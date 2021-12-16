@@ -1,51 +1,141 @@
-﻿
-using OctoAwesome.Components;
-using OctoAwesome.Definitions;
-using OctoAwesome.EntityComponents;
-using OctoAwesome.Network;
-using OctoAwesome.Notifications;
-using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Components;
+using OctoAwesome.Definitions;
+using OctoAwesome.Network;
+using OctoAwesome.Notifications;
+using OctoAwesome.Runtime;
 
 namespace OctoAwesome.Client
 {
     /// <summary>
-    /// This is only temporary
+    ///     This is only temporary
     /// </summary>
     public class ContainerResourceManager : IResourceManager, IDisposable
     {
-        public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
-        public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
-        
-        public bool IsMultiplayer { get; private set; }
-        public Player CurrentPlayer => resourceManager.CurrentPlayer;
-
-        public IUpdateHub UpdateHub { get; }
-
-        public ConcurrentDictionary<int, IPlanet> Planets => resourceManager.Planets;
+        private readonly IDefinitionManager definitionManager;
 
         private readonly IExtensionResolver extensionResolver;
-        private readonly IDefinitionManager definitionManager;
         private readonly ISettings settings;
         private readonly ITypeContainer typeContainer;
-
-        private ResourceManager resourceManager;
         private NetworkUpdateManager networkUpdateManager;
 
-        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub, IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
+        private ResourceManager resourceManager;
+
+        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub,
+            IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
         {
             UpdateHub = updateHub;
             this.typeContainer = typeContainer;
             this.extensionResolver = extensionResolver;
             this.definitionManager = definitionManager;
             this.settings = settings;
+        }
 
+        public bool IsMultiplayer { get; private set; }
+
+        public void Dispose()
+        {
+            if (resourceManager is IDisposable disposable)
+                disposable.Dispose();
+        }
+
+        public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
+        public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
+        public Player CurrentPlayer => resourceManager.CurrentPlayer;
+
+        public IUpdateHub UpdateHub { get; }
+
+        public ConcurrentDictionary<int, IPlanet> Planets => resourceManager.Planets;
+
+        public void DeleteUniverse(Guid id)
+        {
+            resourceManager.DeleteUniverse(id);
+        }
+
+        public IPlanet GetPlanet(int planetId)
+        {
+            var planet = resourceManager.GetPlanet(planetId);
+            planet.UpdateHub = UpdateHub;
+            return planet;
+        }
+
+        public IUniverse GetUniverse()
+        {
+            return resourceManager.GetUniverse();
+        }
+
+        public IUniverse[] ListUniverses()
+        {
+            return resourceManager.ListUniverses();
+        }
+
+        public Player LoadPlayer(string playername)
+        {
+            return resourceManager.LoadPlayer(playername);
+        }
+
+        public bool TryLoadUniverse(Guid universeId)
+        {
+            return resourceManager.TryLoadUniverse(universeId);
+        }
+
+        public Guid NewUniverse(string name, int seed)
+        {
+            return resourceManager.NewUniverse(name, seed);
+        }
+
+        public void SaveEntity(Entity entity)
+        {
+            resourceManager.SaveEntity(entity);
+        }
+
+        public void SavePlayer(Player player)
+        {
+            resourceManager.SavePlayer(player);
+        }
+
+        public void UnloadUniverse()
+        {
+            resourceManager.UnloadUniverse();
+        }
+
+        public void SaveChunkColumn(IChunkColumn chunkColumn)
+        {
+            resourceManager.SaveChunkColumn(chunkColumn);
+        }
+
+        public IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index)
+        {
+            return resourceManager.LoadChunkColumn(planet, index);
+        }
+
+        public Entity LoadEntity(Guid entityId)
+        {
+            return resourceManager.LoadEntity(entityId);
+        }
+
+        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
+        {
+            return resourceManager.LoadEntitiesWithComponent<T>();
+        }
+
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
+        {
+            return resourceManager.GetEntityIdsFromComponent<T>();
+        }
+
+        public IEnumerable<Guid> GetEntityIds()
+        {
+            return resourceManager.GetEntityIds();
+        }
+
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
+        {
+            return resourceManager.GetEntityComponents<T>(entityIds);
         }
 
         public void CreateManager(bool multiplayer)
@@ -69,8 +159,9 @@ namespace OctoAwesome.Client
                 var rawIpAddress = settings.Get<string>("server").Trim();
                 string host;
                 IPAddress iPAddress;
-                int port = -1;
-                if (rawIpAddress[0] == '[' || !IPAddress.TryParse(rawIpAddress, out iPAddress)) //IPV4 || IPV6 without port
+                var port = -1;
+                if (rawIpAddress[0] == '[' ||
+                    !IPAddress.TryParse(rawIpAddress, out iPAddress)) //IPV4 || IPV6 without port
                 {
                     string stringIpAddress;
                     if (rawIpAddress[0] == '[') // IPV6 with Port
@@ -78,8 +169,9 @@ namespace OctoAwesome.Client
                         port = int.Parse(rawIpAddress.Split(':').Last());
                         stringIpAddress = rawIpAddress.Substring(1, rawIpAddress.IndexOf(']') - 1);
                     }
-                    else if (rawIpAddress.Contains(':') && 
-                        IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
+                    else if (rawIpAddress.Contains(':') &&
+                             IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')),
+                                 out iPAddress)) //IPV4 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
                         stringIpAddress = iPAddress.ToString();
@@ -93,6 +185,7 @@ namespace OctoAwesome.Client
                     {
                         stringIpAddress = rawIpAddress;
                     }
+
                     host = stringIpAddress;
                 }
                 else
@@ -113,7 +206,6 @@ namespace OctoAwesome.Client
             resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
             resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
 
-            
 
             IsMultiplayer = multiplayer;
 
@@ -125,53 +217,6 @@ namespace OctoAwesome.Client
             //        networkPersistence.SendChangedChunkColumn(c);
             //    };
             //}
-
-
         }
-
-        public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);
-
-        public IPlanet GetPlanet(int planetId)
-        {
-            var planet = resourceManager.GetPlanet(planetId);
-            planet.UpdateHub = UpdateHub;
-            return planet;
-        }
-
-        public IUniverse GetUniverse() => resourceManager.GetUniverse();
-
-        public IUniverse[] ListUniverses() => resourceManager.ListUniverses();
-
-        public Player LoadPlayer(string playername) => resourceManager.LoadPlayer(playername);
-
-        public bool TryLoadUniverse(Guid universeId) => resourceManager.TryLoadUniverse(universeId);
-
-        public Guid NewUniverse(string name, int seed) => resourceManager.NewUniverse(name, seed);
-
-        public void SaveEntity(Entity entity) => resourceManager.SaveEntity(entity);
-
-        public void SavePlayer(Player player) => resourceManager.SavePlayer(player);
-
-        public void UnloadUniverse() => resourceManager.UnloadUniverse();
-        public void SaveChunkColumn(IChunkColumn chunkColumn) => resourceManager.SaveChunkColumn(chunkColumn);
-        public IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index) => resourceManager.LoadChunkColumn(planet, index);
-
-        public void Dispose()
-        {
-            if (resourceManager is IDisposable disposable)
-                disposable.Dispose();
-        }
-
-        public Entity LoadEntity(Guid entityId) 
-            => resourceManager.LoadEntity(entityId);
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
-            => resourceManager.LoadEntitiesWithComponent<T>();
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
-            => resourceManager.GetEntityIdsFromComponent<T>();       
-        public IEnumerable<Guid> GetEntityIds()
-            => resourceManager.GetEntityIds();
-
-        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
-            => resourceManager.GetEntityComponents<T>(entityIds);
     }
 }

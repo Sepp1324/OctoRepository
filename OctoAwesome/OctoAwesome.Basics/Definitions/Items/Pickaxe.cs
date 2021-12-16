@@ -2,7 +2,6 @@
 using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 using OctoAwesome.OctoMath;
-using System;
 
 namespace OctoAwesome.Basics
 {
@@ -18,10 +17,10 @@ namespace OctoAwesome.Basics
         public Pickaxe(PickaxeDefinition pickaxeDefinition, IMaterialDefinition materialDefinition)
             : base(pickaxeDefinition, materialDefinition)
         {
-
         }
 
-        public override int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining, int volumePerHit)
+        public override int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining,
+            int volumePerHit)
         {
             //⁅((−𝑥^2)/400)+150⁆
             var baseEfficiency = base.Hit(material, blockInfo, volumeRemaining, volumePerHit);
@@ -29,8 +28,8 @@ namespace OctoAwesome.Basics
             if (material is ISolidMaterialDefinition solid && baseEfficiency > 0)
             {
                 var fractureEfficiency = polynomial.Evaluate(solid.FractureToughness);
-                
-                return (int)(baseEfficiency * (fractureEfficiency) / 100);
+
+                return (int)(baseEfficiency * fractureEfficiency / 100);
             }
 
             return baseEfficiency;

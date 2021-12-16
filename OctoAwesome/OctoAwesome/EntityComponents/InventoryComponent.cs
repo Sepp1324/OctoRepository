@@ -1,24 +1,16 @@
-﻿using OctoAwesome.Components;
-using OctoAwesome.Definitions;
-using OctoAwesome.Definitions.Items;
-using OctoAwesome.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Components;
+using OctoAwesome.Definitions;
+using OctoAwesome.Definitions.Items;
+using OctoAwesome.Serialization;
 
 namespace OctoAwesome.EntityComponents
 {
     public class InventoryComponent : Component, IEntityComponent, IFunctionalBlockComponent
     {
-        /// <summary>
-        /// Das Inventar der Entity
-        /// </summary>
-        public List<InventorySlot> Inventory { get; set; }
-
         private readonly IDefinitionManager definitionManager;
 
         public InventoryComponent()
@@ -27,14 +19,19 @@ namespace OctoAwesome.EntityComponents
             definitionManager = TypeContainer.Get<IDefinitionManager>();
         }
 
+        /// <summary>
+        ///     Das Inventar der Entity
+        /// </summary>
+        public List<InventorySlot> Inventory { get; set; }
+
         public override void Deserialize(BinaryReader reader)
         {
             base.Deserialize(reader);
 
             var count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
-                string name = reader.ReadString();
+                var name = reader.ReadString();
 
                 var definition = definitionManager.Definitions.FirstOrDefault(d => d.GetType().FullName == name);
 
@@ -60,26 +57,20 @@ namespace OctoAwesome.EntityComponents
                     else
                     {
                         instance = Activator.CreateInstance(type)!;
-                        if (instance is ISerializable serializable)
-                        {
-                            serializable.Deserialize(reader);
-                        }
+                        if (instance is ISerializable serializable) serializable.Deserialize(reader);
                     }
 
 
-                    if (instance is IInventoryable inventoryObject)
-                    {
-                        inventoryItem = inventoryObject;
-                    }
+                    if (instance is IInventoryable inventoryObject) inventoryItem = inventoryObject;
                 }
 
                 if (inventoryItem == default)
                     continue;
 
-                var slot = new InventorySlot()
+                var slot = new InventorySlot
                 {
                     Amount = amount,
-                    Item = inventoryItem,
+                    Item = inventoryItem
                 };
 
                 Inventory.Add(slot);
@@ -91,7 +82,6 @@ namespace OctoAwesome.EntityComponents
             base.Serialize(writer);
             writer.Write(Inventory.Count);
             foreach (var slot in Inventory)
-            {
                 if (slot.Item is Item item)
                 {
                     writer.Write(slot.Item.GetType().AssemblyQualifiedName!);
@@ -107,26 +97,24 @@ namespace OctoAwesome.EntityComponents
                     writer.Write(slot.Item.GetType().FullName!);
                     writer.Write(slot.Amount);
                 }
-
-            }
         }
 
         /// <summary>
-        /// Fügt ein Element des angegebenen Definitionstyps hinzu.
+        ///     Fügt ein Element des angegebenen Definitionstyps hinzu.
         /// </summary>
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
         {
             var slot = Inventory.FirstOrDefault(s => s.Item == item &&
-                s.Amount < item.VolumePerUnit * item.StackLimit);
+                                                     s.Amount < item.VolumePerUnit * item.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
             {
-                slot = new InventorySlot()
+                slot = new InventorySlot
                 {
                     Item = item,
-                    Amount = quantity,
+                    Amount = quantity
                 };
                 Inventory.Add(slot);
             }
@@ -134,14 +122,16 @@ namespace OctoAwesome.EntityComponents
             {
                 slot.Amount += quantity;
             }
-
         }
 
         /// <summary>
-        /// Entfernt eine Einheit vom angegebenen Slot.
+        ///     Entfernt eine Einheit vom angegebenen Slot.
         /// </summary>
         /// <param name="slot">Der Slot, aus dem entfernt werden soll.</param>
-        /// <returns>Gibt an, ob das entfernen der Einheit aus dem Inventar funktioniert hat. False, z.B. wenn nicht genügend Volumen (weniger als VolumePerUnit) übrig ist-</returns>
+        /// <returns>
+        ///     Gibt an, ob das entfernen der Einheit aus dem Inventar funktioniert hat. False, z.B. wenn nicht genügend
+        ///     Volumen (weniger als VolumePerUnit) übrig ist-
+        /// </returns>
         public bool RemoveUnit(InventorySlot slot)
         {
             if (slot.Item is not IInventoryable definition)
@@ -154,6 +144,7 @@ namespace OctoAwesome.EntityComponents
                     return Inventory.Remove(slot);
                 return true;
             }
+
             return false;
         }
 
@@ -165,15 +156,15 @@ namespace OctoAwesome.EntityComponents
         public void AddSlot(InventorySlot inventorySlot)
         {
             var slot = Inventory.FirstOrDefault(s => s.Item == inventorySlot.Item &&
-               s.Amount < s.Item.VolumePerUnit * s.Item.StackLimit);
+                                                     s.Amount < s.Item.VolumePerUnit * s.Item.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
             {
-                slot = new InventorySlot()
+                slot = new InventorySlot
                 {
                     Item = inventorySlot.Item,
-                    Amount = inventorySlot.Amount,
+                    Amount = inventorySlot.Amount
                 };
                 Inventory.Add(slot);
             }

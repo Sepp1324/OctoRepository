@@ -1,22 +1,26 @@
-﻿using OctoAwesome.Components;
+﻿using System;
 using OctoAwesome.Notifications;
-using System;
 
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// Base Class for all Entity Components.
+    ///     Base Class for all Entity Components.
     /// </summary>
-    public abstract class InstanceComponent<T> : Component, INotificationSubject<SerializableNotification> 
-        where T: INotificationSubject<SerializableNotification>
+    public abstract class InstanceComponent<T> : Component, INotificationSubject<SerializableNotification>
+        where T : INotificationSubject<SerializableNotification>
     {
         /// <summary>
-        /// Reference to the Entity.
+        ///     Reference to the Entity.
         /// </summary>
         public T Instance { get; private set; }
 
-        public InstanceComponent()
+        public virtual void OnNotification(SerializableNotification notification)
         {
+        }
+
+        public virtual void Push(SerializableNotification notification)
+        {
+            Instance?.OnNotification(notification);
         }
 
         public void SetInstance(T instance)
@@ -29,19 +33,8 @@ namespace OctoAwesome.EntityComponents
         }
 
 
-
         protected virtual void OnSetInstance()
         {
-
         }
-        public virtual void OnNotification(SerializableNotification notification)
-        {
-
-        }
-        public virtual void Push(SerializableNotification notification)
-        {
-            Instance?.OnNotification(notification);
-        }
-        
     }
 }

@@ -3,19 +3,18 @@ using engenious;
 using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.Components;
 using SimulationComponentRecord = OctoAwesome.Components.SimulationComponentRecord<
-                                    OctoAwesome.Entity,
-                                    OctoAwesome.Basics.EntityComponents.ForceComponent,
-                                    OctoAwesome.Basics.EntityComponents.MoveableComponent>;
+    OctoAwesome.Entity,
+    OctoAwesome.Basics.EntityComponents.ForceComponent,
+    OctoAwesome.Basics.EntityComponents.MoveableComponent>;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
     public sealed class ForceAggregatorComponent : SimulationComponent<
-            Entity,
-            ForceAggregatorComponent.ForcedEntity,
-            ForceComponent,
-            MoveableComponent>
+        Entity,
+        ForceAggregatorComponent.ForcedEntity,
+        ForceComponent,
+        MoveableComponent>
     {
-
         protected override ForcedEntity OnAdd(Entity entity)
         {
             return new ForcedEntity(entity,
@@ -30,8 +29,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                 forcedEntity.Forces.Aggregate(Vector3.Zero, (s, f) => s + f.Force);
         }
 
-        public record ForcedEntity(Entity Entity, ForceComponent ForceComponent, MoveableComponent MoveableComponent, ForceComponent[] Forces)
+        public record ForcedEntity(Entity Entity, ForceComponent ForceComponent, MoveableComponent MoveableComponent,
+                ForceComponent[] Forces)
             : SimulationComponentRecord(Entity, ForceComponent, MoveableComponent);
-
     }
 }
