@@ -1,5 +1,8 @@
 ﻿namespace OctoAwesome.Definitions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface ISolidMaterialDefinition : IMaterialDefinition
     {
         /// <summary>

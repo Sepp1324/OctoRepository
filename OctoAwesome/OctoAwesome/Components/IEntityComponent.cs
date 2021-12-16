@@ -1,6 +1,7 @@
 ﻿namespace OctoAwesome.Components
 {
-    public interface IEntityComponent : IComponent
-    {
-    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IEntityComponent : IComponent { }
 }

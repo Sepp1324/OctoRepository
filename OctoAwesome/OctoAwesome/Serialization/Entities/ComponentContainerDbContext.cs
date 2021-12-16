@@ -1,95 +1,112 @@
-﻿using System;
+﻿using OctoAwesome.Components;
+using OctoAwesome.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using OctoAwesome.Components;
-using OctoAwesome.Database;
 
 namespace OctoAwesome.Serialization.Entities
 {
-    public sealed class
-        ComponentContainerDbContext<TContainer> : IDatabaseContext<GuidTag<ComponentContainer<TContainer>>,
-            ComponentContainer<TContainer>> where TContainer : IComponent
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TContainer"></typeparam>
+    public sealed class ComponentContainerDbContext<TContainer> : IDatabaseContext<GuidTag<ComponentContainer<TContainer>>, ComponentContainer<TContainer>> where TContainer : IComponent
     {
-        private readonly ComponentContainerComponentDbContext<TContainer> componentsDbContext;
+        private readonly ComponentContainerComponentDbContext<TContainer> _componentsDbContext;
 
-        private readonly ComponentContainerDefinition<TContainer>.ComponentContainerDefinitionContext<TContainer>
-            entityDefinitionContext;
+        private readonly ComponentContainerDefinition<TContainer>.ComponentContainerDefinitionContext<TContainer> _entityDefinitionContext;
 
-        private readonly MethodInfo getComponentMethod;
-        private readonly MethodInfo removeComponentMethod;
+        private readonly MethodInfo _getComponentMethod;
+        private readonly MethodInfo _removeComponentMethod;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="databaseProvider"></param>
+        /// <param name="universe"></param>
         public ComponentContainerDbContext(IDatabaseProvider databaseProvider, Guid universe)
         {
-            var database =
-                databaseProvider.GetDatabase<GuidTag<ComponentContainerDefinition<TContainer>>>(universe, false);
-            entityDefinitionContext =
-                new ComponentContainerDefinition<TContainer>.ComponentContainerDefinitionContext<TContainer>(database);
-            componentsDbContext = new ComponentContainerComponentDbContext<TContainer>(databaseProvider, universe);
-            getComponentMethod = typeof(ComponentContainerComponentDbContext<TContainer>).GetMethod(
-                nameof(ComponentContainerComponentDbContext<TContainer>.Get),
-                new[] { typeof(ComponentContainer<TContainer>) });
-            removeComponentMethod =
-                typeof(ComponentContainerComponentDbContext<TContainer>).GetMethod(
-                    nameof(ComponentContainerComponentDbContext<TContainer>.Remove));
+            var database = databaseProvider.GetDatabase<GuidTag<ComponentContainerDefinition<TContainer>>>(universe, false);
+            _entityDefinitionContext = new ComponentContainerDefinition<TContainer>.ComponentContainerDefinitionContext<TContainer>(database);
+            _componentsDbContext = new ComponentContainerComponentDbContext<TContainer>(databaseProvider, universe);
+            _getComponentMethod = typeof(ComponentContainerComponentDbContext<TContainer>).GetMethod(nameof(ComponentContainerComponentDbContext<TContainer>.Get), new[] { typeof(ComponentContainer<TContainer>) });
+            _removeComponentMethod = typeof(ComponentContainerComponentDbContext<TContainer>).GetMethod(nameof(ComponentContainerComponentDbContext<TContainer>.Remove));
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public void AddOrUpdate(ComponentContainer<TContainer> value)
         {
-            entityDefinitionContext.AddOrUpdate(new ComponentContainerDefinition<TContainer>(value));
+            _entityDefinitionContext.AddOrUpdate(new ComponentContainerDefinition<TContainer>(value));
 
             foreach (dynamic component in value.Components) //dynamic so tyepof<T> in get database returns correct type 
-                componentsDbContext.AddOrUpdate(component, value);
+                _componentsDbContext.AddOrUpdate(component, value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public ComponentContainer<TContainer> Get(GuidTag<ComponentContainer<TContainer>> key)
         {
-            var definition =
-                entityDefinitionContext.Get(new GuidTag<ComponentContainerDefinition<TContainer>>(key.Tag));
+            var definition = _entityDefinitionContext.Get(new GuidTag<ComponentContainerDefinition<TContainer>>(key.Tag));
             var entity = (ComponentContainer<TContainer>)Activator.CreateInstance(definition.Type);
             entity!.Id = definition.Id;
 
             foreach (var component in definition.Components)
             {
-                var genericMethod = getComponentMethod.MakeGenericMethod(component);
-                entity.Components.AddComponent((TContainer)genericMethod.Invoke(componentsDbContext,
-                    new object[] { entity }));
+                var genericMethod = _getComponentMethod.MakeGenericMethod(component);
+                entity.Components.AddComponent((TContainer)genericMethod.Invoke(_componentsDbContext, new object[] { entity }));
             }
 
             return entity;
         }
 
+        /// <summary>
+        /// Removes ComponentContainer
+        /// </summary>
+        /// <param name="value">ComponentContainer</param>
         public void Remove(ComponentContainer<TContainer> value)
         {
-            var definition =
-                entityDefinitionContext.Get(new GuidTag<ComponentContainerDefinition<TContainer>>(value.Id));
-            entityDefinitionContext.Remove(definition);
+            var definition = _entityDefinitionContext.Get(new GuidTag<ComponentContainerDefinition<TContainer>>(value.Id));
+            _entityDefinitionContext.Remove(definition);
 
             foreach (var component in definition.Components)
             {
-                var genericMethod = removeComponentMethod.MakeGenericMethod(component);
-                genericMethod.Invoke(componentsDbContext, new object[] { value });
+                var genericMethod = _removeComponentMethod.MakeGenericMethod(component);
+                genericMethod.Invoke(_componentsDbContext, new object[] { value });
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public IEnumerable<ComponentContainer<TContainer>> GetComponentContainerWithComponent<T>() where T : IComponent
         {
-            var entities = componentsDbContext.GetAllKeys<T>()
-                .Select(t => new GuidTag<ComponentContainer<TContainer>>(t.Tag));
+            var entities = _componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<ComponentContainer<TContainer>>(t.Tag));
 
             foreach (var entityId in entities)
                 yield return Get(entityId);
         }
 
-        public IEnumerable<GuidTag<ComponentContainer<TContainer>>> GetComponentContainerIdsFromComponent<T>()
-            where T : IComponent
-        {
-            return componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<ComponentContainer<TContainer>>(t.Tag));
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<GuidTag<ComponentContainer<TContainer>>> GetComponentContainerIdsFromComponent<T>() where T : IComponent => _componentsDbContext.GetAllKeys<T>().Select(t => new GuidTag<ComponentContainer<TContainer>>(t.Tag));
 
-        public IEnumerable<GuidTag<ComponentContainer<TContainer>>> GetAllKeys()
-        {
-            return entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<ComponentContainer<TContainer>>(e.Tag));
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<GuidTag<ComponentContainer<TContainer>>> GetAllKeys() => _entityDefinitionContext.GetAllKeys().Select(e => new GuidTag<ComponentContainer<TContainer>>(e.Tag));
     }
 }

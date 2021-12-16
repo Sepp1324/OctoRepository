@@ -4,19 +4,29 @@ using OctoAwesome.Components;
 
 namespace OctoAwesome.EntityComponents
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class BoxCollisionComponent : CollisionComponent, IFunctionalBlockComponent
     {
-        private readonly BoundingBox[] boundingBoxes;
+        private readonly BoundingBox[] _boundingBoxes;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public BoxCollisionComponent()
         {
         }
 
-        public BoxCollisionComponent(BoundingBox[] boundingBoxes)
-        {
-            this.boundingBoxes = boundingBoxes;
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="boundingBoxes"></param>
+        public BoxCollisionComponent(BoundingBox[] boundingBoxes) => this._boundingBoxes = boundingBoxes;
 
-        public ReadOnlySpan<BoundingBox> BoundingBoxes => new(boundingBoxes);
+        /// <summary>
+        /// 
+        /// </summary>
+        public ReadOnlySpan<BoundingBox> BoundingBoxes => new(_boundingBoxes);
     }
 }

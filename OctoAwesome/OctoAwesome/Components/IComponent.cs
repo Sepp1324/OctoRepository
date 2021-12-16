@@ -2,6 +2,9 @@
 
 namespace OctoAwesome.Components
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IComponent : ISerializable
     {
         bool Sendable { get; set; }

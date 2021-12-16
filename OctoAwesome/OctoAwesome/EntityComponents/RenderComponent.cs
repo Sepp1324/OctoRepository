@@ -3,19 +3,39 @@ using OctoAwesome.Components;
 
 namespace OctoAwesome.EntityComponents
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class RenderComponent : Component, IEntityComponent, IFunctionalBlockComponent
     {
-        public RenderComponent()
-        {
-            Sendable = true;
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public RenderComponent() => Sendable = true;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string ModelName { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string TextureName { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public float BaseZRotation { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
             writer.Write(Name);
@@ -25,6 +45,9 @@ namespace OctoAwesome.EntityComponents
             base.Serialize(writer);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Deserialize(BinaryReader reader)
         {
             Name = reader.ReadString();

@@ -15,7 +15,14 @@
         /// </summary>
         int Condition { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         IItemDefinition Definition { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         IMaterialDefinition Material { get; }
 
         int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining, int volumePerHit);

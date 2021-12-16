@@ -25,6 +25,9 @@ namespace OctoAwesome.Definitions
         /// <returns></returns>
         IBlockDefinition[] BlockDefinitions { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         IMaterialDefinition[] MaterialDefinitions { get; }
 
         /// <summary>
@@ -34,6 +37,12 @@ namespace OctoAwesome.Definitions
         /// <returns>BlockDefinition</returns>
         IBlockDefinition GetBlockDefinitionByIndex(ushort index);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
         T GetDefinitionByTypeName<T>(string typeName) where T : IDefinition;
 
         /// <summary>

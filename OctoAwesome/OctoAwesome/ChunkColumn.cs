@@ -52,11 +52,13 @@ namespace OctoAwesome
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
             globalChunkCache = planet.GlobalChunkCache;
-            if (chunkPool == null)
-                chunkPool = TypeContainer.Get<ChunkPool>();
+            
+            chunkPool ??= TypeContainer.Get<ChunkPool>();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public IDefinitionManager DefinitionManager { get; }
 
         public int ChangeCounter { get; set; }

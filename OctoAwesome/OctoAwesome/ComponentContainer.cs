@@ -8,8 +8,11 @@ using OctoAwesome.Serialization;
 
 namespace OctoAwesome
 {
-    public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents,
-        INotificationSubject<SerializableNotification> where TComponent : IComponent
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TComponent"></typeparam>
+    public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents, INotificationSubject<SerializableNotification> where TComponent : IComponent
     {
         /// <summary>
         ///     Contains only Components with notification interface implementation.
@@ -21,8 +24,7 @@ namespace OctoAwesome
         /// </summary>
         public ComponentContainer()
         {
-            Components = new ComponentList<TComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent,
-                OnRemoveComponent);
+            Components = new ComponentList<TComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
             notificationComponents = new List<INotificationSubject<SerializableNotification>>();
             Id = Guid.Empty;
         }
@@ -37,24 +39,16 @@ namespace OctoAwesome
         /// </summary>
         public Simulation Simulation { get; internal set; }
 
-        public bool ContainsComponent<T>()
-        {
-            return Components.ContainsComponent<T>();
-        }
+        public bool ContainsComponent<T>() => Components.ContainsComponent<T>();
 
-        public T GetComponent<T>()
-        {
-            return Components.GetComponent<T>();
-        }
+        public T GetComponent<T>() => Components.GetComponent<T>();
 
         /// <summary>
         ///     Id
         /// </summary>
         public Guid Id { get; internal set; }
 
-        public virtual void OnNotification(SerializableNotification notification)
-        {
-        }
+        public virtual void OnNotification(SerializableNotification notification) { }
 
         public virtual void Push(SerializableNotification notification)
         {
@@ -83,9 +77,7 @@ namespace OctoAwesome
             Components.Deserialize(reader);
         }
 
-        protected void OnRemoveComponent(TComponent component)
-        {
-        }
+        protected void OnRemoveComponent(TComponent component) { }
 
         protected virtual void OnAddComponent(TComponent component)
         {
@@ -127,18 +119,11 @@ namespace OctoAwesome
             OnInitialize(mananger);
         }
 
-        protected virtual void OnInitialize(IResourceManager manager)
-        {
-        }
+        protected virtual void OnInitialize(IResourceManager manager) { }
 
-        public virtual void RegisterDefault()
-        {
-        }
+        public virtual void RegisterDefault() { }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {

@@ -9,7 +9,10 @@ namespace OctoAwesome
     /// </summary>
     public abstract class Component : IComponent
     {
-        public Component()
+        /// <summary>
+        /// 
+        /// </summary>
+        protected Component()
         {
             Enabled = true;
             Sendable = false;

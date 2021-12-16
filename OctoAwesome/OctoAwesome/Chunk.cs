@@ -85,6 +85,9 @@ namespace OctoAwesome
         /// </summary>
         public IPlanet Planet { get; private set; }
 
+        /// <summary>
+        /// Version of <see cref="Chunk"/>
+        /// </summary>
         public int Version { get; set; }
 
         /// <summary>
@@ -92,10 +95,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Koordinate des Blocks innerhalb des Chunkgs</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        public ushort GetBlock(Index3 index)
-        {
-            return GetBlock(index.X, index.Y, index.Z);
-        }
+        public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
         ///     Liefet den Block an der angegebenen Koordinate zurück.

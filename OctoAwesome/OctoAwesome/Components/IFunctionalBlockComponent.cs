@@ -1,6 +1,7 @@
 ﻿namespace OctoAwesome.Components
 {
-    public interface IFunctionalBlockComponent : IComponent
-    {
-    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IFunctionalBlockComponent : IComponent { }
 }

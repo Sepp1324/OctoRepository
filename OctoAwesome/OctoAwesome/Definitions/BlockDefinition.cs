@@ -10,10 +10,16 @@ namespace OctoAwesome.Definitions
     /// </summary>
     public abstract class BlockDefinition : IBlockDefinition
     {
-        private readonly BoundingBox[] defaultCollisionBoxes =
-            { new BoundingBox(new Vector3(0, 0), new Vector3(1, 1, 1)) };
+        private readonly BoundingBox[] defaultCollisionBoxes = { new BoundingBox(new Vector3(0, 0), new Vector3(1, 1, 1)) };
 
-        public virtual int VolumePerHit => 25;
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual int VolumePerHit => 25;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual uint SolidWall => 0x3f;
 
         /// <summary>

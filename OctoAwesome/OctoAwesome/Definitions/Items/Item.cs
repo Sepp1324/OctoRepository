@@ -38,8 +38,14 @@ namespace OctoAwesome.Definitions.Items
         /// </summary>
         public Coordinate? Position { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IItemDefinition Definition { get; protected set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IMaterialDefinition Material { get; protected set; }
 
         public virtual int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining,
@@ -50,9 +56,7 @@ namespace OctoAwesome.Definitions.Items
             if (!Definition.CanMineMaterial(material))
                 return 0;
 
-            if (material is ISolidMaterialDefinition solid)
-                if (solid.Granularity > 1)
-                    return 0;
+            if (material is ISolidMaterialDefinition { Granularity: > 1 }) return 0;
 
             if (Material.Hardness * 1.2f < material.Hardness)
                 return 0;

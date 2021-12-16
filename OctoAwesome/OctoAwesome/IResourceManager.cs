@@ -59,9 +59,9 @@ namespace OctoAwesome
         /// <summary>
         ///     Lädt einen Player.
         /// </summary>
-        /// <param name="playername">Der Name des Players.</param>
+        /// <param name="playerName">Der Name des Players.</param>
         /// <returns></returns>
-        Player LoadPlayer(string playername);
+        Player LoadPlayer(string playerName);
 
         /// <summary>
         ///     Speichert einen Player.

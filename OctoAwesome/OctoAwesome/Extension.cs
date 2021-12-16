@@ -5,12 +5,26 @@ namespace OctoAwesome
 {
     //TODO:Eventuell auslagern
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class Extension : IExtension
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string Description => "OctoAwesome";
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Name => "OctoAwesome";
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="extensionLoader"></param>
+        /// <param name="typeContainer"></param>
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {
             extensionLoader.RegisterEntityExtender<Player>(p =>
@@ -22,6 +36,10 @@ namespace OctoAwesome
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="typeContainer"></param>
         public void Register(ITypeContainer typeContainer)
         {
         }

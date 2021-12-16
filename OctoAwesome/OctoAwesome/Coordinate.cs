@@ -155,10 +155,7 @@ namespace OctoAwesome
         /// </summary>
         private void Normalize()
         {
-            var shift = new Index3(
-                (int)Math.Floor(position.X),
-                (int)Math.Floor(position.Y),
-                (int)Math.Floor(position.Z));
+            var shift = new Index3((int)Math.Floor(position.X), (int)Math.Floor(position.Y), (int)Math.Floor(position.Z));
 
             block += shift;
             position -= shift;
@@ -196,20 +193,13 @@ namespace OctoAwesome
         /// <param name="i1"></param>
         /// <param name="i2"></param>
         /// <returns>Das Ergebnis der Addition</returns>
-        public static Coordinate operator +(Coordinate i1, Vector3 i2)
-        {
-            return new(i1.Planet, i1.block, i1.position + i2);
-        }
+        public static Coordinate operator +(Coordinate i1, Vector3 i2) => new(i1.Planet, i1.block, i1.position + i2);
 
         /// <summary>
         ///     Stellt die Coordinate-Instanz als string dar.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return
-                $@"({Planet}/{(block.X + position.X).ToString("0.000000")}/{(block.Y + position.Y).ToString("0.000000")}/{(block.Z + position.Z).ToString("0.000000")})";
-        }
+        public override string ToString() => $@"({Planet}/{(block.X + position.X):0.000000}/{(block.Y + position.Y):0.000000}/{(block.Z + position.Z):0.000000})";
 
         /// <summary>
         ///     Compare this object with an other object
@@ -227,9 +217,10 @@ namespace OctoAwesome
             return base.Equals(obj);
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode() => base.GetHashCode();
     }
 }

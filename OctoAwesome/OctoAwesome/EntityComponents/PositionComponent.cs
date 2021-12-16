@@ -40,9 +40,19 @@ namespace OctoAwesome.EntityComponents
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public float Direction { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IPlanet Planet { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);

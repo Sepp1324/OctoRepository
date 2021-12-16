@@ -4,14 +4,18 @@ using System.IO;
 
 namespace OctoAwesome
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public readonly struct BlockInfo : IEquatable<BlockInfo>
     {
         public static BlockInfo Empty = default;
 
         public bool IsEmpty => this == default;
-
         public Index3 Position { get; }
+
         public ushort Block { get; }
+
         public int Meta { get; }
 
         public BlockInfo(Index3 position, ushort block, int meta = 0)
@@ -21,22 +25,11 @@ namespace OctoAwesome
             Meta = meta;
         }
 
-        public BlockInfo(int x, int y, int z, ushort block, int meta = 0) : this(new Index3(x, y, z), block, meta)
-        {
-        }
+        public BlockInfo(int x, int y, int z, ushort block, int meta = 0) : this(new Index3(x, y, z), block, meta) { }
 
-        public override bool Equals(object obj)
-        {
-            return obj is BlockInfo info
-                   && Equals(info);
-        }
+        public override bool Equals(object obj) => obj is BlockInfo info && Equals(info);
 
-        public bool Equals(BlockInfo other)
-        {
-            return EqualityComparer<Index3>.Default.Equals(Position, other.Position)
-                   && Block == other.Block
-                   && Meta == other.Meta;
-        }
+        public bool Equals(BlockInfo other) => EqualityComparer<Index3>.Default.Equals(Position, other.Position) && Block == other.Block && Meta == other.Meta;
 
         public override int GetHashCode()
         {
@@ -56,67 +49,29 @@ namespace OctoAwesome
             writer.Write(info.Meta);
         }
 
-        public static BlockInfo Deserialize(BinaryReader reader)
-        {
-            return new(
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadUInt16(),
-                reader.ReadInt32());
-        }
+        public static BlockInfo Deserialize(BinaryReader reader) => new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32());
 
-        public static bool operator ==(BlockInfo left, BlockInfo right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(BlockInfo left, BlockInfo right) => left.Equals(right);
 
-        public static bool operator !=(BlockInfo left, BlockInfo right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(BlockInfo left, BlockInfo right) => !(left == right);
 
         #region BlockInfo <=> Tuple Operators
 
-        public static implicit operator BlockInfo((int x, int y, int z, ushort block, int meta) blockTuple)
-        {
-            return new(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block, blockTuple.meta);
-        }
+        public static implicit operator BlockInfo((int x, int y, int z, ushort block, int meta) blockTuple) => new(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block, blockTuple.meta);
 
-        public static implicit operator (int x, int y, int z, ushort block, int meta)(BlockInfo blockInfo)
-        {
-            return (blockInfo.Position.X, blockInfo.Position.Y, blockInfo.Position.Z, blockInfo.Block, blockInfo.Meta);
-        }
+        public static implicit operator (int x, int y, int z, ushort block, int meta)(BlockInfo blockInfo) => (blockInfo.Position.X, blockInfo.Position.Y, blockInfo.Position.Z, blockInfo.Block, blockInfo.Meta);
 
-        public static implicit operator BlockInfo((int x, int y, int z, ushort block) blockTuple)
-        {
-            return new(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block);
-        }
+        public static implicit operator BlockInfo((int x, int y, int z, ushort block) blockTuple) => new(blockTuple.x, blockTuple.y, blockTuple.z, blockTuple.block);
 
-        public static implicit operator (int x, int y, int z, ushort block)(BlockInfo blockInfo)
-        {
-            return (blockInfo.Position.X, blockInfo.Position.Y, blockInfo.Position.Z, blockInfo.Block);
-        }
+        public static implicit operator (int x, int y, int z, ushort block)(BlockInfo blockInfo) => (blockInfo.Position.X, blockInfo.Position.Y, blockInfo.Position.Z, blockInfo.Block);
 
-        public static implicit operator BlockInfo((Index3 position, ushort block, int meta) blockTuple)
-        {
-            return new(blockTuple.position, blockTuple.block, blockTuple.meta);
-        }
+        public static implicit operator BlockInfo((Index3 position, ushort block, int meta) blockTuple) => new(blockTuple.position, blockTuple.block, blockTuple.meta);
 
-        public static implicit operator (Index3 position, ushort block, int meta)(BlockInfo blockInfo)
-        {
-            return (blockInfo.Position, blockInfo.Block, blockInfo.Meta);
-        }
+        public static implicit operator (Index3 position, ushort block, int meta)(BlockInfo blockInfo) => (blockInfo.Position, blockInfo.Block, blockInfo.Meta);
 
-        public static implicit operator BlockInfo((Index3 position, ushort block) blockTuple)
-        {
-            return new(blockTuple.position, blockTuple.block);
-        }
+        public static implicit operator BlockInfo((Index3 position, ushort block) blockTuple) => new(blockTuple.position, blockTuple.block);
 
-        public static implicit operator (Index3 position, ushort block)(BlockInfo blockInfo)
-        {
-            return (blockInfo.Position, blockInfo.Block);
-        }
+        public static implicit operator (Index3 position, ushort block)(BlockInfo blockInfo) => (blockInfo.Position, blockInfo.Block);
 
         #endregion
     }
