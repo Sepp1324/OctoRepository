@@ -8,4 +8,8 @@
     <PackageReference Include="Moq" Version="4.16.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OctoAwesome.Client\OctoAwesome.Client.csproj" />
+  </ItemGroup>
+
 </Project>

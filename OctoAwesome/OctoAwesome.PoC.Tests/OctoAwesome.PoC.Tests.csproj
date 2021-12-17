@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\OctoAwesome.Poc\OctoAwesome.Poc.csproj" />
+    <ProjectReference Include="..\PoC\OctoAwesome.PoC.csproj" />
   </ItemGroup>
 
 </Project>
