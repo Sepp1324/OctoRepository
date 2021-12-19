@@ -6,6 +6,10 @@ namespace OctoAwesome.PoC
 {
     public class DependencyAgent
     {
+        private readonly DependencyTree _internalTree;
+
+        public DependencyAgent(DependencyTree dependencyTree) => _internalTree = dependencyTree;
+
         internal Dictionary<int, Type> GetDependencyTypeOrder<TKey>(TKey key, Type typeOfTKey, Type typeOfTValue) => null;
 
         public static bool TryCreateTree(IList<DependencyItem> dependencies, out DependencyTree tree)
@@ -20,7 +24,7 @@ namespace OctoAwesome.PoC
             if (HasCycle(graph))
                 return false;
 
-            tree = TopologicalSort(graph);
+            tree = TopologicalSort(graph); 
             return true;
         }
 
@@ -100,7 +104,7 @@ namespace OctoAwesome.PoC
             foreach (var item in graph)
                 CheckAndMove(item);
 
-            return new(graph.OrderBy(r => r.Position).ToList());
+            return new(graph.OrderBy(r => r.Position).ToDictionary(l => l.Item.Type, l => l));
         }
 
         private static void CheckAndMove(DependencyLeaf item)

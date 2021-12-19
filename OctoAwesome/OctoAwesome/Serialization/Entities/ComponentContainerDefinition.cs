@@ -9,9 +9,7 @@ namespace OctoAwesome.Serialization.Entities
 {
     public sealed class ComponentContainerDefinition<TContainer> : ISerializable where TContainer : IComponent
     {
-        public ComponentContainerDefinition()
-        {
-        }
+        public ComponentContainerDefinition() { }
 
         public ComponentContainerDefinition(ComponentContainer<TContainer> entity)
         {
@@ -23,8 +21,11 @@ namespace OctoAwesome.Serialization.Entities
         }
 
         public Type Type { get; set; }
+
         public Guid Id { get; set; }
+
         public int ComponentsCount { get; set; }
+
         public IEnumerable<Type> Components { get; set; }
 
         public void Serialize(BinaryWriter writer)
@@ -40,7 +41,7 @@ namespace OctoAwesome.Serialization.Entities
         public void Deserialize(BinaryReader reader)
         {
             Type = Type.GetType(reader.ReadString());
-            Id = new Guid(reader.ReadBytes(16));
+            Id = new(reader.ReadBytes(16));
             ComponentsCount = reader.ReadInt32();
             var list = new List<Type>();
 
@@ -50,29 +51,15 @@ namespace OctoAwesome.Serialization.Entities
             Components = list;
         }
 
-        public sealed class ComponentContainerDefinitionContext<TContainer> : SerializableDatabaseContext<
-            GuidTag<ComponentContainerDefinition<TContainer>>, ComponentContainerDefinition<TContainer>>
-            where TContainer : IComponent
+        public sealed class ComponentContainerDefinitionContext<TContainer> : SerializableDatabaseContext<GuidTag<ComponentContainerDefinition<TContainer>>, ComponentContainerDefinition<TContainer>> where TContainer : IComponent
         {
-            public ComponentContainerDefinitionContext(
-                Database<GuidTag<ComponentContainerDefinition<TContainer>>> database) : base(database)
-            {
-            }
+            public ComponentContainerDefinitionContext(Database<GuidTag<ComponentContainerDefinition<TContainer>>> database) : base(database) { }
 
-            public override void AddOrUpdate(ComponentContainerDefinition<TContainer> value)
-            {
-                InternalAddOrUpdate(new GuidTag<ComponentContainerDefinition<TContainer>>(value.Id), value);
-            }
+            public override void AddOrUpdate(ComponentContainerDefinition<TContainer> value) => InternalAddOrUpdate(new(value.Id), value);
 
-            public IEnumerable<GuidTag<ComponentContainerDefinition<TContainer>>> GetAllKeys()
-            {
-                return Database.Keys;
-            }
+            public IEnumerable<GuidTag<ComponentContainerDefinition<TContainer>>> GetAllKeys() => Database.Keys;
 
-            public override void Remove(ComponentContainerDefinition<TContainer> value)
-            {
-                InternalRemove(new GuidTag<ComponentContainerDefinition<TContainer>>(value.Id));
-            }
+            public override void Remove(ComponentContainerDefinition<TContainer> value) => InternalRemove(new(value.Id));
         }
     }
 }

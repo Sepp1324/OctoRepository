@@ -57,10 +57,8 @@ namespace OctoAwesome.Basics
         public IPlanet GeneratePlanet(Stream stream)
         {
             IPlanet planet = new Planet();
-            using (var reader = new BinaryReader(stream))
-            {
-                planet.Deserialize(reader);
-            }
+            using var reader = new BinaryReader(stream);
+            planet.Deserialize(reader);
 
             return planet;
         }
@@ -69,10 +67,8 @@ namespace OctoAwesome.Basics
         public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)
         {
             IChunkColumn column = new ChunkColumn(planet);
-            using (var reader = new BinaryReader(stream))
-            {
-                column.Deserialize(reader);
-            }
+            using var reader = new BinaryReader(stream);
+            column.Deserialize(reader);
 
             return column;
         }

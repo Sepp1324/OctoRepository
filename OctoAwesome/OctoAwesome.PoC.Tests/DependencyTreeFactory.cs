@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace OctoAwesome.PoC.Tests
 {
@@ -43,6 +45,8 @@ namespace OctoAwesome.PoC.Tests
         {
             var tree = new List<DependencyItem>();
             var uniqueNames = new HashSet<string>();
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new(nameof(DependencyTreeFactory)), AssemblyBuilderAccess.Run);
+            var moduleBuilder = assemblyBuilder.DefineDynamicModule("ModuleName");
 
             for (var i = 0; i < amount; i++)
             {
@@ -54,7 +58,9 @@ namespace OctoAwesome.PoC.Tests
 
                 uniqueNames.Add(name);
 
-                tree.Add(new(typeof(string), name, new(), new()));
+                var typeBuilder = moduleBuilder.DefineType($"{nameof(OctoAwesome)}.{nameof(PoC)}.{nameof(Tests)}.{nameof(DependencyTreeFactory)}.{name}", TypeAttributes.Public | TypeAttributes.Class);
+
+                tree.Add(new(typeBuilder.CreateType(), name, new(), new()));
             }
 
             for (var i = 0; i < amount; i++)
@@ -103,6 +109,7 @@ namespace OctoAwesome.PoC.Tests
 
                 if (!item1.AfterDependencyItems.Contains(item2.Name))
                     item1.AfterDependencyItems.Add(item2.Name);
+
                 if (!item2.AfterDependencyItems.Contains(item1.Name))
                     item2.AfterDependencyItems.Add(item1.Name);
             }
@@ -113,7 +120,7 @@ namespace OctoAwesome.PoC.Tests
         private static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü";
-            return new(Enumerable.Range(0, length).Select(s => chars[random.Next(length)]).ToArray());
+            return new(Enumerable.Range(0, length).Select(_ => chars[random.Next(chars.Length)]).ToArray());
         }
     }
 }

@@ -18,9 +18,7 @@ namespace OctoAwesome.Basics
         public string Name => OctoBasics.ExtensionName;
 
 
-        public void Register(ITypeContainer typeContainer)
-        {
-        }
+        public void Register(ITypeContainer typeContainer) { }
 
         public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
         {

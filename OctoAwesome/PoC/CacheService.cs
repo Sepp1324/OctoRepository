@@ -26,10 +26,9 @@ namespace OctoAwesome.PoC
             if (!_caches.TryGetValue(typeof(TValue), out var cache) || cache.TypeOfTKey != typeof(TKey)) 
                 return default;
 
-            Dictionary<int, Type> types = _dependencyAgent.GetDependencyTypeOrder(key, cache.TypeOfTKey, cache.TypeOfTValue);
+            var types = _dependencyAgent.GetDependencyTypeOrder(key, cache.TypeOfTKey, cache.TypeOfTValue);
 
             return cache.Get<TKey, TValue>(key);
-
         }
 
         //TODO: CleanUp-Task

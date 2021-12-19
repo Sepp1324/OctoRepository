@@ -24,9 +24,7 @@ namespace OctoAwesome.Basics
         ///     Durchschnittliche Dichte des Planeten zur Berechnung der Gravitation in kg/m³. Erd- und
         ///     Standardwert: 5510
         /// </param>
-        public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed,
-            int averageDensity = 5510)
-            : base(id, universe, size, seed)
+        public ComplexPlanet(int id, Guid universe, Index3 size, IMapGenerator generator, int seed, int averageDensity = 5510) : base(id, universe, size, seed)
         {
             Generator = generator;
 
@@ -56,7 +54,7 @@ namespace OctoAwesome.Basics
 
         private void Initalize()
         {
-            BiomeGenerator = new SurfaceBiomeGenerator(this, 40);
+            BiomeGenerator = new(this, 40);
             ClimateMap = new ComplexClimateMap(this);
         }
     }

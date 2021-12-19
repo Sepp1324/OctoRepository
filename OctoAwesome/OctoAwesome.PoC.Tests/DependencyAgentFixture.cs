@@ -8,16 +8,14 @@ namespace OctoAwesome.PoC.Tests
     public static class DependencyAgentFixture
     {
         //TODO:
-        //Abh�ngigkeiten m�ssen als Baum korrekt zur�ckkommen (True, False, ArgumentNullException)
+        //Abhängigkeiten müssen als Baum korrekt zurückkommen (True, False, ArgumentNullException)
         //Cycle Tests mit Cycle und Ohne Cycle
 
         [TestOf(nameof(DependencyAgent.TryCreateTree))]
         public class TryCreateTree : TestFixture
         {
             [Test]
-            public void Fuzzy(
-                [Random(10, 30, 4, Distinct = true)] int amount,
-                [Values(true, false)] bool valid)
+            public void Fuzzy([Random(10, 30, 4, Distinct = true)] int amount, [Values(true, false)] bool valid)
             {
                 var dependencies = DependencyTreeFactory.GetDependencies(amount, valid);
 
@@ -34,8 +32,7 @@ namespace OctoAwesome.PoC.Tests
             }
 
             [Test]
-            public void Bulk(
-                [Values(10, 100, 1000)] int amount)
+            public void Bulk([Values(10, 100, 1000)] int amount)
             {
                 var dependencies = DependencyTreeFactory.GetDependencies(amount, true);
 
@@ -54,25 +51,19 @@ namespace OctoAwesome.PoC.Tests
         {
             public static IEnumerable<TestCaseData> DependencyResolvingCases()
             {
-                yield return new TestCaseData(
-                );
+                yield return new TestCaseData();
             }
         }
 
         public abstract class TestFixture
         {
-            public DependencyAgent DependencyAgent { get; private set; }
+            private DependencyAgent DependencyAgent { get; set; }
 
             [SetUp]
-            public void Setup()
-            {
-                DependencyAgent = new();
-            }
+            public void Setup() => DependencyAgent = new(new(new()));
 
             [TearDown]
-            public void TearDown()
-            {
-            }
+            public void TearDown() { }
         }
     }
 }
