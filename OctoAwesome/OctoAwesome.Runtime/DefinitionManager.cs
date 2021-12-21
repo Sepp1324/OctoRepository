@@ -10,11 +10,11 @@ namespace OctoAwesome.Runtime
     /// </summary>
     public class DefinitionManager : IDefinitionManager
     {
-        private readonly IExtensionResolver extensionResolver;
+        private readonly IExtensionResolver _extensionResolver;
 
         public DefinitionManager(IExtensionResolver extensionResolver)
         {
-            this.extensionResolver = extensionResolver;
+            _extensionResolver = extensionResolver;
 
             Definitions = extensionResolver.GetDefinitions<IDefinition>().ToArray();
 
@@ -81,14 +81,14 @@ namespace OctoAwesome.Runtime
             var i = 0;
             IDefinition definition = default;
             foreach (var d in Definitions)
-                if (i > 0 && d.GetType() == typeof(T))
+                switch (i)
                 {
-                    throw new InvalidOperationException("Multiple Object where found that match the condition");
-                }
-                else if (i == 0 && d.GetType() == typeof(T))
-                {
-                    definition = d;
-                    ++i;
+                    case > 0 when d.GetType() == typeof(T):
+                        throw new InvalidOperationException("Multiple Object where found that match the condition");
+                    case 0 when d.GetType() == typeof(T):
+                        definition = d;
+                        ++i;
+                        break;
                 }
 
             return GetDefinitionIndex(definition);
@@ -102,7 +102,7 @@ namespace OctoAwesome.Runtime
         public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
         {
             // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary (+1 von Maxi am 07.04.2021))
-            return extensionResolver.GetDefinitions<T>();
+            return _extensionResolver.GetDefinitions<T>();
         }
 
         public T GetDefinitionByTypeName<T>(string typeName) where T : IDefinition
@@ -112,9 +112,7 @@ namespace OctoAwesome.Runtime
                 return GetDefinitionFromArrayByTypeName<T>(typeName, BlockDefinitions);
             if (typeof(IItemDefinition).IsAssignableFrom(searchedType))
                 return GetDefinitionFromArrayByTypeName<T>(typeName, ItemDefinitions);
-            if (typeof(IMaterialDefinition).IsAssignableFrom(searchedType))
-                return GetDefinitionFromArrayByTypeName<T>(typeName, MaterialDefinitions);
-            return default;
+            return typeof(IMaterialDefinition).IsAssignableFrom(searchedType) ? GetDefinitionFromArrayByTypeName<T>(typeName, MaterialDefinitions) : default;
         }
 
         private static T GetDefinitionFromArrayByTypeName<T>(string typeName, IDefinition[] array) where T : IDefinition

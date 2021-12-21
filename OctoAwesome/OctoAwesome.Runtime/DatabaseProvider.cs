@@ -146,10 +146,7 @@ namespace OctoAwesome.Runtime
             {
                 var firstType = type.GenericTypeArguments.FirstOrDefault();
 
-                if (firstType != default)
-                    name = $"{typeName}_{firstType.Name}";
-                else
-                    name = typeName;
+                name = firstType != default ? $"{typeName}_{firstType.Name}" : typeName;
             }
             else
             {

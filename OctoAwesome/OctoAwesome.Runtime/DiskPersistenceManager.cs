@@ -170,12 +170,13 @@ namespace OctoAwesome.Runtime
             awaiter.Serializable = universes;
             foreach (var folder in Directory.GetDirectories(root))
             {
-                var id = Path.GetFileNameWithoutExtension(folder); //folder.Replace(root + "\\", "");
-                if (Guid.TryParse(id, out var guid))
-                {
-                    Load(out var universe, guid).WaitOnAndRelease();
-                    universes.Add(universe);
-                }
+                var id = Path.GetFileNameWithoutExtension(folder); 
+
+                if (!Guid.TryParse(id, out var guid)) 
+                    continue;
+
+                Load(out var universe, guid).WaitOnAndRelease();
+                universes.Add(universe);
             }
 
             awaiter.SetResult(universes);
@@ -193,6 +194,7 @@ namespace OctoAwesome.Runtime
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), UniverseFilename);
             universe = new Universe();
             _currentUniverse = universe;
+
             if (!File.Exists(file))
                 return null;
 
@@ -292,7 +294,8 @@ namespace OctoAwesome.Runtime
         {
             //TODO: Später durch Playername ersetzen
             var file = Path.Combine(GetRoot(), universeGuid.ToString(), "player.info");
-            player = new Player();
+            player = new();
+
             if (!File.Exists(file))
                 return null;
 
@@ -323,8 +326,7 @@ namespace OctoAwesome.Runtime
         public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds) where T : IEntityComponent, new()
         {
             foreach (var entityId in entityIds)
-                yield return (entityId,
-                    new ComponentContainerComponentDbContext<T>(_databaseProvider, universeGuid).Get<T>(entityId));
+                yield return (entityId, new ComponentContainerComponentDbContext<T>(_databaseProvider, universeGuid).Get<T>(entityId));
         }
 
         private string GetRoot()
@@ -336,13 +338,13 @@ namespace OctoAwesome.Runtime
 
             if (!string.IsNullOrEmpty(appConfig))
             {
-                _root = new DirectoryInfo(appConfig);
+                _root = new(appConfig);
                 if (!_root.Exists) _root.Create();
                 return _root.FullName;
             }
 
             var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            _root = new DirectoryInfo(exePath + Path.DirectorySeparatorChar + "OctoMap");
+            _root = new(exePath + Path.DirectorySeparatorChar + "OctoMap");
             if (!_root.Exists) _root.Create();
             return _root.FullName;
         }
@@ -370,19 +372,20 @@ namespace OctoAwesome.Runtime
             for (var i = 0; i < keys.Count; i++)
             {
                 var key = keys[i];
-                if (key.ChunkPositon.X == column.Index.X && key.ChunkPositon.Y == column.Index.Y)
-                {
-                    var block = databaseContext.Get(key);
-                    column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.BlockInfo.Block;
-                    column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.BlockInfo.Meta;
-                }
+
+                if (key.ChunkPositon.X != column.Index.X || key.ChunkPositon.Y != column.Index.Y) 
+                    continue;
+
+                var block = databaseContext.Get(key);
+                column.Chunks[key.ChunkPositon.Z].Blocks[key.FlatIndex] = block.BlockInfo.Block;
+                column.Chunks[key.ChunkPositon.Z].MetaData[key.FlatIndex] = block.BlockInfo.Meta;
             }
 
-            if (keys.Count > 1000)
-            {
-                SaveColumn(universeGuid, planet, column);
-                databaseContext.Remove(keys);
-            }
+            if (keys.Count <= 1000) 
+                return;
+
+            SaveColumn(universeGuid, planet, column);
+            databaseContext.Remove(keys);
         }
     }
 }
