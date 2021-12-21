@@ -9,12 +9,10 @@ namespace OctoAwesome.Client.Screens
 {
     internal sealed class ConnectionScreen : BaseScreen
     {
-        private readonly OctoGame game;
-
         public ConnectionScreen(ScreenComponent manager) : base(manager)
         {
-            game = Manager.Game;
-            Padding = new Border(0, 0, 0, 0);
+            var game = Manager.Game;
+            Padding = new(0, 0, 0, 0);
 
             Title = OctoClient.CreateUniverse;
 
@@ -38,8 +36,8 @@ namespace OctoAwesome.Client.Screens
 
             panel.Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Auto });
-            grid.Columns.Add(new ColumnDefinition { Width = 1, ResizeMode = ResizeMode.Parts });
+            grid.Columns.Add(new() { ResizeMode = ResizeMode.Auto });
+            grid.Columns.Add(new() { Width = 1, ResizeMode = ResizeMode.Parts });
 
             var serverNameInput = new Textbox(manager)
             {
@@ -57,22 +55,23 @@ namespace OctoAwesome.Client.Screens
             };
             AddLabeledControl(grid, "Username:", playerNameInput);
 
-            var createButton = new TextButton(manager, OctoClient.Connect);
-            createButton.HorizontalAlignment = HorizontalAlignment.Center;
-            createButton.VerticalAlignment = VerticalAlignment.Center;
-            createButton.Visible = true;
+            var createButton = new TextButton(manager, OctoClient.Connect)
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Visible = true
+            };
             createButton.LeftMouseClick += (s, e) =>
             {
                 game.Settings.Set("server", serverNameInput.Text);
                 game.Settings.Set("player", playerNameInput.Text);
 
-                ((ContainerResourceManager)game.ResourceManager)
-                    .CreateManager(true);
+                ((ContainerResourceManager)game.ResourceManager).CreateManager(true);
 
                 PlayMultiplayer(manager, playerNameInput.Text);
             };
 
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Auto });
+            grid.Rows.Add(new() { ResizeMode = ResizeMode.Auto });
             grid.AddControl(createButton, 1, grid.Rows.Count - 1);
         }
 

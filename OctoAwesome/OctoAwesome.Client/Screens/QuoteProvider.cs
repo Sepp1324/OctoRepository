@@ -6,36 +6,36 @@ namespace OctoAwesome.Client.Screens
 {
     public sealed class QuoteProvider
     {
-        private readonly FileInfo fileInfo;
-        private readonly Random random;
+        private readonly FileInfo _fileInfo;
+        private readonly Random _random;
 
-        private readonly LockSemaphore semaphoreExtended;
-        private bool loaded;
-        private string[] quotes;
+        private readonly LockSemaphore _semaphoreExtended;
+        private bool _loaded;
+        private string[] _quotes;
 
         public QuoteProvider(FileInfo fileInfo)
         {
-            this.fileInfo = fileInfo;
-            random = new Random();
-            semaphoreExtended = new LockSemaphore(1, 1);
+            _fileInfo = fileInfo;
+            _random = new();
+            _semaphoreExtended = new(1, 1);
         }
 
         public string GetRandomQuote()
         {
-            using (semaphoreExtended.Wait())
+            using (_semaphoreExtended.Wait())
             {
                 Load();
-                return quotes[random.Next(0, quotes.Length)];
+                return _quotes[_random.Next(0, _quotes.Length)];
             }
         }
 
         private void Load()
         {
-            if (loaded)
+            if (_loaded)
                 return;
 
-            loaded = true;
-            quotes = File.ReadAllLines(fileInfo.FullName);
+            _loaded = true;
+            _quotes = File.ReadAllLines(_fileInfo.FullName);
         }
     }
 }

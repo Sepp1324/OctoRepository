@@ -16,152 +16,105 @@ namespace OctoAwesome.Client
     /// </summary>
     public class ContainerResourceManager : IResourceManager, IDisposable
     {
-        private readonly IDefinitionManager definitionManager;
+        private readonly IDefinitionManager _definitionManager;
 
-        private readonly IExtensionResolver extensionResolver;
-        private readonly ISettings settings;
-        private readonly ITypeContainer typeContainer;
-        private NetworkUpdateManager networkUpdateManager;
+        private readonly IExtensionResolver _extensionResolver;
+        private readonly ISettings _settings;
+        private readonly ITypeContainer _typeContainer;
 
-        private ResourceManager resourceManager;
+        private ResourceManager _resourceManager;
 
         public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub,
             IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
         {
             UpdateHub = updateHub;
-            this.typeContainer = typeContainer;
-            this.extensionResolver = extensionResolver;
-            this.definitionManager = definitionManager;
-            this.settings = settings;
+            _typeContainer = typeContainer;
+            _extensionResolver = extensionResolver;
+            _definitionManager = definitionManager;
+            _settings = settings;
         }
 
         public bool IsMultiplayer { get; private set; }
 
         public void Dispose()
         {
-            if (resourceManager is IDisposable disposable)
+            if (_resourceManager is IDisposable disposable)
                 disposable.Dispose();
         }
 
-        public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
-        public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
-        public Player CurrentPlayer => resourceManager.CurrentPlayer;
+        public IDefinitionManager DefinitionManager => _resourceManager.DefinitionManager;
+
+        public IUniverse CurrentUniverse => _resourceManager.CurrentUniverse;
+
+        public Player CurrentPlayer => _resourceManager.CurrentPlayer;
 
         public IUpdateHub UpdateHub { get; }
 
-        public ConcurrentDictionary<int, IPlanet> Planets => resourceManager.Planets;
+        public ConcurrentDictionary<int, IPlanet> Planets => _resourceManager.Planets;
 
-        public void DeleteUniverse(Guid id)
-        {
-            resourceManager.DeleteUniverse(id);
-        }
+        public void DeleteUniverse(Guid id) => _resourceManager.DeleteUniverse(id);
 
         public IPlanet GetPlanet(int planetId)
         {
-            var planet = resourceManager.GetPlanet(planetId);
+            var planet = _resourceManager.GetPlanet(planetId);
             planet.UpdateHub = UpdateHub;
             return planet;
         }
 
-        public IUniverse GetUniverse()
-        {
-            return resourceManager.GetUniverse();
-        }
+        public IUniverse GetUniverse() => _resourceManager.GetUniverse();
 
-        public IUniverse[] ListUniverses()
-        {
-            return resourceManager.ListUniverses();
-        }
+        public IUniverse[] ListUniverses() => _resourceManager.ListUniverses();
 
-        public Player LoadPlayer(string playerName)
-        {
-            return resourceManager.LoadPlayer(playerName);
-        }
+        public Player LoadPlayer(string playerName) => _resourceManager.LoadPlayer(playerName);
 
-        public bool TryLoadUniverse(Guid universeId)
-        {
-            return resourceManager.TryLoadUniverse(universeId);
-        }
+        public bool TryLoadUniverse(Guid universeId) => _resourceManager.TryLoadUniverse(universeId);
 
-        public Guid NewUniverse(string name, int seed)
-        {
-            return resourceManager.NewUniverse(name, seed);
-        }
+        public Guid NewUniverse(string name, int seed) => _resourceManager.NewUniverse(name, seed);
 
-        public void SaveEntity(Entity entity)
-        {
-            resourceManager.SaveEntity(entity);
-        }
+        public void SaveEntity(Entity entity) => _resourceManager.SaveEntity(entity);
 
-        public void SavePlayer(Player player)
-        {
-            resourceManager.SavePlayer(player);
-        }
+        public void SavePlayer(Player player) => _resourceManager.SavePlayer(player);
 
-        public void UnloadUniverse()
-        {
-            resourceManager.UnloadUniverse();
-        }
+        public void UnloadUniverse() => _resourceManager.UnloadUniverse();
 
-        public void SaveChunkColumn(IChunkColumn chunkColumn)
-        {
-            resourceManager.SaveChunkColumn(chunkColumn);
-        }
+        public void SaveChunkColumn(IChunkColumn chunkColumn) => _resourceManager.SaveChunkColumn(chunkColumn);
 
-        public IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index)
-        {
-            return resourceManager.LoadChunkColumn(planet, index);
-        }
+        public IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index) => _resourceManager.LoadChunkColumn(planet, index);
 
-        public Entity LoadEntity(Guid entityId)
-        {
-            return resourceManager.LoadEntity(entityId);
-        }
+        public Entity LoadEntity(Guid entityId) => _resourceManager.LoadEntity(entityId);
 
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
-        {
-            return resourceManager.LoadEntitiesWithComponent<T>();
-        }
+        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent => _resourceManager.LoadEntitiesWithComponent<T>();
 
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
-        {
-            return resourceManager.GetEntityIdsFromComponent<T>();
-        }
+        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent => _resourceManager.GetEntityIdsFromComponent<T>();
 
-        public IEnumerable<Guid> GetEntityIds()
-        {
-            return resourceManager.GetEntityIds();
-        }
+        public IEnumerable<Guid> GetEntityIds() => _resourceManager.GetEntityIds();
 
-        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
-        {
-            return resourceManager.GetEntityComponents<T>(entityIds);
-        }
+        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new() => _resourceManager.GetEntityComponents<T>(entityIds);
 
         public void CreateManager(bool multiplayer)
         {
             IPersistenceManager persistenceManager;
 
-            if (resourceManager != null)
+            if (_resourceManager != null)
             {
-                if (resourceManager.CurrentUniverse != null)
-                    resourceManager.UnloadUniverse();
+                if (_resourceManager.CurrentUniverse != null)
+                    _resourceManager.UnloadUniverse();
 
-                if (resourceManager is IDisposable disposable)
+                if (_resourceManager is IDisposable disposable)
                     disposable.Dispose();
 
-                resourceManager = null;
+                _resourceManager = null;
             }
 
 
             if (multiplayer)
             {
-                var rawIpAddress = settings.Get<string>("server").Trim();
+                var rawIpAddress = _settings.Get<string>("server").Trim();
                 string host;
-                IPAddress iPAddress;
                 var port = -1;
+
                 if (rawIpAddress[0] == '[' ||
-                    !IPAddress.TryParse(rawIpAddress, out iPAddress)) //IPV4 || IPV6 without port
+                    !IPAddress.TryParse(rawIpAddress, out var iPAddress)) //IPV4 || IPV6 without port
                 {
                     string stringIpAddress;
                     if (rawIpAddress[0] == '[') // IPV6 with Port
@@ -169,9 +122,7 @@ namespace OctoAwesome.Client
                         port = int.Parse(rawIpAddress.Split(':').Last());
                         stringIpAddress = rawIpAddress.Substring(1, rawIpAddress.IndexOf(']') - 1);
                     }
-                    else if (rawIpAddress.Contains(':') &&
-                             IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')),
-                                 out iPAddress)) //IPV4 with Port
+                    else if (rawIpAddress.Contains(':') && IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
                         stringIpAddress = iPAddress.ToString();
@@ -195,28 +146,18 @@ namespace OctoAwesome.Client
 
                 var client = new Network.Client();
                 client.Connect(host, port > 0 ? (ushort)port : (ushort)8888);
-                persistenceManager = new NetworkPersistenceManager(typeContainer, client);
-                networkUpdateManager = new NetworkUpdateManager(client, UpdateHub);
+                persistenceManager = new NetworkPersistenceManager(_typeContainer, client);
+                new NetworkUpdateManager(client, UpdateHub);
             }
             else
             {
-                persistenceManager = new DiskPersistenceManager(extensionResolver, settings, UpdateHub);
+                persistenceManager = new DiskPersistenceManager(_extensionResolver, _settings, UpdateHub);
             }
 
-            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager);
-            resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
-
+            _resourceManager = new(_extensionResolver, _definitionManager, _settings, persistenceManager);
+            _resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
 
             IsMultiplayer = multiplayer;
-
-            //if (multiplayer)
-            //{
-            //    resourceManager.GlobalChunkCache.ChunkColumnChanged += (s, c) =>
-            //    {
-            //        var networkPersistence = (NetworkPersistenceManager)persistenceManager;
-            //        networkPersistence.SendChangedChunkColumn(c);
-            //    };
-            //}
         }
     }
 }

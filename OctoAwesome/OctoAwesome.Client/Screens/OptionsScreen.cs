@@ -2,22 +2,19 @@
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
-using OctoAwesome.UI.Components;
 using OctoAwesome.UI.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class OptionsScreen : BaseScreen
     {
-        private readonly AssetComponent assets;
-        private readonly Button exitButton;
-        private readonly ISettings settings;
+        private readonly Button _exitButton;
 
         public OptionsScreen(ScreenComponent manager) : base(manager)
         {
-            assets = manager.Game.Assets;
-            settings = manager.Game.Settings;
-            Padding = new Border(0, 0, 0, 0);
+            var assets = manager.Game.Assets;
+            ISettings settings = manager.Game.Settings;
+            Padding = new(0, 0, 0, 0);
 
             Title = OctoClient.Options;
 
@@ -27,7 +24,7 @@ namespace OctoAwesome.Client.Screens
 
             var tabs = new TabControl(manager)
             {
-                Padding = new Border(20, 20, 20, 20),
+                Padding = new(20, 20, 20, 20),
                 Width = 700,
                 TabPageBackground = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
                 TabBrush = NineTileBrush.FromSingleTexture(assets.LoadTexture("buttonLong_brown"), 15, 15),
@@ -51,8 +48,10 @@ namespace OctoAwesome.Client.Screens
 
             #region BindingsPage
 
-            var bindingsPage = new TabPage(manager, OctoClient.KeyBindings);
-            bindingsPage.Padding = Border.All(10);
+            var bindingsPage = new TabPage(manager, OctoClient.KeyBindings)
+            {
+                Padding = Border.All(10)
+            };
             tabs.Pages.Add(bindingsPage);
 
             var bindingsOptions = new BindingsOptionControl(manager, assets, manager.Game.KeyMapper, settings)
@@ -93,20 +92,20 @@ namespace OctoAwesome.Client.Screens
             #endregion
 
             ////////////////////////////////////////////Restart Button////////////////////////////////////////////
-            exitButton = new TextButton(manager, OctoClient.RestartGameToApplyChanges);
-            exitButton.VerticalAlignment = VerticalAlignment.Top;
-            exitButton.HorizontalAlignment = HorizontalAlignment.Right;
-            exitButton.Enabled = false;
-            exitButton.Visible = false;
-            exitButton.LeftMouseClick += (s, e) => Program.Restart();
-            exitButton.Margin = new Border(10, 10, 10, 10);
-            Controls.Add(exitButton);
+            _exitButton = new TextButton(manager, OctoClient.RestartGameToApplyChanges);
+            _exitButton.VerticalAlignment = VerticalAlignment.Top;
+            _exitButton.HorizontalAlignment = HorizontalAlignment.Right;
+            _exitButton.Enabled = false;
+            _exitButton.Visible = false;
+            _exitButton.LeftMouseClick += (s, e) => Program.Restart();
+            _exitButton.Margin = new(10, 10, 10, 10);
+            Controls.Add(_exitButton);
         }
 
         public void NeedRestart()
         {
-            exitButton.Visible = true;
-            exitButton.Enabled = true;
+            _exitButton.Visible = true;
+            _exitButton.Enabled = true;
         }
     }
 }

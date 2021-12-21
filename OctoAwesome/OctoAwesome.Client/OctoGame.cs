@@ -20,8 +20,6 @@ namespace OctoAwesome.Client
     /// </summary>
     internal class OctoGame : Game
     {
-        private readonly ITypeContainer typeContainer;
-
         public OctoGame()
         {
             //graphics = new GraphicsDeviceManager(this);
@@ -34,8 +32,8 @@ namespace OctoAwesome.Client
             IsMouseVisible = true;
             //Icon = Properties.Resources.octoawesome;
 
-            typeContainer = TypeContainer.Get<ITypeContainer>();
-            Screen = new ScreenComponent(this);
+            var typeContainer = TypeContainer.Get<ITypeContainer>();
+            Screen = new(this);
 
             typeContainer.Register<BaseScreenComponent>(Screen);
             typeContainer.Register<ScreenComponent>(Screen);
@@ -45,8 +43,8 @@ namespace OctoAwesome.Client
 
             Settings = typeContainer.Get<Settings>();
 
-            KeyMapper = new KeyMapper(Screen, Settings);
-            Assets = new AssetComponent(this, Settings);
+            KeyMapper = new(Screen, Settings);
+            Assets = new(this, Settings);
 
             typeContainer.Register(Assets);
 
@@ -67,18 +65,16 @@ namespace OctoAwesome.Client
 
             if (Settings.KeyExists("Viewrange"))
             {
-                var viewrange = Settings.Get<int>("Viewrange");
+                var viewRange = Settings.Get<int>("Viewrange");
 
-                if (viewrange < 1)
+                if (viewRange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneControl.VIEWRANGE = viewrange;
+                SceneControl.VIEWRANGE = viewRange;
             }
-
 
             Components.Add(Assets);
             Components.Add(Screen);
-
 
             #region GameComponents
 
@@ -89,21 +85,20 @@ namespace OctoAwesome.Client
             ResourceManager = typeContainer.Get<ContainerResourceManager>();
 
 
-            Player = new PlayerComponent(this, ResourceManager);
+            Player = new(this, ResourceManager);
             Player.UpdateOrder = 2;
             Components.Add(Player);
 
-            Simulation = new SimulationComponent(this,
-                ExtensionLoader, ResourceManager);
+            Simulation = new(this, ExtensionLoader, ResourceManager);
 
-            Entity = new EntityGameComponent(this, Simulation);
+            Entity = new(this, Simulation);
             Entity.UpdateOrder = 2;
             Components.Add(Entity);
 
             Simulation.UpdateOrder = 3;
             Components.Add(Simulation);
 
-            Camera = new CameraComponent(this);
+            Camera = new(this);
             Camera.UpdateOrder = 4;
             Components.Add(Camera);
 
@@ -179,8 +174,10 @@ namespace OctoAwesome.Client
             KeyMapper.RegisterBinding("octoawesome:apply", OctoKeys.apply);
             KeyMapper.RegisterBinding("octoawesome:flymode", OctoKeys.flymode);
             KeyMapper.RegisterBinding("octoawesome:jump", OctoKeys.jump);
+
             for (var i = 0; i < 10; i++)
                 KeyMapper.RegisterBinding("octoawesome:slot" + i, OctoKeys.ResourceManager.GetString("slot" + i));
+
             KeyMapper.RegisterBinding("octoawesome:debug.allblocks", OctoKeys.debug_allblocks);
             KeyMapper.RegisterBinding("octoawesome:debug.control", OctoKeys.debug_control);
             KeyMapper.RegisterBinding("octoawesome:inventory", OctoKeys.inventory);
@@ -232,7 +229,8 @@ namespace OctoAwesome.Client
 
             KeyMapper.AddAction("octoawesome:fullscreen", type =>
             {
-                if (type == KeyMapper.KeyType.Down) Window.Fullscreen = !Window.Fullscreen;
+                if (type == KeyMapper.KeyType.Down)
+                    Window.Fullscreen = !Window.Fullscreen;
             });
         }
 

@@ -6,18 +6,15 @@ using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Crew;
-using OctoAwesome.UI.Components;
 using OctoAwesome.UI.Languages;
 
 namespace OctoAwesome.Client.Screens
 {
     internal class CrewMemberScreen : BaseScreen
     {
-        private readonly AssetComponent assets;
-
         public CrewMemberScreen(ScreenComponent manager, CrewMember member) : base(manager)
         {
-            assets = manager.Game.Assets;
+            var assets = manager.Game.Assets;
 
             VerticalAlignment = VerticalAlignment.Stretch;
             HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -26,7 +23,7 @@ namespace OctoAwesome.Client.Screens
 
             var boldFont = manager.Content.Load<SpriteFont>("Fonts/BoldFont");
 
-            Padding = new Border(0, 0, 0, 0);
+            Padding = new(0, 0, 0, 0);
 
             SetDefaultBackground();
 
@@ -36,7 +33,7 @@ namespace OctoAwesome.Client.Screens
             {
                 MaxWidth = 750,
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
-                Padding = new Border(15, 15, 15, 15)
+                Padding = new(15, 15, 15, 15)
             };
             Controls.Add(panel);
 
@@ -56,18 +53,18 @@ namespace OctoAwesome.Client.Screens
                 Width = 200,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Padding = new Border(0, 0, 10, 0)
+                Padding = new(0, 0, 10, 0),
+                Texture = assets.LoadTexture(typeof(CrewMember), member.PictureFilename ?? "base")
             };
-            if (member.PictureFilename == null)
-                profileImage.Texture = assets.LoadTexture(typeof(CrewMember), "base");
-            else profileImage.Texture = assets.LoadTexture(typeof(CrewMember), member.PictureFilename);
             horizontalStack.Controls.Add(profileImage);
 
             //The Text Stack
-            var textStack = new StackPanel(manager);
-            textStack.VerticalAlignment = VerticalAlignment.Stretch;
-            textStack.HorizontalAlignment = HorizontalAlignment.Left;
-            textStack.Width = 430;
+            var textStack = new StackPanel(manager)
+            {
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 430
+            };
             horizontalStack.Controls.Add(textStack);
 
             //The Username & Alias
@@ -148,11 +145,6 @@ namespace OctoAwesome.Client.Screens
             panel.Width = 700;
         }
 
-        private bool CheckHttpUrl(string url)
-        {
-            Uri tmp;
-            return Uri.TryCreate(url, UriKind.Absolute, out tmp) &&
-                   (tmp.Scheme == Uri.UriSchemeHttp || tmp.Scheme == Uri.UriSchemeHttps);
-        }
+        private bool CheckHttpUrl(string url) => Uri.TryCreate(url, UriKind.Absolute, out var tmp) && (tmp.Scheme == Uri.UriSchemeHttp || tmp.Scheme == Uri.UriSchemeHttps);
     }
 }

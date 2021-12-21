@@ -10,7 +10,7 @@ namespace OctoAwesome.Client.Screens
     {
         public CreditsScreen(ScreenComponent manager) : base(manager)
         {
-            Padding = new Border(0, 0, 0, 0);
+            Padding = new(0, 0, 0, 0);
 
             Title = OctoClient.CreditsCrew;
 
@@ -21,14 +21,14 @@ namespace OctoAwesome.Client.Screens
             var crewScroll = new ScrollContainer(manager)
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
-                Margin = new Border(10, 10, 10, 10),
+                Margin = new(10, 10, 10, 10),
                 CanFocus = false
             };
 
             var crewList = new StackPanel(manager)
             {
                 MinWidth = 700,
-                Padding = new Border(10, 0, 10, 0),
+                Padding = new(10, 0, 10, 0),
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Orientation = Orientation.Vertical
             };
@@ -38,7 +38,7 @@ namespace OctoAwesome.Client.Screens
             {
                 Button memberButton = new TextButton(manager, member.Username);
                 memberButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-                memberButton.Margin = new Border(5, 5, 5, 5);
+                memberButton.Margin = new(5, 5, 5, 5);
 
                 memberButton.LeftMouseClick += (s, e) =>
                 {
