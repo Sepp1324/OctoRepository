@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class SnowBlockDefinition : BlockDefinition
     {
-        public SnowBlockDefinition(SnowMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public SnowBlockDefinition(SnowMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Snow;
 
@@ -21,11 +18,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            if (wall == Wall.Top)
-                return 0;
-            if (wall == Wall.Bottom)
-                return 1;
-            return 2;
+            return wall switch
+            {
+                Wall.Top => 0,
+                Wall.Bottom => 1,
+                _ => 2
+            };
         }
     }
 }

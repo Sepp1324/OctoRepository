@@ -5,8 +5,7 @@ namespace OctoAwesome.Basics.Definitions.Items
 {
     internal class Sword : Item
     {
-        public Sword(SwordDefinition definition, IMaterialDefinition materialDefinition)
-            : base(definition, materialDefinition)
+        public Sword(SwordDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition)
         {
         }
     }

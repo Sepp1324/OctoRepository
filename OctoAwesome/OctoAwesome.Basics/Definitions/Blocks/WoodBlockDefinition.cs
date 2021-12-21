@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class WoodBlockDefinition : BlockDefinition
     {
-        public WoodBlockDefinition(WoodMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public WoodBlockDefinition(WoodMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Wood;
 

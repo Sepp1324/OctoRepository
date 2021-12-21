@@ -4,9 +4,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     internal class HighMountainBiome : BiomeBase
     {
-        public HighMountainBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset,
-            float valueRange)
-            : base(planet, minValue, maxValue, valueRangeOffset, valueRange)
+        public HighMountainBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange) : base(planet, minValue, maxValue, valueRangeOffset, valueRange)
         {
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 2)
             {

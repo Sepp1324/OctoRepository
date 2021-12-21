@@ -5,8 +5,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public abstract class LargeBiomeBase : BiomeBase
     {
-        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange)
-            : base(planet, 0, 0, valueRangeOffset, valueRange)
+        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange) : base(planet, 0, 0, valueRangeOffset, valueRange)
         {
         }
 
@@ -89,10 +88,7 @@ namespace OctoAwesome.Basics.Biomes
             return 0f;
         }
 
-        protected virtual float CurveFunction(float inputValue)
-        {
-            return inputValue;
-        }
+        protected virtual float CurveFunction(float inputValue) => inputValue;
 
         public override float[] GetHeightmap(Index2 chunkIndex, float[] heightmap)
         {

@@ -5,14 +5,12 @@ namespace OctoAwesome.Basics.Definitions.Items
 {
     internal class Bucket : Item, IFluidInventory
     {
-        public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition)
-            : base(definition, materialDefinition)
-        {
-            MaxQuantity = 125;
-        }
+        public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition) => MaxQuantity = 125;
 
         public int Quantity { get; private set; }
+
         public IBlockDefinition FluidBlock { get; private set; }
+
         public int MaxQuantity { get; }
 
         public void AddFluid(int quantity, IBlockDefinition fluidBlock)
@@ -24,25 +22,21 @@ namespace OctoAwesome.Basics.Definitions.Items
             FluidBlock = fluidBlock;
         }
 
-        public override int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining,
-            int volumePerHit)
+        public override int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining, int volumePerHit)
         {
             if (!Definition.CanMineMaterial(material))
                 return 0;
 
-            if (material is IFluidMaterialDefinition fluid)
-            {
-                if (!(FluidBlock is null) && fluid != FluidBlock.Material)
-                    return 0;
+            if (material is not IFluidMaterialDefinition fluid)
+                return base.Hit(material, blockInfo, volumeRemaining, volumePerHit);
 
-                if (Quantity + volumePerHit >= MaxQuantity)
-                    return MaxQuantity - Quantity;
+            if (FluidBlock is not null && fluid != FluidBlock.Material)
+                return 0;
 
-                return volumePerHit;
-            }
+            if (Quantity + volumePerHit >= MaxQuantity)
+                return MaxQuantity - Quantity;
 
-
-            return base.Hit(material, blockInfo, volumeRemaining, volumePerHit);
+            return volumePerHit;
         }
     }
 }

@@ -5,9 +5,6 @@ namespace OctoAwesome.Basics.Definitions.Items
 {
     internal class Hammer : Item
     {
-        public Hammer(HammerDefinition definition, IMaterialDefinition materialDefinition)
-            : base(definition, materialDefinition)
-        {
-        }
+        public Hammer(HammerDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition) { }
     }
 }

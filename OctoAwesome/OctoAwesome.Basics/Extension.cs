@@ -38,8 +38,7 @@ namespace OctoAwesome.Basics
 
             extensionLoader.RegisterEntityExtender<Player>(p =>
             {
-                var posComponent = new PositionComponent
-                    { Position = new Coordinate(0, new Index3(0, 0, 200), new Vector3(0, 0)) };
+                var posComponent = new PositionComponent { Position = new(0, new(0, 0, 200), new(0, 0)) };
 
                 p.Components.AddComponent(posComponent);
                 p.Components.AddComponent(new BodyComponent { Mass = 50f, Height = 3.5f, Radius = 0.75f });
@@ -60,8 +59,7 @@ namespace OctoAwesome.Basics
                 s.Components.AddComponent(new PowerAggregatorComponent());
                 s.Components.AddComponent(new AccelerationComponent());
                 s.Components.AddComponent(new MoveComponent());
-                s.Components.AddComponent(new BlockInteractionComponent(s,
-                    typeContainer.Get<BlockCollectionService>()));
+                s.Components.AddComponent(new BlockInteractionComponent(s, typeContainer.Get<BlockCollectionService>()));
 
                 //TODO: unschön
                 //TODO: TypeContainer?

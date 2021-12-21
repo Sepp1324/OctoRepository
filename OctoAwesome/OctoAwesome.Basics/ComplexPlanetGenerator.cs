@@ -10,17 +10,11 @@ namespace OctoAwesome.Basics
 {
     public class ComplexPlanetGenerator : IMapGenerator
     {
-        private readonly ChunkPool chunkPool;
+        private readonly ChunkPool _chunkPool;
 
-        public ComplexPlanetGenerator()
-        {
-            chunkPool = TypeContainer.Get<ChunkPool>();
-        }
+        public ComplexPlanetGenerator() => _chunkPool = TypeContainer.Get<ChunkPool>();
 
-        public IPlanet GeneratePlanet(Guid universe, int id, int seed)
-        {
-            return new ComplexPlanet(id, universe, new Index3(13, 13, 4), this, seed);
-        }
+        public IPlanet GeneratePlanet(Guid universe, int id, int seed) => new ComplexPlanet(id, universe, new(13, 13, 4), this, seed);
 
         public IChunkColumn GenerateColumn(IDefinitionManager definitionManager, IPlanet planet, Index2 index)
         {
@@ -55,7 +49,7 @@ namespace OctoAwesome.Basics
 
             var chunks = new IChunk[planet.Size.Z];
             for (var i = 0; i < planet.Size.Z; i++)
-                chunks[i] = chunkPool.Get(new Index3(index, i), planet);
+                chunks[i] = _chunkPool.Get(new Index3(index, i), planet);
 
             int obersteSchicht;
             bool surfaceBlock;
@@ -166,10 +160,8 @@ namespace OctoAwesome.Basics
         public IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index)
         {
             IChunkColumn column = new ChunkColumn(planet);
-            using (var reader = new BinaryReader(stream))
-            {
-                column.Deserialize(reader);
-            }
+            using var reader = new BinaryReader(stream);
+            column.Deserialize(reader);
 
             return column;
         }

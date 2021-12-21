@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GrassBlockDefinition : BlockDefinition
     {
-        public GrassBlockDefinition(DirtMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public GrassBlockDefinition(DirtMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Grass;
 
@@ -26,11 +23,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            if (wall == Wall.Top)
-                return 0;
-            if (wall == Wall.Bottom)
-                return 1;
-            return 2;
+            return wall switch
+            {
+                Wall.Top => 0,
+                Wall.Bottom => 1,
+                _ => 2
+            };
         }
     }
 }

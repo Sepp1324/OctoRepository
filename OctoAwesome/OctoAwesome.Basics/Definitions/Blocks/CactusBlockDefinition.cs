@@ -6,15 +6,9 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public class CactusBlockDefinition : BlockDefinition
     {
-        public CactusBlockDefinition()
-        {
-            Textures = new[] { "cactus_inside", "cactus_side", "cactus_top" };
-        }
+        public CactusBlockDefinition() => Textures = new[] { "cactus_inside", "cactus_side", "cactus_top" };
 
-        public CactusBlockDefinition(CactusMaterialDefinition material) : this()
-        {
-            Material = material;
-        }
+        public CactusBlockDefinition(CactusMaterialDefinition material) : this() => Material = material;
 
         public override string Icon => "cactus_inside";
 
@@ -24,8 +18,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
         public override IMaterialDefinition Material { get; }
 
-        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
-            int x, int y, int z)
+        public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
 

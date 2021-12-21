@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class DirtBlockDefinition : BlockDefinition
     {
-        public DirtBlockDefinition(DirtMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public DirtBlockDefinition(DirtMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Ground;
 
@@ -17,7 +14,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
 
         public override string[] Textures { get; } = { "dirt" };
-
 
         public override IMaterialDefinition Material { get; }
     }

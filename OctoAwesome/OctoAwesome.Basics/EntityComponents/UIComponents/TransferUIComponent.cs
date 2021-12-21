@@ -7,24 +7,20 @@ namespace OctoAwesome.Basics.EntityComponents.UIComponents
 {
     public class TransferUIComponent : UIComponent
     {
-        private readonly InventoryComponent chestInventory;
+        private readonly InventoryComponent _chestInventory;
 
-        private readonly TransferScreen transferScreen;
+        private readonly TransferScreen _transferScreen;
 
         public TransferUIComponent(InventoryComponent chestInventory)
         {
-            this.chestInventory = chestInventory;
-            transferScreen =
-                new TransferScreen(ScreenComponent, AssetComponent, chestInventory, new InventoryComponent());
-            transferScreen.Closed += TransferScreen_Closed;
+            _chestInventory = chestInventory;
+            _transferScreen = new(ScreenComponent, AssetComponent, chestInventory, new());
+            _transferScreen.Closed += TransferScreen_Closed;
         }
 
         public event EventHandler<NavigationEventArgs> Closed;
 
-        private void TransferScreen_Closed(object sender, NavigationEventArgs e)
-        {
-            Closed?.Invoke(sender, e);
-        }
+        private void TransferScreen_Closed(object sender, NavigationEventArgs e) => Closed?.Invoke(sender, e);
 
         public void Show(Player p)
         {
@@ -33,10 +29,10 @@ namespace OctoAwesome.Basics.EntityComponents.UIComponents
             if (playerInventory is null)
                 return;
 
-            transferScreen.Rebuild(chestInventory, playerInventory);
+            _transferScreen.Rebuild(_chestInventory, playerInventory);
 
-            if (ScreenComponent.ActiveScreen != transferScreen)
-                ScreenComponent.NavigateToScreen(transferScreen);
+            if (ScreenComponent.ActiveScreen != _transferScreen)
+                ScreenComponent.NavigateToScreen(_transferScreen);
         }
     }
 }

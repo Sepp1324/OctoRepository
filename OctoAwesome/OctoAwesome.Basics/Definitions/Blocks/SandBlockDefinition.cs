@@ -6,10 +6,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class SandBlockDefinition : BlockDefinition
     {
-        public SandBlockDefinition(SandMaterialDefinition material)
-        {
-            Material = material;
-        }
+        public SandBlockDefinition(SandMaterialDefinition material) => Material = material;
 
         public override string Name => OctoBasics.Sand;
 

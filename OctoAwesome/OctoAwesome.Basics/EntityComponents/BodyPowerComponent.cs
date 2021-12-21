@@ -6,7 +6,6 @@ namespace OctoAwesome.Basics.EntityComponents
     {
         public int JumpTime { get; set; }
 
-
         public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);

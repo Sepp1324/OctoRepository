@@ -12,16 +12,11 @@ namespace OctoAwesome.Basics.Definitions.Items
         }
 
         public string Name { get; }
+
         public string Icon { get; }
 
-        public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            return false;
-        }
+        public bool CanMineMaterial(IMaterialDefinition material) => false;
 
-        public Item Create(IMaterialDefinition material)
-        {
-            return new Hammer(this, material);
-        }
+        public Item Create(IMaterialDefinition material) => new Hammer(this, material);
     }
 }

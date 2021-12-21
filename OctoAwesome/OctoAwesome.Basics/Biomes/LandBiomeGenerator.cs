@@ -6,8 +6,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public class LandBiomeGenerator : LargeBiomeBase
     {
-        public LandBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange)
-            : base(planet, valueRangeOffset, valueRange)
+        public LandBiomeGenerator(IPlanet planet, float minVal, float maxVal, float valueRangeOffset, float valueRange) : base(planet, valueRangeOffset, valueRange)
         {
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 1)
             {
@@ -40,8 +39,7 @@ namespace OctoAwesome.Basics.Biomes
             for (var i = 0; i < SubBiomes.Count; i++)
             {
                 SubBiomes[i].GetHeightmap(chunkIndex, tempArray);
-                Array.Copy(tempArray, 0, biomeValues, i * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y,
-                    Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
+                Array.Copy(tempArray, 0, biomeValues, i * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             }
 
             ArrayPool<float>.Shared.Return(tempArray);
@@ -51,8 +49,7 @@ namespace OctoAwesome.Basics.Biomes
             {
                 var region = regions[y * Chunk.CHUNKSIZE_X + x] / 2 + 0.5f;
 
-                int biome2;
-                var biome1 = ChooseBiome(region, out biome2);
+                var biome1 = ChooseBiome(region, out int biome2);
 
                 var interpolationValue = 0f;
                 if (biome2 != -1)

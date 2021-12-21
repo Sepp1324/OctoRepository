@@ -10,7 +10,7 @@ namespace OctoAwesome.Basics
     {
         public IPlanet GeneratePlanet(Guid universe, int id, int seed)
         {
-            var planet = new Planet(id, universe, new Index3(5, 5, 4), seed);
+            var planet = new Planet(id, universe, new(5, 5, 4), seed);
             planet.Generator = this;
             return planet;
         }

@@ -4,8 +4,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public class HillsBiome : BiomeBase
     {
-        public HillsBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
-            : base(planet, minValue, maxValue, valueRangeOffset, valueRange)
+        public HillsBiome(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange) : base(planet, minValue, maxValue, valueRangeOffset, valueRange)
         {
             BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed + 2)
             {

@@ -8,7 +8,7 @@ namespace OctoAwesome.Basics.Biomes
     {
         public BiomeBase(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
         {
-            SubBiomes = new List<IBiome>();
+            SubBiomes = new();
             Planet = planet;
             MinValue = minValue;
             MaxValue = maxValue;
@@ -17,6 +17,7 @@ namespace OctoAwesome.Basics.Biomes
         }
 
         public List<IBiome> SubBiomes { get; protected set; }
+
         public IPlanet Planet { get; }
 
         public INoise BiomeNoiseGenerator { get; protected set; }

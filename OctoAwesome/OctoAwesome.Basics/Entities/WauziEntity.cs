@@ -35,8 +35,7 @@ namespace OctoAwesome.Basics.Entities
 
         public override void RegisterDefault()
         {
-            var posComponent = Components.GetComponent<PositionComponent>() ?? new PositionComponent
-                { Position = new Coordinate(0, new Index3(0, 0, 200), new Vector3(0, 0)) };
+            var posComponent = Components.GetComponent<PositionComponent>() ?? new PositionComponent { Position = new(0, new(0, 0, 200), new(0, 0)) };
 
             Components.AddComponent(posComponent);
             Components.AddComponent(new GravityComponent());
@@ -45,9 +44,7 @@ namespace OctoAwesome.Basics.Entities
             Components.AddComponent(new MoveableComponent());
             Components.AddComponent(new BoxCollisionComponent(Array.Empty<BoundingBox>()));
             Components.AddComponent(new ControllableComponent());
-            Components.AddComponent(
-                new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 },
-                true);
+            Components.AddComponent(new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
             Components.AddComponent(new LocalChunkCacheComponent(posComponent.Planet.GlobalChunkCache, 2, 1));
         }
     }

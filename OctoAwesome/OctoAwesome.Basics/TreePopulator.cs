@@ -10,8 +10,7 @@ namespace OctoAwesome.Basics
 
         public TreePopulator() => Order = 10;
 
-        private static IChunkColumn getColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01,
-            IChunkColumn column11, int x, int y)
+        private static IChunkColumn getColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
             var column = x switch
             {
@@ -24,8 +23,7 @@ namespace OctoAwesome.Basics
             return column;
         }
 
-        public override void Populate(IResourceManager resourceManager, IPlanet planet, IChunkColumn column00,
-            IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
+        public override void Populate(IResourceManager resourceManager, IPlanet planet, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
             // Tree Definitions initialisieren
             if (_treeDefinitions == null)
@@ -53,13 +51,13 @@ namespace OctoAwesome.Basics
                     var y = random.Next(Chunk.CHUNKSIZE_Y / 2, Chunk.CHUNKSIZE_Y * 3 / 2);
                     var z = LocalBuilder.GetSurfaceHeight(column00, column10, column01, column11, x, y);
 
-                    var blocktemp = planet.ClimateMap.GetTemperature(new Index3(column00.Index.X * Chunk.CHUNKSIZE_X, column00.Index.Y * Chunk.CHUNKSIZE_X, z));
+                    var blockTemp = planet.ClimateMap.GetTemperature(new(column00.Index.X * Chunk.CHUNKSIZE_X, column00.Index.Y * Chunk.CHUNKSIZE_X, z));
 
-                    if (blocktemp > treeDefinition.MaxTemperature || blocktemp < treeDefinition.MinTemperature)
+                    if (blockTemp > treeDefinition.MaxTemperature || blockTemp < treeDefinition.MinTemperature)
                         continue;
 
                     var builder = new LocalBuilder(x, y, z + 1, column00, column10, column01, column11);
-                    treeDefinition.PlantTree(planet, new Index3(x, y, z), builder, random.Next(int.MaxValue));
+                    treeDefinition.PlantTree(planet, new(x, y, z), builder, random.Next(int.MaxValue));
                 }
             }
         }

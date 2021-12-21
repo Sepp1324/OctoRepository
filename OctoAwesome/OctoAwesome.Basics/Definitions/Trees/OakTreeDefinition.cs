@@ -6,9 +6,9 @@ namespace OctoAwesome.Basics.Definitions.Trees
 {
     public class OakTreeDefinition : TreeDefinition
     {
-        private ushort leave;
-        private ushort water;
-        private ushort wood;
+        private ushort _leave;
+        private ushort _water;
+        private ushort _wood;
 
         public override int Order => 10;
 
@@ -18,29 +18,26 @@ namespace OctoAwesome.Basics.Definitions.Trees
 
         public override void Init(IDefinitionManager definitionManager)
         {
-            wood = definitionManager.GetDefinitionIndex<WoodBlockDefinition>();
-            leave = definitionManager.GetDefinitionIndex<LeavesBlockDefinition>();
-            water = definitionManager.GetDefinitionIndex<WaterBlockDefinition>();
+            _wood = definitionManager.GetDefinitionIndex<WoodBlockDefinition>();
+            _leave = definitionManager.GetDefinitionIndex<LeavesBlockDefinition>();
+            _water = definitionManager.GetDefinitionIndex<WaterBlockDefinition>();
         }
 
-        public override int GetDensity(IPlanet planet, Index3 index)
-        {
-            return 4;
-        }
+        public override int GetDensity(IPlanet planet, Index3 index) => 4;
 
         public override void PlantTree(IPlanet planet, Index3 index, LocalBuilder builder, int seed)
         {
             var ground = builder.GetBlock(0, 0, -1);
-            if (ground == water) return;
+            if (ground == _water) return;
 
             var rand = new Random(seed);
             var height = rand.Next(6, 10);
             var radius = rand.Next(3, height - 2);
 
-            builder.FillSphere(0, 0, height, radius, leave);
+            builder.FillSphere(0, 0, height, radius, _leave);
 
             var infos = new BlockInfo[height + 2];
-            for (var i = 0; i < height + 2; i++) infos[i] = (0, 0, i, wood);
+            for (var i = 0; i < height + 2; i++) infos[i] = (0, 0, i, _wood);
             builder.SetBlocks(false, infos);
         }
     }

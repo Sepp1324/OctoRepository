@@ -12,18 +12,11 @@ namespace OctoAwesome.Basics.Definitions.Items
         }
 
         public string Name { get; }
+
         public string Icon { get; }
 
-        public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            if (material is ISolidMaterialDefinition solid) return true;
+        public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
 
-            return false;
-        }
-
-        public Item Create(IMaterialDefinition material)
-        {
-            return new Shovel(this, material);
-        }
+        public Item Create(IMaterialDefinition material) => new Shovel(this, material);
     }
 }

@@ -6,12 +6,10 @@ namespace OctoAwesome.Basics.Biomes
 {
     public class SurfaceBiomeGenerator : LargeBiomeBase
     {
-        public SurfaceBiomeGenerator(IPlanet planet, int seaLevel)
-            : base(planet, 0f, 1f)
+        public SurfaceBiomeGenerator(IPlanet planet, int seaLevel) : base(planet, 0f, 1f)
         {
             SeaLevel = seaLevel;
-            BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed)
-                { FrequencyX = 1f / 10000, FrequencyY = 1f / 10000, Factor = 1f };
+            BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed) { FrequencyX = 1f / 10000, FrequencyY = 1f / 10000, Factor = 1f };
 
             var offset = (float)seaLevel / (Planet.Size.Z * Chunk.CHUNKSIZE_Z);
 
@@ -23,10 +21,7 @@ namespace OctoAwesome.Basics.Biomes
 
         public int SeaLevel { get; }
 
-        protected override float CurveFunction(float inputValue)
-        {
-            return CurveFunction(inputValue, -0.08f, 200);
-        }
+        protected override float CurveFunction(float inputValue) => CurveFunction(inputValue, -0.08f, 200);
 
         private float CurveFunction(float inputValue, float brightness, int contrast)
         {
@@ -46,16 +41,13 @@ namespace OctoAwesome.Basics.Biomes
             BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y,
                 Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y, regions);
 
-            var biomeValues =
-                ArrayPool<float>.Shared.Rent(SubBiomes.Count * Chunk.CHUNKSIZE_X *
-                                             Chunk.CHUNKSIZE_Y); //float[SubBiomes.COunt][,]
+            var biomeValues = ArrayPool<float>.Shared.Rent(SubBiomes.Count * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y); //float[SubBiomes.COunt][,]
 
             var tempArray = ArrayPool<float>.Shared.Rent(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             for (var i = 0; i < SubBiomes.Count; i++)
             {
                 SubBiomes[i].GetHeightmap(chunkIndex, tempArray);
-                Array.Copy(tempArray, 0, biomeValues, i * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y,
-                    Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
+                Array.Copy(tempArray, 0, biomeValues, i * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             }
 
             ArrayPool<float>.Shared.Return(tempArray);
@@ -65,8 +57,7 @@ namespace OctoAwesome.Basics.Biomes
             {
                 var region = regions[y * Chunk.CHUNKSIZE_X + x] / 2 + 0.5f;
 
-                int biome2;
-                var biome1 = ChooseBiome(region, out biome2);
+                var biome1 = ChooseBiome(region, out int biome2);
 
                 var interpolationValue = 0f;
                 if (biome2 != -1)

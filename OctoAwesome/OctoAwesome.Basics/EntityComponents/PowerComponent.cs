@@ -10,7 +10,6 @@ namespace OctoAwesome.Basics.EntityComponents
 
         public Vector3 Direction { get; set; }
 
-
         public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);
