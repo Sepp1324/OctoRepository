@@ -15,21 +15,14 @@ namespace OctoAwesome.Notifications
             if (reader.ReadByte() != (byte)BlockNotificationType.BlocksChanged) //Read type of the notification
                 throw new InvalidCastException("this is the wrong type of notification");
 
-            ChunkPos = new Index3(
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32());
+            ChunkPos = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
 
             Planet = reader.ReadInt32();
             var count = reader.ReadInt32();
             var list = new List<BlockInfo>(count);
+
             for (var i = 0; i < count; i++)
-                list.Add(new BlockInfo(
-                    reader.ReadInt32(),
-                    reader.ReadInt32(),
-                    reader.ReadInt32(),
-                    reader.ReadUInt16(),
-                    reader.ReadInt32()));
+                list.Add(new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32()));
         }
 
         public override void Serialize(BinaryWriter writer)

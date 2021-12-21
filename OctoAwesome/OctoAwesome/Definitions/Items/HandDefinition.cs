@@ -18,7 +18,7 @@ namespace OctoAwesome.Definitions.Items
             StackLimit = 0;
             Name = nameof(Hand);
             Icon = "";
-            _hand = new Hand(this);
+            _hand = new(this);
         }
 
         private int VolumePerUnit { get; }

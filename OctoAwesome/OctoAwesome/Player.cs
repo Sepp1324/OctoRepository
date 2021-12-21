@@ -13,17 +13,14 @@ namespace OctoAwesome
         ///     Die Reichweite des Spielers, in der er mit Spielelementen wie <see cref="Block" /> und <see cref="Entity" />
         ///     interagieren kann
         /// </summary>
-        public const int SELECTIONRANGE = 8;
+        public const int SELECTION_RANGE = 8;
 
-        private readonly IPool<EntityNotification> entityNotificationPool;
+        private readonly IPool<EntityNotification> _entityNotificationPool;
 
         /// <summary>
         ///     Erzeugt eine neue Player-Instanz an der Default-Position.
         /// </summary>
-        public Player()
-        {
-            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-        }
+        public Player() => _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
         protected override void OnInitialize(IResourceManager manager)
         {
@@ -54,7 +51,7 @@ namespace OctoAwesome
         {
             base.OnNotification(notification);
 
-            var entityNotification = entityNotificationPool.Get();
+            var entityNotification = _entityNotificationPool.Get();
             entityNotification.Entity = this;
             entityNotification.Type = EntityNotification.ActionType.Update;
             entityNotification.Notification = notification as PropertyChangedNotification;

@@ -11,12 +11,12 @@ namespace OctoAwesome.EntityComponents
 {
     public class InventoryComponent : Component, IEntityComponent, IFunctionalBlockComponent
     {
-        private readonly IDefinitionManager definitionManager;
+        private readonly IDefinitionManager _definitionManager;
 
         public InventoryComponent()
         {
-            Inventory = new List<InventorySlot>();
-            definitionManager = TypeContainer.Get<IDefinitionManager>();
+            Inventory = new();
+            _definitionManager = TypeContainer.Get<IDefinitionManager>();
         }
 
         /// <summary>
@@ -33,11 +33,11 @@ namespace OctoAwesome.EntityComponents
             {
                 var name = reader.ReadString();
 
-                var definition = definitionManager.Definitions.FirstOrDefault(d => d.GetType().FullName == name);
+                var definition = _definitionManager.Definitions.FirstOrDefault(d => d.GetType().FullName == name);
 
                 decimal amount = 1;
                 IInventoryable inventoryItem = default;
-                if (definition is not null && definition is IInventoryable inventoryable)
+                if (definition is IInventoryable inventoryable)
                 {
                     amount = reader.ReadDecimal();
                     inventoryItem = inventoryable;
@@ -52,7 +52,7 @@ namespace OctoAwesome.EntityComponents
                     object instance;
                     if (type.IsAssignableTo(typeof(Item)))
                     {
-                        instance = Item.Deserialize(reader, type, definitionManager);
+                        instance = Item.Deserialize(reader, type, _definitionManager);
                     }
                     else
                     {
@@ -82,20 +82,20 @@ namespace OctoAwesome.EntityComponents
             base.Serialize(writer);
             writer.Write(Inventory.Count);
             foreach (var slot in Inventory)
-                if (slot.Item is Item item)
+                switch (slot.Item)
                 {
-                    writer.Write(slot.Item.GetType().AssemblyQualifiedName!);
-                    Item.Serialize(writer, item);
-                }
-                else if (slot.Item is ISerializable serializable)
-                {
-                    writer.Write(slot.Item.GetType().AssemblyQualifiedName!);
-                    serializable.Serialize(writer);
-                }
-                else
-                {
-                    writer.Write(slot.Item.GetType().FullName!);
-                    writer.Write(slot.Amount);
+                    case Item item:
+                        writer.Write(slot.Item.GetType().AssemblyQualifiedName!);
+                        Item.Serialize(writer, item);
+                        break;
+                    case ISerializable serializable:
+                        writer.Write(slot.Item.GetType().AssemblyQualifiedName!);
+                        serializable.Serialize(writer);
+                        break;
+                    default:
+                        writer.Write(slot.Item.GetType().FullName!);
+                        writer.Write(slot.Amount);
+                        break;
                 }
         }
 
@@ -105,13 +105,12 @@ namespace OctoAwesome.EntityComponents
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
         {
-            var slot = Inventory.FirstOrDefault(s => s.Item == item &&
-                                                     s.Amount < item.VolumePerUnit * item.StackLimit);
+            var slot = Inventory.FirstOrDefault(s => s.Item == item && s.Amount < item.VolumePerUnit * item.StackLimit);
 
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
             {
-                slot = new InventorySlot
+                slot = new()
                 {
                     Item = item,
                     Amount = quantity
@@ -137,15 +136,12 @@ namespace OctoAwesome.EntityComponents
             if (slot.Item is not IInventoryable definition)
                 return false;
 
-            if (slot.Amount >= definition.VolumePerUnit) // Wir können noch einen Block setzen
-            {
-                slot.Amount -= definition.VolumePerUnit;
-                if (slot.Amount <= 0)
-                    return Inventory.Remove(slot);
-                return true;
-            }
+            if (slot.Amount < definition.VolumePerUnit) 
+                return false;
 
-            return false;
+            slot.Amount -= definition.VolumePerUnit;
+
+            return slot.Amount > 0 || Inventory.Remove(slot);
         }
 
         public bool RemoveSlot(InventorySlot inventorySlot)
@@ -161,7 +157,7 @@ namespace OctoAwesome.EntityComponents
             // Wenn noch kein Slot da ist oder der vorhandene voll, dann neuen Slot
             if (slot == null)
             {
-                slot = new InventorySlot
+                slot = new()
                 {
                     Item = inventorySlot.Item,
                     Amount = inventorySlot.Amount

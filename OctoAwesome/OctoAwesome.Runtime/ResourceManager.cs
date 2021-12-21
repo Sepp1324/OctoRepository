@@ -40,9 +40,9 @@ namespace OctoAwesome.Runtime
         {
             _semaphoreSlim = new LockSemaphore(1, 1);
             _loadingSemaphore = new CountedScopeSemaphore();
-            this._extensionResolver = extensionResolver;
+            _extensionResolver = extensionResolver;
             DefinitionManager = definitionManager;
-            this._persistenceManager = persistenceManager;
+            _persistenceManager = persistenceManager;
 
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(ResourceManager));
 

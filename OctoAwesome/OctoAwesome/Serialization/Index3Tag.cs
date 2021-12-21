@@ -9,17 +9,9 @@ namespace OctoAwesome.Serialization
 
         public Index3 Index { get; private set; }
 
-        public Index3Tag(Index3 index)
-        {
-            Index = index;
-        }
+        public Index3Tag(Index3 index) => Index = index;
 
-        public void FromBytes(byte[] array, int startIndex)
-        {
-            Index = new Index3(BitConverter.ToInt32(array, startIndex),
-                BitConverter.ToInt32(array, startIndex + sizeof(int)),
-                BitConverter.ToInt32(array, startIndex + sizeof(int) + sizeof(int)));
-        }
+        public void FromBytes(byte[] array, int startIndex) => Index = new(BitConverter.ToInt32(array, startIndex), BitConverter.ToInt32(array, startIndex + sizeof(int)), BitConverter.ToInt32(array, startIndex + sizeof(int) + sizeof(int)));
 
         public byte[] GetBytes()
         {
@@ -32,15 +24,9 @@ namespace OctoAwesome.Serialization
             return byteArray;
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is Index3Tag tag && Equals(tag);
-        }
+        public override bool Equals(object obj) => obj is Index3Tag tag && Equals(tag);
 
-        public bool Equals(Index3Tag other)
-        {
-            return Length == other.Length && Index.Equals(other.Index);
-        }
+        public bool Equals(Index3Tag other) => Length == other.Length && Index.Equals(other.Index);
 
         public override int GetHashCode()
         {
@@ -57,14 +43,8 @@ namespace OctoAwesome.Serialization
             BitConverter.TryWriteBytes(span[(sizeof(int) + sizeof(int))..], Index.Z);
         }
 
-        public static bool operator ==(Index3Tag left, Index3Tag right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(Index3Tag left, Index3Tag right) => left.Equals(right);
 
-        public static bool operator !=(Index3Tag left, Index3Tag right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(Index3Tag left, Index3Tag right) => !(left == right);
     }
 }

@@ -12,6 +12,7 @@ namespace OctoAwesome
         public static BlockInfo Empty = default;
 
         public bool IsEmpty => this == default;
+
         public Index3 Position { get; }
 
         public ushort Block { get; }
@@ -50,7 +51,6 @@ namespace OctoAwesome
         }
 
         public static BlockInfo Deserialize(BinaryReader reader) => new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32());
-
         public static bool operator ==(BlockInfo left, BlockInfo right) => left.Equals(right);
 
         public static bool operator !=(BlockInfo left, BlockInfo right) => !(left == right);

@@ -9,6 +9,12 @@ namespace OctoAwesome.PoC
         {
             throw new NotImplementedException();
         }
+
+        public Component[] TryFind<T>(T key) => key switch
+        {
+            int => Array.Empty<Component>(),
+            _ => null
+        };
     }
 
     public class EntityCache : Cache<int, Entity>
@@ -27,6 +33,20 @@ namespace OctoAwesome.PoC
     public class PositionComponentCache : ComponentCache
     {
         protected PositionComponent[] Find(Index3 key) => throw new NotImplementedException();
+
+        public PositionComponent TryFindFirst<T>(T key) => key switch
+        {
+            Index3 => null,
+            Index2 => null,
+            _ => null
+        };
+
+        public PositionComponent[] TryFind<T>(T key) => key switch
+        {
+            Index3 => Array.Empty<PositionComponent>(),
+            Index2 => Array.Empty<PositionComponent>(),
+            _ => null
+        };
     }
 
     public class Index3PositionConverter

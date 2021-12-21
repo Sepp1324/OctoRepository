@@ -7,26 +7,21 @@ namespace OctoAwesome.Network.Pooling
 {
     public sealed class PackagePool : IPool<Package>
     {
-        private readonly Stack<Package> internalStack;
-        private readonly LockSemaphore semaphoreExtended;
+        private readonly Stack<Package> _internalStack;
+        private readonly LockSemaphore _semaphoreExtended;
 
         public PackagePool()
         {
-            internalStack = new Stack<Package>();
-            semaphoreExtended = new LockSemaphore(1, 1);
+            _internalStack = new();
+            _semaphoreExtended = new(1, 1);
         }
 
         public Package Get()
         {
             Package obj;
 
-            using (semaphoreExtended.Wait())
-            {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new Package();
-            }
+            using (_semaphoreExtended.Wait())
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new();
 
             obj.Init(this);
             obj.UId = Package.NextUId;
@@ -35,10 +30,8 @@ namespace OctoAwesome.Network.Pooling
 
         public void Push(Package obj)
         {
-            using (semaphoreExtended.Wait())
-            {
-                internalStack.Push(obj);
-            }
+            using (_semaphoreExtended.Wait())
+                _internalStack.Push(obj);
         }
 
         public void Push(IPoolElement obj)
@@ -53,13 +46,8 @@ namespace OctoAwesome.Network.Pooling
         {
             Package obj;
 
-            using (semaphoreExtended.Wait())
-            {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new Package(false);
-            }
+            using (_semaphoreExtended.Wait())
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new(false);
 
             obj.Init(this);
             return obj;

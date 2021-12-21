@@ -6,28 +6,23 @@ namespace OctoAwesome.Pooling
 {
     public sealed class ChunkPool : IPool<Chunk>
     {
-        private readonly Stack<Chunk> internalStack;
-        private readonly LockSemaphore semaphoreExtended;
+        private readonly Stack<Chunk> _internalStack;
+        private readonly LockSemaphore _semaphoreExtended;
 
         public ChunkPool()
         {
-            internalStack = new Stack<Chunk>();
-            semaphoreExtended = new LockSemaphore(1, 1);
+            _internalStack = new();
+            _semaphoreExtended = new(1, 1);
         }
 
         [Obsolete("Can not be used. Use Get(Index3, IPlanet) instead.", true)]
-        public Chunk Get()
-        {
-            throw new NotSupportedException("Use Get(Index3, IPlanet) instead.");
-        }
+        public Chunk Get() => throw new NotSupportedException("Use Get(Index3, IPlanet) instead.");
 
 
         public void Push(Chunk obj)
         {
-            using (semaphoreExtended.Wait())
-            {
-                internalStack.Push(obj);
-            }
+            using (_semaphoreExtended.Wait())
+                _internalStack.Push(obj);
         }
 
         public void Push(IPoolElement obj)
@@ -42,13 +37,8 @@ namespace OctoAwesome.Pooling
         {
             Chunk obj;
 
-            using (semaphoreExtended.Wait())
-            {
-                if (internalStack.Count > 0)
-                    obj = internalStack.Pop();
-                else
-                    obj = new Chunk(position, planet);
-            }
+            using (_semaphoreExtended.Wait())
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : new(position, planet);
 
             obj.Init(position, planet);
             return obj;

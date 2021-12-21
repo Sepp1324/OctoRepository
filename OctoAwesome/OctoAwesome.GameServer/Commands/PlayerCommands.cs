@@ -16,14 +16,14 @@ namespace OctoAwesome.GameServer.Commands
         public static byte[] Whoami(CommandParameter parameter)
         {
             var updateHub = TypeContainer.Get<IUpdateHub>();
-            var playername = Encoding.UTF8.GetString(parameter.Data);
+            var playerName = Encoding.UTF8.GetString(parameter.Data);
             var player = new Player();
             var entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
             var entityNotification = entityNotificationPool.Get();
             entityNotification.Entity = player;
             entityNotification.Type = EntityNotification.ActionType.Add;
 
-            updateHub.Push(entityNotification, DefaultChannels.Simulation);
+            updateHub.Push(entityNotification, DefaultChannels.SIMULATION);
             entityNotification.Release();
 
 
@@ -35,12 +35,12 @@ namespace OctoAwesome.GameServer.Commands
                 true);
             remotePlayer.Components.AddComponent(new BodyComponent { Mass = 50f, Height = 2f, Radius = 1.5f });
 
-            Console.WriteLine(playername);
+            Console.WriteLine(playerName);
             entityNotification = entityNotificationPool.Get();
             entityNotification.Entity = remotePlayer;
             entityNotification.Type = EntityNotification.ActionType.Add;
 
-            updateHub.Push(entityNotification, DefaultChannels.Network);
+            updateHub.Push(entityNotification, DefaultChannels.NETWORK);
             entityNotification.Release();
             return Serializer.Serialize(player);
         }

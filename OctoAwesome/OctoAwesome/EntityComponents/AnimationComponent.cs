@@ -57,11 +57,12 @@ namespace OctoAwesome.EntityComponents
 
         private float NextSmallerValue(float value)
         {
-            if (value < 0)
-                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) + 1);
-            if (value > 0)
-                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) - 1);
-            return -float.Epsilon;
+            return value switch
+            {
+                < 0 => BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) + 1),
+                > 0 => BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) - 1),
+                _ => -float.Epsilon
+            };
         }
 
         public void Update(GameTime gameTime, Model model)

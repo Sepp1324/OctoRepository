@@ -17,7 +17,7 @@ namespace OctoAwesome
         /// <summary>
         ///     Contains only Components with notification interface implementation.
         /// </summary>
-        private readonly List<INotificationSubject<SerializableNotification>> notificationComponents;
+        private readonly List<INotificationSubject<SerializableNotification>> _notificationComponents;
 
         /// <summary>
         ///     Entity die regelmäßig eine Updateevent bekommt
@@ -25,7 +25,7 @@ namespace OctoAwesome
         public ComponentContainer()
         {
             Components = new ComponentList<TComponent>(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
-            notificationComponents = new List<INotificationSubject<SerializableNotification>>();
+            _notificationComponents = new List<INotificationSubject<SerializableNotification>>();
             Id = Guid.Empty;
         }
 
@@ -52,7 +52,7 @@ namespace OctoAwesome
 
         public virtual void Push(SerializableNotification notification)
         {
-            foreach (var component in notificationComponents)
+            foreach (var component in _notificationComponents)
                 component?.OnNotification(notification);
         }
 
@@ -99,7 +99,7 @@ namespace OctoAwesome
             }
 
             if (component is INotificationSubject<SerializableNotification> nofiticationComponent)
-                notificationComponents.Add(nofiticationComponent);
+                _notificationComponents.Add(nofiticationComponent);
         }
 
         protected virtual void ValidateAddComponent(TComponent component)
@@ -114,10 +114,7 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager mananger)
-        {
-            OnInitialize(mananger);
-        }
+        public void Initialize(IResourceManager manager) => OnInitialize(manager);
 
         protected virtual void OnInitialize(IResourceManager manager) { }
 

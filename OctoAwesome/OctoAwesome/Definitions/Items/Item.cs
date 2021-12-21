@@ -10,7 +10,7 @@ namespace OctoAwesome.Definitions.Items
     /// </summary>
     public abstract class Item : IItem, IInventoryable, ISerializable
     {
-        private readonly IDefinitionManager definitionManager;
+        private readonly IDefinitionManager _definitionManager;
 
         /// <summary>
         ///     Erzeugt eine neue Instanz der Klasse Item.
@@ -21,7 +21,7 @@ namespace OctoAwesome.Definitions.Items
             Material = material;
             Condition = 99;
 
-            definitionManager = TypeContainer.Get<IDefinitionManager>();
+            _definitionManager = TypeContainer.Get<IDefinitionManager>();
         }
 
         public virtual int VolumePerUnit => 1;
@@ -75,8 +75,8 @@ namespace OctoAwesome.Definitions.Items
 
         public virtual void Deserialize(BinaryReader reader)
         {
-            Definition = definitionManager.GetDefinitionByTypeName<IItemDefinition>(reader.ReadString());
-            Material = definitionManager.GetDefinitionByTypeName<IMaterialDefinition>(reader.ReadString());
+            Definition = _definitionManager.GetDefinitionByTypeName<IItemDefinition>(reader.ReadString());
+            Material = _definitionManager.GetDefinitionByTypeName<IMaterialDefinition>(reader.ReadString());
 
             InternalDeserialize(reader);
         }
@@ -85,16 +85,17 @@ namespace OctoAwesome.Definitions.Items
         {
             writer.Write(Condition);
             writer.Write(Position.HasValue);
-            if (Position.HasValue)
-            {
-                writer.Write(Position.Value.Planet);
-                writer.Write(Position.Value.GlobalBlockIndex.X);
-                writer.Write(Position.Value.GlobalBlockIndex.Y);
-                writer.Write(Position.Value.GlobalBlockIndex.Z);
-                writer.Write(Position.Value.BlockPosition.X);
-                writer.Write(Position.Value.BlockPosition.Y);
-                writer.Write(Position.Value.BlockPosition.Z);
-            }
+
+            if (!Position.HasValue) 
+                return;
+
+            writer.Write(Position.Value.Planet);
+            writer.Write(Position.Value.GlobalBlockIndex.X);
+            writer.Write(Position.Value.GlobalBlockIndex.Y);
+            writer.Write(Position.Value.GlobalBlockIndex.Z);
+            writer.Write(Position.Value.BlockPosition.X);
+            writer.Write(Position.Value.BlockPosition.Y);
+            writer.Write(Position.Value.BlockPosition.Z);
         }
 
         public static void Serialize(BinaryWriter writer, Item item)
@@ -108,19 +109,20 @@ namespace OctoAwesome.Definitions.Items
         protected void InternalDeserialize(BinaryReader reader)
         {
             Condition = reader.ReadInt32();
-            if (reader.ReadBoolean())
-            {
-                // Position
-                var planet = reader.ReadInt32();
-                var blockX = reader.ReadInt32();
-                var blockY = reader.ReadInt32();
-                var blockZ = reader.ReadInt32();
-                var posX = reader.ReadSingle();
-                var posY = reader.ReadSingle();
-                var posZ = reader.ReadSingle();
 
-                Position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
-            }
+            if (!reader.ReadBoolean()) 
+                return;
+
+            // Position
+            var planet = reader.ReadInt32();
+            var blockX = reader.ReadInt32();
+            var blockY = reader.ReadInt32();
+            var blockZ = reader.ReadInt32();
+            var posX = reader.ReadSingle();
+            var posY = reader.ReadSingle();
+            var posZ = reader.ReadSingle();
+
+            Position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
         }
 
         public static Item Deserialize(BinaryReader reader, Type itemType, IDefinitionManager manager)

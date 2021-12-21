@@ -49,7 +49,7 @@ namespace OctoAwesome.EntityComponents
             var x = reader.ReadSingle();
             var y = reader.ReadSingle();
             var z = reader.ReadSingle();
-            Offset = new Vector3(x, y, z);
+            Offset = new(x, y, z);
 
 
             Tilt = reader.ReadSingle();

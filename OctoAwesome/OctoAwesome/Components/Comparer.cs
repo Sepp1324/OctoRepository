@@ -11,12 +11,12 @@ namespace OctoAwesome.Components
     {
         public TOriginal Value { get; set; }
 
-        private readonly Func<TOriginal, TSelected, bool> compareFunc;
+        private readonly Func<TOriginal, TSelected, bool> _compareFunc;
 
         public Comparer(TOriginal value, Func<TOriginal, TSelected, bool> compareFunc)
         {
             Value = value;
-            this.compareFunc = compareFunc;
+            this._compareFunc = compareFunc;
         }
 
         public override bool Equals(object obj) => obj is Comparer<TOriginal, TSelected> comparer && Equals(comparer) || obj is TSelected rigth && Equals(rigth) || obj is TOriginal left && Equals(left);
@@ -25,7 +25,7 @@ namespace OctoAwesome.Components
 
         public bool Equals(TOriginal other) => Equals(Value, other);
 
-        public bool Equals(TSelected other) => compareFunc(Value, other);
+        public bool Equals(TSelected other) => _compareFunc(Value, other);
 
         public override int GetHashCode() => Value.GetHashCode();
 
@@ -53,6 +53,6 @@ namespace OctoAwesome.Components
 
         public static implicit operator Comparer<TOriginal, TSelected>((TOriginal value, Func<TOriginal, TSelected, bool> comparer) tuple) => new(tuple.value, tuple.comparer);
 
-        public static implicit operator (TOriginal value, Func<TOriginal, TSelected, bool> comparer)(Comparer<TOriginal, TSelected> comparer) => (comparer.Value, comparer.compareFunc);
+        public static implicit operator (TOriginal value, Func<TOriginal, TSelected, bool> comparer)(Comparer<TOriginal, TSelected> comparer) => (comparer.Value, comparer._compareFunc);
     }
 }

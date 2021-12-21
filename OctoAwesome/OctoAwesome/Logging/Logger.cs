@@ -5,124 +5,58 @@ namespace OctoAwesome.Logging
 {
     public sealed class Logger : ILogger
     {
-        private static readonly NLog.ILogger nullLogger;
+        private static readonly NLog.ILogger NullLogger;
 
-        private NLog.ILogger internalLogger;
+        private NLog.ILogger _internalLogger;
 
-        static Logger()
-        {
-            nullLogger = LogManager.LogFactory.CreateNullLogger();
-        }
+        static Logger() => NullLogger = LogManager.LogFactory.CreateNullLogger();
 
-        public Logger()
-        {
-            internalLogger = nullLogger;
-        }
+        public Logger() => _internalLogger = NullLogger;
 
-        public void Info(string message)
-        {
-            internalLogger.Info(message);
-        }
+        public void Info(string message) => _internalLogger.Info(message);
 
-        public void Info(string message, Exception exception)
-        {
-            internalLogger.Info(exception, message);
-        }
+        public void Info(string message, Exception exception) => _internalLogger.Info(exception, message);
 
-        public void Info<T>(T message)
-        {
-            internalLogger.Info(message);
-        }
+        public void Info<T>(T message) => _internalLogger.Info(message);
 
-        public void Error(string message)
-        {
-            internalLogger.Error(message);
-        }
+        public void Error(string message) => _internalLogger.Error(message);
 
-        public void Error(string message, Exception exception)
-        {
-            internalLogger.Error(exception, message);
-        }
+        public void Error(string message, Exception exception) => _internalLogger.Error(exception, message);
 
-        public void Error<T>(T message)
-        {
-            internalLogger.Error(message);
-        }
+        public void Error<T>(T message) => _internalLogger.Error(message);
 
-        public void Warn(string message)
-        {
-            internalLogger.Warn(message);
-        }
+        public void Warn(string message) => _internalLogger.Warn(message);
 
-        public void Warn(string message, Exception exception)
-        {
-            internalLogger.Warn(exception, message);
-        }
+        public void Warn(string message, Exception exception) => _internalLogger.Warn(exception, message);
 
-        public void Warn<T>(T message)
-        {
-            internalLogger.Warn(message);
-        }
+        public void Warn<T>(T message) => _internalLogger.Warn(message);
 
-        public void Debug(string message)
-        {
-            internalLogger.Debug(message);
-        }
+        public void Debug(string message) => _internalLogger.Debug(message);
 
-        public void Debug(string message, Exception exception)
-        {
-            internalLogger.Debug(exception, message);
-        }
+        public void Debug(string message, Exception exception) => _internalLogger.Debug(exception, message);
 
-        public void Debug<T>(T message)
-        {
-            internalLogger.Debug(message);
-        }
+        public void Debug<T>(T message) => _internalLogger.Debug(message);
 
-        public void Trace(string message)
-        {
-            internalLogger.Trace(message);
-        }
+        public void Trace(string message) => _internalLogger.Trace(message);
 
-        public void Trace(string message, Exception exception)
-        {
-            internalLogger.Trace(exception, message);
-        }
+        public void Trace(string message, Exception exception) => _internalLogger.Trace(exception, message);
 
-        public void Trace<T>(T message)
-        {
-            internalLogger.Trace(message);
-        }
+        public void Trace<T>(T message) => _internalLogger.Trace(message);
 
-        public void Fatal(string message)
-        {
-            internalLogger.Trace(message);
-        }
+        public void Fatal(string message) => _internalLogger.Trace(message);
 
-        public void Fatal(string message, Exception exception)
-        {
-            internalLogger.Trace(exception, message);
-        }
+        public void Fatal(string message, Exception exception) => _internalLogger.Trace(exception, message);
 
-        public void Fatal<T>(T message)
-        {
-            internalLogger.Trace(message);
-        }
+        public void Fatal<T>(T message) => _internalLogger.Trace(message);
 
         public ILogger As(string loggerName)
         {
-            internalLogger = LogManager.GetLogger(loggerName);
+            _internalLogger = LogManager.GetLogger(loggerName);
             return this;
         }
 
-        public ILogger As(Type type)
-        {
-            return As(type.FullName);
-        }
+        public ILogger As(Type type) => As(type.FullName);
 
-        public void Flush()
-        {
-            LogManager.Flush();
-        }
+        public void Flush() => LogManager.Flush();
     }
 }

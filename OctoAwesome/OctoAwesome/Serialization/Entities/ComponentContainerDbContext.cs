@@ -28,8 +28,8 @@ namespace OctoAwesome.Serialization.Entities
         public ComponentContainerDbContext(IDatabaseProvider databaseProvider, Guid universe)
         {
             var database = databaseProvider.GetDatabase<GuidTag<ComponentContainerDefinition<TContainer>>>(universe, false);
-            _entityDefinitionContext = new ComponentContainerDefinition<TContainer>.ComponentContainerDefinitionContext<TContainer>(database);
-            _componentsDbContext = new ComponentContainerComponentDbContext<TContainer>(databaseProvider, universe);
+            _entityDefinitionContext = new(database);
+            _componentsDbContext = new(databaseProvider, universe);
             _getComponentMethod = typeof(ComponentContainerComponentDbContext<TContainer>).GetMethod(nameof(ComponentContainerComponentDbContext<TContainer>.Get), new[] { typeof(ComponentContainer<TContainer>) });
             _removeComponentMethod = typeof(ComponentContainerComponentDbContext<TContainer>).GetMethod(nameof(ComponentContainerComponentDbContext<TContainer>.Remove));
 
@@ -73,7 +73,7 @@ namespace OctoAwesome.Serialization.Entities
         /// <param name="value">ComponentContainer</param>
         public void Remove(ComponentContainer<TContainer> value)
         {
-            var definition = _entityDefinitionContext.Get(new GuidTag<ComponentContainerDefinition<TContainer>>(value.Id));
+            var definition = _entityDefinitionContext.Get(new(value.Id));
             _entityDefinitionContext.Remove(definition);
 
             foreach (var component in definition.Components)

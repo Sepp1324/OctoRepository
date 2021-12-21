@@ -7,24 +7,24 @@ namespace OctoAwesome
     /// </summary>
     public class InventorySlot
     {
-        private IInventoryable item;
+        private IInventoryable _item;
 
         /// <summary>
         ///     Das Item das in dem Slot ist.
         /// </summary>
         public IInventoryable Item
         {
-            get => item;
+            get => _item;
             set
             {
-                if (value is IDefinition definition)
-                    Definition = definition;
-                else if (value is IItem item)
-                    Definition = item.Definition;
-                else
-                    Definition = null;
+                Definition = value switch
+                {
+                    IDefinition definition => definition,
+                    IItem item => item.Definition,
+                    _ => null
+                };
 
-                item = value;
+                _item = value;
             }
         }
 

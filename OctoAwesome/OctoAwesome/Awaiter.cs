@@ -19,8 +19,8 @@ namespace OctoAwesome
 
         public Awaiter()
         {
-            _manualReset = new ManualResetEventSlim(false);
-            _semaphore = new LockSemaphore(1, 1);
+            _manualReset = new(false);
+            _semaphore = new(1, 1);
         }
 
         public ISerializable Serializable { get; set; }

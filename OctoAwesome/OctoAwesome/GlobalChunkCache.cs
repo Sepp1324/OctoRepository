@@ -57,12 +57,12 @@ namespace OctoAwesome
             Planet = planet ?? throw new ArgumentNullException(nameof(planet));
             _resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
 
-            _cache = new Dictionary<Index3, CacheItem>();
-            _newChunks = new Queue<CacheItem>();
-            _oldChunks = new Queue<CacheItem>();
+            _cache = new();
+            _newChunks = new();
+            _oldChunks = new();
 
-            _tokenSource = new CancellationTokenSource();
-            _cleanupTask = new Task(async () => await BackgroundCleanup(_tokenSource.Token),
+            _tokenSource = new();
+            _cleanupTask = new(async () => await BackgroundCleanup(_tokenSource.Token),
                 TaskCreationOptions.LongRunning);
             _cleanupTask.Start(TaskScheduler.Default);
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(GlobalChunkCache));
@@ -335,10 +335,10 @@ namespace OctoAwesome
         /// <param name="notification"></param>
         public void OnUpdate(SerializableNotification notification)
         {
-            _updateHub?.Push(notification, DefaultChannels.Network);
+            _updateHub?.Push(notification, DefaultChannels.NETWORK);
 
             if (notification is IChunkNotification)
-                _updateHub?.Push(notification, DefaultChannels.Chunk);
+                _updateHub?.Push(notification, DefaultChannels.CHUNK);
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace OctoAwesome
 
             public CacheItem(ChunkPool chunkPool)
             {
-                _internalSemaphore = new LockSemaphore(1, 1);
+                _internalSemaphore = new(1, 1);
                 _chunkPool = chunkPool;
             }
 
@@ -411,7 +411,7 @@ namespace OctoAwesome
             public Index2 Index { get; set; }
 
             /// <summary>
-            ///     Die Zahl der Subscriber, die das Item Abboniert hat.
+            ///     Die Zahl der Subscriber, die das Item abonniert hat.
             /// </summary>
             public int References { get; set; }
 

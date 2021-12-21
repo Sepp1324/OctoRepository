@@ -48,17 +48,9 @@ namespace OctoAwesome.Serialization
             BitConverter.TryWriteBytes(span[(intSize * 3)..(intSize * 4)], FlatIndex);
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is ChunkDiffTag tag && Equals(tag);
-        }
+        public override bool Equals(object obj) => obj is ChunkDiffTag tag && Equals(tag);
 
-        public bool Equals(ChunkDiffTag other)
-        {
-            return Length == other.Length &&
-                   FlatIndex == other.FlatIndex &&
-                   EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
-        }
+        public bool Equals(ChunkDiffTag other) => Length == other.Length && FlatIndex == other.FlatIndex && EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
 
 
         public override int GetHashCode()
@@ -70,14 +62,8 @@ namespace OctoAwesome.Serialization
             return hashCode;
         }
 
-        public static bool operator ==(ChunkDiffTag left, ChunkDiffTag right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(ChunkDiffTag left, ChunkDiffTag right) => left.Equals(right);
 
-        public static bool operator !=(ChunkDiffTag left, ChunkDiffTag right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(ChunkDiffTag left, ChunkDiffTag right) => !(left == right);
     }
 }

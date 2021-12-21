@@ -33,7 +33,7 @@ namespace OctoAwesome.Basics.Definitions.Items
                 Type = FunctionalBlockNotification.ActionType.Add
             };
 
-            updateHub.Push(notification, DefaultChannels.Simulation);
+            updateHub.Push(notification, DefaultChannels.SIMULATION);
             return 0;
         }
     }

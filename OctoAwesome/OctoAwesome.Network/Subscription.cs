@@ -12,10 +12,9 @@ namespace OctoAwesome.Network
         }
 
         public IAsyncObservable<T> Observable { get; }
+       
         public IAsyncObserver<T> Observer { get; }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
     }
 }

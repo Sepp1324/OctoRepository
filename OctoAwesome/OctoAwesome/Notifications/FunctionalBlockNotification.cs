@@ -15,7 +15,7 @@ namespace OctoAwesome.Notifications
             Request
         }
 
-        private FunctionalBlock block;
+        private FunctionalBlock _block;
 
         public FunctionalBlockNotification()
         {
@@ -27,14 +27,15 @@ namespace OctoAwesome.Notifications
         }
 
         public ActionType Type { get; set; }
+
         public Guid BlockId { get; set; }
 
         public FunctionalBlock Block
         {
-            get => block;
+            get => _block;
             set
             {
-                block = value;
+                _block = value;
                 BlockId = value?.Id ?? default;
             }
         }

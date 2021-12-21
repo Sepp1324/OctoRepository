@@ -5,12 +5,10 @@ namespace OctoAwesome.Network.ServerNotifications
 {
     public class ServerDataNotification : Notification
     {
-        public ServerDataNotification()
-        {
-            PlayerIds = new HashSet<int>();
-        }
+        public ServerDataNotification() => PlayerIds = new();
 
         public byte[] Data { get; set; }
+
         public OfficialCommand OfficialCommand { get; set; }
 
         public HashSet<int> PlayerIds { get; set; }

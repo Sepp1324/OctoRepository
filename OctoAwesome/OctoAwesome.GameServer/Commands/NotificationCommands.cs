@@ -9,26 +9,26 @@ namespace OctoAwesome.GameServer.Commands
 {
     public static class NotificationCommands
     {
-        private static readonly IUpdateHub updateHub;
-        private static readonly IPool<EntityNotification> entityNotificationPool;
-        private static readonly IPool<BlockChangedNotification> blockChangedNotificationPool;
-        private static readonly IPool<BlocksChangedNotification> blocksChangedNotificationPool;
+        private static readonly IUpdateHub UpdateHub;
+        private static readonly IPool<EntityNotification> EntityNotificationPool;
+        private static readonly IPool<BlockChangedNotification> BlockChangedNotificationPool;
+        private static readonly IPool<BlocksChangedNotification> BlocksChangedNotificationPool;
 
         static NotificationCommands()
         {
-            updateHub = TypeContainer.Get<IUpdateHub>();
-            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
-            blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
+            UpdateHub = TypeContainer.Get<IUpdateHub>();
+            EntityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
+            BlockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
+            BlocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
         }
 
         [Command((ushort)OfficialCommand.EntityNotification)]
         public static byte[] EntityNotification(CommandParameter parameter)
         {
-            var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, parameter.Data);
+            var entityNotification = Serializer.DeserializePoolElement(EntityNotificationPool, parameter.Data);
             entityNotification.SenderId = parameter.ClientId;
-            updateHub.Push(entityNotification, DefaultChannels.Simulation);
-            updateHub.Push(entityNotification, DefaultChannels.Network);
+            UpdateHub.Push(entityNotification, DefaultChannels.SIMULATION);
+            UpdateHub.Push(entityNotification, DefaultChannels.NETWORK);
             entityNotification.Release();
             return null;
         }
@@ -41,19 +41,19 @@ namespace OctoAwesome.GameServer.Commands
             switch (notificationType)
             {
                 case BlockNotificationType.BlockChanged:
-                    chunkNotification = Serializer.DeserializePoolElement(blockChangedNotificationPool, parameter.Data);
+                    chunkNotification = Serializer.DeserializePoolElement(BlockChangedNotificationPool, parameter.Data);
                     break;
                 case BlockNotificationType.BlocksChanged:
                     chunkNotification =
-                        Serializer.DeserializePoolElement(blocksChangedNotificationPool, parameter.Data);
+                        Serializer.DeserializePoolElement(BlocksChangedNotificationPool, parameter.Data);
                     break;
                 default:
                     throw new NotSupportedException($"This Type is not supported: {notificationType}");
             }
 
             chunkNotification.SenderId = parameter.ClientId;
-            updateHub.Push(chunkNotification, DefaultChannels.Chunk);
-            updateHub.Push(chunkNotification, DefaultChannels.Network);
+            UpdateHub.Push(chunkNotification, DefaultChannels.CHUNK);
+            UpdateHub.Push(chunkNotification, DefaultChannels.NETWORK);
             chunkNotification.Release();
 
             return null;

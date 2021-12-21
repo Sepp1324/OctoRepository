@@ -3,8 +3,7 @@ using System.IO;
 
 namespace OctoAwesome.Serialization
 {
-    public class SerializableCollection<T> : Collection<T>, ISerializableEnumerable<T>, ISerializable
-        where T : ISerializable
+    public class SerializableCollection<T> : Collection<T>, ISerializableEnumerable<T>, ISerializable where T : ISerializable
     {
         public void Deserialize(BinaryReader reader)
         {

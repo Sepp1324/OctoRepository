@@ -19,7 +19,7 @@ namespace OctoAwesome
         /// <param name="column"></param>
         public EntityList(IChunkColumn column)
         {
-            _entities = new List<Entity>();
+            _entities = new();
             _column = column;
             _resourceManager = TypeContainer.Get<IResourceManager>();
         }

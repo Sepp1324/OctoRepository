@@ -11,12 +11,10 @@ namespace OctoAwesome.GameServer.Commands
         {
             var universe = TypeContainer.Get<SimulationManager>().GetUniverse();
 
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new BinaryWriter(memoryStream))
-            {
-                universe.Serialize(writer);
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream);
+            universe.Serialize(writer);
+            return memoryStream.ToArray();
         }
 
         [Command((ushort)OfficialCommand.GetPlanet)]
@@ -24,12 +22,10 @@ namespace OctoAwesome.GameServer.Commands
         {
             var planet = TypeContainer.Get<SimulationManager>().GetPlanet(0);
 
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new BinaryWriter(memoryStream))
-            {
-                planet.Serialize(writer);
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream);
+            planet.Serialize(writer);
+            return memoryStream.ToArray();
         }
     }
 }

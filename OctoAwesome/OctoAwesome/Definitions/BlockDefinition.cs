@@ -10,7 +10,7 @@ namespace OctoAwesome.Definitions
     /// </summary>
     public abstract class BlockDefinition : IBlockDefinition
     {
-        private readonly BoundingBox[] defaultCollisionBoxes = { new BoundingBox(new Vector3(0, 0), new Vector3(1, 1, 1)) };
+        private readonly BoundingBox[] _defaultCollisionBoxes = { new(new(0, 0), new(1, 1, 1)) };
 
         /// <summary>
         /// 
@@ -69,7 +69,7 @@ namespace OctoAwesome.Definitions
         {
             //item.Definition.Hit(item, volumeState.BlockDefinition, blockHitInformation);
             var valueMined = item.Hit(Material, blockVolume.BlockInfo, blockVolume.VolumeRemaining, VolumePerHit);
-            return new BlockHitInformation(valueMined != 0, valueMined, new[] { (VolumePerUnit, (IDefinition)this) });
+            return new(valueMined != 0, valueMined, new[] { (VolumePerUnit, (IDefinition)this) });
         }
 
         /// <summary>
@@ -80,24 +80,12 @@ namespace OctoAwesome.Definitions
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Ein Array von Kollisionsboxen</returns>
-        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z)
-        {
-            return defaultCollisionBoxes;
-        }
+        public virtual BoundingBox[] GetCollisionBoxes(ILocalChunkCache manager, int x, int y, int z) => _defaultCollisionBoxes;
 
-        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
 
-        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
-        {
-            return 0;
-        }
+        public virtual int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z) => 0;
 
-        public bool IsSolidWall(Wall wall)
-        {
-            return (SolidWall & (1 << (int)wall)) != 0;
-        }
+        public bool IsSolidWall(Wall wall) => (SolidWall & (1 << (int)wall)) != 0;
     }
 }

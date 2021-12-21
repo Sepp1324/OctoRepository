@@ -11,31 +11,30 @@ namespace OctoAwesome.UI.Controls
     public sealed class InventoryControl : Panel
     {
         private const int COLUMNS = 8;
-        private readonly AssetComponent assets;
-        private readonly ScrollContainer scroll;
+        private readonly AssetComponent _assets;
+        private readonly ScrollContainer _scroll;
 
-        private Grid grid;
+        private Grid _grid;
 
-        public InventoryControl(BaseScreenComponent manager, AssetComponent assets, List<InventorySlot> inventorySlots,
-            int columns = COLUMNS) : base(manager)
+        public InventoryControl(BaseScreenComponent manager, AssetComponent assets, List<InventorySlot> inventorySlots, int columns = COLUMNS) : base(manager)
         {
-            scroll = new ScrollContainer(manager)
+            _scroll = new ScrollContainer(manager)
             {
                 Margin = new Border(0, 0, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             };
 
-            grid = new Grid(manager)
+            _grid = new(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
 
-            this.assets = assets;
+            _assets = assets;
 
-            scroll.Content = grid;
+            _scroll.Content = _grid;
 
-            Controls.Add(scroll);
+            Controls.Add(_scroll);
             Rebuild(inventorySlots, columns);
         }
 
@@ -46,28 +45,28 @@ namespace OctoAwesome.UI.Controls
 
         public void Rebuild(List<InventorySlot> inventorySlots, int columns = COLUMNS)
         {
-            grid = new Grid(ScreenManager)
+            _grid = new(ScreenManager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
 
-            scroll.Content = grid;
+            _scroll.Content = _grid;
 
             for (var i = 0; i < columns; i++)
-                grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Parts, Width = 1 });
+                _grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Parts, Width = 1 });
 
             var rows = (int)Math.Ceiling((float)inventorySlots.Count / columns);
             for (var i = 0; i < rows; i++)
-                grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Fixed, Height = 50 });
+                _grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Fixed, Height = 50 });
 
             var column = 0;
             var row = 0;
             foreach (var inventorySlot in inventorySlots)
             {
-                Texture2D texture;
                 if (inventorySlot.Definition is null)
                     continue;
-                texture = assets.LoadTexture(inventorySlot.Definition.GetType(), inventorySlot.Definition.Icon);
+
+                var texture = _assets.LoadTexture(inventorySlot.Definition.GetType(), inventorySlot.Definition.Icon);
 
 
                 var image = new Image(ScreenManager)
@@ -86,8 +85,8 @@ namespace OctoAwesome.UI.Controls
                     Text = inventorySlot.Amount.ToString(), HorizontalAlignment = HorizontalAlignment.Right,
                     VerticalTextAlignment = VerticalAlignment.Bottom, Background = new BorderBrush(Color.White)
                 };
-                grid.AddControl(image, column, row);
-                grid.AddControl(label, column, row);
+                _grid.AddControl(image, column, row);
+                _grid.AddControl(label, column, row);
 
                 column++;
                 if (column >= columns)

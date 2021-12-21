@@ -9,49 +9,43 @@ namespace OctoAwesome.Serialization
     {
         public static byte[] Serialize<T>(T obj) where T : ISerializable
         {
-            using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
-            {
-                obj.Serialize(writer);
-                return stream.ToArray();
-            }
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream);
+            obj.Serialize(writer);
+            return stream.ToArray();
         }
 
         public static byte[] SerializeCompressed<T>(T obj) where T : ISerializable
         {
-            using (var stream = new MemoryStream())
+            using var stream = new MemoryStream();
+            using (var writer = new BinaryWriter(stream, Encoding.Default, true))
             {
-                using (var writer = new BinaryWriter(stream, Encoding.Default, true))
+                obj.Serialize(writer);
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                stream.Position = 0;
+                using (var zip = new GZipStream(ms, CompressionMode.Compress, true))
                 {
-                    obj.Serialize(writer);
+                    stream.CopyTo(zip);
                 }
 
-                using (var ms = new MemoryStream())
-                {
-                    stream.Position = 0;
-                    using (var zip = new GZipStream(ms, CompressionMode.Compress, true))
-                    {
-                        stream.CopyTo(zip);
-                    }
-
-                    return ms.ToArray();
-                }
+                return ms.ToArray();
             }
         }
 
         public static byte[] SerializeCompressed<T>(T obj, int capacity) where T : ISerializable
         {
-            using (var stream = new MemoryStream(capacity))
-            using (var zip = new GZipStream(stream, CompressionMode.Compress))
-            using (var buff = new BufferedStream(zip))
+            using var stream = new MemoryStream(capacity);
+            using var zip = new GZipStream(stream, CompressionMode.Compress);
+            using var buff = new BufferedStream(zip);
+            using (var writer = new BinaryWriter(buff, Encoding.Default, true))
             {
-                using (var writer = new BinaryWriter(buff, Encoding.Default, true))
-                {
-                    obj.Serialize(writer);
-                }
-
-                return stream.ToArray();
+                obj.Serialize(writer);
             }
+
+            return stream.ToArray();
         }
 
         public static T Deserialize<T>(byte[] data) where T : ISerializable, new()
@@ -85,21 +79,17 @@ namespace OctoAwesome.Serialization
 
         private static void InternalDeserialize<T>(ref T instance, byte[] data) where T : ISerializable
         {
-            using (var stream = new MemoryStream(data))
-            using (var reader = new BinaryReader(stream))
-            {
-                instance.Deserialize(reader);
-            }
+            using var stream = new MemoryStream(data);
+            using var reader = new BinaryReader(stream);
+            instance.Deserialize(reader);
         }
 
         private static void InternalDeserializeCompressed<T>(ref T instance, byte[] data) where T : ISerializable
         {
-            using (var stream = new MemoryStream(data))
-            using (var zip = new GZipStream(stream, CompressionMode.Decompress))
-            using (var reader = new BinaryReader(zip))
-            {
-                instance.Deserialize(reader);
-            }
+            using var stream = new MemoryStream(data);
+            using var zip = new GZipStream(stream, CompressionMode.Decompress);
+            using var reader = new BinaryReader(zip);
+            instance.Deserialize(reader);
         }
     }
 }

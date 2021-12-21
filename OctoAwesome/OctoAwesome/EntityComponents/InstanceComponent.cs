@@ -17,9 +17,7 @@ namespace OctoAwesome.EntityComponents
         /// 
         /// </summary>
         /// <param name="notification"></param>
-        public virtual void OnNotification(SerializableNotification notification)
-        {
-        }
+        public virtual void OnNotification(SerializableNotification notification) { }
 
         /// <summary>
         /// 
@@ -44,8 +42,6 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         /// 
         /// </summary>
-        protected virtual void OnSetInstance()
-        {
-        }
+        protected virtual void OnSetInstance() { }
     }
 }

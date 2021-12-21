@@ -14,15 +14,15 @@ namespace OctoAwesome
     /// </summary>
     public class ChunkColumn : IChunkColumn
     {
-        private static ChunkPool chunkPool;
+        private static ChunkPool _chunkPool;
 
         /// <summary>
         ///     Auflistung aller sich in dieser Column befindenden Entitäten.
         /// </summary>
-        private readonly IEntityList entities;
+        private readonly IEntityList _entities;
 
-        private readonly LockSemaphore entitieSemaphore;
-        private readonly IGlobalChunkCache globalChunkCache;
+        private readonly LockSemaphore _entitySemaphore;
+        private readonly IGlobalChunkCache _globalChunkCache;
 
         /// <summary>
         ///     Erzeugt eine neue Instanz einer ChunkColumn.
@@ -47,13 +47,13 @@ namespace OctoAwesome
         public ChunkColumn(IPlanet planet)
         {
             Heights = new int[Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y];
-            entities = new EntityList(this);
-            entitieSemaphore = new LockSemaphore(1, 1);
+            _entities = new EntityList(this);
+            _entitySemaphore = new(1, 1);
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
-            globalChunkCache = planet.GlobalChunkCache;
+            _globalChunkCache = planet.GlobalChunkCache;
             
-            chunkPool ??= TypeContainer.Get<ChunkPool>();
+            _chunkPool ??= TypeContainer.Get<ChunkPool>();
         }
 
         /// <summary>
@@ -93,10 +93,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Koordinate des Blocks innerhalb des Chunkgs</param>
         /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
-        public ushort GetBlock(Index3 index)
-        {
-            return GetBlock(index.X, index.Y, index.Z);
-        }
+        public ushort GetBlock(Index3 index) => GetBlock(index.X, index.Y, index.Z);
 
         /// <summary>
         ///     Liefet den Block an der angegebenen Koordinate zurück.
@@ -146,10 +143,7 @@ namespace OctoAwesome
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
         /// <param name="meta">(Optional) Metainformationen für den Block</param>
-        public void SetBlock(Index3 index, ushort block, int meta = 0)
-        {
-            SetBlock(index.X, index.Y, index.Z, block, meta);
-        }
+        public void SetBlock(Index3 index, ushort block, int meta = 0) => SetBlock(index.X, index.Y, index.Z, block, meta);
 
         /// <summary>
         ///     Überschreibt den Block an der angegebenen Koordinate.
@@ -275,11 +269,9 @@ namespace OctoAwesome
             }
 
             var resManager = TypeContainer.Get<IResourceManager>();
-            using (var lockObj = entitieSemaphore.Wait())
-            {
-                foreach (var entity in entities)
-                    resManager.SaveEntity(entity);
-            }
+            using var lockObj = _entitySemaphore.Wait();
+            foreach (var entity in _entities)
+                resManager.SaveEntity(entity);
         }
 
         /// <summary>
@@ -308,14 +300,12 @@ namespace OctoAwesome
             for (var x = 0; x < Chunk.CHUNKSIZE_X; x++)
                 Heights[x, y] = reader.ReadUInt16();
 
-
             // Phase 2 (Block Definitionen)
-            int typecount = longIndex ? reader.ReadUInt16() : reader.ReadByte();
+            int typeCount = longIndex ? reader.ReadUInt16() : reader.ReadByte();
             var types = new List<IDefinition>();
-            Span<ushort> map = stackalloc ushort[typecount];
+            Span<ushort> map = stackalloc ushort[typeCount];
 
-
-            for (var i = 0; i < typecount; i++)
+            for (var i = 0; i < typeCount; i++)
             {
                 var typeName = reader.ReadString();
                 var definitions = DefinitionManager.Definitions.ToArray();
@@ -328,7 +318,7 @@ namespace OctoAwesome
             // Phase 3 (Chunk Infos)
             for (var c = 0; c < Chunks.Length; c++)
             {
-                var chunk = Chunks[c] = chunkPool.Get(new Index3(Index, c), Planet);
+                var chunk = Chunks[c] = _chunkPool.Get(new Index3(Index, c), Planet);
                 chunk.Version = reader.ReadInt32();
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
@@ -354,10 +344,7 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification)
-        {
-            globalChunkCache.OnUpdate(notification);
-        }
+        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
 
         public void Update(SerializableNotification notification)
         {
@@ -369,34 +356,26 @@ namespace OctoAwesome
 
         public void ForEachEntity(Action<Entity> action)
         {
-            using (entitieSemaphore.Wait())
-            {
-                foreach (var entity in entities) action(entity);
-            }
+            using (_entitySemaphore.Wait())
+                foreach (var entity in _entities) action(entity);
         }
 
         public void Add(Entity entity)
         {
-            using (entitieSemaphore.Wait())
-            {
-                entities.Add(entity);
-            }
+            using (_entitySemaphore.Wait())
+                _entities.Add(entity);
         }
 
         public void Remove(Entity entity)
         {
-            using (entitieSemaphore.Wait())
-            {
-                entities.Remove(entity);
-            }
+            using (_entitySemaphore.Wait())
+                _entities.Remove(entity);
         }
 
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
         {
-            using (entitieSemaphore.Wait())
-            {
-                return entities.FailChunkEntity().ToList();
-            }
+            using (_entitySemaphore.Wait())
+                return _entities.FailChunkEntity().ToList();
         }
 
         public void FlagDirty()

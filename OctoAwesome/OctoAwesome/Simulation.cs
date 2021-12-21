@@ -28,7 +28,7 @@ namespace OctoAwesome
         public Simulation(IResourceManager resourceManager, IExtensionResolver extensionResolver, IGameService service)
         {
             ResourceManager = resourceManager;
-            simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.Simulation);
+            simulationSubscription = resourceManager.UpdateHub.Subscribe(this, DefaultChannels.SIMULATION);
             entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
 
 
@@ -358,7 +358,7 @@ namespace OctoAwesome
         public void OnUpdate(SerializableNotification notification)
         {
             if (!IsServerSide)
-                ResourceManager.UpdateHub.Push(notification, DefaultChannels.Network);
+                ResourceManager.UpdateHub.Push(notification, DefaultChannels.NETWORK);
         }
 
         private void EntityUpdate(EntityNotification notification)
@@ -369,7 +369,7 @@ namespace OctoAwesome
                 var entityNotification = entityNotificationPool.Get();
                 entityNotification.EntityId = notification.EntityId;
                 entityNotification.Type = EntityNotification.ActionType.Request;
-                ResourceManager.UpdateHub.Push(entityNotification, DefaultChannels.Network);
+                ResourceManager.UpdateHub.Push(entityNotification, DefaultChannels.NETWORK);
                 entityNotification.Release();
             }
             else
@@ -400,7 +400,7 @@ namespace OctoAwesome
             newEntityNotification.Entity = remoteEntity;
             newEntityNotification.Type = EntityNotification.ActionType.Add;
 
-            ResourceManager.UpdateHub.Push(newEntityNotification, DefaultChannels.Network);
+            ResourceManager.UpdateHub.Push(newEntityNotification, DefaultChannels.NETWORK);
             newEntityNotification.Release();
         }
     }

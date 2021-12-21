@@ -460,11 +460,11 @@ namespace OctoAwesome.Client.Controls
             selectionPoint = null;
             float bestDistance = 9999;
             BlockInfo block = default;
-            //var pickEndPost = centerblock + (camera.PickRay.Position + (camera.PickRay.Direction * Player.SELECTIONRANGE));
+            //var pickEndPost = centerblock + (camera.PickRay.Position + (camera.PickRay.Direction * Player.SELECTION_RANGE));
             //var pickStartPos = centerblock + camera.PickRay.Position;
-            for (var z = -Player.SELECTIONRANGE; z < Player.SELECTIONRANGE; z++)
-            for (var y = -Player.SELECTIONRANGE; y < Player.SELECTIONRANGE; y++)
-            for (var x = -Player.SELECTIONRANGE; x < Player.SELECTIONRANGE; x++)
+            for (var z = -Player.SELECTION_RANGE; z < Player.SELECTION_RANGE; z++)
+            for (var y = -Player.SELECTION_RANGE; y < Player.SELECTION_RANGE; y++)
+            for (var x = -Player.SELECTION_RANGE; x < Player.SELECTION_RANGE; x++)
             {
                 var range = new Index3(x, y, z);
                 var pos = range + centerblock;
@@ -520,12 +520,12 @@ namespace OctoAwesome.Client.Controls
                 var posComponent = funcBlock.GetComponent<PositionComponent>();
                 var boxCollisionComponent = funcBlock.GetComponent<BoxCollisionComponent>();
 
-                if (posComponent.Position.GlobalPosition.X - Player.SELECTIONRANGE < centerblock.X
-                    && posComponent.Position.GlobalPosition.X + Player.SELECTIONRANGE > centerblock.X
-                    && posComponent.Position.GlobalPosition.Y - Player.SELECTIONRANGE < centerblock.Y
-                    && posComponent.Position.GlobalPosition.Y + Player.SELECTIONRANGE > centerblock.Y
-                    && posComponent.Position.GlobalPosition.Z - Player.SELECTIONRANGE < centerblock.Z
-                    && posComponent.Position.GlobalPosition.Z + Player.SELECTIONRANGE > centerblock.Z)
+                if (posComponent.Position.GlobalPosition.X - Player.SELECTION_RANGE < centerblock.X
+                    && posComponent.Position.GlobalPosition.X + Player.SELECTION_RANGE > centerblock.X
+                    && posComponent.Position.GlobalPosition.Y - Player.SELECTION_RANGE < centerblock.Y
+                    && posComponent.Position.GlobalPosition.Y + Player.SELECTION_RANGE > centerblock.Y
+                    && posComponent.Position.GlobalPosition.Z - Player.SELECTION_RANGE < centerblock.Z
+                    && posComponent.Position.GlobalPosition.Z + Player.SELECTION_RANGE > centerblock.Z)
                 {
                     var distance = Block.Intersect(boxCollisionComponent.BoundingBoxes,
                         posComponent.Position.GlobalBlockIndex - renderOffset, camera.PickRay, out var collisionAxis);

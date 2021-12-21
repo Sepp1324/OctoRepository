@@ -14,9 +14,7 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         /// 
         /// </summary>
-        public BoxCollisionComponent()
-        {
-        }
+        public BoxCollisionComponent() { }
 
         /// <summary>
         /// 
