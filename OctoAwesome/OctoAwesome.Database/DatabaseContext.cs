@@ -2,10 +2,7 @@
 {
     public abstract class DatabaseContext<Tag, TObject> : IDatabaseContext<Tag, TObject> where Tag : ITag, new()
     {
-        protected DatabaseContext(Database<Tag> database)
-        {
-            Database = database;
-        }
+        protected DatabaseContext(Database<Tag> database) => Database = database;
 
         protected Database<Tag> Database { get; }
 

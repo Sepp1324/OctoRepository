@@ -12,9 +12,7 @@ namespace OctoAwesome.Database.Checks
             Data.Add(nameof(Position), position);
         }
 
-        protected KeyInvalidException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
+        protected KeyInvalidException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 

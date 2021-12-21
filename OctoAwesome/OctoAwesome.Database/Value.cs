@@ -4,9 +4,6 @@
     {
         public byte[] Content { get; }
 
-        public Value(byte[] buffer)
-        {
-            Content = buffer;
-        }
+        public Value(byte[] buffer) => Content = buffer;
     }
 }

@@ -9,30 +9,15 @@ namespace OctoAwesome.Database
 
         public int Length => 16;
 
-        public GuidTag(Guid id)
-        {
-            Tag = id;
-        }
+        public GuidTag(Guid id) => Tag = id;
 
-        public byte[] GetBytes()
-        {
-            return Tag.ToByteArray();
-        }
+        public byte[] GetBytes() => Tag.ToByteArray();
 
-        public void FromBytes(byte[] array, int startIndex)
-        {
-            Tag = new Guid(array.Skip(startIndex).Take(Length).ToArray());
-        }
+        public void FromBytes(byte[] array, int startIndex) => Tag = new(array.Skip(startIndex).Take(Length).ToArray());
 
-        public override bool Equals(object obj)
-        {
-            return obj is GuidTag<T> tag && Equals(tag);
-        }
+        public override bool Equals(object obj) => obj is GuidTag<T> tag && Equals(tag);
 
-        public bool Equals(GuidTag<T> other)
-        {
-            return Length == other.Length && Tag.Equals(other.Tag);
-        }
+        public bool Equals(GuidTag<T> other) => Length == other.Length && Tag.Equals(other.Tag);
 
         public override int GetHashCode()
         {
@@ -42,19 +27,10 @@ namespace OctoAwesome.Database
             return hashCode;
         }
 
-        public void WriteBytes(Span<byte> span)
-        {
-            Tag.TryWriteBytes(span);
-        }
+        public void WriteBytes(Span<byte> span) => Tag.TryWriteBytes(span);
 
-        public static bool operator ==(GuidTag<T> left, GuidTag<T> right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(GuidTag<T> left, GuidTag<T> right) => left.Equals(right);
 
-        public static bool operator !=(GuidTag<T> left, GuidTag<T> right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(GuidTag<T> left, GuidTag<T> right) => !(left == right);
     }
 }

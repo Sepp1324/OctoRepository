@@ -105,20 +105,12 @@ namespace OctoAwesome.Database
             var tag = InstanceCreator<TTag>.CreateInstance();
             tag.FromBytes(array, index + BASE_KEY_SIZE);
 
-            return new Key<TTag>(tag, localIndex, length, index);
+            return new(tag, localIndex, length, index);
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is Key<TTag> key
-                   && Equals(key);
-        }
+        public override bool Equals(object obj) => obj is Key<TTag> key && Equals(key);
 
-        public bool Equals(Key<TTag> other)
-        {
-            return EqualityComparer<TTag>.Default.Equals(Tag, other.Tag)
-                   && ValueLength == other.ValueLength;
-        }
+        public bool Equals(Key<TTag> other) => EqualityComparer<TTag>.Default.Equals(Tag, other.Tag) && ValueLength == other.ValueLength;
 
         public override int GetHashCode()
         {
@@ -128,22 +120,10 @@ namespace OctoAwesome.Database
             return hashCode;
         }
 
-        public bool Validate()
-        {
-            return ValueLength >= 0
-                   && Position >= 0
-                   && Index >= 0
-                   && KEY_SIZE > BASE_KEY_SIZE;
-        }
+        public bool Validate() => ValueLength >= 0 && Position >= 0 && Index >= 0 && KEY_SIZE > BASE_KEY_SIZE;
 
-        public static bool operator ==(Key<TTag> left, Key<TTag> right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(Key<TTag> left, Key<TTag> right) => left.Equals(right);
 
-        public static bool operator !=(Key<TTag> left, Key<TTag> right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(Key<TTag> left, Key<TTag> right) => !(left == right);
     }
 }
