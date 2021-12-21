@@ -32,6 +32,7 @@ namespace OctoAwesome.Client.Components
 
         // public ActorHost ActorHost { get; private set; }
         public Selection Selection { get; set; }
+
         public Index3? SelectedBox { get; set; }
 
         public Vector2? SelectedPoint { get; set; }

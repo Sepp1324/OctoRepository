@@ -10,11 +10,11 @@ namespace OctoAwesome.PoC
             throw new NotImplementedException();
         }
 
-        public Component[] TryFind<T>(T key) => key switch
-        {
-            int => Array.Empty<Component>(),
-            _ => null
-        };
+        //public Component[] TryFind<T>(T key) => key switch
+        //{
+        //    int => Array.Empty<Component>(),
+        //    _ => null
+        //};
     }
 
     public class EntityCache : Cache<int, Entity>
@@ -41,12 +41,12 @@ namespace OctoAwesome.PoC
             _ => null
         };
 
-        public PositionComponent[] TryFind<T>(T key) => key switch
-        {
-            Index3 => Array.Empty<PositionComponent>(),
-            Index2 => Array.Empty<PositionComponent>(),
-            _ => null
-        };
+        //public PositionComponent[] TryFind<T>(T key) => key switch
+        //{
+        //    Index3 => Array.Empty<PositionComponent>(),
+        //    Index2 => Array.Empty<PositionComponent>(),
+        //    _ => null
+        //};
     }
 
     public class Index3PositionConverter

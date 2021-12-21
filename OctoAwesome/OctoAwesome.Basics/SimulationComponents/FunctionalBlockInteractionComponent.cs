@@ -5,35 +5,24 @@ using OctoAwesome.Services;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
-    public class FunctionalBlockInteractionComponent : SimulationComponent<
-        Entity,
-        SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent>,
-        ControllableComponent,
-        InventoryComponent>
+    public class FunctionalBlockInteractionComponent : SimulationComponent<Entity, SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent>, ControllableComponent, InventoryComponent>
     {
-        private readonly BlockCollectionService service;
-        private readonly Simulation simulation;
+        private readonly BlockCollectionService _service;
+        private readonly Simulation _simulation;
 
 
         public FunctionalBlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
         {
-            this.simulation = simulation;
-            service = interactionService;
+            _simulation = simulation;
+            _service = interactionService;
         }
 
-        protected override void UpdateValue(GameTime gameTime,
-            SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent> value)
+        protected override void UpdateValue(GameTime gameTime, SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent> value)
         {
             var entity = value.Value;
             var controller = value.Component1;
 
-            controller
-                .Selection?
-                .Map(
-                    blockInfo => { },
-                    functionalBlock => InternalUpdate(controller, entity, functionalBlock),
-                    entity => { }
-                );
+            controller.Selection?.Visit(blockInfo => { }, functionalBlock => InternalUpdate(controller, entity, functionalBlock), entity => { });
         }
 
         private void InternalUpdate(ControllableComponent controller, Entity entity, FunctionalBlock functionalBlock)

@@ -16,21 +16,18 @@ namespace OctoAwesome.Runtime
         /// </summary>
         public const float GAP = 0.01f;
 
-        private readonly IResourceManager manager;
+        private readonly IResourceManager _manager;
 
         /// <summary>
         ///     Standart Konstruktor.
         /// </summary>
         /// <param name="resourceManager">ResourceManger</param>
-        public GameService(IResourceManager resourceManager)
-        {
-            manager = resourceManager;
-        }
+        public GameService(IResourceManager resourceManager) => _manager = resourceManager;
 
         /// <summary>
         ///     <see cref="IDefinitionManager" /> der lokalen Daten.
         /// </summary>
-        public IDefinitionManager DefinitionManager => manager.DefinitionManager;
+        public IDefinitionManager DefinitionManager => _manager.DefinitionManager;
 
         /// <summary>
         ///     Berechnet die Geschwindigkeit einer <see cref="Entity" /> nach der Kollision mit der Welt. (Original Lassi)
@@ -139,10 +136,7 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <param name="serviceType">Type of Service</param>
         /// <returns></returns>
-        public object GetService(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetService(Type serviceType) => throw new NotImplementedException();
 
         /// <summary>
         ///     Gibt einen <see cref="ILocalChunkCache" /> zurück
@@ -151,10 +145,8 @@ namespace OctoAwesome.Runtime
         /// <param name="dimensions">Dimensionen des Caches</param>
         /// <param name="range">Ausdehnung des Caches</param>
         /// <returns></returns>
-        public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range)
-        {
+        public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range) =>
             //new LocalChunkCache(manager.GlobalChunkCache, false, 2, 1);
-            return null;
-        }
+            null;
     }
 }

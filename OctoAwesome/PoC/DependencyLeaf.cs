@@ -22,8 +22,6 @@ namespace OctoAwesome.PoC
         /// </summary>
         public List<DependencyLeaf> Parents { get; }
 
-        public IReadOnlyList<DependencyLeaf> FlattenedParents => _flattenedParents ??= GenerateFlattenedParents();
-
         public int Position { get; internal set; }
 
         public DependencyLeaf(DependencyItem item, List<DependencyLeaf> children, List<DependencyLeaf> parents, int position)
@@ -35,17 +33,9 @@ namespace OctoAwesome.PoC
             Position = position;
         }
 
-        private IReadOnlyList<DependencyLeaf> GenerateFlattenedParents()
-        {
-            throw new NotImplementedException();
-        }
+        private IReadOnlyList<DependencyLeaf> GenerateFlattenedParents() => throw new NotImplementedException();
 
-        public IEnumerable<DependencyLeaf> GetFlattenedChildren()
-        {
-            
-        }
-
-        private static bool HasCycle(IList<DependencyLeaf> dependencies)
+        private static bool HasCycle(ICollection<DependencyLeaf> dependencies)
         {
             HashSet<DependencyLeaf> visitedChildren = new();
 
@@ -66,7 +56,7 @@ namespace OctoAwesome.PoC
             return false;
         }
 
-        private static bool CheckCycleForChildren(DependencyLeaf children, DependencyLeaf parent, int maxDepth, HashSet<DependencyLeaf> visitedChildren, int currentDepth = 0)
+        private static bool CheckCycleForChildren(DependencyLeaf children, DependencyLeaf parent, int maxDepth, ISet<DependencyLeaf> visitedChildren, int currentDepth = 0)
         {
             if (children == parent)
                 return true;
@@ -84,8 +74,6 @@ namespace OctoAwesome.PoC
             return false;
         }
 
-        public override string ToString()
-            => $"{Item.Name} loads Before: {string.Join(", ", Children.Select(x => x.Item.Name))} and loads After: {string.Join(", ", Parents.Select(x => x.Item.Name))} (BeforeCount: {Children.Count}, AfterCount: {Parents.Count})";
-
+        public override string ToString() => $"{Item.Name} loads Before: {string.Join(", ", Children.Select(x => x.Item.Name))} and loads After: {string.Join(", ", Parents.Select(x => x.Item.Name))} (BeforeCount: {Children.Count}, AfterCount: {Parents.Count})";
     }
 }

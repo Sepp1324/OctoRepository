@@ -32,7 +32,7 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         /// 
         /// </summary>
-        public Selection Selection { get; set; }
+        internal Selection Selection { get; set; }
 
         /// <summary>
         /// 
