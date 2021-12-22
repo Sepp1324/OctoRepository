@@ -12,77 +12,75 @@ namespace OctoAwesome.Client.Controls
 {
     internal class ToolbarControl : Panel
     {
-        private readonly Brush activeBackground;
+        private readonly Brush _activeBackground;
 
-        private readonly Label activeToolLabel;
+        private readonly Label _activeToolLabel;
 
-        private readonly Brush buttonBackgroud;
+        private readonly Brush _buttonBackGround;
 
-        private readonly Button[] buttons = new Button[ToolBarComponent.TOOLCOUNT];
+        private readonly Button[] _buttons = new Button[ToolBarComponent.TOOL_COUNT];
 
-        private readonly Image[] images = new Image[ToolBarComponent.TOOLCOUNT];
+        private readonly Image[] _images = new Image[ToolBarComponent.TOOL_COUNT];
 
-        private readonly Dictionary<string, Texture2D> toolTextures;
+        private readonly Dictionary<string, Texture2D> _toolTextures;
 
         private int lastActiveIndex;
 
-        public ToolbarControl(BaseScreenComponent screenManager, AssetComponent assets, PlayerComponent playerComponent,
-            IDefinitionManager definitionManager)
-            : base(screenManager)
+        public ToolbarControl(BaseScreenComponent screenManager, AssetComponent assets, PlayerComponent playerComponent, IDefinitionManager definitionManager) : base(screenManager)
         {
             Background = new SolidColorBrush(Color.Transparent);
             Player = playerComponent;
-            Player.Toolbar.OnChanged += (slot, index) => SetTexture(slot, index);
-            toolTextures = new Dictionary<string, Texture2D>();
+            Player.Toolbar.OnChanged += SetTexture;
+            _toolTextures = new();
 
-            buttonBackgroud = new BorderBrush(new Color(Color.Black, 0.5f));
-            activeBackground = new BorderBrush(new Color(Color.Black, 0.5f), LineType.Dotted, Color.Red, 3);
+            _buttonBackGround = new BorderBrush(new(Color.Black, 0.5f));
+            _activeBackground = new BorderBrush(new(Color.Black, 0.5f), LineType.Dotted, Color.Red, 3);
 
             foreach (var item in definitionManager.Definitions)
             {
                 var texture = assets.LoadTexture(item.GetType(), item.Icon);
-                toolTextures.Add(item.GetType().FullName, texture);
+                _toolTextures.Add(item.GetType().FullName!, texture);
             }
 
             var grid = new Grid(screenManager)
             {
-                Margin = new Border(0, 0, 0, 0),
+                Margin = new(0, 0, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Bottom
             };
             Controls.Add(grid);
 
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Auto, Height = 1 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Fixed, Height = 50 });
+            grid.Rows.Add(new() { ResizeMode = ResizeMode.Auto, Height = 1 });
+            grid.Rows.Add(new() { ResizeMode = ResizeMode.Fixed, Height = 50 });
 
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
-                grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Fixed, Width = 50 });
+            for (var i = 0; i < ToolBarComponent.TOOL_COUNT; i++)
+                grid.Columns.Add(new() { ResizeMode = ResizeMode.Fixed, Width = 50 });
 
-            activeToolLabel = new Label(screenManager)
+            _activeToolLabel = new(screenManager)
             {
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Background = new BorderBrush(Color.Black * 0.3f),
                 TextColor = Color.White
             };
-            grid.AddControl(activeToolLabel, 0, 0, ToolBarComponent.TOOLCOUNT);
+            grid.AddControl(_activeToolLabel, 0, 0, ToolBarComponent.TOOL_COUNT);
 
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOL_COUNT; i++)
             {
-                buttons[i] = new Button(screenManager)
+                _buttons[i] = new(screenManager)
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment = VerticalAlignment.Stretch,
-                    Background = buttonBackgroud,
-                    HoveredBackground = null,
-                    PressedBackground = null
+                    Background = _buttonBackGround,
+                    HoveredBackground = null!,
+                    PressedBackground = null!,
+                    Content = _images[i] = new(screenManager)
+                    {
+                        Width = 42,
+                        Height = 42
+                    }
                 };
-                buttons[i].Content = images[i] = new Image(screenManager)
-                {
-                    Width = 42,
-                    Height = 42
-                };
-                grid.AddControl(buttons[i], i, 1);
+                grid.AddControl(_buttons[i], i, 1);
             }
         }
 
@@ -98,11 +96,11 @@ namespace OctoAwesome.Client.Controls
 
             if (Player.Toolbar.ActiveIndex != lastActiveIndex)
             {
-                buttons[lastActiveIndex].Background = buttonBackgroud;
+                _buttons[lastActiveIndex].Background = _buttonBackGround;
                 lastActiveIndex = Player.Toolbar.ActiveIndex;
             }
 
-            buttons[Player.Toolbar.ActiveIndex].Background = activeBackground;
+            _buttons[Player.Toolbar.ActiveIndex].Background = _activeBackground;
             SetTexture(Player.Toolbar.ActiveTool, Player.Toolbar.ActiveIndex);
 
             var newText = "";
@@ -116,9 +114,9 @@ namespace OctoAwesome.Client.Controls
                     newText += $" ({Player.Toolbar.ActiveTool.Amount})";
             }
 
-            activeToolLabel.Text = newText;
+            _activeToolLabel.Text = newText;
 
-            activeToolLabel.Visible = !(activeToolLabel.Text == string.Empty);
+            _activeToolLabel.Visible = _activeToolLabel.Text != string.Empty;
 
             base.OnUpdate(gameTime);
         }
@@ -127,16 +125,13 @@ namespace OctoAwesome.Client.Controls
         {
             if (inventorySlot is null)
             {
-                images[index].Texture = null;
+                _images[index].Texture = null;
                 return;
             }
 
             var definitionName = inventorySlot.Definition.GetType().FullName;
 
-            if (toolTextures.TryGetValue(definitionName, out var texture))
-                images[index].Texture = texture;
-            else
-                images[index].Texture = null;
+            _images[index].Texture = _toolTextures.TryGetValue(definitionName, out var texture) ? texture : null;
         }
     }
 }

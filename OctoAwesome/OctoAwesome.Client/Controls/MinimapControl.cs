@@ -6,24 +6,17 @@ namespace OctoAwesome.Client.Controls
 {
     internal class MinimapControl : Control
     {
-        public MinimapControl(BaseScreenComponent screenManager, SceneControl scene)
-            : base(screenManager)
-        {
-            Scene = scene;
-        }
+        public MinimapControl(BaseScreenComponent screenManager, SceneControl scene) : base(screenManager) => Scene = scene;
 
         public SceneControl Scene { get; set; }
 
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (Scene == null || Scene.MiniMapTexture == null)
+            if (Scene?.MiniMapTexture == null)
                 return;
 
-            batch.Draw(Skin.Pix,
-                new Rectangle(contentArea.X - 2, contentArea.Y - 2, contentArea.Width + 4, contentArea.Height + 4),
-                Color.Black);
-            batch.Draw(Scene.MiniMapTexture,
-                new Rectangle(contentArea.X, contentArea.Y, contentArea.Width, contentArea.Height), Color.White);
+            batch.Draw(Skin.Pix, new Rectangle(contentArea.X - 2, contentArea.Y - 2, contentArea.Width + 4, contentArea.Height + 4), Color.Black);
+            batch.Draw(Scene.MiniMapTexture, new Rectangle(contentArea.X, contentArea.Y, contentArea.Width, contentArea.Height), Color.White);
 
             var center = new Index2(contentArea.Width / 2 + contentArea.X, contentArea.Height / 2 + contentArea.Y);
 

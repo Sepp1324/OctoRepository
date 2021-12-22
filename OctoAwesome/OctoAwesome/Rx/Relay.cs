@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OctoAwesome.PoC.Rx
+namespace OctoAwesome.Rx
 {
     public class Relay<T> : IObservable<T>, IObserver<T>, IDisposable
     {

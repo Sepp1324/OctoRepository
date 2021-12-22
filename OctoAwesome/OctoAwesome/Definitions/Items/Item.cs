@@ -132,7 +132,7 @@ namespace OctoAwesome.Definitions.Items
 
             var item = Activator.CreateInstance(itemType, definition, material) as Item;
 
-            item.InternalDeserialize(reader);
+            item?.InternalDeserialize(reader);
             return item;
         }
     }

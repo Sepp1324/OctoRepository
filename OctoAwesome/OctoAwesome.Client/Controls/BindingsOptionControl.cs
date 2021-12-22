@@ -12,23 +12,22 @@ namespace OctoAwesome.Client.Controls
 {
     internal sealed class BindingsOptionControl : Panel
     {
-        private readonly AssetComponent assets;
-        private readonly KeyMapper keyMapper;
-        private readonly ISettings settings;
+        private readonly AssetComponent _assets;
+        private readonly KeyMapper _keyMapper;
+        private readonly ISettings _settings;
 
-        public BindingsOptionControl(BaseScreenComponent manager, AssetComponent assets, KeyMapper keyMapper,
-            ISettings settings) : base(manager)
+        public BindingsOptionControl(BaseScreenComponent manager, AssetComponent assets, KeyMapper keyMapper, ISettings settings) : base(manager)
         {
-            this.assets = assets;
-            this.settings = settings;
-            this.keyMapper = keyMapper;
+            _assets = assets;
+            _settings = settings;
+            _keyMapper = keyMapper;
             var bindingsScroll = new ScrollContainer(manager);
             Controls.Add(bindingsScroll);
 
             var bindingsStack = new StackPanel(manager)
             {
                 Orientation = Orientation.Vertical,
-                Padding = new Border(20, 20, 20, 20),
+                Padding = new(20, 20, 20, 20),
                 Width = 650
             };
             bindingsScroll.Content = bindingsStack;
@@ -78,13 +77,13 @@ namespace OctoAwesome.Client.Controls
 
             var lbl = (Label)sender;
 
-            var screen = new MessageScreen(ScreenManager, assets, OctoClient.PressKey, "", OctoClient.Cancel);
+            var screen = new MessageScreen(ScreenManager, _assets, OctoClient.PressKey, "", OctoClient.Cancel);
             screen.KeyDown += (s, a) =>
             {
-                keyMapper.RemoveKey(id, oldKey);
-                keyMapper.AddKey(id, a.Key);
+                _keyMapper.RemoveKey(id, oldKey);
+                _keyMapper.AddKey(id, a.Key);
                 data[1] = a.Key;
-                settings.Set("KeyMapper-" + id, a.Key.ToString());
+                _settings.Set("KeyMapper-" + id, a.Key.ToString());
                 lbl.Text = a.Key.ToString();
                 ScreenManager.NavigateBack();
             };

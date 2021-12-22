@@ -5,94 +5,94 @@ using OctoAwesome.Notifications;
 namespace OctoAwesome
 {
     /// <summary>
-    ///     Standard-Implementierung des Planeten.
+    /// Standard-Implementation of the Planet
     /// </summary>
     public class Planet : IPlanet
     {
-        private IDisposable chunkSubscription;
+        private IDisposable _chunkSubscription;
 
-        private bool disposed;
+        private bool _disposed;
 
-        private IUpdateHub updateHub;
+        private IUpdateHub _updateHub;
 
         /// <summary>
-        ///     Initialisierung des Planeten.
+        /// Initialization of the Planet
         /// </summary>
-        /// <param name="id">ID des Planeten.</param>
-        /// <param name="universe">ID des Universums.</param>
-        /// <param name="size">Größe des Planeten in Zweierpotenzen Chunks.</param>
-        /// <param name="seed">Seed des Zufallsgenerators.</param>
+        /// <param name="id">ID of the Planet</param>
+        /// <param name="universe">ID of the Universe</param>
+        /// <param name="size">Size of the Planet</param>
+        /// <param name="seed">Seed of the Random-Generator</param>
         public Planet(int id, Guid universe, Index3 size, int seed) : this()
         {
             Id = id;
             Universe = universe;
-            Size = new Index3(
-                (int)Math.Pow(2, size.X),
-                (int)Math.Pow(2, size.Y),
-                (int)Math.Pow(2, size.Z));
+            Size = new((int)Math.Pow(2, size.X), (int)Math.Pow(2, size.Y), (int)Math.Pow(2, size.Z));
             Seed = seed;
         }
 
         /// <summary>
-        ///     Erzeugt eine neue Instanz eines Planeten.
+        /// Instantiate new Planet
         /// </summary>
-        public Planet()
-        {
-            GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
-        }
+        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
 
         /// <summary>
-        ///     ID des Planeten.
+        /// ID of the Planet
         /// </summary>
         public int Id { get; private set; }
 
         /// <summary>
-        ///     Referenz auf das Parent Universe
+        /// Reference to the Parent-Universe
         /// </summary>
         public Guid Universe { get; private set; }
 
         /// <summary>
-        ///     Die Klimakarte des Planeten
+        /// ClimateMap of the Planet
         /// </summary>
         public IClimateMap ClimateMap { get; protected set; }
 
         /// <summary>
-        ///     Seed des Zufallsgenerators dieses Planeten.
+        /// Seed of the Random-Generator
         /// </summary>
         public int Seed { get; private set; }
 
         /// <summary>
-        ///     Die Größe des Planeten in Chunks.
+        /// Size of the Planet in Chunks
         /// </summary>
         public Index3 Size { get; private set; }
 
         /// <summary>
-        ///     Gravitation des Planeten.
+        /// Gravity of the Planet
         /// </summary>
         public float Gravity { get; protected set; }
 
         /// <summary>
-        ///     Der Generator des Planeten.
+        /// Generator of the Planet
         /// </summary>
         public IMapGenerator Generator { get; set; }
 
+        /// <summary>
+        /// GlobalChunkCache for the Planet
+        /// </summary>
         public IGlobalChunkCache GlobalChunkCache { get; set; }
 
+        /// <summary>
+        /// UpdateHub for the Planet
+        /// </summary>
         public IUpdateHub UpdateHub
         {
-            get => updateHub;
+            get => _updateHub;
             set
             {
-                chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.CHUNK);
+                _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.CHUNK);
                 GlobalChunkCache.InsertUpdateHub(value);
-                updateHub = value;
+                _updateHub = value;
             }
         }
 
         /// <summary>
-        ///     Serialisiert den Planeten in den angegebenen Stream.
+        /// Serializes the Planet with the given <see cref="BinaryWriter"/>
         /// </summary>
-        /// <param name="stream">Zielstream</param>
+        /// <param name="writer">Given <see cref="BinaryWriter"/></param>
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(Id);
@@ -105,32 +105,32 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        ///     Deserialisiert den Planeten aus dem angegebenen Stream.
+        /// Deserializes the Planet with the given <see cref="BinaryReader"/>
         /// </summary>
-        /// <param name="stream">Quellstream</param>
+        /// <param name="reader">Given <see cref="BinaryReader"/></param>
         public virtual void Deserialize(BinaryReader reader)
         {
             Id = reader.ReadInt32();
             Seed = reader.ReadInt32();
             Gravity = reader.ReadSingle();
-            Size = new Index3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
-            Universe = new Guid(reader.ReadBytes(16));
+            Size = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+            Universe = new(reader.ReadBytes(16));
             //var name = reader.ReadString();
         }
 
         public void Dispose()
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
-            disposed = true;
+            _disposed = true;
 
-            chunkSubscription.Dispose();
+            _chunkSubscription.Dispose();
 
             if (GlobalChunkCache is IDisposable disposable)
                 disposable.Dispose();
 
-            chunkSubscription = null;
+            _chunkSubscription = null;
             GlobalChunkCache = null;
         }
     }

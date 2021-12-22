@@ -8,12 +8,11 @@ namespace OctoAwesome.Client.Controls
 {
     internal sealed class ExtensionsOptionControl : Panel
     {
-        private readonly Listbox<IExtension> activeExtensionsList;
-        private readonly Button applyButton;
-        private readonly Button disableButton;
-        private readonly Button enableButton;
-        private readonly Label infoLabel;
-        private readonly Listbox<IExtension> loadedExtensionsList;
+        private readonly Listbox<IExtension> _activeExtensionsList;
+        private readonly Button _disableButton;
+        private readonly Button _enableButton;
+        private readonly Label _infoLabel;
+        private readonly Listbox<IExtension> _loadedExtensionsList;
 
         public ExtensionsOptionControl(BaseScreenComponent manager, IExtensionLoader extensionLoader) : base(manager)
         {
@@ -25,12 +24,12 @@ namespace OctoAwesome.Client.Controls
             };
             Controls.Add(grid);
 
-            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Parts, Width = 1 });
-            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Fixed, Width = 100 });
-            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Parts, Width = 1 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Parts, Height = 1 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Auto, Height = 1 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Auto, Height = 1 });
+            grid.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            grid.Columns.Add(new() { ResizeMode = ResizeMode.Fixed, Width = 100 });
+            grid.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            grid.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            grid.Rows.Add(new() { ResizeMode = ResizeMode.Auto, Height = 1 });
+            grid.Rows.Add(new() { ResizeMode = ResizeMode.Auto, Height = 1 });
 
             var buttons = new StackPanel(manager)
             {
@@ -40,35 +39,35 @@ namespace OctoAwesome.Client.Controls
 
             #region Manipulationsbuttons
 
-            enableButton = new TextButton(manager, OctoClient.Enable);
-            enableButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            enableButton.Visible = false;
-            buttons.Controls.Add(enableButton);
+            _enableButton = new TextButton(manager, OctoClient.Enable);
+            _enableButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _enableButton.Visible = false;
+            buttons.Controls.Add(_enableButton);
 
-            disableButton = new TextButton(manager, OctoClient.Disable);
-            disableButton.HorizontalAlignment = HorizontalAlignment.Stretch;
-            disableButton.Visible = false;
-            buttons.Controls.Add(disableButton);
+            _disableButton = new TextButton(manager, OctoClient.Disable);
+            _disableButton.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _disableButton.Visible = false;
+            buttons.Controls.Add(_disableButton);
 
             #endregion
 
-            applyButton = new TextButton(manager, OctoClient.Apply);
+            Button applyButton = new TextButton(manager, OctoClient.Apply);
             applyButton.HorizontalAlignment = HorizontalAlignment.Right;
             applyButton.VerticalAlignment = VerticalAlignment.Bottom;
             grid.AddControl(applyButton, 0, 2, 3);
 
-            infoLabel = new Label(ScreenManager)
+            _infoLabel = new(ScreenManager)
             {
                 HorizontalTextAlignment = HorizontalAlignment.Left,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Top,
                 WordWrap = true
             };
-            grid.AddControl(infoLabel, 0, 1, 3);
+            grid.AddControl(_infoLabel, 0, 1, 3);
 
             #region Listen
 
-            loadedExtensionsList = new Listbox<IExtension>(manager)
+            _loadedExtensionsList = new Listbox<IExtension>(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -76,9 +75,9 @@ namespace OctoAwesome.Client.Controls
                 TemplateGenerator = ListTemplateGenerator
             };
 
-            grid.AddControl(loadedExtensionsList, 0, 0);
+            grid.AddControl(_loadedExtensionsList, 0, 0);
 
-            activeExtensionsList = new Listbox<IExtension>(manager)
+            _activeExtensionsList = new Listbox<IExtension>(manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -86,46 +85,46 @@ namespace OctoAwesome.Client.Controls
                 TemplateGenerator = ListTemplateGenerator
             };
 
-            grid.AddControl(activeExtensionsList, 2, 0);
+            grid.AddControl(_activeExtensionsList, 2, 0);
 
             #endregion
 
-            loadedExtensionsList.SelectedItemChanged += loadedList_SelectedItemChanged;
-            activeExtensionsList.SelectedItemChanged += activeList_SelectedItemChanged;
+            _loadedExtensionsList.SelectedItemChanged += loadedList_SelectedItemChanged;
+            _activeExtensionsList.SelectedItemChanged += activeList_SelectedItemChanged;
 
-            enableButton.LeftMouseClick += (s, e) =>
+            _enableButton.LeftMouseClick += (s, e) =>
             {
-                var ext = loadedExtensionsList.SelectedItem;
-                loadedExtensionsList.Items.Remove(ext);
-                activeExtensionsList.Items.Add(ext);
-                activeExtensionsList.SelectedItem = ext;
+                var ext = _loadedExtensionsList.SelectedItem;
+                _loadedExtensionsList.Items.Remove(ext!);
+                _activeExtensionsList.Items.Add(ext!);
+                _activeExtensionsList.SelectedItem = ext;
             };
 
-            disableButton.LeftMouseClick += (s, e) =>
+            _disableButton.LeftMouseClick += (s, e) =>
             {
-                var ext = activeExtensionsList.SelectedItem;
-                activeExtensionsList.Items.Remove(ext);
-                loadedExtensionsList.Items.Add(ext);
-                loadedExtensionsList.SelectedItem = ext;
+                var ext = _activeExtensionsList.SelectedItem;
+                _activeExtensionsList.Items.Remove(ext!);
+                _loadedExtensionsList.Items.Add(ext!);
+                _loadedExtensionsList.SelectedItem = ext;
             };
 
             applyButton.LeftMouseClick += (s, e) =>
             {
                 //TODO: Apply
-                extensionLoader.ApplyExtensions(loadedExtensionsList.Items);
+                extensionLoader.ApplyExtensions(_loadedExtensionsList.Items);
                 Program.Restart();
             };
 
             // Daten laden
             var loader = extensionLoader;
             foreach (var item in loader.LoadedExtensions)
-                loadedExtensionsList.Items.Add(item);
+                _loadedExtensionsList.Items.Add(item);
 
             foreach (var item in loader.ActiveExtensions)
             {
-                activeExtensionsList.Items.Add(item);
-                if (loadedExtensionsList.Items.Contains(item))
-                    loadedExtensionsList.Items.Remove(item);
+                _activeExtensionsList.Items.Add(item);
+                if (_loadedExtensionsList.Items.Contains(item))
+                    _loadedExtensionsList.Items.Remove(item);
             }
         }
 
@@ -142,16 +141,16 @@ namespace OctoAwesome.Client.Controls
         private void loadedList_SelectedItemChanged(Control control, SelectionEventArgs<IExtension> e)
         {
             e.Handled = true;
-            enableButton.Visible = e.NewItem != null;
+            _enableButton.Visible = e.NewItem != null;
 
             if (e.NewItem != null)
             {
-                activeExtensionsList.SelectedItem = null;
+                _activeExtensionsList.SelectedItem = null;
                 SetPackInfo(e.NewItem);
             }
             else
             {
-                if (activeExtensionsList.SelectedItem == null)
+                if (_activeExtensionsList.SelectedItem == null)
                     SetPackInfo(null);
             }
         }
@@ -159,16 +158,16 @@ namespace OctoAwesome.Client.Controls
         private void activeList_SelectedItemChanged(Control control, SelectionEventArgs<IExtension> e)
         {
             e.Handled = true;
-            disableButton.Visible = e.NewItem != null;
+            _disableButton.Visible = e.NewItem != null;
 
             if (e.NewItem != null)
             {
-                loadedExtensionsList.SelectedItem = null;
+                _loadedExtensionsList.SelectedItem = null;
                 SetPackInfo(e.NewItem);
             }
             else
             {
-                if (loadedExtensionsList.SelectedItem == null)
+                if (_loadedExtensionsList.SelectedItem == null)
                     SetPackInfo(null);
             }
         }
@@ -176,9 +175,9 @@ namespace OctoAwesome.Client.Controls
         private void SetPackInfo(IExtension ext)
         {
             if (ext != null)
-                infoLabel.Text = string.Format("{0}{1}{2}", ext.Name, Environment.NewLine, ext.Description);
+                _infoLabel.Text = string.Format("{0}{1}{2}", ext.Name, Environment.NewLine, ext.Description);
             else
-                infoLabel.Text = string.Empty;
+                _infoLabel.Text = string.Empty;
         }
     }
 }

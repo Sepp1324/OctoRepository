@@ -10,9 +10,7 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         /// 
         /// </summary>
-        public LocalChunkCacheComponent()
-        {
-        }
+        public LocalChunkCacheComponent() { }
 
         /// <summary>
         /// 

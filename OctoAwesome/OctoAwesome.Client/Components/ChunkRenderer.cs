@@ -207,7 +207,7 @@ namespace OctoAwesome.Client.Components
                 graphicsDevice.RasterizerState = WireFrame ? wireFrameState : RasterizerState.CullCounterClockwise;
                 graphicsDevice.VertexBuffer = VertexBuffer;
 
-                foreach (var pass in simple.CurrentTechnique.Passes)
+                foreach (var pass in simple.CurrentTechnique?.Passes!)
                 {
                     pass.Apply();
                     graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, VertexCount, 0, indexCount / 3);

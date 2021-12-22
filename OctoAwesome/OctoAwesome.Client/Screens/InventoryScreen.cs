@@ -97,13 +97,13 @@ namespace OctoAwesome.Client.Screens
             };
 
             toolbar.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOL_COUNT; i++)
                 toolbar.Columns.Add(new() { ResizeMode = ResizeMode.Fixed, Width = 50 });
             toolbar.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 1 });
             toolbar.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 1 });
 
-            _images = new Image[ToolBarComponent.TOOLCOUNT];
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            _images = new Image[ToolBarComponent.TOOL_COUNT];
+            for (var i = 0; i < ToolBarComponent.TOOL_COUNT; i++)
             {
                 var image = _images[i] = new(manager)
                 {
@@ -117,11 +117,11 @@ namespace OctoAwesome.Client.Screens
 
                 image.StartDrag += (c, e) =>
                 {
-                    var slot = _player.Toolbar.Tools[(int)image.Tag];
+                    var slot = _player.Toolbar.Tools[(int)image.Tag!];
                     if (slot != null)
                     {
                         e.Handled = true;
-                        e.Icon = _toolTextures[slot.Definition.GetType().FullName];
+                        e.Icon = _toolTextures[slot.Definition.GetType().FullName!];
                         e.Content = slot;
                         e.Sender = toolbar;
                     }
@@ -136,7 +136,7 @@ namespace OctoAwesome.Client.Screens
                     if (e.Sender is Grid) // && ShiftPressed
                     {
                         // Swap
-                        var targetIndex = (int)image.Tag;
+                        var targetIndex = (int)image.Tag!;
                         var targetSlot = _player.Toolbar.Tools[targetIndex];
 
                         var sourceSlot = e.Content as InventorySlot;
@@ -149,7 +149,7 @@ namespace OctoAwesome.Client.Screens
                     {
                         // Inventory Drop
                         var slot = e.Content as InventorySlot;
-                        _player.Toolbar.SetTool(slot, (int)image.Tag);
+                        _player.Toolbar.SetTool(slot, (int)image.Tag!);
                     }
                 };
 
@@ -203,7 +203,7 @@ namespace OctoAwesome.Client.Screens
             _massLabel.Text = _volumeLabel.Text = _inventory.HoveredSlot?.Amount.ToString() ?? "";
 
             // Aktualisierung des aktiven Buttons
-            for (var i = 0; i < ToolBarComponent.TOOLCOUNT; i++)
+            for (var i = 0; i < ToolBarComponent.TOOL_COUNT; i++)
                 if (_player.Toolbar.Tools != null &&
                     _player.Toolbar.Tools.Length > i &&
                     _player.Toolbar.Tools[i] != null &&

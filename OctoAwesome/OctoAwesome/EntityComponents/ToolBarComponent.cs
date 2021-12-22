@@ -12,8 +12,7 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         ///     Gibt die Anzahl Tools in der Toolbar an.
         /// </summary>
-        public const int TOOLCOUNT = 10;
-
+        public const int TOOL_COUNT = 10;
 
         private int _activeIndex;
 
@@ -24,7 +23,7 @@ namespace OctoAwesome.EntityComponents
         public ToolBarComponent()
         {
             HandSlot = new() { Item = new Hand(new()) };
-            Tools = new InventorySlot[TOOLCOUNT];
+            Tools = new InventorySlot[TOOL_COUNT];
             ActiveIndex = 0;
         }
 
@@ -49,7 +48,7 @@ namespace OctoAwesome.EntityComponents
         public int ActiveIndex
         {
             get => _activeIndex;
-            set => _activeIndex = (value + TOOLCOUNT) % TOOLCOUNT;
+            set => _activeIndex = (value + TOOL_COUNT) % TOOL_COUNT;
         }
 
         /// <summary>

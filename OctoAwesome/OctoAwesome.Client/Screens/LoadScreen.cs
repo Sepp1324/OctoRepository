@@ -53,7 +53,7 @@ namespace OctoAwesome.Client.Screens
             {
                 var li = new Label(manager)
                 {
-                    Text = $"{x.Name} ({x.Seed})",
+                    Text = $"{x?.Name} ({x?.Seed})",
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     Padding = Border.All(10)
                 };
@@ -113,10 +113,10 @@ namespace OctoAwesome.Client.Screens
             {
                 // Sicherstellen, dass universe nicht geladen ist
                 if (_manager.Game.ResourceManager.CurrentUniverse != null &&
-                    _manager.Game.ResourceManager.CurrentUniverse.Id == _levelList.SelectedItem.Id)
+                    _manager.Game.ResourceManager.CurrentUniverse.Id == _levelList?.SelectedItem?.Id)
                     return;
 
-                _manager.Game.ResourceManager.DeleteUniverse(_levelList.SelectedItem.Id);
+                _manager.Game.ResourceManager.DeleteUniverse(_levelList!.SelectedItem!.Id);
                 _levelList.Items.Remove(_levelList.SelectedItem);
                 _levelList.SelectedItem = null;
                 _levelList.InvalidateDimensions();
@@ -175,7 +175,7 @@ namespace OctoAwesome.Client.Screens
         {
             _manager.Player.SetEntity(null);
 
-            _manager.Game.Simulation.LoadGame(_levelList.SelectedItem.Id);
+            _manager.Game.Simulation.LoadGame(_levelList.SelectedItem!.Id);
             _settings.Set("LastUniverse", _levelList.SelectedItem.Id.ToString());
 
             var player = _manager.Game.Simulation.LoginPlayer("");

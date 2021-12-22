@@ -1,57 +1,64 @@
 ﻿using System.IO;
-using engenious;
 using OctoAwesome.Components;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 
 namespace OctoAwesome.EntityComponents
 {
-    public sealed class PositionComponent : InstanceComponent<INotificationSubject<SerializableNotification>>,
-        IEntityComponent, IFunctionalBlockComponent
+    /// <summary>
+    /// PositionComponent
+    /// </summary>
+    public sealed class PositionComponent : InstanceComponent<INotificationSubject<SerializableNotification>>, IEntityComponent, IFunctionalBlockComponent
     {
-        private readonly IPool<PropertyChangedNotification> propertyChangedNotificationPool;
-        private readonly IResourceManager resourceManager;
+        private readonly IPool<PropertyChangedNotification> _propertyChangedNotificationPool;
+        private readonly IResourceManager _resourceManager;
 
-        private Coordinate position;
-        private bool posUpdate;
-
-        public PositionComponent()
-        {
-            Sendable = true;
-            resourceManager = TypeContainer.Get<IResourceManager>();
-            propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
-        }
-
-        public Coordinate Position
-        {
-            get => position;
-            set
-            {
-                var valueBlockX = (int)(value.BlockPosition.X * 100) / 100f;
-                var valueBlockY = (int)(value.BlockPosition.Y * 100) / 100f;
-                var positionBlockX = (int)(position.BlockPosition.X * 100) / 100f;
-                var positionBlockY = (int)(position.BlockPosition.Y * 100) / 100f;
-
-                posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY
-                                                          || position.BlockPosition.Z != value.BlockPosition.Z;
-
-                SetValue(ref position, value);
-                TryUpdatePlanet(value.Planet);
-            }
-        }
+        private IPlanet _planet;
+        private Coordinate _position;
+        private bool _posUpdate;
 
         /// <summary>
-        /// 
+        /// Direction
         /// </summary>
         public float Direction { get; set; }
 
         /// <summary>
-        /// 
+        /// Current Planet
         /// </summary>
-        public IPlanet Planet { get; private set; }
+        public IPlanet Planet { get => _planet ??= TryGetPlanet(_position.Planet); private set => _planet = value; }
 
         /// <summary>
-        /// 
+        /// PositionComponent
+        /// </summary>
+        public PositionComponent()
+        {
+            Sendable = true;
+            _resourceManager = TypeContainer.Get<IResourceManager>();
+            _propertyChangedNotificationPool = TypeContainer.Get<IPool<PropertyChangedNotification>>();
+        }
+
+        /// <summary>
+        /// Position
+        /// </summary>
+        public Coordinate Position
+        {
+            get => _position;
+            set
+            {
+                var valueBlockX = (int)(value.BlockPosition.X * 100) / 100f;
+                var valueBlockY = (int)(value.BlockPosition.Y * 100) / 100f;
+                var positionBlockX = (int)(_position.BlockPosition.X * 100) / 100f;
+                var positionBlockY = (int)(_position.BlockPosition.Y * 100) / 100f;
+
+                _posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || _position.BlockPosition.Z != value.BlockPosition.Z;
+
+                SetValue(ref _position, value);
+                _planet = TryGetPlanet(value.Planet);
+            }
+        }
+
+        /// <summary>
+        /// Serialize
         /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
@@ -79,39 +86,37 @@ namespace OctoAwesome.EntityComponents
             var posY = reader.ReadSingle();
             var posZ = reader.ReadSingle();
 
-            position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
-            TryUpdatePlanet(planet);
+            _position = new(planet, new(blockX, blockY, blockZ), new(posX, posY, posZ));
         }
 
-        private bool TryUpdatePlanet(int planetId)
+        private IPlanet TryGetPlanet(int planetId)
         {
-            if (Planet != null && Planet.Id == planetId)
-                return false;
+            if (_planet != null && _planet.Id == planetId)
+                return _planet;
 
-            Planet = resourceManager.GetPlanet(planetId);
-            return true;
+            return _resourceManager.GetPlanet(planetId);
         }
 
         protected override void OnPropertyChanged<T>(T value, string callerName)
         {
             base.OnPropertyChanged(value, callerName);
 
-            if (callerName == nameof(Position) && posUpdate)
+            if (callerName != nameof(Position) || !_posUpdate) 
+                return;
+
+            var updateNotification = _propertyChangedNotificationPool.Get();
+
+            updateNotification.Issuer = nameof(PositionComponent);
+            updateNotification.Property = callerName;
+
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
             {
-                var updateNotification = propertyChangedNotificationPool.Get();
-
-                updateNotification.Issuer = nameof(PositionComponent);
-                updateNotification.Property = callerName;
-
-                using (var stream = new MemoryStream())
-                using (var writer = new BinaryWriter(stream))
-                {
-                    Serialize(writer);
-                    updateNotification.Value = stream.ToArray();
-                }
-
-                Push(updateNotification);
+                Serialize(writer);
+                updateNotification.Value = stream.ToArray();
             }
+
+            Push(updateNotification);
         }
 
         public override void OnNotification(SerializableNotification notification)

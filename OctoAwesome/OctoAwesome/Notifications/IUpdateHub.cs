@@ -1,8 +1,17 @@
-﻿namespace OctoAwesome.Notifications
+﻿using System;
+
+namespace OctoAwesome.Notifications
 {
-    public interface IUpdateHub : INotificationObservable
+    public interface IUpdateHub
     {
-        void Push(Notification notification, string channel);
-        void Push(Notification notification);
+
+        /// <summary>
+        /// Listens on a given Channel
+        /// </summary>
+        /// <param name="channel">Channel to listen on</param>
+        /// <returns>Observer of a given Channel</returns>
+        IObservable<Notification> ListenOn(string channel);
+
+        IDisposable AddSource(IObservable<Notification> notification, string channel);
     }
 }

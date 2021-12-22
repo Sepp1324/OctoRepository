@@ -43,7 +43,7 @@ namespace OctoAwesome.Client.Components
             graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
             using (var writer = File.AppendText(Path.Combine(".", "render.log")))
             {
-                foreach (var pass in effect.CurrentTechnique.Passes)
+                foreach (var pass in effect.CurrentTechnique?.Passes!)
                 {
                     pass.Apply();
                     i++;
