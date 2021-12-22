@@ -4,8 +4,14 @@ using OctoAwesome.Noise;
 
 namespace OctoAwesome.Basics.Biomes
 {
+    /// <summary>
+    /// Generator for Surface Biomes
+    /// </summary>
     public class SurfaceBiomeGenerator : LargeBiomeBase
     {
+        /// <summary>
+        /// Generator for Surface Biomes
+        /// </summary>
         public SurfaceBiomeGenerator(IPlanet planet, int seaLevel) : base(planet, 0f, 1f)
         {
             SeaLevel = seaLevel;
@@ -19,10 +25,25 @@ namespace OctoAwesome.Basics.Biomes
             SortSubBiomes();
         }
 
+        /// <summary>
+        /// Current SeaLevel
+        /// </summary>
         public int SeaLevel { get; }
 
+        /// <summary>
+        /// Mathematical Function for generating a Curve
+        /// </summary>
+        /// <param name="inputValue"></param>
+        /// <returns></returns>
         protected override float CurveFunction(float inputValue) => CurveFunction(inputValue, -0.08f, 200);
 
+        /// <summary>
+        /// Mathematical Function for generating a Curve
+        /// </summary>
+        /// <param name="inputValue"></param>
+        /// <param name="brightness"></param>
+        /// <param name="contrast"></param>
+        /// <returns></returns>
         private float CurveFunction(float inputValue, float brightness, int contrast)
         {
             inputValue += brightness;
@@ -31,7 +52,7 @@ namespace OctoAwesome.Basics.Biomes
             return Math.Min(Math.Max(inputValue, 0f), 1f);
         }
 
-        public override float[] GetHeightmap(Index2 chunkIndex, float[] heightmap)
+        public override float[] GetHeigthMap(Index2 chunkIndex, float[] heightmap)
         {
             var blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
 
@@ -46,7 +67,7 @@ namespace OctoAwesome.Basics.Biomes
             var tempArray = ArrayPool<float>.Shared.Rent(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             for (var i = 0; i < SubBiomes.Count; i++)
             {
-                SubBiomes[i].GetHeightmap(chunkIndex, tempArray);
+                SubBiomes[i].GetHeigthMap(chunkIndex, tempArray);
                 Array.Copy(tempArray, 0, biomeValues, i * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             }
 

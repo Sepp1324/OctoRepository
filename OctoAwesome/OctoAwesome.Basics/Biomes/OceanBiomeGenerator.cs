@@ -8,7 +8,7 @@
             MaxValue = maxVal;
         }
 
-        public override float[] GetHeightmap(Index2 chunkIndex, float[] heightmap)
+        public override float[] GetHeigthMap(Index2 chunkIndex, float[] heightmap)
         {
             chunkIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
 

@@ -5,9 +5,7 @@ namespace OctoAwesome.Basics.Biomes
 {
     public abstract class LargeBiomeBase : BiomeBase
     {
-        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange) : base(planet, 0, 0, valueRangeOffset, valueRange)
-        {
-        }
+        protected LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange) : base(planet, 0, 0, valueRangeOffset, valueRange) { }
 
         protected void SortSubBiomes()
         {
@@ -17,7 +15,7 @@ namespace OctoAwesome.Basics.Biomes
                 throw new InvalidOperationException("MinValue oder MaxValue der Biome nicht in gültigem Bereich");
         }
 
-        protected IBiome ChooseBiome(float value, out IBiome secondBiome)
+        private IBiome ChooseBiome(float value, out IBiome secondBiome)
         {
             secondBiome = null;
             var betweenPossible = false;
@@ -30,9 +28,7 @@ namespace OctoAwesome.Basics.Biomes
                 }
 
                 if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
-                {
                     return SubBiomes[i];
-                }
 
                 betweenPossible = value > SubBiomes[i].MaxValue;
             }
@@ -53,9 +49,7 @@ namespace OctoAwesome.Basics.Biomes
                 }
 
                 if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
-                {
                     return i;
-                }
 
                 betweenPossible = value > SubBiomes[i].MaxValue;
             }
@@ -80,19 +74,11 @@ namespace OctoAwesome.Basics.Biomes
                 return CurveFunction(region);
             }
 
-            if (biome1 != null)
-            {
-                return 0f;
-            }
-
-            return 0f;
+            return biome1 != null ? 0f : 0f;
         }
 
         protected virtual float CurveFunction(float inputValue) => inputValue;
 
-        public override float[] GetHeightmap(Index2 chunkIndex, float[] heightmap)
-        {
-            return base.GetHeightmap(chunkIndex, heightmap);
-        }
+        public override float[] GetHeigthMap(Index2 chunkIndex, float[] heightmap) => base.GetHeigthMap(chunkIndex, heightmap);
     }
 }

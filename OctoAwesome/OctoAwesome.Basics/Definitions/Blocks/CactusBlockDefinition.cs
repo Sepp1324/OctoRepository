@@ -4,20 +4,51 @@ using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Definition for Cactus
+    /// </summary>
     public class CactusBlockDefinition : BlockDefinition
     {
+        /// <summary>
+        /// Definition for Cactus
+        /// </summary>
         public CactusBlockDefinition() => Textures = new[] { "cactus_inside", "cactus_side", "cactus_top" };
 
+        /// <summary>
+        /// Definition for Cactus
+        /// </summary>
+        /// <param name="material"><see cref="CactusMaterialDefinition"/></param>
         public CactusBlockDefinition(CactusMaterialDefinition material) : this() => Material = material;
 
+        /// <summary>
+        /// Material-Inventory Icon
+        /// </summary>
         public override string Icon => "cactus_inside";
 
+        /// <summary>
+        /// Material-Name
+        /// </summary>
         public override string Name => OctoBasics.Cactus;
 
+        /// <summary>
+        /// Material-Textures
+        /// </summary>
         public override string[] Textures { get; }
 
+        /// <summary>
+        /// Material
+        /// </summary>
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Returns Texture-Index (Orientation)
+        /// </summary>
+        /// <param name="wall">Side of <see cref="Wall"/></param>
+        /// <param name="manager">Current <see cref="ILocalChunkCache"/></param>
+        /// <param name="x">X-Coordinate</param>
+        /// <param name="y">Y-Coordinate</param>
+        /// <param name="z">Z-Coordinate</param>
+        /// <returns></returns>
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             var orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);
@@ -26,7 +57,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             {
                 case Wall.Top:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
@@ -38,15 +69,12 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideBottom:
                         case OrientationFlags.SideTop:
                         default:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                     }
                 }
                 case Wall.Bottom:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
@@ -58,25 +86,19 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                         case OrientationFlags.SideBottom:
                         case OrientationFlags.SideTop:
                         default:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                     }
                 }
 
                 case Wall.Front:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
                         case OrientationFlags.SideBottom:
@@ -87,16 +109,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 }
                 case Wall.Back:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
                         case OrientationFlags.SideBottom:
@@ -108,16 +127,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
                 case Wall.Left:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
                         case OrientationFlags.SideBottom:
@@ -129,16 +145,13 @@ namespace OctoAwesome.Basics.Definitions.Blocks
 
                 case Wall.Right:
                 {
-                    var topblock = manager.GetBlock(x, y, z + 1);
+                    var topBlock = manager.GetBlock(x, y, z + 1);
 
                     switch (orientation)
                     {
                         case OrientationFlags.SideWest:
                         case OrientationFlags.SideEast:
-                            if (topblock != 0)
-                                return 0;
-                            else
-                                return 2;
+                            return topBlock != 0 ? 0 : 2;
                         case OrientationFlags.SideSouth:
                         case OrientationFlags.SideNorth:
                         case OrientationFlags.SideBottom:
