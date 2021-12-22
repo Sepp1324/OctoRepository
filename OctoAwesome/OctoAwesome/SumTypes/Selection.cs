@@ -3,7 +3,7 @@
 namespace OctoAwesome.SumTypes
 {
     [Variant]
-    internal partial class Selection
+    public partial class Selection
     {
         static partial void VariantOf(BlockInfo blockInfo, FunctionalBlock functionalBlock, Entity entity);
     }

@@ -9,7 +9,6 @@ namespace OctoAwesome.PoC.Rx
 
         public Relay() => _subscriptions = new();
 
-
         public void OnCompleted()
         {
             foreach (var subscription in _subscriptions)
@@ -44,6 +43,8 @@ namespace OctoAwesome.PoC.Rx
             return sub;
         }
 
+        private void Unsubscribe(RelaySubscription subscription) => _subscriptions.Remove(subscription);
+
         public void Dispose()
         {
             foreach (var subscription in _subscriptions)
@@ -52,14 +53,11 @@ namespace OctoAwesome.PoC.Rx
             _subscriptions.Clear();
         }
 
-        private void Unsubscribe(RelaySubscription subscription) => _subscriptions.Remove(subscription);
-
-
         private class RelaySubscription : IDisposable
         {
-            public IObserver<T> Observer { get; }
-
             private readonly Relay<T> _relay;
+
+            public IObserver<T> Observer { get; }
 
             public RelaySubscription(Relay<T> relay, IObserver<T> observer)
             {

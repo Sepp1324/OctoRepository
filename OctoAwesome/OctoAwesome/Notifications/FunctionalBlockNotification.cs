@@ -17,14 +17,9 @@ namespace OctoAwesome.Notifications
 
         private FunctionalBlock _block;
 
-        public FunctionalBlockNotification()
-        {
-        }
+        public FunctionalBlockNotification() { }
 
-        public FunctionalBlockNotification(Guid id) : this()
-        {
-            BlockId = id;
-        }
+        public FunctionalBlockNotification(Guid id) : this() => BlockId = id;
 
         public ActionType Type { get; set; }
 
