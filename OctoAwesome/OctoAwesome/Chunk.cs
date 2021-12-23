@@ -86,7 +86,7 @@ namespace OctoAwesome
         public IPlanet Planet { get; private set; }
 
         /// <summary>
-        /// Version of <see cref="Chunk"/>
+        ///     Version of <see cref="Chunk" />
         /// </summary>
         public int Version { get; set; }
 
@@ -104,10 +104,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
         /// <returns>Block-ID der angegebenen Koordinate</returns>
-        public ushort GetBlock(int x, int y, int z)
-        {
-            return Blocks[GetFlatIndex(x, y, z)];
-        }
+        public ushort GetBlock(int x, int y, int z) => Blocks[GetFlatIndex(x, y, z)];
 
         /// <summary>
         ///     Überschreibt den Block an der angegebenen Koordinate.
@@ -130,7 +127,7 @@ namespace OctoAwesome
         /// <param name="meta">(Optional) Die Metadaten des Blocks</param>
         public void SetBlock(int x, int y, int z, ushort block, int meta = 0)
         {
-            SetBlock(GetFlatIndex(x, y, z), new BlockInfo(x, y, z, block, meta));
+            SetBlock(GetFlatIndex(x, y, z), new(x, y, z, block, meta));
         }
 
         public void SetBlock(int flatIndex, BlockInfo blockInfo)
@@ -173,10 +170,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <returns>Die Metadaten des angegebenen Blocks</returns>
-        public int GetBlockMeta(int x, int y, int z)
-        {
-            return MetaData[GetFlatIndex(x, y, z)];
-        }
+        public int GetBlockMeta(int x, int y, int z) => MetaData[GetFlatIndex(x, y, z)];
 
         /// <summary>
         ///     Ändert die Metadaten des Blockes an der angegebenen Koordinate.
@@ -198,10 +192,7 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <returns>Ein Array aller Ressourcen des Blocks</returns>
-        public ushort[] GetBlockResources(int x, int y, int z)
-        {
-            return Array.Empty<ushort>();
-        }
+        public ushort[] GetBlockResources(int x, int y, int z) => Array.Empty<ushort>();
 
         /// <summary>
         ///     Ändert die Ressourcen des Blocks an der angegebenen Koordinate
@@ -293,12 +284,10 @@ namespace OctoAwesome
         /// <param name="y">Y-Anteil der Koordinate</param>
         /// <param name="z">Z-Anteil der Koordinate</param>
         /// <returns>Index innerhalb des flachen Arrays</returns>
-        public static int GetFlatIndex(int x, int y, int z)
-        {
-            return ((z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
-                   | ((y & (CHUNKSIZE_Y - 1)) << LimitX)
-                   | (x & (CHUNKSIZE_X - 1));
-        }
+        public static int GetFlatIndex(int x, int y, int z) =>
+            ((z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
+            | ((y & (CHUNKSIZE_Y - 1)) << LimitX)
+            | (x & (CHUNKSIZE_X - 1));
 
         /// <summary>
         ///     Liefert den Index des Blocks im abgeflachten Block-Array der angegebenen 3D-Koordinate zurück. Sollte die
@@ -307,12 +296,10 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="position">Die aktuelle Blockposition</param>
         /// <returns>Index innerhalb des flachen Arrays</returns>
-        public static int GetFlatIndex(Index3 position)
-        {
-            return ((position.Z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
-                   | ((position.Y & (CHUNKSIZE_Y - 1)) << LimitX)
-                   | (position.X & (CHUNKSIZE_X - 1));
-        }
+        public static int GetFlatIndex(Index3 position) =>
+            ((position.Z & (CHUNKSIZE_Z - 1)) << (LimitX + LimitY))
+            | ((position.Y & (CHUNKSIZE_Y - 1)) << LimitX)
+            | (position.X & (CHUNKSIZE_X - 1));
 
         public void Init(Index3 position, IPlanet planet)
         {

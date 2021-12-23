@@ -8,7 +8,8 @@ namespace OctoAwesome.Notifications
         private INotificationObservable _observable;
         private INotificationObserver _observer;
 
-        public NotificationSubscription(INotificationObservable observable, INotificationObserver observer, string channel)
+        public NotificationSubscription(INotificationObservable observable, INotificationObserver observer,
+            string channel)
         {
             _observer = observer;
             _observable = observable;

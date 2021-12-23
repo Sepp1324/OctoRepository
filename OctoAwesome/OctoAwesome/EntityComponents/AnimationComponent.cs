@@ -7,32 +7,26 @@ using OctoAwesome.Components;
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// 
     /// </summary>
     public class AnimationComponent : Component, IEntityComponent, IFunctionalBlockComponent
     {
         /// <summary>
-        /// 
         /// </summary>
         public AnimationComponent() => Sendable = true;
 
         /// <summary>
-        /// 
         /// </summary>
         public float CurrentTime { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         public float MaxTime { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         public float AnimationSpeed { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(BinaryWriter writer)
@@ -44,7 +38,6 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(BinaryReader reader)

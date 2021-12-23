@@ -96,9 +96,7 @@ namespace OctoAwesome.Runtime
         /// </summary>
         /// <typeparam name="T">Typ der Definition</typeparam>
         /// <returns>Auflistung von Instanzen</returns>
-        public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition =>
-            // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary (+1 von Maxi am 07.04.2021))
-            _extensionResolver.GetDefinitions<T>();
+        public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition =>_extensionResolver.GetDefinitions<T>(); // TODO: Caching (Generalisiertes IDefinition-Interface für Dictionary (+1 von Maxi am 07.04.2021))
 
         public T GetDefinitionByTypeName<T>(string typeName) where T : IDefinition
         {

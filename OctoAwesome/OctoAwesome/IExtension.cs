@@ -19,11 +19,11 @@
         ///     Register the Components in the ExtensionsLoader
         /// </summary>
         /// <param name="extensionLoader">ExtensionsLoader</param>
-        /// <param name="typeContainer">TypeContainer <see cref="ITypeContainer"/></param>
+        /// <param name="typeContainer">TypeContainer <see cref="ITypeContainer" /></param>
         void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer);
 
         /// <summary>
-        /// <see cref="ITypeContainer"/>
+        ///     <see cref="ITypeContainer" />
         /// </summary>
         /// <param name="typeContainer"></param>
         void Register(ITypeContainer typeContainer);

@@ -22,7 +22,9 @@ namespace OctoAwesome.Pooling
         public void Push(Chunk obj)
         {
             using (_semaphoreExtended.Wait())
+            {
                 _internalStack.Push(obj);
+            }
         }
 
         public void Push(IPoolElement obj)
@@ -38,7 +40,9 @@ namespace OctoAwesome.Pooling
             Chunk obj;
 
             using (_semaphoreExtended.Wait())
+            {
                 obj = _internalStack.Count > 0 ? _internalStack.Pop() : new(position, planet);
+            }
 
             obj.Init(position, planet);
             return obj;

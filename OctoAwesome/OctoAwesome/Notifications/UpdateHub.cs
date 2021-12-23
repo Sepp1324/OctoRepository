@@ -16,8 +16,17 @@ namespace OctoAwesome.Notifications
             _channels = new();
         }
 
+        public void Dispose()
+        {
+            foreach (var channel in _channels)
+                channel.Value.Dispose();
+
+            _channels.Clear();
+            _lockSemaphore.Dispose();
+        }
+
         /// <summary>
-        /// Listens on a given Channel
+        ///     Listens on a given Channel
         /// </summary>
         /// <param name="channel">Channel to listen on</param>
         /// <returns>Observer of a given Channel</returns>
@@ -35,15 +44,6 @@ namespace OctoAwesome.Notifications
             }
 
             return channelRelay;
-        }
-
-        public void Dispose()
-        {
-            foreach (var channel in _channels)
-                channel.Value.Dispose();
-
-            _channels.Clear();
-            _lockSemaphore.Dispose();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace OctoAwesome.Serialization
             var y = BitConverter.ToInt32(array, startIndex + sizeof(int));
             var z = BitConverter.ToInt32(array, startIndex + sizeof(int) * 2);
             FlatIndex = BitConverter.ToInt32(array, startIndex + sizeof(int) * 3);
-            ChunkPositon = new Index3(x, y, z);
+            ChunkPositon = new(x, y, z);
         }
 
         public byte[] GetBytes()
@@ -50,7 +50,9 @@ namespace OctoAwesome.Serialization
 
         public override bool Equals(object obj) => obj is ChunkDiffTag tag && Equals(tag);
 
-        public bool Equals(ChunkDiffTag other) => Length == other.Length && FlatIndex == other.FlatIndex && EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
+        public bool Equals(ChunkDiffTag other) =>
+            Length == other.Length && FlatIndex == other.FlatIndex &&
+            EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
 
 
         public override int GetHashCode()

@@ -136,7 +136,7 @@ namespace OctoAwesome.EntityComponents
             if (slot.Item is not IInventoryable definition)
                 return false;
 
-            if (slot.Amount < definition.VolumePerUnit) 
+            if (slot.Amount < definition.VolumePerUnit)
                 return false;
 
             slot.Amount -= definition.VolumePerUnit;
@@ -144,10 +144,7 @@ namespace OctoAwesome.EntityComponents
             return slot.Amount > 0 || Inventory.Remove(slot);
         }
 
-        public bool RemoveSlot(InventorySlot inventorySlot)
-        {
-            return Inventory.Remove(inventorySlot);
-        }
+        public bool RemoveSlot(InventorySlot inventorySlot) => Inventory.Remove(inventorySlot);
 
         public void AddSlot(InventorySlot inventorySlot)
         {

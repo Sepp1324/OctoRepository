@@ -52,12 +52,11 @@ namespace OctoAwesome
             DefinitionManager = TypeContainer.Get<IDefinitionManager>();
             Planet = planet;
             _globalChunkCache = planet.GlobalChunkCache;
-            
+
             _chunkPool ??= TypeContainer.Get<ChunkPool>();
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public IDefinitionManager DefinitionManager { get; }
 
@@ -143,7 +142,10 @@ namespace OctoAwesome
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
         /// <param name="meta">(Optional) Metainformationen für den Block</param>
-        public void SetBlock(Index3 index, ushort block, int meta = 0) => SetBlock(index.X, index.Y, index.Z, block, meta);
+        public void SetBlock(Index3 index, ushort block, int meta = 0)
+        {
+            SetBlock(index.X, index.Y, index.Z, block, meta);
+        }
 
         /// <summary>
         ///     Überschreibt den Block an der angegebenen Koordinate.
@@ -290,7 +292,7 @@ namespace OctoAwesome
 
             Populated = reader.ReadBoolean(); // Populated
 
-            Index = new Index2(reader.ReadInt32(), reader.ReadInt32());
+            Index = new(reader.ReadInt32(), reader.ReadInt32());
             var planetId = reader.ReadInt32();
 
             var resManager = TypeContainer.Get<IResourceManager>();
@@ -318,7 +320,7 @@ namespace OctoAwesome
             // Phase 3 (Chunk Infos)
             for (var c = 0; c < Chunks.Length; c++)
             {
-                var chunk = Chunks[c] = _chunkPool.Get(new Index3(Index, c), Planet);
+                var chunk = Chunks[c] = _chunkPool.Get(new(Index, c), Planet);
                 chunk.Version = reader.ReadInt32();
                 chunk.Changed += OnChunkChanged;
                 chunk.SetColumn(this);
@@ -344,7 +346,10 @@ namespace OctoAwesome
 
         public event Action<IChunkColumn, IChunk> Changed;
 
-        public void OnUpdate(SerializableNotification notification) => _globalChunkCache.OnUpdate(notification);
+        public void OnUpdate(SerializableNotification notification)
+        {
+            _globalChunkCache.OnUpdate(notification);
+        }
 
         public void Update(SerializableNotification notification)
         {
@@ -357,25 +362,33 @@ namespace OctoAwesome
         public void ForEachEntity(Action<Entity> action)
         {
             using (_entitySemaphore.Wait())
+            {
                 foreach (var entity in _entities) action(entity);
+            }
         }
 
         public void Add(Entity entity)
         {
             using (_entitySemaphore.Wait())
+            {
                 _entities.Add(entity);
+            }
         }
 
         public void Remove(Entity entity)
         {
             using (_entitySemaphore.Wait())
+            {
                 _entities.Remove(entity);
+            }
         }
 
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
         {
             using (_entitySemaphore.Wait())
+            {
                 return _entities.FailChunkEntity().ToList();
+            }
         }
 
         public void FlagDirty()

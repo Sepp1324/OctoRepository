@@ -3,14 +3,12 @@
 namespace OctoAwesome.Definitions.Items
 {
     /// <summary>
-    /// 
     /// </summary>
     public class HandDefinition : IItemDefinition
     {
         private readonly Hand _hand;
 
         /// <summary>
-        /// 
         /// </summary>
         public HandDefinition()
         {
@@ -33,6 +31,8 @@ namespace OctoAwesome.Definitions.Items
 
         public Item Create(IMaterialDefinition material) => _hand;
 
-        public void Hit(IItem item, IBlockDefinition blockDefinition, BlockHitInformation blockHit) { }
+        public void Hit(IItem item, IBlockDefinition blockDefinition, BlockHitInformation blockHit)
+        {
+        }
     }
 }

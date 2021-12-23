@@ -17,7 +17,9 @@ namespace OctoAwesome.Notifications
 
         private FunctionalBlock _block;
 
-        public FunctionalBlockNotification() { }
+        public FunctionalBlockNotification()
+        {
+        }
 
         public FunctionalBlockNotification(Guid id) : this() => BlockId = id;
 
@@ -46,7 +48,7 @@ namespace OctoAwesome.Notifications
             //Block = Serializer.Deserialize()
             else
             {
-                BlockId = new Guid(reader.ReadBytes(16));
+                BlockId = new(reader.ReadBytes(16));
             }
         }
 

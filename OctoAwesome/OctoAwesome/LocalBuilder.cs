@@ -21,7 +21,8 @@ namespace OctoAwesome
         /// <param name="column10"></param>
         /// <param name="column01"></param>
         /// <param name="column11"></param>
-        public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
+        public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10,
+            IChunkColumn column01, IChunkColumn column11)
         {
             _originX = originX;
             _originY = originY;
@@ -42,7 +43,8 @@ namespace OctoAwesome
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static IChunkColumn GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
+        public static IChunkColumn GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01,
+            IChunkColumn column11, int x, int y)
         {
             var column = x switch
             {
@@ -64,7 +66,8 @@ namespace OctoAwesome
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static int GetSurfaceHeight(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
+        public static int GetSurfaceHeight(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01,
+            IChunkColumn column11, int x, int y)
         {
             var curColumn = GetColumn(column00, column10, column01, column11, x, y);
             return curColumn.Heights[x % Chunk.CHUNKSIZE_X, y % Chunk.CHUNKSIZE_Y];

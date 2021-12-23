@@ -22,7 +22,8 @@ namespace OctoAwesome.Notifications
             var list = new List<BlockInfo>(count);
 
             for (var i = 0; i < count; i++)
-                list.Add(new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32()));
+                list.Add(new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(),
+                    reader.ReadInt32()));
         }
 
         public override void Serialize(BinaryWriter writer)

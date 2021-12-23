@@ -5,7 +5,7 @@ using OctoAwesome.Notifications;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Standard-Implementation of the Planet
+    ///     Standard-Implementation of the Planet
     /// </summary>
     public class Planet : IPlanet
     {
@@ -16,7 +16,7 @@ namespace OctoAwesome
         private IUpdateHub _updateHub;
 
         /// <summary>
-        /// Initialization of the Planet
+        ///     Initialization of the Planet
         /// </summary>
         /// <param name="id">ID of the Planet</param>
         /// <param name="universe">ID of the Universe</param>
@@ -31,52 +31,52 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Instantiate new Planet
+        ///     Instantiate new Planet
         /// </summary>
         public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
 
         /// <summary>
-        /// ID of the Planet
+        ///     ID of the Planet
         /// </summary>
         public int Id { get; private set; }
 
         /// <summary>
-        /// Reference to the Parent-Universe
+        ///     Reference to the Parent-Universe
         /// </summary>
         public Guid Universe { get; private set; }
 
         /// <summary>
-        /// ClimateMap of the Planet
+        ///     ClimateMap of the Planet
         /// </summary>
         public IClimateMap ClimateMap { get; protected set; }
 
         /// <summary>
-        /// Seed of the Random-Generator
+        ///     Seed of the Random-Generator
         /// </summary>
         public int Seed { get; private set; }
 
         /// <summary>
-        /// Size of the Planet in Chunks
+        ///     Size of the Planet in Chunks
         /// </summary>
         public Index3 Size { get; private set; }
 
         /// <summary>
-        /// Gravity of the Planet
+        ///     Gravity of the Planet
         /// </summary>
         public float Gravity { get; protected set; }
 
         /// <summary>
-        /// Generator of the Planet
+        ///     Generator of the Planet
         /// </summary>
         public IMapGenerator Generator { get; set; }
 
         /// <summary>
-        /// GlobalChunkCache for the Planet
+        ///     GlobalChunkCache for the Planet
         /// </summary>
         public IGlobalChunkCache GlobalChunkCache { get; set; }
 
         /// <summary>
-        /// UpdateHub for the Planet
+        ///     UpdateHub for the Planet
         /// </summary>
         public IUpdateHub UpdateHub
         {
@@ -90,9 +90,9 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Serializes the Planet with the given <see cref="BinaryWriter"/>
+        ///     Serializes the Planet with the given <see cref="BinaryWriter" />
         /// </summary>
-        /// <param name="writer">Given <see cref="BinaryWriter"/></param>
+        /// <param name="writer">Given <see cref="BinaryWriter" /></param>
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(Id);
@@ -105,9 +105,9 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Deserializes the Planet with the given <see cref="BinaryReader"/>
+        ///     Deserializes the Planet with the given <see cref="BinaryReader" />
         /// </summary>
-        /// <param name="reader">Given <see cref="BinaryReader"/></param>
+        /// <param name="reader">Given <see cref="BinaryReader" /></param>
         public virtual void Deserialize(BinaryReader reader)
         {
             Id = reader.ReadInt32();

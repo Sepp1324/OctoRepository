@@ -1,7 +1,6 @@
 ﻿namespace OctoAwesome.Definitions
 {
     /// <summary>
-    /// 
     /// </summary>
     public interface IFluidMaterialDefinition : IMaterialDefinition
     {

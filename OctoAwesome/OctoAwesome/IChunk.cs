@@ -32,7 +32,7 @@ namespace OctoAwesome
         int[] MetaData { get; }
 
         /// <summary>
-        /// Version of Chunk
+        ///     Version of Chunk
         /// </summary>
         int Version { get; set; }
 
@@ -71,7 +71,7 @@ namespace OctoAwesome
         void SetBlock(int x, int y, int z, ushort block, int meta = 0);
 
         /// <summary>
-        /// Set Block
+        ///     Set Block
         /// </summary>
         /// <param name="flatIndex"></param>
         /// <param name="blockInfo"></param>
@@ -114,37 +114,37 @@ namespace OctoAwesome
         void SetBlockResources(int x, int y, int z, ushort[] resources);
 
         /// <summary>
-        /// Set ChunkColumn
+        ///     Set ChunkColumn
         /// </summary>
         /// <param name="chunkColumn"></param>
         void SetColumn(IChunkColumn chunkColumn);
 
         /// <summary>
-        /// Update Chunk
+        ///     Update Chunk
         /// </summary>
         /// <param name="notification"></param>
         void Update(SerializableNotification notification);
 
         /// <summary>
-        /// Event for Update
+        ///     Event for Update
         /// </summary>
         /// <param name="notification"></param>
         void OnUpdate(SerializableNotification notification);
 
         /// <summary>
-        /// Sets Blocks
+        ///     Sets Blocks
         /// </summary>
         /// <param name="issueNotification"></param>
         /// <param name="blockInfos"></param>
         void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos);
 
         /// <summary>
-        /// Action for ChunkChanges
+        ///     Action for ChunkChanges
         /// </summary>
         event Action<IChunk> Changed;
 
         /// <summary>
-        /// Dirty Chunks
+        ///     Dirty Chunks
         /// </summary>
         void FlagDirty();
     }

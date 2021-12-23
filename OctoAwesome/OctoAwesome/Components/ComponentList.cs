@@ -20,9 +20,12 @@ namespace OctoAwesome
         private readonly Action<T> _onRemover;
         private readonly Action<T> _removeValidator;
 
-        public ComponentList() { }
+        public ComponentList()
+        {
+        }
 
-        public ComponentList(Action<T> insertValidator, Action<T> removeValidator, Action<T> onInserter, Action<T> onRemover)
+        public ComponentList(Action<T> insertValidator, Action<T> removeValidator, Action<T> onInserter,
+            Action<T> onRemover)
         {
             _insertValidator = insertValidator;
             _removeValidator = removeValidator;
@@ -40,7 +43,10 @@ namespace OctoAwesome
         ///     Adds a new Component to the List.
         /// </summary>
         /// <param name="component">Component</param>
-        public void AddComponent<V>(V component) where V : T => AddComponent(component, false);
+        public void AddComponent<V>(V component) where V : T
+        {
+            AddComponent(component, false);
+        }
 
 
         public void AddComponent<V>(V component, bool replace) where V : T
@@ -101,7 +107,7 @@ namespace OctoAwesome
                 return false;
 
             _removeValidator?.Invoke(component);
-            
+
             if (_components.Remove(typeof(V)))
             {
                 _onRemover?.Invoke(component);
@@ -118,7 +124,7 @@ namespace OctoAwesome
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(_components.Count);
-            
+
             foreach (var component in _components)
             {
                 writer.Write(component.Key.AssemblyQualifiedName!);

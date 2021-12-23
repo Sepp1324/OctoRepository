@@ -6,6 +6,7 @@ using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
 using OctoAwesome.Threading;
+using OctoAwesome.Rx;
 
 namespace OctoAwesome.Network
 {
@@ -32,7 +33,7 @@ namespace OctoAwesome.Network
             _blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
             _packagePool = TypeContainer.Get<PackagePool>();
 
-            _hubSubscription = updateHub.Subscribe(this, DefaultChannels.NETWORK);
+            _hubSubscription = updateHub.ListenOn(DefaultChannels.NETWORK).Subscribe<Notification>(OnNext, OnError, OnCompleted);
             _clientSubscription = client.Subscribe(this);
         }
 
@@ -47,20 +48,12 @@ namespace OctoAwesome.Network
                     break;
                 case OfficialCommand.ChunkNotification:
                     var notificationType = (BlockNotificationType)package.Payload[0];
-                    Notification chunkNotification;
-                    switch (notificationType)
+                    Notification chunkNotification = notificationType switch
                     {
-                        case BlockNotificationType.BlockChanged:
-                            chunkNotification =
-                                Serializer.DeserializePoolElement(_blockChangedNotificationPool, package.Payload);
-                            break;
-                        case BlockNotificationType.BlocksChanged:
-                            chunkNotification =
-                                Serializer.DeserializePoolElement(_blocksChangedNotificationPool, package.Payload);
-                            break;
-                        default:
-                            throw new NotSupportedException($"This Type is not supported: {notificationType}");
-                    }
+                        BlockNotificationType.BlockChanged => Serializer.DeserializePoolElement(_blockChangedNotificationPool, package.Payload),
+                        BlockNotificationType.BlocksChanged => Serializer.DeserializePoolElement(_blocksChangedNotificationPool, package.Payload),
+                        _ => throw new NotSupportedException($"This Type is not supported: {notificationType}")
+                    };
 
                     _updateHub.Push(chunkNotification, DefaultChannels.CHUNK);
                     chunkNotification.Release();
@@ -70,22 +63,11 @@ namespace OctoAwesome.Network
             return Task.CompletedTask;
         }
 
-        public Task OnError(Exception error)
-        {
-            _logger.Error(error.Message, error);
-            return Task.CompletedTask;
-        }
-
-        public Task OnCompleted()
-        {
-            _clientSubscription.Dispose();
-            return Task.CompletedTask;
-        }
-
         public void OnNext(Notification value)
         {
             ushort command;
             byte[] payload;
+
             switch (value)
             {
                 case EntityNotification entityNotification:
@@ -103,7 +85,19 @@ namespace OctoAwesome.Network
             var package = _packagePool.Get();
             package.Command = command;
             package.Payload = payload;
-            _client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelease(package);
+        }
+
+        public Task OnError(Exception error)
+        {
+            _logger.Error(error.Message, error);
+            return Task.CompletedTask;
+        }
+
+        public Task OnCompleted()
+        {
+            _clientSubscription.Dispose();
+            return Task.CompletedTask;
         }
 
         void INotificationObserver.OnCompleted()

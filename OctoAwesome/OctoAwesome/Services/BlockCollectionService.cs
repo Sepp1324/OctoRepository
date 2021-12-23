@@ -18,7 +18,8 @@ namespace OctoAwesome.Services
             _blockCollectionInformations = new();
         }
 
-        public (bool Valid, IReadOnlyList<(int Quantity, IDefinition Definition)> List) Hit(BlockInfo block, IItem item, ILocalChunkCache cache)
+        public (bool Valid, IReadOnlyList<(int Quantity, IDefinition Definition)> List) Hit(BlockInfo block, IItem item,
+            ILocalChunkCache cache)
         {
             if (!_blockCollectionInformations.TryGetValue(block, out var volumeState))
             {
@@ -38,14 +39,13 @@ namespace OctoAwesome.Services
             volumeState.VolumeRemaining -= blockHitInformation.Quantity;
             volumeState.RestoreTime();
 
-            if (volumeState.VolumeRemaining >= 1) 
+            if (volumeState.VolumeRemaining >= 1)
                 return (false, null);
 
             _blockCollectionInformations.Remove(block);
             volumeState.Release();
             cache.SetBlock(block.Position, 0);
             return (true, blockHitInformation.Definitions);
-
         }
     }
 }

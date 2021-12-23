@@ -104,7 +104,7 @@ namespace OctoAwesome.Network
             column = new ChunkColumn(planet);
             var awaiter = GetAwaiter(column, package.UId);
 
-            _client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelease(package);
 
             return awaiter;
         }
@@ -115,7 +115,7 @@ namespace OctoAwesome.Network
             package.Command = (ushort)OfficialCommand.GetPlanet;
             planet = _typeContainer.Get<IPlanet>();
             var awaiter = GetAwaiter(planet, package.UId);
-            _client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelease(package);
 
             return awaiter;
         }
@@ -130,7 +130,7 @@ namespace OctoAwesome.Network
 
             player = new Player();
             var awaiter = GetAwaiter(player, package.UId);
-            _client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelease(package);
 
             return awaiter;
         }
@@ -142,7 +142,7 @@ namespace OctoAwesome.Network
 
             universe = new Universe();
             var awaiter = GetAwaiter(universe, package.UId);
-            _client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelease(package);
 
             return awaiter;
         }

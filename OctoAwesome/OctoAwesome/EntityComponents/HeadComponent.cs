@@ -25,7 +25,6 @@ namespace OctoAwesome.EntityComponents
         public float Angle { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
@@ -40,7 +39,6 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public override void Deserialize(BinaryReader reader)
         {

@@ -11,7 +11,10 @@ namespace OctoAwesome.Threading
 
         public LockSemaphore(int initialCount, int maxCount) => _semaphoreSlim = new(initialCount, maxCount);
 
-        public void Dispose() => _semaphoreSlim.Dispose();
+        public void Dispose()
+        {
+            _semaphoreSlim.Dispose();
+        }
 
         public SemaphoreLock Wait()
         {
@@ -25,7 +28,10 @@ namespace OctoAwesome.Threading
             return new(this);
         }
 
-        private void Release() => _semaphoreSlim.Release();
+        private void Release()
+        {
+            _semaphoreSlim.Release();
+        }
 
         public readonly struct SemaphoreLock : IDisposable, IEquatable<SemaphoreLock>
         {
@@ -35,7 +41,10 @@ namespace OctoAwesome.Threading
 
             public SemaphoreLock(LockSemaphore semaphoreExtended) => _internalSemaphore = semaphoreExtended;
 
-            public void Dispose() => _internalSemaphore?.Release();
+            public void Dispose()
+            {
+                _internalSemaphore?.Release();
+            }
 
             public override bool Equals(object obj) => obj is SemaphoreLock @lock && Equals(@lock);
 

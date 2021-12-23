@@ -9,18 +9,19 @@ using OctoAwesome.Serialization;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Container for Components
+    ///     Container for Components
     /// </summary>
     /// <typeparam name="TComponent"></typeparam>
-    public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents, INotificationSubject<SerializableNotification> where TComponent : IComponent
+    public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents,
+        INotificationSubject<SerializableNotification> where TComponent : IComponent
     {
         /// <summary>
-        /// Contains Components with an Implementation of <see cref="INotificationSubject{TNotification}"/>
+        ///     Contains Components with an Implementation of <see cref="INotificationSubject{TNotification}" />
         /// </summary>
         private readonly List<INotificationSubject<SerializableNotification>> _notificationComponents;
 
         /// <summary>
-        /// Entities with periodic Update-Events
+        ///     Entities with periodic Update-Events
         /// </summary>
         protected ComponentContainer()
         {
@@ -30,12 +31,12 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Contains all Components
+        ///     Contains all Components
         /// </summary>
         public ComponentList<TComponent> Components { get; }
 
         /// <summary>
-        /// Reference to the active Simulation
+        ///     Reference to the active Simulation
         /// </summary>
         public Simulation Simulation { get; internal set; }
 
@@ -44,11 +45,13 @@ namespace OctoAwesome
         public T GetComponent<T>() => Components.GetComponent<T>();
 
         /// <summary>
-        /// Id
+        ///     Id
         /// </summary>
         public Guid Id { get; internal set; }
 
-        public virtual void OnNotification(SerializableNotification notification) { }
+        public virtual void OnNotification(SerializableNotification notification)
+        {
+        }
 
         public virtual void Push(SerializableNotification notification)
         {
@@ -57,9 +60,9 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Serializes an Entity with the given <see cref="BinaryWriter"/>
+        ///     Serializes an Entity with the given <see cref="BinaryWriter" />
         /// </summary>
-        /// <param name="writer">Given <see cref="BinaryWriter"/></param>
+        /// <param name="writer">Given <see cref="BinaryWriter" /></param>
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(Id.ToByteArray());
@@ -68,16 +71,18 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Deserializes an Entity with the given <see cref="BinaryReader"/>
+        ///     Deserializes an Entity with the given <see cref="BinaryReader" />
         /// </summary>
-        /// <param name="reader">Given <see cref="BinaryReader"/></param>
+        /// <param name="reader">Given <see cref="BinaryReader" /></param>
         public virtual void Deserialize(BinaryReader reader)
         {
             Id = new(reader.ReadBytes(16));
             Components.Deserialize(reader);
         }
 
-        protected void OnRemoveComponent(TComponent component) { }
+        protected void OnRemoveComponent(TComponent component)
+        {
+        }
 
         protected virtual void OnAddComponent(TComponent component)
         {
@@ -114,11 +119,18 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager manager) => OnInitialize(manager);
+        public void Initialize(IResourceManager manager)
+        {
+            OnInitialize(manager);
+        }
 
-        protected virtual void OnInitialize(IResourceManager manager) { }
+        protected virtual void OnInitialize(IResourceManager manager)
+        {
+        }
 
-        public virtual void RegisterDefault() { }
+        public virtual void RegisterDefault()
+        {
+        }
 
         public override int GetHashCode() => Id.GetHashCode();
 

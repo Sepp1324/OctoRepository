@@ -4,12 +4,10 @@ using OctoAwesome.Components;
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// 
     /// </summary>
     public sealed class BodyComponent : Component, IEntityComponent, IFunctionalBlockComponent
     {
         /// <summary>
-        /// 
         /// </summary>
         public BodyComponent()
         {
@@ -19,7 +17,6 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public float Mass { get; set; }
 
@@ -34,7 +31,6 @@ namespace OctoAwesome.EntityComponents
         public float Height { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
@@ -46,7 +42,6 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public override void Deserialize(BinaryReader reader)
         {

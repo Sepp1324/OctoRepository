@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using engenious;
 using OctoAwesome.Serialization;
 
 namespace OctoAwesome.Definitions.Items
@@ -39,12 +38,10 @@ namespace OctoAwesome.Definitions.Items
         public Coordinate? Position { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         public IItemDefinition Definition { get; protected set; }
 
         /// <summary>
-        /// 
         /// </summary>
         public IMaterialDefinition Material { get; protected set; }
 
@@ -86,7 +83,7 @@ namespace OctoAwesome.Definitions.Items
             writer.Write(Condition);
             writer.Write(Position.HasValue);
 
-            if (!Position.HasValue) 
+            if (!Position.HasValue)
                 return;
 
             writer.Write(Position.Value.Planet);
@@ -110,7 +107,7 @@ namespace OctoAwesome.Definitions.Items
         {
             Condition = reader.ReadInt32();
 
-            if (!reader.ReadBoolean()) 
+            if (!reader.ReadBoolean())
                 return;
 
             // Position
@@ -122,7 +119,7 @@ namespace OctoAwesome.Definitions.Items
             var posY = reader.ReadSingle();
             var posZ = reader.ReadSingle();
 
-            Position = new Coordinate(planet, new Index3(blockX, blockY, blockZ), new Vector3(posX, posY, posZ));
+            Position = new Coordinate(planet, new(blockX, blockY, blockZ), new(posX, posY, posZ));
         }
 
         public static Item Deserialize(BinaryReader reader, Type itemType, IDefinitionManager manager)

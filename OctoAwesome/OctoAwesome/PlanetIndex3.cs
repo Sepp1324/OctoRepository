@@ -33,7 +33,7 @@
         /// <param name="x">X-Anteil des Indexes des Chunks</param>
         /// <param name="y">Y-Anteil des Indexes des Chunks</param>
         /// <param name="z">Z-Anteil des Indexes des Chunks</param>
-        public PlanetIndex3(int planet, int x, int y, int z) : this(planet, new Index3(x, y, z))
+        public PlanetIndex3(int planet, int x, int y, int z) : this(planet, new(x, y, z))
         {
         }
 
@@ -61,7 +61,8 @@
         public override bool Equals(object obj)
         {
             if (obj is PlanetIndex3 other)
-                return other.Planet == Planet && other.ChunkIndex.X == ChunkIndex.X && other.ChunkIndex.Y == ChunkIndex.Y && other.ChunkIndex.Z == ChunkIndex.Z;
+                return other.Planet == Planet && other.ChunkIndex.X == ChunkIndex.X &&
+                       other.ChunkIndex.Y == ChunkIndex.Y && other.ChunkIndex.Z == ChunkIndex.Z;
 
             return false;
         }

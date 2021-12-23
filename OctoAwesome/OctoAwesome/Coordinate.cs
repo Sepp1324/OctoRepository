@@ -48,7 +48,8 @@ namespace OctoAwesome
             set
             {
                 var localBlockIndex = LocalBlockIndex;
-                _block = new(value.X * Chunk.CHUNKSIZE_X + localBlockIndex.X, value.Y * Chunk.CHUNKSIZE_Y + localBlockIndex.Y, value.Z * Chunk.CHUNKSIZE_Z + localBlockIndex.Z);
+                _block = new(value.X * Chunk.CHUNKSIZE_X + localBlockIndex.X,
+                    value.Y * Chunk.CHUNKSIZE_Y + localBlockIndex.Y, value.Z * Chunk.CHUNKSIZE_Z + localBlockIndex.Z);
             }
         }
 
@@ -70,12 +71,14 @@ namespace OctoAwesome
             get
             {
                 var chunk = ChunkIndex;
-                return new(_block.X - chunk.X * Chunk.CHUNKSIZE_X, _block.Y - chunk.Y * Chunk.CHUNKSIZE_Y, _block.Z - chunk.Z * Chunk.CHUNKSIZE_Z);
+                return new(_block.X - chunk.X * Chunk.CHUNKSIZE_X, _block.Y - chunk.Y * Chunk.CHUNKSIZE_Y,
+                    _block.Z - chunk.Z * Chunk.CHUNKSIZE_Z);
             }
             set
             {
                 var chunk = ChunkIndex;
-                GlobalBlockIndex = new(chunk.X * Chunk.CHUNKSIZE_X + value.X, chunk.Y * Chunk.CHUNKSIZE_Y + value.Y, chunk.Z * Chunk.CHUNKSIZE_Z + value.Z);
+                GlobalBlockIndex = new(chunk.X * Chunk.CHUNKSIZE_X + value.X, chunk.Y * Chunk.CHUNKSIZE_Y + value.Y,
+                    chunk.Z * Chunk.CHUNKSIZE_Z + value.Z);
                 Normalize();
             }
         }
@@ -109,7 +112,8 @@ namespace OctoAwesome
             set
             {
                 var chunkIndex = ChunkIndex;
-                _block = new(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y, chunkIndex.Z * Chunk.CHUNKSIZE_Z);
+                _block = new(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y,
+                    chunkIndex.Z * Chunk.CHUNKSIZE_Z);
                 _position = value;
                 Normalize();
             }
@@ -134,7 +138,8 @@ namespace OctoAwesome
         /// </summary>
         private void Normalize()
         {
-            var shift = new Index3((int)Math.Floor(_position.X), (int)Math.Floor(_position.Y), (int)Math.Floor(_position.Z));
+            var shift = new Index3((int)Math.Floor(_position.X), (int)Math.Floor(_position.Y),
+                (int)Math.Floor(_position.Z));
 
             _block += shift;
             _position -= shift;
@@ -178,7 +183,7 @@ namespace OctoAwesome
         ///     Stellt die Coordinate-Instanz als string dar.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $@"({Planet}/{(_block.X + _position.X):0.000000}/{(_block.Y + _position.Y):0.000000}/{(_block.Z + _position.Z):0.000000})";
+        public override string ToString() => $@"({Planet}/{_block.X + _position.X:0.000000}/{_block.Y + _position.Y:0.000000}/{_block.Z + _position.Z:0.000000})";
 
         /// <summary>
         ///     Compare this object with an other object
@@ -188,13 +193,13 @@ namespace OctoAwesome
         public override bool Equals(object obj)
         {
             if (obj is Coordinate coordinate)
-                return base.Equals(obj) || Planet == coordinate.Planet && _position == coordinate._position && _block == coordinate._block;
+                return base.Equals(obj) || Planet == coordinate.Planet && _position == coordinate._position &&
+                    _block == coordinate._block;
 
             return base.Equals(obj);
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode() => base.GetHashCode();

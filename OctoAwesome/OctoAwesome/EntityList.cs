@@ -5,16 +5,14 @@ using OctoAwesome.EntityComponents;
 namespace OctoAwesome
 {
     /// <summary>
-    /// 
     /// </summary>
     public class EntityList : IEntityList
     {
-        private readonly IResourceManager _resourceManager;
         private readonly IChunkColumn _column;
         private readonly List<Entity> _entities;
+        private readonly IResourceManager _resourceManager;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="column"></param>
         public EntityList(IChunkColumn column)
@@ -25,61 +23,60 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public int Count => _entities.Count;
 
         /// <summary>
-        /// 
         /// </summary>
         public bool IsReadOnly => false;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="item"></param>
-        public void Add(Entity item) => _entities.Add(item);
+        public void Add(Entity item)
+        {
+            _entities.Add(item);
+        }
 
         /// <summary>
-        /// 
         /// </summary>
-        public void Clear() => _entities.Clear();
+        public void Clear()
+        {
+            _entities.Clear();
+        }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Contains(Entity item) => _entities.Contains(item);
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(Entity[] array, int arrayIndex) => _entities.CopyTo(array, arrayIndex);
+        public void CopyTo(Entity[] array, int arrayIndex)
+        {
+            _entities.CopyTo(array, arrayIndex);
+        }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         public IEnumerator<Entity> GetEnumerator() => _entities.GetEnumerator();
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Remove(Entity item) => _entities.Remove(item);
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator() => _entities.GetEnumerator();
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         public IEnumerable<FailEntityChunkArgs> FailChunkEntity()
@@ -91,12 +88,12 @@ namespace OctoAwesome
 
                     if (position.Position.ChunkIndex.X != _column.Index.X ||
                         position.Position.ChunkIndex.Y != _column.Index.Y)
-                        yield return new FailEntityChunkArgs
+                        yield return new()
                         {
                             Entity = entity,
-                            CurrentChunk = new Index2(_column.Index),
+                            CurrentChunk = new(_column.Index),
                             CurrentPlanet = _column.Planet,
-                            TargetChunk = new Index2(position.Position.ChunkIndex),
+                            TargetChunk = new(position.Position.ChunkIndex),
                             TargetPlanet = _resourceManager.GetPlanet(position.Position.Planet)
                         };
                 }

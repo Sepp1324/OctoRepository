@@ -13,7 +13,9 @@ namespace OctoAwesome.Serialization
         public override void AddOrUpdate(IChunkColumn value)
         {
             using (Database.Lock(Operation.Write))
+            {
                 Database.AddOrUpdate(new(value.Index), new(Serializer.SerializeCompressed(value, 2048)));
+            }
         }
 
         public IChunkColumn Get(Index2 key) => Get(new Index2Tag(key));
@@ -35,7 +37,9 @@ namespace OctoAwesome.Serialization
         public override void Remove(IChunkColumn value)
         {
             using (Database.Lock(Operation.Write))
+            {
                 Database.Remove(new(value.Index));
+            }
         }
     }
 }

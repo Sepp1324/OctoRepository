@@ -27,7 +27,9 @@ namespace OctoAwesome.Notifications
 
         IEnumerator IEnumerable.GetEnumerator() => _internalDictionary.GetEnumerator();
 
-        IEnumerator<KeyValuePair<string, ObserverHashSet>> IEnumerable<KeyValuePair<string, ObserverHashSet>>.GetEnumerator() => _internalDictionary.GetEnumerator();
+        IEnumerator<KeyValuePair<string, ObserverHashSet>> IEnumerable<KeyValuePair<string, ObserverHashSet>>.
+            GetEnumerator() =>
+            _internalDictionary.GetEnumerator();
 
         public void Add(string channel, INotificationObserver value)
         {
@@ -35,16 +37,24 @@ namespace OctoAwesome.Notifications
 
             if (_internalDictionary.TryGetValue(channel, out var hashset))
                 using (hashset.Wait())
+                {
                     hashset.Add(value);
+                }
             else
                 _internalDictionary.Add(channel, new() { value });
 
             _addSemaphore.Release();
         }
 
-        public void Clear() => _internalDictionary.Clear();
+        public void Clear()
+        {
+            _internalDictionary.Clear();
+        }
 
-        public bool Contains(INotificationObserver item) => _internalDictionary.Values.Any(i => i == item);
+        public bool Contains(INotificationObserver item)
+        {
+            return _internalDictionary.Values.Any(i => i == item);
+        }
 
         public bool Contains(string key) => _internalDictionary.ContainsKey(key);
 
@@ -58,7 +68,9 @@ namespace OctoAwesome.Notifications
 
             foreach (var hashSet in _internalDictionary.Values)
                 using (hashSet.Wait())
+                {
                     returnValue = returnValue ? returnValue : hashSet.Remove(item);
+                }
 
             return returnValue;
         }
@@ -69,7 +81,9 @@ namespace OctoAwesome.Notifications
             bool returnValue;
 
             using (hashSet.Wait())
+            {
                 returnValue = hashSet.Remove(item);
+            }
 
             return returnValue;
         }

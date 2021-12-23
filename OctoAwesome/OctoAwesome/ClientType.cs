@@ -1,7 +1,7 @@
 ﻿namespace OctoAwesome
 {
     /// <summary>
-    /// Type of Client
+    ///     Type of Client
     /// </summary>
     public enum ClientType
     {

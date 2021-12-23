@@ -4,27 +4,27 @@ using System.IO;
 namespace OctoAwesome.Notifications
 {
     /// <summary>
-    /// Notification for Block CHanges
+    ///     Notification for Block CHanges
     /// </summary>
     public sealed class BlockChangedNotification : SerializableNotification, IChunkNotification
     {
         /// <summary>
-        /// Information of Block
+        ///     Information of Block
         /// </summary>
         public BlockInfo BlockInfo { get; set; }
 
         /// <summary>
-        /// ChunkPosition of Block
+        ///     ChunkPosition of Block
         /// </summary>
         public Index3 ChunkPos { get; internal set; }
 
         /// <summary>
-        /// Current Planet of Block
+        ///     Current Planet of Block
         /// </summary>
         public int Planet { get; internal set; }
 
         /// <summary>
-        /// Deserialize Block with given <see cref="BinaryReader"/>
+        ///     Deserialize Block with given <see cref="BinaryReader" />
         /// </summary>
         /// <param name="reader"></param>
         /// <exception cref="InvalidCastException"></exception>
@@ -33,13 +33,14 @@ namespace OctoAwesome.Notifications
             if (reader.ReadByte() != (byte)BlockNotificationType.BlockChanged) //Read type of the notification
                 throw new InvalidCastException("this is the wrong type of notification");
 
-            BlockInfo = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32());
+            BlockInfo = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(),
+                reader.ReadInt32());
             ChunkPos = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Planet = reader.ReadInt32();
         }
 
         /// <summary>
-        /// Serialize Block with given <see cref="BinaryWriter"/>
+        ///     Serialize Block with given <see cref="BinaryWriter" />
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(BinaryWriter writer)
@@ -59,7 +60,7 @@ namespace OctoAwesome.Notifications
         }
 
         /// <summary>
-        /// Event for Block-Release
+        ///     Event for Block-Release
         /// </summary>
         protected override void OnRelease()
         {

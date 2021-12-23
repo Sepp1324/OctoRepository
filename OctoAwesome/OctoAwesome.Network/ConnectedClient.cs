@@ -57,7 +57,7 @@ namespace OctoAwesome.Network
             var package = _packagePool.Get();
             package.Payload = data;
             package.Command = (ushort)officialCommand;
-            SendPackageAndRelase(package);
+            SendPackageAndRelease(package);
         }
     }
 }

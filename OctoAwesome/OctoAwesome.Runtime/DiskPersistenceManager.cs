@@ -108,10 +108,8 @@ namespace OctoAwesome.Runtime
             var generatorInfo = Path.Combine(path, PlanetGeneratorInfo);
             using (Stream stream = File.Open(generatorInfo, FileMode.Create, FileAccess.Write))
             {
-                using (var bw = new BinaryWriter(stream))
-                {
-                    bw.Write(planet.Generator.GetType().FullName!);
-                }
+                using var bw = new BinaryWriter(stream);
+                bw.Write(planet.Generator.GetType().FullName!);
             }
 
             var file = Path.Combine(path, PlanetFilename);
@@ -166,8 +164,9 @@ namespace OctoAwesome.Runtime
         {
             var root = GetRoot();
             var awaiter = _awaiterPool.Get();
-            universes = new SerializableCollection<IUniverse>();
+            universes = new();
             awaiter.Serializable = universes;
+
             foreach (var folder in Directory.GetDirectories(root))
             {
                 var id = Path.GetFileNameWithoutExtension(folder); 
@@ -225,12 +224,9 @@ namespace OctoAwesome.Runtime
             IMapGenerator generator = null;
             using (Stream stream = File.Open(generatorInfo, FileMode.Open, FileAccess.Read))
             {
-                using (var bw = new BinaryReader(stream))
-                {
-                    var generatorName = bw.ReadString();
-                    generator = _extensionResolver.GetMapGenerator()
-                        .FirstOrDefault(g => g.GetType().FullName!.Equals(generatorName));
-                }
+                using var bw = new BinaryReader(stream);
+                var generatorName = bw.ReadString();
+                generator = _extensionResolver.GetMapGenerator().FirstOrDefault(g => g.GetType().FullName!.Equals(generatorName));
             }
 
             if (generator == null)
@@ -239,13 +235,11 @@ namespace OctoAwesome.Runtime
 
             using (Stream stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                using (var zip = new GZipStream(stream, CompressionMode.Decompress))
-                {
-                    var awaiter = _awaiterPool.Get();
-                    planet = generator.GeneratePlanet(zip);
-                    awaiter.SetResult(planet);
-                    return awaiter;
-                }
+                using var zip = new GZipStream(stream, CompressionMode.Decompress);
+                var awaiter = _awaiterPool.Get();
+                planet = generator.GeneratePlanet(zip);
+                awaiter.SetResult(planet);
+                return awaiter;
             }
         }
 
@@ -323,11 +317,7 @@ namespace OctoAwesome.Runtime
 
         public IEnumerable<Guid> GetEntityIds(Guid universeGuid) => new ComponentContainerDbContext<IEntityComponent>(_databaseProvider, universeGuid).GetAllKeys().Select(i => i.Tag);
 
-        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds) where T : IEntityComponent, new()
-        {
-            foreach (var entityId in entityIds)
-                yield return (entityId, new ComponentContainerComponentDbContext<T>(_databaseProvider, universeGuid).Get<T>(entityId));
-        }
+        public IEnumerable<(Guid Id, T Component)> GetEntityComponents<T>(Guid universeGuid, Guid[] entityIds) where T : IEntityComponent, new() => entityIds.Select(entityId => (entityId, new ComponentContainerComponentDbContext<T>(_databaseProvider, universeGuid).Get<T>(entityId)));
 
         private string GetRoot()
         {
@@ -369,10 +359,8 @@ namespace OctoAwesome.Runtime
             var databaseContext = new ChunkDiffDbContext(database, _blockChangedNotificationPool);
             var keys = databaseContext.GetAllKeys();
 
-            for (var i = 0; i < keys.Count; i++)
+            foreach (var key in keys)
             {
-                var key = keys[i];
-
                 if (key.ChunkPositon.X != column.Index.X || key.ChunkPositon.Y != column.Index.Y) 
                     continue;
 

@@ -201,9 +201,7 @@ namespace OctoAwesome.Runtime
         /// <summary>
         ///     Adds a new Map Generator.
         /// </summary>
-        public void RegisterMapGenerator(IMapGenerator generator) =>
-            // TODO: Checks
-            _mapGenerators.Add(generator);
+        public void RegisterMapGenerator(IMapGenerator generator) => _mapGenerators.Add(generator); //TODO: Checks
 
         public void RegisterMapPopulator(IMapPopulator populator) => _mapPopulators.Add(populator);
 

@@ -50,7 +50,7 @@ namespace OctoAwesome
         public void Deserialize(BinaryReader reader)
         {
             var tmpGuid = reader.ReadString();
-            Id = new Guid(tmpGuid);
+            Id = new(tmpGuid);
             Name = reader.ReadString();
             Seed = reader.ReadInt32();
         }

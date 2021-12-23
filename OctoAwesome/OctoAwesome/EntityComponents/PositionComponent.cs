@@ -6,9 +6,10 @@ using OctoAwesome.Pooling;
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// PositionComponent
+    ///     PositionComponent
     /// </summary>
-    public sealed class PositionComponent : InstanceComponent<INotificationSubject<SerializableNotification>>, IEntityComponent, IFunctionalBlockComponent
+    public sealed class PositionComponent : InstanceComponent<INotificationSubject<SerializableNotification>>,
+        IEntityComponent, IFunctionalBlockComponent
     {
         private readonly IPool<PropertyChangedNotification> _propertyChangedNotificationPool;
         private readonly IResourceManager _resourceManager;
@@ -18,17 +19,7 @@ namespace OctoAwesome.EntityComponents
         private bool _posUpdate;
 
         /// <summary>
-        /// Direction
-        /// </summary>
-        public float Direction { get; set; }
-
-        /// <summary>
-        /// Current Planet
-        /// </summary>
-        public IPlanet Planet { get => _planet ??= TryGetPlanet(_position.Planet); private set => _planet = value; }
-
-        /// <summary>
-        /// PositionComponent
+        ///     PositionComponent
         /// </summary>
         public PositionComponent()
         {
@@ -38,7 +29,21 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Position
+        ///     Direction
+        /// </summary>
+        public float Direction { get; set; }
+
+        /// <summary>
+        ///     Current Planet
+        /// </summary>
+        public IPlanet Planet
+        {
+            get => _planet ??= TryGetPlanet(_position.Planet);
+            private set => _planet = value;
+        }
+
+        /// <summary>
+        ///     Position
         /// </summary>
         public Coordinate Position
         {
@@ -50,7 +55,8 @@ namespace OctoAwesome.EntityComponents
                 var positionBlockX = (int)(_position.BlockPosition.X * 100) / 100f;
                 var positionBlockY = (int)(_position.BlockPosition.Y * 100) / 100f;
 
-                _posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY || _position.BlockPosition.Z != value.BlockPosition.Z;
+                _posUpdate = valueBlockX != positionBlockX || valueBlockY != positionBlockY ||
+                             _position.BlockPosition.Z != value.BlockPosition.Z;
 
                 SetValue(ref _position, value);
                 _planet = TryGetPlanet(value.Planet);
@@ -58,7 +64,7 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// Serialize
+        ///     Serialize
         /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
@@ -101,7 +107,7 @@ namespace OctoAwesome.EntityComponents
         {
             base.OnPropertyChanged(value, callerName);
 
-            if (callerName != nameof(Position) || !_posUpdate) 
+            if (callerName != nameof(Position) || !_posUpdate)
                 return;
 
             var updateNotification = _propertyChangedNotificationPool.Get();

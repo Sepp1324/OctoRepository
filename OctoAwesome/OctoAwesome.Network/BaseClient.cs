@@ -104,13 +104,13 @@ namespace OctoAwesome.Network
             await SendAsync(bytes, bytes.Length);
         }
 
-        public async Task SendPackageAndRelaseAsync(Package package)
+        public async Task SendPackageAndReleaseAsync(Package package)
         {
             await SendPackageAsync(package);
             package.Release();
         }
 
-        public void SendPackageAndRelase(Package package)
+        public void SendPackageAndRelease(Package package)
         {
             var task = Task.Run(async () => await SendPackageAsync(package));
             task.Wait();
@@ -195,8 +195,7 @@ namespace OctoAwesome.Network
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)
                 {
-                    var ex = new Exception(
-                        $"Buffer is to small for package head deserialization [length: {length} | offset: {bufferOffset}]");
+                    var ex = new Exception($"Buffer is to small for package head deserialization [length: {length} | offset: {bufferOffset}]");
                     ex.Data.Add(nameof(length), length);
                     ex.Data.Add(nameof(bufferOffset), bufferOffset);
                     throw ex;

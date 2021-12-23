@@ -140,12 +140,11 @@ namespace OctoAwesome.Runtime
 
             string name;
 
-            foreach (var c in Path.GetInvalidFileNameChars()) typeName = typeName.Replace(c, '\0');
+            typeName = Path.GetInvalidFileNameChars().Aggregate(typeName, (current, c) => current.Replace(c, '\0'));
 
             if (type.IsGenericType)
             {
                 var firstType = type.GenericTypeArguments.FirstOrDefault();
-
                 name = firstType != default ? $"{typeName}_{firstType.Name}" : typeName;
             }
             else

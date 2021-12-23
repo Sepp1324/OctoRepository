@@ -13,12 +13,10 @@ namespace OctoAwesome.Definitions
         private readonly BoundingBox[] _defaultCollisionBoxes = { new(new(0, 0), new(1, 1, 1)) };
 
         /// <summary>
-        /// 
         /// </summary>
         protected virtual int VolumePerHit => 25;
 
         /// <summary>
-        /// 
         /// </summary>
         public virtual uint SolidWall => 0x3f;
 

@@ -17,17 +17,36 @@ namespace OctoAwesome
 
         public static T CreateObject<T>() where T : class => Instance.CreateObject<T>();
 
-        public static void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour) => Instance.Register(registrar, type, instanceBehaviour);
+        public static void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour)
+        {
+            Instance.Register(registrar, type, instanceBehaviour);
+        }
 
-        public static void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Instance.Register<T>(instanceBehaviour);
+        public static void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
+        {
+            Instance.Register<T>(instanceBehaviour);
+        }
 
-        public static void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Instance.Register<TRegistrar, T>(instanceBehaviour);
+        public static void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance)
+            where T : class
+        {
+            Instance.Register<TRegistrar, T>(instanceBehaviour);
+        }
 
-        public static void Register(Type registrar, Type type, object singleton) => Instance.Register(registrar, type, singleton);
+        public static void Register(Type registrar, Type type, object singleton)
+        {
+            Instance.Register(registrar, type, singleton);
+        }
 
-        public static void Register<T>(T singleton) where T : class => Instance.Register(singleton);
+        public static void Register<T>(T singleton) where T : class
+        {
+            Instance.Register(singleton);
+        }
 
-        public static void Register<TRegistrar, T>(object singleton) where T : class => Instance.Register<TRegistrar, T>(singleton);
+        public static void Register<TRegistrar, T>(object singleton) where T : class
+        {
+            Instance.Register<TRegistrar, T>(singleton);
+        }
 
         public static bool TryResolve(Type type, out object resolvedInstance) => Instance.TryResolve(type, out resolvedInstance);
 

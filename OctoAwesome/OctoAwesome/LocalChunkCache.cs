@@ -24,7 +24,24 @@ namespace OctoAwesome
         /// </summary>
         private readonly IGlobalChunkCache _globalCache;
 
+        /// <summary>
+        ///     Größe des Caches in Zweierpotenzen
+        /// </summary>
+        private readonly int _limit;
+
         private readonly ILogger _logger;
+
+        /// <summary>
+        ///     Maske, die die Grösse des Caches markiert
+        /// </summary>
+        private readonly int _mask;
+
+        /// <summary>
+        ///     Gibt die Range in Chunks in alle Richtungen an (bsp. Range = 1 bedeutet centraler Block + links uns rechts jeweils
+        ///     1 = 3)
+        /// </summary>
+        private readonly int _range;
+
         private readonly LockSemaphore _semaphore;
         private readonly LockSemaphore _taskSemaphore;
 
@@ -39,22 +56,6 @@ namespace OctoAwesome
         private Task _loadingTask;
 
         /// <summary>
-        ///     Größe des Caches in Zweierpotenzen
-        /// </summary>
-        private readonly int _limit;
-
-        /// <summary>
-        ///     Maske, die die Grösse des Caches markiert
-        /// </summary>
-        private readonly int _mask;
-
-        /// <summary>
-        ///     Gibt die Range in Chunks in alle Richtungen an (bsp. Range = 1 bedeutet centraler Block + links uns rechts jeweils
-        ///     1 = 3)
-        /// </summary>
-        private readonly int _range;
-
-        /// <summary>
         ///     Instanziert einen neuen local Chunk Cache.
         /// </summary>
         /// <param name="globalCache">Referenz auf global Chunk Cache</param>
@@ -66,8 +67,8 @@ namespace OctoAwesome
                 throw new ArgumentException("Range too big");
 
 
-            _semaphore = new LockSemaphore(1, 1);
-            _taskSemaphore = new LockSemaphore(1, 1);
+            _semaphore = new(1, 1);
+            _taskSemaphore = new(1, 1);
             Planet = globalCache.Planet;
             _globalCache = globalCache;
             _range = range;
@@ -111,7 +112,7 @@ namespace OctoAwesome
                     _logger.Debug("New task on index " + index);
                     _cancellationToken?.Cancel();
                     _cancellationToken?.Dispose();
-                    _cancellationToken = new CancellationTokenSource();
+                    _cancellationToken = new();
                     _loadingTask = Task.Run(() => InternalSetCenter(_cancellationToken.Token, index, successCallback));
                 }
             }
@@ -197,7 +198,10 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="block">Die neue Block-ID.</param>
-        public void SetBlock(Index3 index, ushort block) => SetBlock(index.X, index.Y, index.Z, block);
+        public void SetBlock(Index3 index, ushort block)
+        {
+            SetBlock(index.X, index.Y, index.Z, block);
+        }
 
         /// <summary>
         ///     Überschreibt den Block an der angegebenen Koordinate.
@@ -253,7 +257,10 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">Block-Koordinate</param>
         /// <param name="meta">Die neuen Metadaten</param>
-        public void SetBlockMeta(Index3 index, int meta) => SetBlockMeta(index.X, index.Y, index.Z, meta);
+        public void SetBlockMeta(Index3 index, int meta)
+        {
+            SetBlockMeta(index.X, index.Y, index.Z, meta);
+        }
 
         /// <summary>
         ///     Leert den Cache und gibt sie beim GlobalChunkCache wieder frei
@@ -306,7 +313,7 @@ namespace OctoAwesome
             }
 
             foreach (var chunkColumnIndex in requiredChunkColumns
-                         .OrderBy(c => index.ShortestDistanceXY(c, new Index2(Planet.Size))
+                         .OrderBy(c => index.ShortestDistanceXY(c, new(Planet.Size))
                              .LengthSquared()))
             {
                 var localX = chunkColumnIndex.X & _mask;
@@ -341,12 +348,13 @@ namespace OctoAwesome
                     // Neuen Chunk laden
                     if (chunkColumn == null)
                     {
-                        chunkColumn = _globalCache.Subscribe(new Index2(chunkColumnIndex));
+                        chunkColumn = _globalCache.Subscribe(new(chunkColumnIndex));
 
                         if (chunkColumn?.Index != chunkColumnIndex)
                             _logger.Error($"Loaded Chunk Index: {chunkColumn?.Index}, wanted: {chunkColumnIndex} ");
                         if (_chunkColumns[flatIndex] != null)
-                            _logger.Error($"Chunk in Array!!: {flatIndex}, on index: {_chunkColumns[flatIndex].Index} ");
+                            _logger.Error(
+                                $"Chunk in Array!!: {flatIndex}, on index: {_chunkColumns[flatIndex].Index} ");
 
 
                         _chunkColumns[flatIndex] = chunkColumn;
@@ -376,6 +384,6 @@ namespace OctoAwesome
         /// <param name="x">Die X-Koordinate</param>
         /// <param name="y">Die Y-Koordinate</param>
         /// <returns>Der Abgeflachte index</returns>
-        private int FlatIndex(int x, int y) => ((y & _mask) << _limit) | x & _mask;
+        private int FlatIndex(int x, int y) => ((y & _mask) << _limit) | (x & _mask);
     }
 }

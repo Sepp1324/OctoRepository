@@ -38,12 +38,10 @@ namespace OctoAwesome.EntityComponents
         public InventorySlot ActiveTool => Tools[_activeIndex] ?? HandSlot;
 
         /// <summary>
-        /// 
         /// </summary>
         public InventorySlot HandSlot { get; }
 
         /// <summary>
-        /// 
         /// </summary>
         public int ActiveIndex
         {
@@ -52,7 +50,6 @@ namespace OctoAwesome.EntityComponents
         }
 
         /// <summary>
-        /// 
         /// </summary>
         public event Action<InventorySlot, int> OnChanged;
 

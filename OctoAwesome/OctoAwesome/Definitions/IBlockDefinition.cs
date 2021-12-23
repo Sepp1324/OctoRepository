@@ -19,19 +19,16 @@ namespace OctoAwesome.Definitions
         ///     Zeigt, ob der Block-Typ Metadaten besitzt
         /// </summary>
         bool HasMetaData { get; }
-        
+
         /// <summary>
-        /// 
         /// </summary>
         uint SolidWall { get; }
-        
+
         /// <summary>
-        /// 
         /// </summary>
         TimeSpan TimeToVolumeReset { get; }
-        
+
         /// <summary>
-        /// 
         /// </summary>
         IMaterialDefinition Material { get; }
 

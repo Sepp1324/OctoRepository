@@ -8,7 +8,6 @@ using OctoAwesome.Threading;
 namespace OctoAwesome
 {
     /// <summary>
-    /// 
     /// </summary>
     public class Awaiter : IPoolElement, IDisposable
     {
@@ -27,7 +26,10 @@ namespace OctoAwesome
 
         public bool Timeouted { get; private set; }
 
-        public void Dispose() => _manualReset.Dispose();
+        public void Dispose()
+        {
+            _manualReset.Dispose();
+        }
 
         public void Init(IPool pool)
         {

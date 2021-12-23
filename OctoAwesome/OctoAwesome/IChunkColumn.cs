@@ -6,44 +6,44 @@ using OctoAwesome.Serialization;
 namespace OctoAwesome
 {
     /// <summary>
-    /// Base-Interface for a ChunkColumn
+    ///     Base-Interface for a ChunkColumn
     /// </summary>
     public interface IChunkColumn : ISerializable
     {
         /// <summary>
-        /// States if the <see cref="IChunkColumn"/> already got edited by a <see cref="IMapPopulator"/>
+        ///     States if the <see cref="IChunkColumn" /> already got edited by a <see cref="IMapPopulator" />
         /// </summary>
         bool Populated { get; set; }
 
         /// <summary>
-        /// Current <see cref="Planet"/>
+        ///     Current <see cref="Planet" />
         /// </summary>
         IPlanet Planet { get; }
 
         /// <summary>
-        /// Position of the <see cref="ChunkColumn"/>
+        ///     Position of the <see cref="ChunkColumn" />
         /// </summary>
         Index2 Index { get; }
 
         /// <summary>
-        /// Heights within the CunkColumn
+        ///     Heights within the CunkColumn
         /// </summary>
         int[,] Heights { get; }
 
         /// <summary>
-        /// <see cref="Chunks"/> of the <see cref="ChunkColumn"/>
+        ///     <see cref="Chunks" /> of the <see cref="ChunkColumn" />
         /// </summary>
         IChunk[] Chunks { get; }
 
         /// <summary>
-        /// Returns the Blocks of the given Coordinate
+        ///     Returns the Blocks of the given Coordinate
         /// </summary>
-        /// <param name="index">Coordinate of the Block within the <see cref="ChunkColumn"/></param>
+        /// <param name="index">Coordinate of the Block within the <see cref="ChunkColumn" /></param>
         /// <returns>Block-ID of the given Coordinate</returns>
         ushort GetBlock(Index3 index);
 
         /// <summary>
-        /// Returns List of <see cref="Block"/> at the given Coordinate
+        ///     Returns List of <see cref="Block" /> at the given Coordinate
         /// </summary>
         /// <param name="x">X-Axis of Block-Coordinate</param>
         /// <param name="y">Y-Axis of Block-Coordinate</param>
@@ -52,12 +52,12 @@ namespace OctoAwesome
         ushort GetBlock(int x, int y, int z);
 
         /// <summary>
-        /// Action for ChunkColumn Changes
+        ///     Action for ChunkColumn Changes
         /// </summary>
         event Action<IChunkColumn, IChunk> Changed;
 
         /// <summary>
-        /// Overrides the Block of the given Position
+        ///     Overrides the Block of the given Position
         /// </summary>
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
@@ -65,7 +65,7 @@ namespace OctoAwesome
         void SetBlock(Index3 index, ushort block, int meta = 0);
 
         /// <summary>
-        /// Overrides the Block of the given Position
+        ///     Overrides the Block of the given Position
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -111,7 +111,7 @@ namespace OctoAwesome
         void SetBlockResources(int x, int y, int z, ushort[] resources);
 
         /// <summary>
-        /// Event for Block-Update within a ChunkColumn
+        ///     Event for Block-Update within a ChunkColumn
         /// </summary>
         /// <param name="notification"></param>
         void OnUpdate(SerializableNotification notification);

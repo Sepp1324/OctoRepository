@@ -5,7 +5,6 @@ using System.IO;
 namespace OctoAwesome
 {
     /// <summary>
-    /// 
     /// </summary>
     public readonly struct BlockInfo : IEquatable<BlockInfo>
     {
@@ -26,11 +25,15 @@ namespace OctoAwesome
             Meta = meta;
         }
 
-        public BlockInfo(int x, int y, int z, ushort block, int meta = 0) : this(new Index3(x, y, z), block, meta) { }
+        public BlockInfo(int x, int y, int z, ushort block, int meta = 0) : this(new(x, y, z), block, meta)
+        {
+        }
 
         public override bool Equals(object obj) => obj is BlockInfo info && Equals(info);
 
-        public bool Equals(BlockInfo other) => EqualityComparer<Index3>.Default.Equals(Position, other.Position) && Block == other.Block && Meta == other.Meta;
+        public bool Equals(BlockInfo other) =>
+            EqualityComparer<Index3>.Default.Equals(Position, other.Position) && Block == other.Block &&
+            Meta == other.Meta;
 
         public override int GetHashCode()
         {
@@ -50,7 +53,10 @@ namespace OctoAwesome
             writer.Write(info.Meta);
         }
 
-        public static BlockInfo Deserialize(BinaryReader reader) => new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32());
+        public static BlockInfo Deserialize(BinaryReader reader) =>
+            new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(),
+                reader.ReadInt32());
+
         public static bool operator ==(BlockInfo left, BlockInfo right) => left.Equals(right);
 
         public static bool operator !=(BlockInfo left, BlockInfo right) => !(left == right);

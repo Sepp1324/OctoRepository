@@ -9,6 +9,21 @@ namespace OctoAwesome.Rx
 
         public Relay() => _subscriptions = new();
 
+        public void Dispose()
+        {
+            foreach (var subscription in _subscriptions)
+                subscription.Dispose();
+
+            _subscriptions.Clear();
+        }
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            var sub = new RelaySubscription(this, observer);
+            _subscriptions.Add(sub);
+            return sub;
+        }
+
         public void OnCompleted()
         {
             foreach (var subscription in _subscriptions)
@@ -27,28 +42,14 @@ namespace OctoAwesome.Rx
                 subscription?.Observer.OnNext(value);
         }
 
-        public IDisposable Subscribe(IObserver<T> observer)
+        private void Unsubscribe(RelaySubscription subscription)
         {
-            var sub = new RelaySubscription(this, observer);
-            _subscriptions.Add(sub);
-            return sub;
-        }
-
-        private void Unsubscribe(RelaySubscription subscription) => _subscriptions.Remove(subscription);
-
-        public void Dispose()
-        {
-            foreach (var subscription in _subscriptions)
-                subscription.Dispose();
-
-            _subscriptions.Clear();
+            _subscriptions.Remove(subscription);
         }
 
         private class RelaySubscription : IDisposable
         {
             private readonly Relay<T> _relay;
-
-            public IObserver<T> Observer { get; }
 
             public RelaySubscription(Relay<T> relay, IObserver<T> observer)
             {
@@ -57,7 +58,12 @@ namespace OctoAwesome.Rx
                 Observer = observer;
             }
 
-            public void Dispose() => _relay.Unsubscribe(this);
+            public IObserver<T> Observer { get; }
+
+            public void Dispose()
+            {
+                _relay.Unsubscribe(this);
+            }
         }
     }
 }

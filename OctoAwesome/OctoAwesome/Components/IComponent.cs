@@ -3,7 +3,6 @@
 namespace OctoAwesome.Components
 {
     /// <summary>
-    /// 
     /// </summary>
     public interface IComponent : ISerializable
     {

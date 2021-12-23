@@ -10,13 +10,11 @@ namespace OctoAwesome.Logging
 
         public string Name { get; private set; }
 
-        public ILogger As(string loggerName)
-        {
-            return new NullLogger
+        public ILogger As(string loggerName) =>
+            new NullLogger
             {
                 Name = loggerName
             };
-        }
 
         public ILogger As(Type type) => As(type.FullName);
 

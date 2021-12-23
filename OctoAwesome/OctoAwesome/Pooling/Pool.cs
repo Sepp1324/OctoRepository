@@ -29,7 +29,9 @@ namespace OctoAwesome.Pooling
             T obj;
 
             using (_semaphoreExtended.Wait())
+            {
                 obj = _internalStack.Count > 0 ? _internalStack.Pop() : GetInstance();
+            }
 
             obj.Init(this);
             return obj;
@@ -38,7 +40,9 @@ namespace OctoAwesome.Pooling
         public void Push(T obj)
         {
             using (_semaphoreExtended.Wait())
+            {
                 _internalStack.Push(obj);
+            }
         }
 
         public void Push(IPoolElement obj)

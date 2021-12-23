@@ -3,7 +3,8 @@
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// 
     /// </summary>
-    public abstract class CollisionComponent : Component, IEntityComponent { }
+    public abstract class CollisionComponent : Component, IEntityComponent
+    {
+    }
 }

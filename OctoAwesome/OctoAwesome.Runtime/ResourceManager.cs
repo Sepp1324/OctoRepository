@@ -186,7 +186,7 @@ namespace OctoAwesome.Runtime
         public void DeleteUniverse(Guid id)
         {
             if (CurrentUniverse != null && CurrentUniverse.Id == id)
-                throw new Exception("Universe is already loaded");
+                throw new("Universe is already loaded");
 
             _persistenceManager.DeleteUniverse(id);
         }
@@ -199,7 +199,7 @@ namespace OctoAwesome.Runtime
         public IPlanet GetPlanet(int id)
         {
             if (CurrentUniverse == null)
-                throw new Exception("No Universe loaded");
+                throw new("No Universe loaded");
 
             using (_semaphoreSlim.Wait())
             using (_loadingSemaphore.EnterScope())
@@ -241,7 +241,7 @@ namespace OctoAwesome.Runtime
         public Player LoadPlayer(string playerName)
         {
             if (CurrentUniverse == null)
-                throw new Exception("No Universe loaded");
+                throw new("No Universe loaded");
 
             using (_loadingSemaphore.EnterScope())
             {
@@ -264,7 +264,7 @@ namespace OctoAwesome.Runtime
         public void SavePlayer(Player player)
         {
             if (CurrentUniverse == null)
-                throw new Exception("No Universe loaded");
+                throw new("No Universe loaded");
 
             using (_loadingSemaphore.EnterScope())
                 _persistenceManager.SavePlayer(CurrentUniverse.Id, player);
@@ -296,7 +296,7 @@ namespace OctoAwesome.Runtime
                     if (awaiter?.Timeouted ?? false)
                         _logger.Error("Awaiter timeout");
                 }
-            } while (awaiter != null && awaiter.Timeouted);
+            } while (awaiter is { Timeouted: true });
 
             var column00 = planet.GlobalChunkCache.Peek(Index2.NormalizeXY(index + new Index2(-1, -1), planet.Size));
             var column10 = planet.GlobalChunkCache.Peek(Index2.NormalizeXY(index + new Index2(0, -1), planet.Size));
@@ -367,7 +367,7 @@ namespace OctoAwesome.Runtime
         public Entity LoadEntity(Guid entityId)
         {
             if (CurrentUniverse == null)
-                throw new Exception("No Universe loaded");
+                throw new("No Universe loaded");
 
             using (_loadingSemaphore.EnterScope())
             {
@@ -385,7 +385,7 @@ namespace OctoAwesome.Runtime
         public void SaveEntity(Entity entity)
         {
             if (CurrentUniverse == null)
-                throw new Exception("No Universe loaded");
+                throw new("No Universe loaded");
 
             using (_loadingSemaphore.EnterScope())
             {

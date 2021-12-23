@@ -16,12 +16,10 @@
         int Condition { get; set; }
 
         /// <summary>
-        /// 
         /// </summary>
         IItemDefinition Definition { get; }
 
         /// <summary>
-        /// 
         /// </summary>
         IMaterialDefinition Material { get; }
 

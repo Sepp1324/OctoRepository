@@ -104,7 +104,6 @@ namespace OctoAwesome.Threading
             public override int GetHashCode() => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(_internalSemaphore);
 
             public static bool operator ==(SuperScope left, SuperScope right) => left.Equals(right);
-
             public static bool operator !=(SuperScope left, SuperScope right) => !(left == right);
         }
     }
