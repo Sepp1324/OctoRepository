@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using NUnit.Framework;
+using OctoAwesome.Notifications;
 
 namespace OctoAwesome.Network.Tests
 {
@@ -18,7 +19,7 @@ namespace OctoAwesome.Network.Tests
 
         public SimulationManagerTests()
         {
-            simulationManager = new SimulationManager(new Settings(), new UpdateHub());
+            simulationManager = new SimulationManager(new Settings(), new());
         }
 
         [Test]

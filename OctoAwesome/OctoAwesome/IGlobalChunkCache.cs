@@ -6,7 +6,7 @@ namespace OctoAwesome
     /// <summary>
     ///     Basisinterface für einen Globalen Chunkcache
     /// </summary>
-    public interface IGlobalChunkCache : INotificationObserver
+    public interface IGlobalChunkCache
     {
         /// <summary>
         ///     Die Zahl der geladenen Chunks zurück
@@ -50,10 +50,11 @@ namespace OctoAwesome
         void Clear();
 
         void BeforeSimulationUpdate(Simulation simulation);
+
         void AfterSimulationUpdate(Simulation simulation);
 
         void OnUpdate(SerializableNotification notification);
+
         void Update(SerializableNotification notification);
-        void InsertUpdateHub(IUpdateHub updateHub);
     }
 }

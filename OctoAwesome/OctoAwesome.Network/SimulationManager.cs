@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using engenious;
 using OctoAwesome.Definitions;
+using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 
 namespace OctoAwesome.Network
@@ -26,7 +27,6 @@ namespace OctoAwesome.Network
             _settings = settings;
             _updateHub = updateHub;
 
-
             TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionResolver, ExtensionLoader>(InstanceBehaviour.Singleton);
@@ -41,10 +41,9 @@ namespace OctoAwesome.Network
             extensionLoader.LoadExtensions();
 
             ResourceManager = TypeContainer.Get<ResourceManager>();
-            ResourceManager.InsertUpdateHub(updateHub);
 
-            Service = new GameService(ResourceManager);
-            _simulation = new Simulation(ResourceManager, extensionLoader, Service)
+            Service = new(ResourceManager);
+            _simulation = new(ResourceManager, extensionLoader, Service)
             {
                 IsServerSide = true
             };
@@ -79,7 +78,7 @@ namespace OctoAwesome.Network
         public void Start()
         {
             IsRunning = true;
-            GameTime = new GameTime();
+            GameTime = new();
 
             _cancellationTokenSource = new();
             var token = _cancellationTokenSource.Token;
@@ -95,7 +94,7 @@ namespace OctoAwesome.Network
             }
             else
             {
-                if (!_simulation.TryLoadGame(new Guid(universe)))
+                if (!_simulation.TryLoadGame(new(universe)))
                 {
                     var guid = _simulation.NewGame("melmack", new Random().Next().ToString());
                     _settings.Set("LastUniverse", guid.ToString());
@@ -117,12 +116,7 @@ namespace OctoAwesome.Network
 
         public IUniverse NewUniverse() => throw new NotImplementedException();
 
-        public IPlanet GetPlanet(int planetId)
-        {
-            var planet = ResourceManager.GetPlanet(planetId);
-            planet.UpdateHub = _updateHub;
-            return planet;
-        }
+        public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
 
         public IChunkColumn LoadColumn(IPlanet planet, Index2 index2) => ResourceManager.LoadChunkColumn(planet, index2);
 

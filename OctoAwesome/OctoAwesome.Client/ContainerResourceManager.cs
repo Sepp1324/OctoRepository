@@ -24,8 +24,7 @@ namespace OctoAwesome.Client
 
         private ResourceManager _resourceManager;
 
-        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub,
-            IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
+        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub, IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
         {
             UpdateHub = updateHub;
             _typeContainer = typeContainer;
@@ -54,12 +53,7 @@ namespace OctoAwesome.Client
 
         public void DeleteUniverse(Guid id) => _resourceManager.DeleteUniverse(id);
 
-        public IPlanet GetPlanet(int planetId)
-        {
-            var planet = _resourceManager.GetPlanet(planetId);
-            planet.UpdateHub = UpdateHub;
-            return planet;
-        }
+        public IPlanet GetPlanet(int planetId) => _resourceManager.GetPlanet(planetId);
 
         public IUniverse GetUniverse() => _resourceManager.GetUniverse();
 
@@ -91,7 +85,7 @@ namespace OctoAwesome.Client
 
         public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new() => _resourceManager.GetEntityComponents<T>(entityIds);
 
-        public void CreateManager(bool multiplayer)
+        public void CreateManager(bool multiPlayer)
         {
             IPersistenceManager persistenceManager;
 
@@ -106,15 +100,13 @@ namespace OctoAwesome.Client
                 _resourceManager = null;
             }
 
-
-            if (multiplayer)
+            if (multiPlayer)
             {
                 var rawIpAddress = _settings.Get<string>("server").Trim();
                 string host;
                 var port = -1;
 
-                if (rawIpAddress[0] == '[' ||
-                    !IPAddress.TryParse(rawIpAddress, out var iPAddress)) //IPV4 || IPV6 without port
+                if (rawIpAddress[0] == '[' || !IPAddress.TryParse(rawIpAddress, out var iPAddress)) //IPV4 || IPV6 without port
                 {
                     string stringIpAddress;
                     if (rawIpAddress[0] == '[') // IPV6 with Port
@@ -154,10 +146,9 @@ namespace OctoAwesome.Client
                 persistenceManager = new DiskPersistenceManager(_extensionResolver, _settings, UpdateHub);
             }
 
-            _resourceManager = new(_extensionResolver, _definitionManager, _settings, persistenceManager);
-            _resourceManager.InsertUpdateHub(UpdateHub as UpdateHub);
+            _resourceManager = new(_extensionResolver, _definitionManager, _settings, persistenceManager, UpdateHub);
 
-            IsMultiplayer = multiplayer;
+            IsMultiplayer = multiPlayer;
         }
     }
 }

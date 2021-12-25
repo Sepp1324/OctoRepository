@@ -5,7 +5,6 @@ using CommandManagementSystem;
 using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
-using OctoAwesome.Runtime;
 using OctoAwesome.Threading;
 
 namespace OctoAwesome.GameServer
@@ -87,7 +86,6 @@ namespace OctoAwesome.GameServer
         {
             _logger.Debug("Hurra ein neuer Spieler");
             e.ServerSubscription = e.Subscribe(this);
-            e.NetworkChannelSubscription = UpdateHub.Subscribe(e, DefaultChannels.NETWORK);
         }
     }
 }

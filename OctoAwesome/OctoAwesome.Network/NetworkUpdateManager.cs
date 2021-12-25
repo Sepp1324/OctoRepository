@@ -10,22 +10,28 @@ using OctoAwesome.Rx;
 
 namespace OctoAwesome.Network
 {
-    public class NetworkUpdateManager : IAsyncObserver<Package>, INotificationObserver
+    public class NetworkUpdateManager : IAsyncObserver<Package>, IDisposable
     {
         private readonly IPool<BlockChangedNotification> _blockChangedNotificationPool;
         private readonly IPool<BlocksChangedNotification> _blocksChangedNotificationPool;
-        private readonly Client _client;
-        private readonly IDisposable _clientSubscription;
         private readonly IPool<EntityNotification> _entityNotificationPool;
+
+        private readonly Client _client;
+
+        private readonly IDisposable _clientSubscription;
         private readonly IDisposable _hubSubscription;
+        private readonly IDisposable _simulationSource;
+        private readonly IDisposable _chunkSource;
+        
         private readonly ILogger _logger;
         private readonly PackagePool _packagePool;
-        private readonly IUpdateHub _updateHub;
+
+        private readonly Relay<Notification> _simulationRelay;
+        private readonly Relay<Notification> _chunkRelay;
 
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
         {
             _client = client;
-            _updateHub = updateHub;
 
             _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
             _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
@@ -33,7 +39,12 @@ namespace OctoAwesome.Network
             _blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
             _packagePool = TypeContainer.Get<PackagePool>();
 
-            _hubSubscription = updateHub.ListenOn(DefaultChannels.NETWORK).Subscribe<Notification>(OnNext, OnError, OnCompleted);
+            _simulationRelay = new();
+            _chunkRelay = new();
+
+            _hubSubscription = updateHub.ListenOn(DefaultChannels.NETWORK).Subscribe(OnNext, error => _logger.Error(error.Message, error));
+            _simulationSource = updateHub.AddSource(_simulationRelay, DefaultChannels.SIMULATION);
+            _chunkSource = updateHub.AddSource(_chunkRelay, DefaultChannels.CHUNK);
             _clientSubscription = client.Subscribe(this);
         }
 
@@ -43,7 +54,7 @@ namespace OctoAwesome.Network
             {
                 case OfficialCommand.EntityNotification:
                     var entityNotification = Serializer.DeserializePoolElement(_entityNotificationPool, package.Payload);
-                    _updateHub.Push(entityNotification, DefaultChannels.SIMULATION);
+                    _simulationRelay.OnNext(entityNotification);
                     entityNotification.Release();
                     break;
                 case OfficialCommand.ChunkNotification:
@@ -55,7 +66,7 @@ namespace OctoAwesome.Network
                         _ => throw new NotSupportedException($"This Type is not supported: {notificationType}")
                     };
 
-                    _updateHub.Push(chunkNotification, DefaultChannels.CHUNK);
+                    _chunkRelay.OnNext(chunkNotification);
                     chunkNotification.Release();
                     break;
             }
@@ -100,11 +111,13 @@ namespace OctoAwesome.Network
             return Task.CompletedTask;
         }
 
-        void INotificationObserver.OnCompleted()
+        public void Dispose()
         {
-            //hubSubscription.Dispose();
+            _hubSubscription?.Dispose();
+            _simulationSource?.Dispose();
+            _chunkSource?.Dispose();
+            _simulationRelay?.Dispose();
+            _chunkRelay?.Dispose();
         }
-
-        void INotificationObserver.OnError(Exception error) => _logger.Error(error.Message, error);
     }
 }

@@ -3,30 +3,33 @@ using System.Net.Sockets;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
+using OctoAwesome.Rx;
 
 namespace OctoAwesome.Network
 {
-    public sealed class ConnectedClient : BaseClient, INotificationObserver
+    public sealed class ConnectedClient : BaseClient, IDisposable
     {
         private readonly PackagePool _packagePool;
 
-        public ConnectedClient(Socket socket) : base(socket) => _packagePool = TypeContainer.Get<PackagePool>();
+        private readonly IDisposable _networkSubscription;
+
+        public ConnectedClient(Socket socket) : base(socket)
+        {
+            _packagePool = TypeContainer.Get<PackagePool>();
+            _networkSubscription = TypeContainer.Get<IUpdateHub>().ListenOn(DefaultChannels.NETWORK).Subscribe(OnNext, OnError);
+        }
 
         public IDisposable NetworkChannelSubscription { get; set; }
 
         public IDisposable ServerSubscription { get; set; }
 
-        public void OnCompleted()
-        {
-        }
-
-        public void OnError(Exception error)
+        private void OnError(Exception error)
         {
             Socket.Close();
             throw error;
         }
 
-        public void OnNext(Notification value)
+        private void OnNext(Notification value)
         {
             if (value.SenderId == Id)
                 return;
@@ -59,5 +62,7 @@ namespace OctoAwesome.Network
             package.Command = (ushort)officialCommand;
             SendPackageAndRelease(package);
         }
+
+        public void Dispose() => _networkSubscription?.Dispose();
     }
 }

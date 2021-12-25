@@ -35,11 +35,10 @@ namespace OctoAwesome.Runtime
         /// <param name="extensionResolver">ExetnsionResolver</param>
         /// <param name="definitionManager">DefinitionManager</param>
         /// <param name="settings">Einstellungen</param>
-        public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager,
-            ISettings settings, IPersistenceManager persistenceManager)
+        public ResourceManager(IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings, IPersistenceManager persistenceManager, IUpdateHub updateHub)
         {
-            _semaphoreSlim = new LockSemaphore(1, 1);
-            _loadingSemaphore = new CountedScopeSemaphore();
+            _semaphoreSlim = new(1, 1);
+            _loadingSemaphore = new();
             _extensionResolver = extensionResolver;
             DefinitionManager = definitionManager;
             _persistenceManager = persistenceManager;
@@ -48,7 +47,8 @@ namespace OctoAwesome.Runtime
 
             _populators = extensionResolver.GetMapPopulator().OrderBy(p => p.Order).ToList();
 
-            Planets = new ConcurrentDictionary<int, IPlanet>();
+            Planets = new();
+            UpdateHub = updateHub;
 
             bool.TryParse(settings.Get<string>("DisablePersistence"), out _disablePersistence);
         }
@@ -83,7 +83,7 @@ namespace OctoAwesome.Runtime
             using (_loadingSemaphore.EnterScope())
             {
                 _tokenSource?.Dispose();
-                _tokenSource = new CancellationTokenSource();
+                _tokenSource = new();
                 _currentToken = _tokenSource.Token;
 
                 var guid = Guid.NewGuid();
@@ -123,7 +123,7 @@ namespace OctoAwesome.Runtime
             using (_loadingSemaphore.EnterScope())
             {
                 _tokenSource?.Dispose();
-                _tokenSource = new CancellationTokenSource();
+                _tokenSource = new();
                 _currentToken = _tokenSource.Token;
 
                 // Neuen Daten loaden/generieren
@@ -431,7 +431,5 @@ namespace OctoAwesome.Runtime
                 return _persistenceManager.GetEntityComponents<T>(CurrentUniverse.Id, entityIds).ToArray(); //Hack wird noch geänder
             }
         }
-
-        public void InsertUpdateHub(UpdateHub updateHub) => UpdateHub = updateHub;
     }
 }

@@ -12,8 +12,7 @@ namespace OctoAwesome
     ///     Container for Components
     /// </summary>
     /// <typeparam name="TComponent"></typeparam>
-    public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents,
-        INotificationSubject<SerializableNotification> where TComponent : IComponent
+    public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents, INotificationSubject<SerializableNotification> where TComponent : IComponent
     {
         /// <summary>
         ///     Contains Components with an Implementation of <see cref="INotificationSubject{TNotification}" />
@@ -49,9 +48,7 @@ namespace OctoAwesome
         /// </summary>
         public Guid Id { get; internal set; }
 
-        public virtual void OnNotification(SerializableNotification notification)
-        {
-        }
+        public virtual void OnNotification(SerializableNotification notification) { }
 
         public virtual void Push(SerializableNotification notification)
         {

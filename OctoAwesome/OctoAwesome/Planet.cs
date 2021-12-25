@@ -13,8 +13,6 @@ namespace OctoAwesome
 
         private bool _disposed;
 
-        private IUpdateHub _updateHub;
-
         /// <summary>
         ///     Initialization of the Planet
         /// </summary>
@@ -33,7 +31,7 @@ namespace OctoAwesome
         /// <summary>
         ///     Instantiate new Planet
         /// </summary>
-        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>());
+        public Planet() => GlobalChunkCache = new GlobalChunkCache(this, TypeContainer.Get<IResourceManager>(), TypeContainer.Get<IUpdateHub>());
 
         /// <summary>
         ///     ID of the Planet
@@ -74,20 +72,6 @@ namespace OctoAwesome
         ///     GlobalChunkCache for the Planet
         /// </summary>
         public IGlobalChunkCache GlobalChunkCache { get; set; }
-
-        /// <summary>
-        ///     UpdateHub for the Planet
-        /// </summary>
-        public IUpdateHub UpdateHub
-        {
-            get => _updateHub;
-            set
-            {
-                _chunkSubscription = value.Subscribe(GlobalChunkCache, DefaultChannels.CHUNK);
-                GlobalChunkCache.InsertUpdateHub(value);
-                _updateHub = value;
-            }
-        }
 
         /// <summary>
         ///     Serializes the Planet with the given <see cref="BinaryWriter" />

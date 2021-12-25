@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using OctoAwesome.Notifications;
 using OctoAwesome.PoC.Rx;
+using UpdateHub = OctoAwesome.PoC.Rx.UpdateHub;
 
 namespace OctoAwesome.PoC
 {

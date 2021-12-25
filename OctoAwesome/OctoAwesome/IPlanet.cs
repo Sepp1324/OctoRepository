@@ -45,6 +45,5 @@ namespace OctoAwesome
         IMapGenerator Generator { get; set; }
 
         IGlobalChunkCache GlobalChunkCache { get; set; }
-        IUpdateHub UpdateHub { get; set; }
     }
 }

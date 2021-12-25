@@ -23,10 +23,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\Debug\</OutputPath>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\bin\Release\</OutputPath>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <!-- Fix adapted from https://jaylee.org/archive/2019/03/31/using-span-of-t-in-xamarin-cross-targeted-projects.html
