@@ -1,25 +1,25 @@
 ﻿#region Using Statements
-using OctoAwesome.Client.Cache;
-using OctoAwesome.Logging;
+
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using OctoAwesome.Logging;
+
 #endregion
 
 namespace OctoAwesome.Client
 {
     /// <summary>
-    /// The main class.
+    ///     The main class.
     /// </summary>
     public static class Program
     {
-        static OctoGame game;
+        private static OctoGame _game;
+
         /// <summary>
-        /// The main entry point for the application.
+        ///     The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             using (var typeContainer = TypeContainer.Get<ITypeContainer>())
             {
@@ -30,24 +30,26 @@ namespace OctoAwesome.Client
                 var logger = (typeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As("OctoAwesome.Client");
                 AppDomain.CurrentDomain.UnhandledException += (s, e) =>
                 {
-                    File.WriteAllText(
-                        Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"),
-                        e.ExceptionObject.ToString());
+                    File.WriteAllText(Path.Combine(".", "logs", $"client-dump-{DateTime.Now:ddMMyy_hhmmss}.txt"), e.ExceptionObject.ToString());
 
                     logger.Fatal($"Unhandled Exception: {e.ExceptionObject}", e.ExceptionObject as Exception);
                     logger.Flush();
                 };
 
-                using (game = new OctoGame())
-                    game.Run(60, 60);
+                using (_game = new())
+                {
+                    _game.Run(60, 60);
+                }
             }
         }
 
         public static void Restart()
         {
-            game.Exit();
-            using (game = new OctoGame())
-                game.Run(60, 60);
+            _game.Exit();
+            using (_game = new())
+            {
+                _game.Run(60, 60);
+            }
         }
     }
 }

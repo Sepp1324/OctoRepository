@@ -1,70 +1,52 @@
-﻿using engenious;
-using engenious.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
+using engenious;
+using engenious.Graphics;
 
 namespace OctoAwesome.UI.Components
 {
     public sealed class AssetComponent : DrawableGameComponent
     {
-        private readonly ISettings settings;
+        private readonly List<ResourcePack> _activePacks = new();
+        private readonly Dictionary<string, Bitmap> _bitmaps;
+        private readonly List<ResourcePack> _loadedPacks = new();
+        private readonly ISettings _settings;
+        private readonly Dictionary<string, Texture2D> _textures;
+        private readonly string[] _textureTypes = { "png", "jpg", "jpeg", "bmp" };
 
-        public const string INFOFILENAME = "packinfo.xml";
+        public const string INFO_FILENAME = "packinfo.xml";
 
-        public const string SETTINGSKEY = "ActiveResourcePacks";
+        public const string SETTINGS_KEY = "ActiveResourcePacks";
 
-        public const string RESOURCEPATH = "Resources";
-        readonly Dictionary<string, Texture2D> textures;
-        readonly Dictionary<string, Bitmap> bitmaps;
-        readonly string[] textureTypes = new string[] { "png", "jpg", "jpeg", "bmp" };
-        readonly List<ResourcePack> loadedPacks = new();
-        readonly List<ResourcePack> activePacks = new();
+        public const string RESOURCE_PATH = "Resources";
 
-        /// <summary>
-        /// Gibt an, ob der Asset Manager bereit zum Laden von Resourcen ist.
-        /// </summary>
-        public bool Ready { get; private set; }
-
-        /// <summary>
-        /// Gibt die Anzahl geladener Texturen zurück.
-        /// </summary>
-        public int LoadedTextures => textures.Count + bitmaps.Count;
-
-        /// <summary>
-        /// Auflistung aller bekannten Resource Packs.
-        /// </summary>
-        public IEnumerable<ResourcePack> LoadedResourcePacks => loadedPacks.AsEnumerable();
-
-        /// <summary>
-        /// Auflistung aller aktuell aktiven Resource Packs.
-        /// </summary>
-        public IEnumerable<ResourcePack> ActiveResourcePacks => activePacks.AsEnumerable();
+       
 
         public AssetComponent(IGame game, ISettings settings) : base(game)
         {
-            this.settings = settings;
+            _settings = settings;
 
             Ready = false;
-            textures = new Dictionary<string, Texture2D>();
-            bitmaps = new Dictionary<string, Bitmap>();
+            _textures = new Dictionary<string, Texture2D>();
+            _bitmaps = new Dictionary<string, Bitmap>();
             ScanForResourcePacks();
 
             // Load list of active Resource Packs
-            List<ResourcePack> toLoad = new List<ResourcePack>();
-            if (settings.KeyExists(SETTINGSKEY))
+            var toLoad = new List<ResourcePack>();
+            if (settings.KeyExists(SETTINGS_KEY))
             {
-                string activePackPathes = settings.Get<string>(SETTINGSKEY);
+                var activePackPathes = settings.Get<string>(SETTINGS_KEY);
                 if (!string.IsNullOrEmpty(activePackPathes))
                 {
-                    string[] packPathes = activePackPathes.Split(';');
+                    var packPathes = activePackPathes.Split(';');
                     foreach (var packPath in packPathes)
                     {
-                        ResourcePack resourcePack = loadedPacks.FirstOrDefault(p => p.Path.Equals(packPath));
+                        var resourcePack = _loadedPacks.FirstOrDefault(p => p.Path.Equals(packPath));
                         if (resourcePack != null) toLoad.Add(resourcePack);
                     }
                 }
@@ -73,35 +55,53 @@ namespace OctoAwesome.UI.Components
             ApplyResourcePacks(toLoad);
         }
 
+        /// <summary>
+        ///     Gibt an, ob der Asset Manager bereit zum Laden von Resourcen ist.
+        /// </summary>
+        public bool Ready { get; private set; }
+
+        /// <summary>
+        ///     Gibt die Anzahl geladener Texturen zurück.
+        /// </summary>
+        public int LoadedTextures => _textures.Count + _bitmaps.Count;
+
+        /// <summary>
+        ///     Auflistung aller bekannten Resource Packs.
+        /// </summary>
+        public IEnumerable<ResourcePack> LoadedResourcePacks => _loadedPacks.AsEnumerable();
+
+        /// <summary>
+        ///     Auflistung aller aktuell aktiven Resource Packs.
+        /// </summary>
+        public IEnumerable<ResourcePack> ActiveResourcePacks => _activePacks.AsEnumerable();
+
         public void ScanForResourcePacks()
         {
-            loadedPacks.Clear();
-            if (Directory.Exists(RESOURCEPATH))
-            {
-                foreach (var directory in Directory.GetDirectories(RESOURCEPATH))
+            _loadedPacks.Clear();
+            if (Directory.Exists(RESOURCE_PATH))
+                foreach (var directory in Directory.GetDirectories(RESOURCE_PATH))
                 {
-                    DirectoryInfo info = new DirectoryInfo(directory);
-                    if (File.Exists(Path.Combine(directory, INFOFILENAME)))
+                    var info = new DirectoryInfo(directory);
+                    if (File.Exists(Path.Combine(directory, INFO_FILENAME)))
                     {
                         // Scan info File
-                        XmlSerializer serializer = new XmlSerializer(typeof(ResourcePack));
-                        using Stream stream = File.OpenRead(Path.Combine(directory, INFOFILENAME));
-                        ResourcePack pack = (ResourcePack)serializer.Deserialize(stream);
+                        var serializer = new XmlSerializer(typeof(ResourcePack));
+                        using Stream stream = File.OpenRead(Path.Combine(directory, INFO_FILENAME));
+                        var pack = (ResourcePack)serializer.Deserialize(stream);
                         pack!.Path = info.FullName;
-                        loadedPacks.Add(pack);
+                        _loadedPacks.Add(pack);
                     }
                     else
                     {
-                        ResourcePack pack = new ResourcePack()
+                        var pack = new ResourcePack
                         {
                             Path = info.FullName,
                             Name = info.Name
                         };
 
-                        loadedPacks.Add(pack);
+                        _loadedPacks.Add(pack);
                     }
                 }
-            }
         }
 
         public void ApplyResourcePacks(IEnumerable<ResourcePack> packs)
@@ -113,108 +113,104 @@ namespace OctoAwesome.UI.Components
                 component.UnloadAssets();
 
             // Dispose Bitmaps
-            lock (bitmaps)
+            lock (_bitmaps)
             {
-                foreach (var value in bitmaps.Values)
+                foreach (var value in _bitmaps.Values)
                     value.Dispose();
-                bitmaps.Clear();
+                _bitmaps.Clear();
             }
 
             // Dispose textures
-            lock (textures)
+            lock (_textures)
             {
-                foreach (var value in textures.Values)
+                foreach (var value in _textures.Values)
                     value.Dispose();
-                textures.Clear();
+                _textures.Clear();
             }
 
             // Set new Active Resource Packs
-            activePacks.Clear();
+            _activePacks.Clear();
             foreach (var pack in packs)
-                if (loadedPacks.Contains(pack)) // Warum eigentlich keine eigenen Packs?
-                    activePacks.Add(pack);
+                if (_loadedPacks.Contains(pack)) // Warum eigentlich keine eigenen Packs?
+                    _activePacks.Add(pack);
 
             // Signal zum Reload senden
             foreach (var component in Game.Components.OfType<IAssetRelatedComponent>())
                 component.ReloadAssets();
 
             // Speichern der Settings
-            settings.Set(SETTINGSKEY, string.Join(";", activePacks.Select(p => p.Path)));
+            _settings.Set(SETTINGS_KEY, string.Join(";", _activePacks.Select(p => p.Path)));
 
             Ready = true;
         }
+
         public Texture2D LoadTexture(string key)
         {
-            lock (textures)
-            {
-                return Load(typeof(AssetComponent), key, textureTypes, textures, (stream) => Texture2D.FromStream(GraphicsDevice, stream));
-            }
+            lock (_textures)
+                return Load(typeof(AssetComponent), key, _textureTypes, _textures, stream => Texture2D.FromStream(GraphicsDevice, stream));
         }
 
         public Texture2D LoadTexture(Type baseType, string key)
         {
-            lock (textures)
-            {
-                return Load(baseType, key, textureTypes, textures, (stream) => Texture2D.FromStream(GraphicsDevice, stream));
-            }
+            lock (_textures)
+                return Load(baseType, key, _textureTypes, _textures, stream => Texture2D.FromStream(GraphicsDevice, stream));
         }
 
         public Bitmap LoadBitmap(Type baseType, string key)
         {
-            lock (bitmaps)
-            {
-                return Load(baseType, key, textureTypes, bitmaps, (stream) => (Bitmap)Image.FromStream(stream));
-            }
+            lock (_bitmaps)
+                return Load(baseType, key, _textureTypes, _bitmaps, stream => (Bitmap)Image.FromStream(stream));
         }
 
         public Stream LoadStream(Type baseType, string key, params string[] fileTypes)
         {
-            return Load(baseType, key, fileTypes, null, (stream) =>
+            return Load(baseType, key, fileTypes, null, stream =>
             {
-                MemoryStream result = new MemoryStream();
-                byte[] buffer = new byte[1024];
-                int count = 0;
+                var result = new MemoryStream();
+                var buffer = new byte[1024];
+                var count = 0;
                 do
                 {
                     count = stream.Read(buffer, 0, buffer.Length);
                     result.Write(buffer, 0, count);
                 } while (count != 0);
+
                 result.Seek(0, SeekOrigin.Begin);
                 return result;
             });
         }
 
-        private T Load<T>(Type baseType, string key, string[] fileTypes, Dictionary<string, T> cache, Func<Stream, T> callback)
+        private T Load<T>(Type baseType, string key, string[] fileTypes, Dictionary<string, T> cache,
+            Func<Stream, T> callback)
         {
             if (baseType == null)
                 throw new ArgumentNullException();
 
             if (string.IsNullOrEmpty(key))
-                return default(T);
+                return default;
 
-            string fullkey = string.Format("{0}.{1}", baseType.Namespace, key);
+            var fullKey = $"{baseType.Namespace}.{key}";
 
-            string basefolder = baseType.Namespace!.Replace('.', Path.DirectorySeparatorChar);
+            var baseFolder = baseType.Namespace!.Replace('.', Path.DirectorySeparatorChar);
 
             // Cache fragen
-            T result = default(T);
-            if (cache != null && cache.TryGetValue(fullkey, out result))
+            var result = default(T);
+            if (cache != null && cache.TryGetValue(fullKey, out result))
                 return result;
 
             // Versuche Datei zu laden
-            foreach (var resourcePack in activePacks)
+            foreach (var resourcePack in _activePacks)
             {
-                string localFolder = Path.Combine(resourcePack.Path, basefolder);
+                var localFolder = Path.Combine(resourcePack.Path, baseFolder);
 
                 foreach (var fileType in fileTypes)
                 {
-                    string filename = Path.Combine(localFolder, string.Format("{0}.{1}", key, fileType));
+                    var filename = Path.Combine(localFolder, string.Format("{0}.{1}", key, fileType));
                     if (File.Exists(filename))
                     {
-                        using (var stream = File.Open(filename, FileMode.Open))
-                        {
-                            result = callback(stream);
-                        }
+                        using var stream = File.Open(filename, FileMode.Open);
+                        result = callback(stream);
+
                         break;
                     }
                 }
@@ -232,10 +228,10 @@ namespace OctoAwesome.UI.Components
                 if (assemblyName.Equals("OctoClient"))
                     assemblyName = "OctoAwesome.Client";
 
-                var resKey = fullkey.Replace(assemblyName, string.Format("{0}.Assets", assemblyName));
+                var resKey = fullKey.Replace(assemblyName, string.Format("{0}.Assets", assemblyName));
                 foreach (var fileType in fileTypes)
-                {
-                    using (var stream = baseType.Assembly.GetManifestResourceStream(string.Format("{0}.{1}", resKey, fileType)))
+                    using (var stream =
+                           baseType.Assembly.GetManifestResourceStream(string.Format("{0}.{1}", resKey, fileType)))
                     {
                         if (stream != null)
                         {
@@ -243,21 +239,18 @@ namespace OctoAwesome.UI.Components
                             break;
                         }
                     }
-                }
             }
 
             if (result == null)
-            {
                 // Im worstcase CheckerTex laden
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("OctoAwesome.Client.Assets.FallbackTexture.png"))
-                {
-                    result = callback(stream);
-                }
+            {
+                using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("OctoAwesome.Client.Assets.FallbackTexture.png");
+                result = callback(stream);
             }
 
             // In Cache speichern
             if (result != null && cache != null)
-                cache[fullkey] = result;
+                cache[fullKey] = result;
 
             return result;
         }

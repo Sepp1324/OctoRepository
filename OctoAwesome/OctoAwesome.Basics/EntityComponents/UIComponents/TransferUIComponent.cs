@@ -1,45 +1,38 @@
-﻿using engenious.UI;
-
+﻿using System;
+using engenious.UI;
 using OctoAwesome.Basics.UI.Screens;
 using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.EntityComponents.UIComponents
 {
     public class TransferUIComponent : UIComponent
     {
-        public event EventHandler<NavigationEventArgs> Closed;
+        private readonly InventoryComponent _chestInventory;
 
-        private readonly TransferScreen transferScreen;
-        private readonly InventoryComponent chestInventory;
+        private readonly TransferScreen _transferScreen;
 
         public TransferUIComponent(InventoryComponent chestInventory)
         {
-            this.chestInventory = chestInventory;
-            transferScreen = new TransferScreen(ScreenComponent, AssetComponent, chestInventory, new InventoryComponent());
-            transferScreen.Closed += TransferScreen_Closed;
+            _chestInventory = chestInventory;
+            _transferScreen = new(ScreenComponent, AssetComponent, chestInventory, new());
+            _transferScreen.Closed += TransferScreen_Closed;
         }
 
-        private void TransferScreen_Closed(object sender, NavigationEventArgs e)
-        {
-            Closed?.Invoke(sender, e);
-        }
+        public event EventHandler<NavigationEventArgs> Closed;
+
+        private void TransferScreen_Closed(object sender, NavigationEventArgs e) => Closed?.Invoke(sender, e);
 
         public void Show(Player p)
         {
             var playerInventory = p.Components.GetComponent<InventoryComponent>();
 
-            if (playerInventory is null) 
+            if (playerInventory is null)
                 return;
 
-            transferScreen.Rebuild(chestInventory, playerInventory);
+            _transferScreen.Rebuild(_chestInventory, playerInventory);
 
-            if (ScreenComponent.ActiveScreen != transferScreen)
-                ScreenComponent.NavigateToScreen(transferScreen);
+            if (ScreenComponent.ActiveScreen != _transferScreen)
+                ScreenComponent.NavigateToScreen(_transferScreen);
         }
     }
 }

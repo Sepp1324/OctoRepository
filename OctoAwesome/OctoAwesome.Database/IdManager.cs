@@ -1,45 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
     public sealed class IdManager
     {
-        private readonly Queue<int> freeIds;
-        private readonly HashSet<int> reservedIds;
-        private int nextId;
+        private readonly Queue<int> _freeIds;
+        private readonly HashSet<int> _reservedIds;
+        private int _nextId;
 
         public IdManager() : this(Array.Empty<int>())
         {
         }
+
         public IdManager(IEnumerable<int> alreadyUsedIds)
         {
-            if (alreadyUsedIds == null)
-                alreadyUsedIds = Array.Empty<int>();
+            alreadyUsedIds ??= Array.Empty<int>();
 
-            freeIds = new Queue<int>();
-            reservedIds = new HashSet<int>();
+            _freeIds = new();
+            _reservedIds = new();
 
             var ids = alreadyUsedIds.Distinct().OrderBy(i => i).ToArray();
             if (ids.Length <= 0)
             {
-                nextId = 0;
+                _nextId = 0;
                 return;
             }
-            nextId = ids.Max();
 
-            var ids2 = new List<int>(nextId);
+            _nextId = ids.Max();
+
+            var ids2 = new List<int>(_nextId);
             ids2.AddRange(ids);
 
-            for (var i = 0; i < nextId; i++)
+            for (var i = 0; i < _nextId; i++)
             {
                 if (i >= ids2.Count || ids2[i] == i)
                     continue;
 
                 ids2.Insert(i, i);
-                freeIds.Enqueue(i);
+                _freeIds.Enqueue(i);
             }
         }
 
@@ -49,19 +49,18 @@ namespace OctoAwesome.Database
 
             do
             {
-                id = freeIds.Count > 0 ? freeIds.Dequeue() : nextId++;
-            } while (reservedIds.Contains(id));
+                id = _freeIds.Count > 0 ? _freeIds.Dequeue() : _nextId++;
+            } while (_reservedIds.Contains(id));
 
             return id;
         }
 
         public void ReleaseId(int id)
         {
-            freeIds.Enqueue(id);
-            reservedIds.Remove(id);
+            _freeIds.Enqueue(id);
+            _reservedIds.Remove(id);
         }
 
-        public void ReserveId(int id) 
-            => reservedIds.Add(id);
+        public void ReserveId(int id) => _reservedIds.Add(id);
     }
 }

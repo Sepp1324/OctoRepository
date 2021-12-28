@@ -1,95 +1,82 @@
-﻿using OctoAwesome.Threading;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using OctoAwesome.Threading;
 
 namespace OctoAwesome.Rx
 {
     public class ConcurrentRelay<T> : IObservable<T>, IObserver<T>, IDisposable
     {
-        private readonly List<RelaySubscription> subscriptions;
-        private readonly LockSemaphore lockSemaphore;
+        private readonly LockSemaphore _lockSemaphore;
+        private readonly List<RelaySubscription> _subscriptions;
 
         public ConcurrentRelay()
         {
-            lockSemaphore = new LockSemaphore(1, 1);
-            subscriptions = new();
+            _lockSemaphore = new(1, 1);
+            _subscriptions = new();
         }
 
-        public void OnCompleted()
+        public void Dispose()
         {
-            using var scope = lockSemaphore.Wait();
+            foreach (var subscription in _subscriptions)
+                subscription.Dispose();
 
-            for (int i = 0; i < subscriptions.Count; i++)
-            {
-                subscriptions[i]?.Observer.OnCompleted();
-            }
-        }
-
-        public void OnError(Exception error)
-        {
-            using var scope = lockSemaphore.Wait();
-
-            for (int i = 0; i < subscriptions.Count; i++)
-            {
-                subscriptions[i]?.Observer.OnError(error);
-            }
-        }
-
-        public void OnNext(T value)
-        {
-            using var scope = lockSemaphore.Wait(); 
-
-            for (int i = 0; i < subscriptions.Count; i++)
-            {
-                subscriptions[i]?.Observer.OnNext(value);
-            }
+            _subscriptions.Clear();
+            _lockSemaphore.Dispose();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
             var sub = new RelaySubscription(this, observer);
 
-            using (var scope = lockSemaphore.Wait())
-                subscriptions.Add(sub);
+            using var scope = _lockSemaphore.Wait();
+            _subscriptions.Add(sub);
 
             return sub;
         }
 
-        public void Dispose()
+        public void OnCompleted()
         {
-            foreach (var subscription in subscriptions)
-            {
-                subscription.Dispose();
-            }
+            using var scope = _lockSemaphore.Wait();
+            foreach (var subscription in _subscriptions)
+                subscription?.Observer.OnCompleted();
+        }
 
-            subscriptions.Clear();
-            lockSemaphore.Dispose();
+        public void OnError(Exception error)
+        {
+            using var scope = _lockSemaphore.Wait();
+            foreach (var subscription in _subscriptions)
+                subscription?.Observer.OnError(error);
+        }
+
+        public void OnNext(T value)
+        {
+            using var scope = _lockSemaphore.Wait();
+            foreach (var subscription in _subscriptions)
+                subscription?.Observer.OnNext(value);
         }
 
         private void Unsubscribe(RelaySubscription subscription)
         {
-            using var scope = lockSemaphore.Wait();
-
-            subscriptions.Remove(subscription);
+            using var scope = _lockSemaphore.Wait();
+            _subscriptions.Remove(subscription);
         }
-
 
         private class RelaySubscription : IDisposable
         {
-            public IObserver<T> Observer { get; }
-
-            private readonly ConcurrentRelay<T> relay;
+            private readonly ConcurrentRelay<T> _relay;
 
             public RelaySubscription(ConcurrentRelay<T> relay, IObserver<T> observer)
             {
-                this.relay = relay;
+                _relay = relay;
 
                 Observer = observer;
             }
 
+            public IObserver<T> Observer { get; }
+
             public void Dispose()
             {
-                relay.Unsubscribe(this);
+                _relay.Unsubscribe(this);
             }
         }
     }

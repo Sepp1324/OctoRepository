@@ -1,31 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
     public class TreePopulator : MapPopulator
     {
-        private IEnumerable<ITreeDefinition> treeDefinitions = null;
+        private IEnumerable<ITreeDefinition> _treeDefinitions;
 
-        public TreePopulator()
-        {
-            Order = 10;
-        }
+        public TreePopulator() => Order = 10;
 
         private static IChunkColumn getColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
-            IChunkColumn column;
-            if (x >= Chunk.CHUNKSIZE_X && y >= Chunk.CHUNKSIZE_Y)
-                column = column11;
-            else if (x < Chunk.CHUNKSIZE_X && y >= Chunk.CHUNKSIZE_Y)
-                column = column01;
-            else if (x >= Chunk.CHUNKSIZE_X && y < Chunk.CHUNKSIZE_Y)
-                column = column10;
-            else
-                column = column00;
-
+            var column = x switch
+            {
+                >= Chunk.CHUNKSIZE_X when y >= Chunk.CHUNKSIZE_Y => column11,
+                < Chunk.CHUNKSIZE_X when y >= Chunk.CHUNKSIZE_Y => column01,
+                >= Chunk.CHUNKSIZE_X when y < Chunk.CHUNKSIZE_Y => column10,
+                _ => column00
+            };
 
             return column;
         }
@@ -33,37 +26,38 @@ namespace OctoAwesome.Basics
         public override void Populate(IResourceManager resourceManager, IPlanet planet, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
             // Tree Definitions initialisieren
-            if (treeDefinitions == null)
+            if (_treeDefinitions == null)
             {
-                treeDefinitions = resourceManager.DefinitionManager.GetDefinitions<ITreeDefinition>().OrderBy(d => d.Order).ToArray();
-                foreach (var treeDefinition in treeDefinitions)
+                _treeDefinitions = resourceManager.DefinitionManager.GetDefinitions<ITreeDefinition>()
+                    .OrderBy(d => d.Order).ToArray();
+                foreach (var treeDefinition in _treeDefinitions)
                     treeDefinition.Init(resourceManager.DefinitionManager);
             }
 
-            int salt = (column00.Index.X & 0xffff) + ((column00.Index.Y & 0xffff) << 16);
-            Random random = new Random(planet.Seed + salt);
+            var salt = (column00.Index.X & 0xffff) + ((column00.Index.Y & 0xffff) << 16);
+            var random = new Random(planet.Seed + salt);
 
-            Index3 sample = new Index3(column00.Index.X * Chunk.CHUNKSIZE_X, column00.Index.Y * Chunk.CHUNKSIZE_Y, column00.Heights[0, 0]);
-            
-            foreach (var treeDefinition in treeDefinitions)
+            var sample = new Index3(column00.Index.X * Chunk.CHUNKSIZE_X, column00.Index.Y * Chunk.CHUNKSIZE_Y,
+                column00.Heights[0, 0]);
+
+            foreach (var treeDefinition in _treeDefinitions)
             {
-                int density = treeDefinition.GetDensity(planet, sample);
+                var density = treeDefinition.GetDensity(planet, sample);
                 if (density <= 0) continue;
 
-                for (int i = 0; i < density; i++)
+                for (var i = 0; i < density; i++)
                 {
-                    int x = random.Next(Chunk.CHUNKSIZE_X / 2, Chunk.CHUNKSIZE_X * 3 / 2);
-                    int y = random.Next(Chunk.CHUNKSIZE_Y / 2, Chunk.CHUNKSIZE_Y * 3 / 2);
-                    int z = LocalBuilder.GetSurfaceHeight(column00, column10, column01, column11, x, y);
+                    var x = random.Next(Chunk.CHUNKSIZE_X / 2, Chunk.CHUNKSIZE_X * 3 / 2);
+                    var y = random.Next(Chunk.CHUNKSIZE_Y / 2, Chunk.CHUNKSIZE_Y * 3 / 2);
+                    var z = LocalBuilder.GetSurfaceHeight(column00, column10, column01, column11, x, y);
 
-                    float blocktemp = planet.ClimateMap.GetTemperature(new Index3(column00.Index.X * Chunk.CHUNKSIZE_X,
-                    column00.Index.Y * Chunk.CHUNKSIZE_X, z));
+                    var blockTemp = planet.ClimateMap.GetTemperature(new(column00.Index.X * Chunk.CHUNKSIZE_X, column00.Index.Y * Chunk.CHUNKSIZE_X, z));
 
-                    if (blocktemp > treeDefinition.MaxTemperature || blocktemp < treeDefinition.MinTemperature)
+                    if (blockTemp > treeDefinition.MaxTemperature || blockTemp < treeDefinition.MinTemperature)
                         continue;
 
-                    LocalBuilder builder = new LocalBuilder(x, y, z + 1, column00, column10, column01, column11);
-                    treeDefinition.PlantTree(planet, new Index3(x, y, z), builder, random.Next(int.MaxValue));
+                    var builder = new LocalBuilder(x, y, z + 1, column00, column10, column01, column11);
+                    treeDefinition.PlantTree(planet, new(x, y, z), builder, random.Next(int.MaxValue));
                 }
             }
         }

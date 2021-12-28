@@ -1,45 +1,44 @@
-﻿using engenious;
-using engenious.Input;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using engenious;
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using OctoAwesome.UI.Languages;
+using EventArgs = System.EventArgs;
 
 namespace OctoAwesome.Client.Screens
 {
     internal sealed class LoadingScreen : BaseScreen
     {
-        private static readonly QuoteProvider loadingQuoteProvider;
+        private static readonly QuoteProvider LoadingQuoteProvider;
+
+        private readonly GameScreen _gameScreen;
+        private readonly Task _quoteUpdate;
+        private readonly CancellationTokenSource _tokenSource;
+
         static LoadingScreen()
         {
             var settings = TypeContainer.Get<ISettings>();
-            loadingQuoteProvider = new QuoteProvider(new FileInfo(Path.Combine(settings.Get<string>("LoadingScreenQuotesPath"))));
+            LoadingQuoteProvider = new(new(Path.Combine(settings.Get<string>("LoadingScreenQuotesPath"))));
         }
 
-        private readonly GameScreen gameScreen;
-        private readonly CancellationTokenSource tokenSource;
-        private readonly Task quoteUpdate;
-    
         public LoadingScreen(ScreenComponent manager) : base(manager)
         {
-            Padding = new Border(0, 0, 0, 0);
-            tokenSource = new CancellationTokenSource();
+            Padding = new(0, 0, 0, 0);
+            _tokenSource = new();
 
             Title = "Loading";
 
             SetDefaultBackground();
-            
+
             //Main Panel
             var mainStack = new Grid(manager);
-            mainStack.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 4 });
-            mainStack.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            mainStack.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 4 });
+            mainStack.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 1 });
             mainStack.Margin = Border.All(50);
             mainStack.HorizontalAlignment = HorizontalAlignment.Stretch;
             mainStack.VerticalAlignment = VerticalAlignment.Stretch;
@@ -53,7 +52,7 @@ namespace OctoAwesome.Client.Screens
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Margin = Border.All(10)
             };
-            mainStack.AddControl(backgroundStack, 0, 0, 1, 1);
+            mainStack.AddControl(backgroundStack, 0, 0);
 
             var mainGrid = new Grid(manager)
             {
@@ -61,13 +60,13 @@ namespace OctoAwesome.Client.Screens
                 VerticalAlignment = VerticalAlignment.Stretch
             };
 
-            mainGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            mainGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 3 });
-            mainGrid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Parts, Width = 1 });
-            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 4 });
-            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
-            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 1 });
-            mainGrid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 4 });
+            mainGrid.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            mainGrid.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 3 });
+            mainGrid.Columns.Add(new() { ResizeMode = ResizeMode.Parts, Width = 1 });
+            mainGrid.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 4 });
+            mainGrid.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            mainGrid.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 1 });
+            mainGrid.Rows.Add(new() { ResizeMode = ResizeMode.Parts, Height = 4 });
 
             backgroundStack.Controls.Add(mainGrid);
 
@@ -76,10 +75,11 @@ namespace OctoAwesome.Client.Screens
                 Text = "Konfuzius sagt: Das hier lädt...",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Padding = Border.All(10),
+                Padding = Border.All(10)
             };
 
-            quoteUpdate = Task.Run(async () => await UpdateLabel(text, loadingQuoteProvider, TimeSpan.FromSeconds(1.5), tokenSource.Token));
+            _quoteUpdate = Task.Run(async () =>
+                await UpdateLabel(text, LoadingQuoteProvider, TimeSpan.FromSeconds(1.5), _tokenSource.Token));
             mainGrid.AddControl(text, 1, 1);
 
 
@@ -92,36 +92,34 @@ namespace OctoAwesome.Client.Screens
             };
             mainGrid.AddControl(buttonStack, 1, 2);
 
-            Button cancelButton = GetButton(UI.Languages.OctoClient.Cancel);
+            var cancelButton = GetButton(OctoClient.Cancel);
             buttonStack.Controls.Add(cancelButton);
 
             Debug.WriteLine("Create GameScreen");
-            gameScreen = new GameScreen(manager);
-            gameScreen.Update(new GameTime());
-            gameScreen.OnCenterChanged += SwitchToGame;
+            _gameScreen = new(manager);
+            _gameScreen.Update(new());
+            _gameScreen.OnCenterChanged += SwitchToGame;
 
             cancelButton.LeftMouseClick += (s, e) =>
             {
-                tokenSource.Cancel();
-                tokenSource.Dispose();
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
                 manager.Player.SetEntity(null);
                 manager.Game.Simulation.ExitGame();
-                gameScreen.Unload();
+                _gameScreen.Unload();
                 manager.NavigateBack();
             };
-
-
         }
 
-        private void SwitchToGame(object sender, System.EventArgs args)
+        private void SwitchToGame(object sender, EventArgs args)
         {
             Manager.Invoke(() =>
             {
-                tokenSource.Cancel();
-                tokenSource.Dispose();
-                Manager.NavigateToScreen(gameScreen);
-                gameScreen.OnCenterChanged -= SwitchToGame;
-            });            
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
+                Manager.NavigateToScreen(_gameScreen);
+                _gameScreen.OnCenterChanged -= SwitchToGame;
+            });
         }
 
         private static async Task UpdateLabel(Label label, QuoteProvider quoteProvider, TimeSpan timeSpan, CancellationToken token)

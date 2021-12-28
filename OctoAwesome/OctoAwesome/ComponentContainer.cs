@@ -2,13 +2,9 @@
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
@@ -32,7 +28,7 @@ namespace OctoAwesome
         /// <summary>
         /// Contains only Components with notification interface implementation.
         /// </summary>
-        private readonly List<INotificationSubject<SerializableNotification>> notificationComponents;
+        private readonly List<INotificationSubject<SerializableNotification>> _notificationComponents;
 
         /// <summary>
         /// Entity die regelmäßig eine Updateevent bekommt
@@ -40,14 +36,11 @@ namespace OctoAwesome
         public ComponentContainer()
         {
             Components = new(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
-            notificationComponents = new();
+            _notificationComponents = new();
             Id = Guid.Empty;
         }
 
-        protected void OnRemoveComponent(TComponent component)
-        {
-
-        }
+        protected void OnRemoveComponent(TComponent component) { }
 
         protected virtual void OnAddComponent(TComponent component)
         {
@@ -69,7 +62,7 @@ namespace OctoAwesome
             //}
 
             if (component is INotificationSubject<SerializableNotification> nofiticationComponent)
-                notificationComponents.Add(nofiticationComponent);
+                _notificationComponents.Add(nofiticationComponent);
         }
 
         protected virtual void ValidateAddComponent(TComponent component)
@@ -84,10 +77,7 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager mananger)
-        {
-            OnInitialize(mananger);
-        }
+        public void Initialize(IResourceManager manager) => OnInitialize(manager);
 
         protected virtual void OnInitialize(IResourceManager manager)
         {
@@ -105,7 +95,6 @@ namespace OctoAwesome
 
                     localChunkCache.LocalChunkCache = new LocalChunkCache(positionComponent.Planet.GlobalChunkCache, 4, 2);
                 }
-
             }
         }
 
@@ -130,13 +119,9 @@ namespace OctoAwesome
             Components.Deserialize(reader);
         }
 
-        public virtual void RegisterDefault()
-        {
+        public virtual void RegisterDefault() { }
 
-        }
-
-        public override int GetHashCode()
-            => Id.GetHashCode();
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -146,19 +131,16 @@ namespace OctoAwesome
             return base.Equals(obj);
         }
 
-        public virtual void OnNotification(SerializableNotification notification)
-        {
-        }
+        public virtual void OnNotification(SerializableNotification notification) { }
 
         public virtual void Push(SerializableNotification notification)
         {
-            foreach (var component in notificationComponents)
+            foreach (var component in _notificationComponents)
                 component?.OnNotification(notification);
         }
 
-        public bool ContainsComponent<T>()
-            => Components.ContainsComponent<T>();
-        public T GetComponent<T>()
-            => Components.GetComponent<T>();
+        public bool ContainsComponent<T>() => Components.ContainsComponent<T>();
+       
+        public T GetComponent<T>() => Components.GetComponent<T>();
     }
 }

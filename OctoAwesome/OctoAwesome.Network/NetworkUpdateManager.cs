@@ -1,93 +1,80 @@
-﻿using OctoAwesome.Logging;
-using OctoAwesome.Network;
+﻿using System;
+using OctoAwesome.Logging;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
-using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
-using System;
+using OctoAwesome.Rx;
 
 namespace OctoAwesome.Network
 {
     public class NetworkUpdateManager : IDisposable
     {
-        private readonly Client client;
-        private readonly ILogger logger;
-        private readonly IDisposable hubSubscription;
-        private readonly IDisposable simulationSource;
-        private readonly IDisposable chunkSource;
-        private readonly IDisposable clientSubscription;
-        private readonly IPool<EntityNotification> entityNotificationPool;
-        private readonly IPool<BlockChangedNotification> blockChangedNotificationPool;
-        private readonly IPool<BlocksChangedNotification> blocksChangedNotificationPool;
-        private readonly PackagePool packagePool;
+        private readonly IPool<BlockChangedNotification> _blockChangedNotificationPool;
+        private readonly IPool<BlocksChangedNotification> _blocksChangedNotificationPool;
+        private readonly IPool<EntityNotification> _entityNotificationPool;
 
-        private readonly Relay<Notification> simulation;
-        private readonly Relay<Notification> chunk;
+        private readonly Client _client;
+
+        private readonly IDisposable _clientSubscription;
+        private readonly IDisposable _hubSubscription;
+        private readonly IDisposable _simulationSource;
+        private readonly IDisposable _chunkSource;
+        
+        private readonly ILogger _logger;
+        private readonly PackagePool _packagePool;
+
+        private readonly Relay<Notification> _simulationRelay;
+        private readonly Relay<Notification> _chunkRelay;
 
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
         {
-            this.client = client;
+            _client = client;
 
-            logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
-            entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
-            blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
-            packagePool = TypeContainer.Get<PackagePool>();
+            _logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(NetworkUpdateManager));
+            _entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
+            _blockChangedNotificationPool = TypeContainer.Get<IPool<BlockChangedNotification>>();
+            _blocksChangedNotificationPool = TypeContainer.Get<IPool<BlocksChangedNotification>>();
+            _packagePool = TypeContainer.Get<PackagePool>();
 
-            simulation = new Relay<Notification>();
-            chunk = new Relay<Notification>();
+            _simulationRelay = new();
+            _chunkRelay = new();
 
-            hubSubscription 
-                = updateHub
-                .ListenOn(DefaultChannels.Network)
-                .Subscribe(OnNext, error => logger.Error(error.Message, error));
-
-            simulationSource = updateHub.AddSource(simulation, DefaultChannels.Simulation);
-            chunkSource = updateHub.AddSource(chunk, DefaultChannels.Chunk);
-
-            clientSubscription = client.Packages.Subscribe(package => OnNext(package), err => OnError(err));
-            
+            _hubSubscription = updateHub.ListenOn(DefaultChannels.NETWORK).Subscribe(OnNext, error => _logger.Error(error.Message, error));
+            _simulationSource = updateHub.AddSource(_simulationRelay, DefaultChannels.SIMULATION);
+            _chunkSource = updateHub.AddSource(_chunkRelay, DefaultChannels.CHUNK);
+            _clientSubscription = client.Packages.Subscribe(OnNext, OnError);
         }
 
-        public void OnNext(Package package)
+        private void OnNext(Package package)
         {
             switch (package.OfficialCommand)
             {
                 case OfficialCommand.EntityNotification:
-                    var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, package.Payload);
-                    simulation.OnNext(entityNotification);
+                    var entityNotification = Serializer.DeserializePoolElement(_entityNotificationPool, package.Payload);
+                    _simulationRelay.OnNext(entityNotification);
                     entityNotification.Release();
                     break;
                 case OfficialCommand.ChunkNotification:
                     var notificationType = (BlockNotificationType)package.Payload[0];
-                    Notification chunkNotification;
-
-                    switch (notificationType)
+                    Notification chunkNotification = notificationType switch
                     {
-                        case BlockNotificationType.BlockChanged:
-                            chunkNotification = Serializer.DeserializePoolElement(blockChangedNotificationPool, package.Payload);
-                            break;
-                        case BlockNotificationType.BlocksChanged:
-                            chunkNotification = Serializer.DeserializePoolElement(blocksChangedNotificationPool, package.Payload);
-                            break;
-                        default:
-                            throw new NotSupportedException($"This Type is not supported: {notificationType}");
-                    }
+                        BlockNotificationType.BlockChanged => Serializer.DeserializePoolElement(_blockChangedNotificationPool, package.Payload),
+                        BlockNotificationType.BlocksChanged => Serializer.DeserializePoolElement(_blocksChangedNotificationPool, package.Payload),
+                        _ => throw new NotSupportedException($"This Type is not supported: {notificationType}")
+                    };
 
-                    chunk.OnNext(chunkNotification);
+                    _chunkRelay.OnNext(chunkNotification);
                     chunkNotification.Release();
                     break;
-                default:
-                    break;
             }
-
         }
 
-        public void OnNext(Notification value)
+        private void OnNext(Notification value)
         {
             ushort command;
             byte[] payload;
+
             switch (value)
             {
                 case EntityNotification entityNotification:
@@ -101,25 +88,23 @@ namespace OctoAwesome.Network
                 default:
                     return;
             }
-            var package = packagePool.Get();
+
+            var package = _packagePool.Get();
             package.Command = command;
             package.Payload = payload;
-            client.SendPackageAndRelase(package);
+            _client.SendPackageAndRelease(package);
         }
 
-        public void OnError(Exception error)
-        {
-            logger.Error(error.Message, error);
-        }
+        private void OnError(Exception error) => _logger.Error(error.Message, error);
 
         public void Dispose()
         {
-            hubSubscription?.Dispose();
-            simulationSource?.Dispose();
-            chunkSource?.Dispose();
-            chunk?.Dispose();
-            simulation?.Dispose();
-            clientSubscription?.Dispose();
+            _hubSubscription?.Dispose();
+            _simulationSource?.Dispose();
+            _chunkSource?.Dispose();
+            _simulationRelay?.Dispose();
+            _chunkRelay?.Dispose();
+            _clientSubscription?.Dispose();
         }
     }
 }

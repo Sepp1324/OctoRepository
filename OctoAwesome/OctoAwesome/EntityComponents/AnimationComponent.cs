@@ -1,28 +1,34 @@
-﻿using engenious;
-using engenious.Graphics;
-
-using OctoAwesome.Components;
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using engenious;
+using engenious.Graphics;
+using OctoAwesome.Components;
 
 namespace OctoAwesome.EntityComponents
 {
+    /// <summary>
+    /// </summary>
     public class AnimationComponent : Component, IEntityComponent, IFunctionalBlockComponent
     {
+        /// <summary>
+        /// </summary>
+        public AnimationComponent() => Sendable = true;
+
+        /// <summary>
+        /// </summary>
         public float CurrentTime { get; set; }
+
+        /// <summary>
+        /// </summary>
         public float MaxTime { get; set; }
+
+        /// <summary>
+        /// </summary>
         public float AnimationSpeed { get; set; }
 
-        public AnimationComponent()
-        {
-            Sendable = true;
-        }
-
+        /// <summary>
+        /// </summary>
+        /// <param name="writer"></param>
         public override void Serialize(BinaryWriter writer)
         {
             writer.Write(CurrentTime);
@@ -31,6 +37,9 @@ namespace OctoAwesome.EntityComponents
             base.Serialize(writer);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="reader"></param>
         public override void Deserialize(BinaryReader reader)
         {
             CurrentTime = reader.ReadSingle();
@@ -41,11 +50,12 @@ namespace OctoAwesome.EntityComponents
 
         private float NextSmallerValue(float value)
         {
-            if (value < 0)
-                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) + 1);
-            else if (value > 0)
-                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) - 1);
-            return -float.Epsilon;
+            return value switch
+            {
+                < 0 => BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) + 1),
+                > 0 => BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) - 1),
+                _ => -float.Epsilon
+            };
         }
 
         public void Update(GameTime gameTime, Model model)

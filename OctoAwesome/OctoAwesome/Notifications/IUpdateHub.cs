@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
-    public interface IUpdateHub 
+    public interface IUpdateHub
     {
-        IDisposable AddSource(IObservable<Notification> notification, string channel);
+        /// <summary>
+        ///     Listens on a given Channel
+        /// </summary>
+        /// <param name="channel">Channel to listen on</param>
+        /// <returns>Observer of a given Channel</returns>
         IObservable<Notification> ListenOn(string channel);
+
+        IDisposable AddSource(IObservable<Notification> notification, string channel);
     }
 }

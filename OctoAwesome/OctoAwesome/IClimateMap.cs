@@ -1,24 +1,24 @@
 ﻿namespace OctoAwesome
 {
     /// <summary>
-    /// Basisinterface für eine Klimakarte eines Planeten
+    ///     Basisinterface für eine Klimakarte eines Planeten
     /// </summary>
     public interface IClimateMap
     {
         /// <summary>
-        /// Der Planet für die ClimateMap
+        ///     Der Planet für die ClimateMap
         /// </summary>
         IPlanet Planet { get; }
 
         /// <summary>
-        /// Gibt die Temperatur für den Angegebenen Block zurück
+        ///     Gibt die Temperatur für den Angegebenen Block zurück
         /// </summary>
         /// <param name="blockIndex">Die Block-Koordinate</param>
-        /// <returns>Temperatur als <see cref="float"/></returns>
+        /// <returns>Temperatur als <see cref="float" /></returns>
         float GetTemperature(Index3 blockIndex);
 
         /// <summary>
-        /// Gibt den niederschlag für den angegebenen Block zurück
+        ///     Gibt den niederschlag für den angegebenen Block zurück
         /// </summary>
         /// <param name="blockIndex">Die Block-Koordinate</param>
         /// <returns>Den Niederschlagswert</returns>

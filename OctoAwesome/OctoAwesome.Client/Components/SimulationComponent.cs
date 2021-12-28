@@ -1,8 +1,7 @@
-﻿using OctoAwesome.Runtime;
-using System;
+﻿using System;
 using engenious;
-using OctoAwesome.EntityComponents;
 using OctoAwesome.Common;
+using OctoAwesome.EntityComponents;
 
 namespace OctoAwesome.Client.Components
 {
@@ -11,6 +10,14 @@ namespace OctoAwesome.Client.Components
         private readonly IExtensionResolver extensionResolver;
 
         private readonly IResourceManager resourceManager;
+
+        public SimulationComponent(OctoGame game, IExtensionResolver extensionResolver,
+            IResourceManager resourceManager) : base(game)
+        {
+            Service = game.Service;
+            this.extensionResolver = extensionResolver;
+            this.resourceManager = resourceManager;
+        }
 
         public Simulation Simulation { get; private set; }
 
@@ -24,13 +31,6 @@ namespace OctoAwesome.Client.Components
                     return Simulation.State;
                 return SimulationState.Undefined;
             }
-        }
-
-        public SimulationComponent(OctoGame game, IExtensionResolver extensionResolver, IResourceManager resourceManager) : base(game)
-        {
-            Service = game.Service;
-            this.extensionResolver = extensionResolver;
-            this.resourceManager = resourceManager;
         }
 
         public Guid NewGame(string name, string seed)
@@ -79,9 +79,10 @@ namespace OctoAwesome.Client.Components
             if (Simulation.State != SimulationState.Running && Simulation.State != SimulationState.Paused)
                 throw new NotSupportedException();
 
-            Player player = resourceManager.LoadPlayer(playerName);
-
-            player.Components.AddComponent(new RenderComponent() { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
+            var player = resourceManager.LoadPlayer(playerName);
+            player.Components.AddComponent(
+                new RenderComponent { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 },
+                true);
             Simulation.Add(player);
 
 

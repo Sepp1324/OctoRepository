@@ -1,63 +1,21 @@
-﻿using OctoAwesome.Basics.Properties;
-using OctoAwesome.Information;
-using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
     public class PickaxeDefinition : IItemDefinition
     {
-        public string Icon
-        {
-            get
-            {
-                return "pick_iron";
-            }
-        }
+        public int StackLimit => 1;
 
-        public string Name
-        {
-            get
-            {
-                return "Pickaxe";
-            }
-        }
+        public float VolumePerUnit => 10;
 
-        public int StackLimit
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public string Icon => "pick_iron";
 
-        public float VolumePerUnit
-        {
-            get
-            {
-                return 10;
-            }
-        }
+        public string Name => "Pickaxe";
 
 
-        public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            if(material is ISolidMaterialDefinition solid)
-            {
-                return true;
-            }
+        public bool CanMineMaterial(IMaterialDefinition material) => material is ISolidMaterialDefinition solid;
 
-            return false;
-        }
-
-        public Item Create(IMaterialDefinition material)
-        {
-            return new Pickaxe(this, material);
-        }
+        public Item Create(IMaterialDefinition material) => new Pickaxe(this, material);
     }
 }

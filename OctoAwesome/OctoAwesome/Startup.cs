@@ -1,15 +1,13 @@
-﻿using NLog;
+﻿using System;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
-using OctoAwesome.Information;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ILogger = OctoAwesome.Logging.ILogger;
+using Logger = OctoAwesome.Logging.Logger;
+using NullLogger = OctoAwesome.Logging.NullLogger;
 
 namespace OctoAwesome
 {
@@ -17,12 +15,12 @@ namespace OctoAwesome
     {
         public static void Register(ITypeContainer typeContainer)
         {
-            typeContainer.Register<GlobalChunkCache, GlobalChunkCache>(InstanceBehaviour.Instance);
-            typeContainer.Register<IGlobalChunkCache, GlobalChunkCache>(InstanceBehaviour.Instance);
+            typeContainer.Register<GlobalChunkCache, GlobalChunkCache>();
+            typeContainer.Register<IGlobalChunkCache, GlobalChunkCache>();
 
-            typeContainer.Register<Logging.NullLogger, Logging.NullLogger>();
-            typeContainer.Register<Logging.Logger, Logging.Logger>();
-            typeContainer.Register<Logging.ILogger, Logging.Logger>();
+            typeContainer.Register<NullLogger, NullLogger>();
+            typeContainer.Register<Logger, Logger>();
+            typeContainer.Register<ILogger, Logger>();
 
             typeContainer.Register<IPool<Awaiter>, Pool<Awaiter>>(InstanceBehaviour.Singleton);
             typeContainer.Register<Pool<Awaiter>, Pool<Awaiter>>(InstanceBehaviour.Singleton);
@@ -66,7 +64,7 @@ namespace OctoAwesome
                         FileName = $"./logs/generic-{DateTime.Now:ddMMyy_hhmmss}.log"
                     });
                     break;
-            }            
+            }
 
             LogManager.Configuration = config;
         }

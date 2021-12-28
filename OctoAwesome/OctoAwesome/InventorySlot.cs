@@ -3,32 +3,33 @@
 namespace OctoAwesome
 {
     /// <summary>
-    /// Ein Slot in einem Inventar
+    ///     Ein Slot in einem Inventar
     /// </summary>
     public class InventorySlot
     {
+        private IInventoryable _item;
+
         /// <summary>
-        /// Das Item das in dem Slot ist.
+        ///     Das Item das in dem Slot ist.
         /// </summary>
         public IInventoryable Item
         {
-            get => item; set
+            get => _item;
+            set
             {
-                if (value is IDefinition definition)
-                    Definition = definition;
-                else if (value is IItem item)
-                    Definition = item.Definition;
-                else
-                    Definition = null;
+                Definition = value switch
+                {
+                    IDefinition definition => definition,
+                    IItem item => item.Definition,
+                    _ => null
+                };
 
-                item = value;
+                _item = value;
             }
         }
 
-        private IInventoryable item;
-
         /// <summary>
-        /// Volumen des Elementes <see cref="Item"/> in diesem Slot in dm³.
+        ///     Volumen des Elementes <see cref="Item" /> in diesem Slot in dm³.
         /// </summary>
         public decimal Amount { get; set; }
 

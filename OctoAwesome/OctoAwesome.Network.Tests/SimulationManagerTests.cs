@@ -19,7 +19,7 @@ namespace OctoAwesome.Network.Tests
 
         public SimulationManagerTests()
         {
-            simulationManager = new SimulationManager(new Settings(), new UpdateHub());
+            simulationManager = new SimulationManager(new Settings(), new());
         }
 
         [Test]

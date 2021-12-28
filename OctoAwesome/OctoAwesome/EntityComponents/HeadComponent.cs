@@ -1,40 +1,31 @@
-﻿using engenious;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
+using engenious;
 using OctoAwesome.Components;
 
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// HeadComponent
+    ///     HeadComponent
     /// </summary>
     public sealed class HeadComponent : Component, IEntityComponent
     {
         /// <summary>
-        /// HeadPosition
+        ///     HeadPosition
         /// </summary>
         public Vector3 Offset { get; set; }
 
         /// <summary>
-        /// Tilt
+        ///     Tilt
         /// </summary>
         public float Tilt { get; set; }
 
         /// <summary>
-        /// Angle
+        ///     Angle
         /// </summary>
         public float Angle { get; set; }
 
-        public HeadComponent()
-        {
-
-        }
-
-
+        /// <summary>
+        /// </summary>
         public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);
@@ -47,6 +38,8 @@ namespace OctoAwesome.EntityComponents
             writer.Write(Angle);
         }
 
+        /// <summary>
+        /// </summary>
         public override void Deserialize(BinaryReader reader)
         {
             base.Deserialize(reader);
@@ -54,7 +47,7 @@ namespace OctoAwesome.EntityComponents
             var x = reader.ReadSingle();
             var y = reader.ReadSingle();
             var z = reader.ReadSingle();
-            Offset = new Vector3(x, y, z);
+            Offset = new(x, y, z);
 
 
             Tilt = reader.ReadSingle();

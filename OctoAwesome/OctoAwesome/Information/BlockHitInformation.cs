@@ -1,10 +1,6 @@
-﻿using OctoAwesome.Definitions;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Information
 {
@@ -14,10 +10,11 @@ namespace OctoAwesome.Information
 
         public bool IsEmpty => !IsHitValid && Quantity == 0 && definitions == null;
 
-        public bool IsHitValid { get;  }
+        public bool IsHitValid { get; }
+
         public int Quantity { get; }
-        public IReadOnlyList<(int Quantity, IDefinition Definition)> Definitions
-            => definitions ?? Array.Empty<(int Quantity, IDefinition Definition)>();
+
+        public IReadOnlyList<(int Quantity, IDefinition Definition)> Definitions => definitions ?? Array.Empty<(int Quantity, IDefinition Definition)>();
 
         private readonly (int Quantity, IDefinition Definition)[] definitions;
 
@@ -28,25 +25,22 @@ namespace OctoAwesome.Information
             this.definitions = definitions;
         }
 
-        public override bool Equals(object obj) 
-            => obj is BlockHitInformation information && Equals(information);
-        public bool Equals(BlockHitInformation other) 
-            => IsHitValid == other.IsHitValid 
-                && Quantity == other.Quantity 
-                && EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.Equals(definitions, other.definitions);
+        public override bool Equals(object obj) => obj is BlockHitInformation information && Equals(information);
+
+        public bool Equals(BlockHitInformation other) => IsHitValid == other.IsHitValid && Quantity == other.Quantity && EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.Equals(definitions, other.definitions);
 
         public override int GetHashCode()
         {
             var hashCode = -1198439795;
             hashCode = hashCode * -1521134295 + IsHitValid.GetHashCode();
             hashCode = hashCode * -1521134295 + Quantity.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.GetHashCode(definitions);
+            hashCode = hashCode * -1521134295 +
+                       EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.GetHashCode(definitions);
             return hashCode;
         }
 
-        public static bool operator ==(BlockHitInformation left, BlockHitInformation right) 
-            => left.Equals(right);
-        public static bool operator !=(BlockHitInformation left, BlockHitInformation right) 
-            => !(left == right);
+        public static bool operator ==(BlockHitInformation left, BlockHitInformation right) => left.Equals(right);
+
+        public static bool operator !=(BlockHitInformation left, BlockHitInformation right) => !(left == right);
     }
 }

@@ -1,12 +1,10 @@
-﻿using OctoAwesome.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 
 namespace OctoAwesome.Serialization
 {
-    public class SerializableCollection<T> : Collection<T>, ISerializableEnumerable<T>, ISerializable where T : ISerializable
+    public class SerializableCollection<T> : Collection<T>, ISerializableEnumerable<T>, ISerializable
+        where T : ISerializable
     {
         public void Deserialize(BinaryReader reader)
         {
@@ -19,6 +17,5 @@ namespace OctoAwesome.Serialization
             foreach (var item in this)
                 item.Serialize(writer);
         }
-
     }
 }

@@ -1,28 +1,28 @@
-﻿using engenious;
+﻿using System;
+using engenious;
 using OctoAwesome.Components;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.EntityComponents
 {
+    /// <summary>
+    /// </summary>
     public sealed class BoxCollisionComponent : CollisionComponent, IFunctionalBlockComponent
     {
-        public ReadOnlySpan<BoundingBox> BoundingBoxes => new(boundingBoxes);
+        private readonly BoundingBox[] _boundingBoxes;
 
-        private readonly BoundingBox[] boundingBoxes;
-
+        /// <summary>
+        /// </summary>
         public BoxCollisionComponent()
         {
-
         }
 
-        public BoxCollisionComponent(BoundingBox[] boundingBoxes)
-        {
-            this.boundingBoxes = boundingBoxes;
-        }
+        /// <summary>
+        /// </summary>
+        /// <param name="boundingBoxes"></param>
+        public BoxCollisionComponent(BoundingBox[] boundingBoxes) => _boundingBoxes = boundingBoxes;
+
+        /// <summary>
+        /// </summary>
+        public ReadOnlySpan<BoundingBox> BoundingBoxes => new(_boundingBoxes);
     }
 }

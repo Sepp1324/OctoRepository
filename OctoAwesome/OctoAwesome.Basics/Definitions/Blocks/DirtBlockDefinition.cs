@@ -1,32 +1,38 @@
-﻿using System;
-using System.Drawing;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
+using OctoAwesome.Basics.Languages;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Definition for Dirt
+    /// </summary>
     public sealed class DirtBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Ground; }
-        }
+        /// <summary>
+        /// Definition for Dirt
+        /// </summary>
+        /// <param name="material"><see cref="DirtMaterialDefinition"/></param>
+        public DirtBlockDefinition(DirtMaterialDefinition material) => Material = material;
 
-        public override string Icon
-        {
-            get { return "dirt"; }
-        }
+        /// <summary>
+        /// Material-Name
+        /// </summary>
+        public override string Name => OctoBasics.Ground;
 
+        /// <summary>
+        /// Material-Inventory Icon
+        /// </summary>
+        public override string Icon => "dirt";
 
-        public override string[] Textures { get; } = new[] { "dirt" };
+        /// <summary>
+        /// Material-Textures
+        /// </summary>
+        public override string[] Textures { get; } = { "dirt" };
 
-
-
+        /// <summary>
+        /// Material
+        /// </summary>
         public override IMaterialDefinition Material { get; }
-
-        public DirtBlockDefinition(DirtMaterialDefinition material)
-        {
-            Material = material;
-        }
     }
 }
