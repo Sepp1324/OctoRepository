@@ -96,6 +96,7 @@ namespace OctoAwesome
 
         /// <summary>
         /// </summary>
+        /// <param name="issueNotification"></param>
         /// <param name="blockInfos"></param>
         public void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos)
         {

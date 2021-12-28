@@ -77,9 +77,7 @@ namespace OctoAwesome
             Components.Deserialize(reader);
         }
 
-        protected void OnRemoveComponent(TComponent component)
-        {
-        }
+        protected void OnRemoveComponent(TComponent component) { }
 
         protected virtual void OnAddComponent(TComponent component)
         {
@@ -116,18 +114,11 @@ namespace OctoAwesome
                 throw new NotSupportedException("Can't remove components during simulation");
         }
 
-        public void Initialize(IResourceManager manager)
-        {
-            OnInitialize(manager);
-        }
+        public void Initialize(IResourceManager manager) => OnInitialize(manager);
 
-        protected virtual void OnInitialize(IResourceManager manager)
-        {
-        }
+        protected virtual void OnInitialize(IResourceManager manager) { }
 
-        public virtual void RegisterDefault()
-        {
-        }
+        public virtual void RegisterDefault() { }
 
         public override int GetHashCode() => Id.GetHashCode();
 

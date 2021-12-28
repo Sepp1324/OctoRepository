@@ -33,71 +33,49 @@ namespace OctoAwesome
         ///     Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte</param>
-        public Index2(Index2 value) : this(value.X, value.Y)
-        {
-        }
+        public Index2(Index2 value) : this(value.X, value.Y) { }
 
         /// <summary>
         ///     Initialisierung
         /// </summary>
         /// <param name="value">Initialwerte (X und Y Anteil wird übernommen)</param>
-        public Index2(Index3 value) : this(value.X, value.Y)
-        {
-        }
+        public Index2(Index3 value) : this(value.X, value.Y) { }
 
         /// <summary>
         ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X</param>
-        public void NormalizeX(int size)
-        {
-            X = NormalizeAxis(X, size);
-        }
+        public void NormalizeX(int size) => X = NormalizeAxis(X, size);
 
         /// <summary>
         ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Größe (X-Anzeil wird genommen)</param>
-        public void NormalizeX(Index2 size)
-        {
-            NormalizeX(size.X);
-        }
+        public void NormalizeX(Index2 size) => NormalizeX(size.X);
 
         /// <summary>
         ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Größe (X-Anzeil wird genommen)</param>
-        public void NormalizeX(Index3 size)
-        {
-            NormalizeX(size.X);
-        }
+        public void NormalizeX(Index3 size) => NormalizeX(size.X);
 
         /// <summary>
         ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für Y</param>
-        public void NormalizeY(int size)
-        {
-            Y = NormalizeAxis(Y, size);
-        }
+        public void NormalizeY(int size) => Y = NormalizeAxis(Y, size);
 
         /// <summary>
         ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Größe (Y-Anzeil wird genommen)</param>
-        public void NormalizeY(Index2 size)
-        {
-            NormalizeY(size.Y);
-        }
+        public void NormalizeY(Index2 size) => NormalizeY(size.Y);
 
         /// <summary>
         ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Größe (Y-Anzeil wird genommen)</param>
-        public void NormalizeY(Index3 size)
-        {
-            NormalizeY(size.Y);
-        }
+        public void NormalizeY(Index3 size) => NormalizeY(size.Y);
 
         /// <summary>
         ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
@@ -114,19 +92,13 @@ namespace OctoAwesome
         ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="size">2D Size</param>
-        public void NormalizeXY(Index2 size)
-        {
-            NormalizeXY(size.X, size.Y);
-        }
+        public void NormalizeXY(Index2 size) => NormalizeXY(size.X, size.Y);
 
         /// <summary>
         ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.
         /// </summary>
         /// <param name="size">3D Size</param>
-        public void NormalizeXY(Index3 size)
-        {
-            NormalizeXY(size.X, size.Y);
-        }
+        public void NormalizeXY(Index3 size) => NormalizeXY(size.X, size.Y);
 
         /// <summary>
         ///     Normalisiert den Wert von X und Y auf den angegebenen Grenzbereich.

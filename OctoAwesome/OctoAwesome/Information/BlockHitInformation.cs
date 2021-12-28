@@ -14,8 +14,7 @@ namespace OctoAwesome.Information
 
         public int Quantity { get; }
 
-        public IReadOnlyList<(int Quantity, IDefinition Definition)> Definitions =>
-            definitions ?? Array.Empty<(int Quantity, IDefinition Definition)>();
+        public IReadOnlyList<(int Quantity, IDefinition Definition)> Definitions => definitions ?? Array.Empty<(int Quantity, IDefinition Definition)>();
 
         private readonly (int Quantity, IDefinition Definition)[] definitions;
 
@@ -28,10 +27,7 @@ namespace OctoAwesome.Information
 
         public override bool Equals(object obj) => obj is BlockHitInformation information && Equals(information);
 
-        public bool Equals(BlockHitInformation other) =>
-            IsHitValid == other.IsHitValid && Quantity == other.Quantity &&
-            EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.Equals(definitions,
-                other.definitions);
+        public bool Equals(BlockHitInformation other) => IsHitValid == other.IsHitValid && Quantity == other.Quantity && EqualityComparer<(int Quantity, IDefinition Definition)[]>.Default.Equals(definitions, other.definitions);
 
         public override int GetHashCode()
         {

@@ -9,9 +9,7 @@ namespace OctoAwesome.Serialization.Entities
 {
     public sealed class ComponentContainerDefinition<TContainer> : ISerializable where TContainer : IComponent
     {
-        public ComponentContainerDefinition()
-        {
-        }
+        public ComponentContainerDefinition() { }
 
         public ComponentContainerDefinition(ComponentContainer<TContainer> entity)
         {
@@ -53,26 +51,15 @@ namespace OctoAwesome.Serialization.Entities
             Components = list;
         }
 
-        public sealed class ComponentContainerDefinitionContext<TContainer> : SerializableDatabaseContext<
-            GuidTag<ComponentContainerDefinition<TContainer>>, ComponentContainerDefinition<TContainer>>
-            where TContainer : IComponent
+        public sealed class ComponentContainerDefinitionContext<TContainer> : SerializableDatabaseContext<GuidTag<ComponentContainerDefinition<TContainer>>, ComponentContainerDefinition<TContainer>> where TContainer : IComponent
         {
-            public ComponentContainerDefinitionContext(
-                Database<GuidTag<ComponentContainerDefinition<TContainer>>> database) : base(database)
-            {
-            }
+            public ComponentContainerDefinitionContext(Database<GuidTag<ComponentContainerDefinition<TContainer>>> database) : base(database) { }
 
-            public override void AddOrUpdate(ComponentContainerDefinition<TContainer> value)
-            {
-                InternalAddOrUpdate(new(value.Id), value);
-            }
+            public override void AddOrUpdate(ComponentContainerDefinition<TContainer> value) => InternalAddOrUpdate(new(value.Id), value);
 
             public IEnumerable<GuidTag<ComponentContainerDefinition<TContainer>>> GetAllKeys() => Database.Keys;
 
-            public override void Remove(ComponentContainerDefinition<TContainer> value)
-            {
-                InternalRemove(new(value.Id));
-            }
+            public override void Remove(ComponentContainerDefinition<TContainer> value) => InternalRemove(new(value.Id));
         }
     }
 }

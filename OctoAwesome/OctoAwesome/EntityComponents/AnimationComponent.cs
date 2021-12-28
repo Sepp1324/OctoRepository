@@ -63,8 +63,7 @@ namespace OctoAwesome.EntityComponents
             if (model.CurrentAnimation is null)
                 return;
 
-            CurrentTime = Math.Clamp(CurrentTime + AnimationSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0,
-                NextSmallerValue(MaxTime));
+            CurrentTime = Math.Clamp(CurrentTime + AnimationSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0, NextSmallerValue(MaxTime));
 
             model.UpdateAnimation(CurrentTime);
         }

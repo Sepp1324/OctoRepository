@@ -20,7 +20,6 @@ namespace OctoAwesome.Serialization
         public byte[] GetBytes()
         {
             var byteArray = new byte[Length];
-            const int intSize = sizeof(int);
 
             Buffer.BlockCopy(BitConverter.GetBytes(Index.X), 0, byteArray, 0, sizeof(int));
             Buffer.BlockCopy(BitConverter.GetBytes(Index.Y), 0, byteArray, sizeof(int), sizeof(int));

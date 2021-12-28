@@ -34,8 +34,6 @@ namespace OctoAwesome
         /// <summary>
         /// </summary>
         /// <param name="typeContainer"></param>
-        public void Register(ITypeContainer typeContainer)
-        {
-        }
+        public void Register(ITypeContainer typeContainer) { }
     }
 }

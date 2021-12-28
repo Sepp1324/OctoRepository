@@ -197,10 +197,9 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        ///     Serialisiert die Chunksäule in den angegebenen Stream.
+        /// Serializes the ChunkColumn with the given <see cref="BinaryWriter"/>
         /// </summary>
-        /// <param name="writer">Zielschreiber</param>
-        /// <param name="definitionManager">Der verwendete DefinitionManager</param>
+        /// <param name="writer">Given <see cref="BinaryWriter"/></param>
         public void Serialize(BinaryWriter writer)
         {
             // Definitionen sammeln
@@ -277,12 +276,9 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        ///     Deserialisiert die Chunksäule aus dem angegebenen Stream.
+        /// Deserializes the ChunkColumn with the given <see cref="BinaryReader"/>
         /// </summary>
-        /// <param name="stream">Quellstream</param>
-        /// <param name="definitionManager">Der verwendete DefinitionManager</param>
-        /// <param name="columnIndex">Die Position der Säule</param>
-        /// <param name="planetId">Der Index des Planeten</param>
+        /// <param name="reader">Given <see cref="BinaryReader"/></param>
         public void Deserialize(BinaryReader reader)
         {
             var longIndex = reader.ReadByte() > 0;

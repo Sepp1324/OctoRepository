@@ -52,8 +52,7 @@ namespace OctoAwesome.Notifications
             var isNotification = reader.ReadBoolean();
 
             if (isNotification)
-                Notification = Serializer.DeserializePoolElement(_propertyChangedNotificationPool,
-                    reader.ReadBytes(reader.ReadInt32()));
+                Notification = Serializer.DeserializePoolElement(_propertyChangedNotificationPool, reader.ReadBytes(reader.ReadInt32()));
         }
 
         public override void Serialize(BinaryWriter writer)

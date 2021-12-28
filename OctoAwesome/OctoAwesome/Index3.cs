@@ -41,89 +41,61 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="index">2D-Basis</param>
         /// <param name="z">Z-Anteil</param>
-        public Index3(Index2 index, int z) : this(index.X, index.Y, z)
-        {
-        }
+        public Index3(Index2 index, int z) : this(index.X, index.Y, z) { }
 
         /// <summary>
         ///     Initialisierung
         /// </summary>
         /// <param name="index">3D-Basis</param>
-        public Index3(Index3 index) : this(index.X, index.Y, index.Z)
-        {
-        }
+        public Index3(Index3 index) : this(index.X, index.Y, index.Z) { }
 
         /// <summary>
         ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X</param>
-        public void NormalizeX(int size)
-        {
-            X = Index2.NormalizeAxis(X, size);
-        }
+        public void NormalizeX(int size) => X = Index2.NormalizeAxis(X, size);
 
         /// <summary>
         ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Size</param>
-        public void NormalizeX(Index2 size)
-        {
-            NormalizeX(size.X);
-        }
+        public void NormalizeX(Index2 size) => NormalizeX(size.X);
 
         /// <summary>
         ///     Normalisiert die X-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Size</param>
-        public void NormalizeX(Index3 size)
-        {
-            NormalizeX(size.X);
-        }
+        public void NormalizeX(Index3 size) => NormalizeX(size.X);
 
         /// <summary>
         ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für Y</param>
-        public void NormalizeY(int size)
-        {
-            Y = Index2.NormalizeAxis(Y, size);
-        }
+        public void NormalizeY(int size) => Y = Index2.NormalizeAxis(Y, size);
 
         /// <summary>
         ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">2D-Size</param>
-        public void NormalizeY(Index2 size)
-        {
-            NormalizeY(size.Y);
-        }
+        public void NormalizeY(Index2 size) => NormalizeY(size.Y);
 
         /// <summary>
         ///     Normalisiert die Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Size</param>
-        public void NormalizeY(Index3 size)
-        {
-            NormalizeY(size.Y);
-        }
+        public void NormalizeY(Index3 size) => NormalizeY(size.Y);
 
         /// <summary>
         ///     Normalisiert die Z-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für Z</param>
-        public void NormalizeZ(int size)
-        {
-            Z = Index2.NormalizeAxis(Z, size);
-        }
+        public void NormalizeZ(int size) => Z = Index2.NormalizeAxis(Z, size);
 
         /// <summary>
         ///     Normalisiert die Z-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">3D-Size</param>
-        public void NormalizeZ(Index3 size)
-        {
-            NormalizeZ(size.Z);
-        }
+        public void NormalizeZ(Index3 size) => NormalizeZ(size.Z);
 
         /// <summary>
         ///     Normalisiert die X- und Y-Achse auf die angegebene Größe.
@@ -140,19 +112,13 @@ namespace OctoAwesome
         ///     Normalisiert die X- und Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X und Y</param>
-        public void NormalizeXY(Index2 size)
-        {
-            NormalizeXY(size.X, size.Y);
-        }
+        public void NormalizeXY(Index2 size) => NormalizeXY(size.X, size.Y);
 
         /// <summary>
         ///     Normalisiert die X- und Y-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X und Y</param>
-        public void NormalizeXY(Index3 size)
-        {
-            NormalizeXY(size.X, size.Y);
-        }
+        public void NormalizeXY(Index3 size) => NormalizeXY(size.X, size.Y);
 
         /// <summary>
         ///     Normalisiert die X-, Y- und Z-Achse auf die angegebene Größe.
@@ -172,19 +138,13 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="size">2D-Size</param>
         /// <param name="z">Z-Anteil</param>
-        public void NormalizeXYZ(Index2 size, int z)
-        {
-            NormalizeXYZ(size.X, size.Y, z);
-        }
+        public void NormalizeXYZ(Index2 size, int z) => NormalizeXYZ(size.X, size.Y, z);
 
         /// <summary>
         ///     Normalisiert die X-, Y- und Z-Achse auf die angegebene Größe.
         /// </summary>
         /// <param name="size">Maximalwert für X, Y und Z</param>
-        public void NormalizeXYZ(Index3 size)
-        {
-            NormalizeXYZ(size.X, size.Y, size.Z);
-        }
+        public void NormalizeXYZ(Index3 size) => NormalizeXYZ(size.X, size.Y, size.Z);
 
         /// <summary>
         ///     Ermittelt die kürzeste Entfernung zum Ziel auf einer normalisierten X-Achse.
@@ -224,9 +184,7 @@ namespace OctoAwesome
         /// <param name="destination">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
         /// <returns>Entfernung</returns>
-        public Index3 ShortestDistanceXY(Index3 destination, Index3 size) =>
-            new(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y),
-                destination.Z - Z);
+        public Index3 ShortestDistanceXY(Index3 destination, Index3 size) => new(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y), destination.Z - Z);
 
         /// <summary>
         ///     Ermittelt die kürzeste Entfernung zum Ziel auf den normalisierten Achsen.
@@ -234,9 +192,7 @@ namespace OctoAwesome
         /// <param name="destination">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
         /// <returns>Entfernung</returns>
-        public Index3 ShortestDistanceXY(Index3 destination, Index2 size) =>
-            new(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y),
-                destination.Z - Z);
+        public Index3 ShortestDistanceXY(Index3 destination, Index2 size) => new(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y), destination.Z - Z);
 
         /// <summary>
         ///     Ermittelt die kürzeste Entfernung zum Ziel auf den normalisierten Achsen.
@@ -244,9 +200,7 @@ namespace OctoAwesome
         /// <param name="destination">Ziel</param>
         /// <param name="size">Normalisierungsgröße</param>
         /// <returns>Entfernung</returns>
-        public Index3 ShortestDistanceXYZ(Index3 destination, Index3 size) =>
-            new(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y),
-                ShortestDistanceZ(destination.Z, size.Z));
+        public Index3 ShortestDistanceXYZ(Index3 destination, Index3 size) => new(ShortestDistanceX(destination.X, size.X), ShortestDistanceY(destination.Y, size.Y), ShortestDistanceZ(destination.Z, size.Z));
 
         /// <summary>
         ///     Ermittelt die Entferung zum Nullpunkt.

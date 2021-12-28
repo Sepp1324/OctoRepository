@@ -33,17 +33,11 @@ namespace OctoAwesome
         /// <summary>
         /// </summary>
         /// <param name="item"></param>
-        public void Add(Entity item)
-        {
-            _entities.Add(item);
-        }
+        public void Add(Entity item) => _entities.Add(item);
 
         /// <summary>
         /// </summary>
-        public void Clear()
-        {
-            _entities.Clear();
-        }
+        public void Clear() => _entities.Clear();
 
         /// <summary>
         /// </summary>
@@ -55,10 +49,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(Entity[] array, int arrayIndex)
-        {
-            _entities.CopyTo(array, arrayIndex);
-        }
+        public void CopyTo(Entity[] array, int arrayIndex) => _entities.CopyTo(array, arrayIndex);
 
         /// <summary>
         /// </summary>

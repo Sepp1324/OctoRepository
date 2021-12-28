@@ -17,6 +17,7 @@ namespace OctoAwesome.Basics.Definitions.Items
         public ChestItem(ChestItemDefinition definition, IMaterialDefinition materialDefinition) : base(definition, materialDefinition)
         {
             _updateHub = TypeContainer.Get<IUpdateHub>();
+            _simulationRelay = new();
             _simulationSource = _updateHub.AddSource(_simulationRelay, DefaultChannels.SIMULATION);
         }
 
@@ -42,6 +43,7 @@ namespace OctoAwesome.Basics.Definitions.Items
         public void Dispose()
         {
             _simulationSource?.Dispose();
+            _simulationRelay?.Dispose();
         }
     }
 }

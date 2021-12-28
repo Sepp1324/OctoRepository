@@ -52,6 +52,7 @@ namespace OctoAwesome
         /// <summary>
         ///     Create new instance of GlobalChunkCache
         /// </summary>
+        /// <param name="planet"></param>
         /// <param name="resourceManager">the current <see cref="IResourceManager" /> to load ressources/></param>
         /// <param name="updateHub"></param>
         public GlobalChunkCache(IPlanet planet, IResourceManager resourceManager, IUpdateHub updateHub)
@@ -62,6 +63,9 @@ namespace OctoAwesome
             _cache = new();
             _newChunks = new();
             _oldChunks = new();
+
+            _networkRelay = new();
+            _chunkRelay = new();
 
             CancellationTokenSource tokenSource = new();
             Task cleanupTask = new(async () => await BackgroundCleanup(tokenSource.Token), TaskCreationOptions.LongRunning);
@@ -103,6 +107,8 @@ namespace OctoAwesome
             _chunkSubscription.Dispose();
             _networkSource.Dispose();
             _chunkSource.Dispose();
+            _networkRelay?.Dispose();
+            _chunkRelay?.Dispose();
         }
 
         /// <summary>

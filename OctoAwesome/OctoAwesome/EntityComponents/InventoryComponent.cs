@@ -102,6 +102,7 @@ namespace OctoAwesome.EntityComponents
         /// <summary>
         ///     Fügt ein Element des angegebenen Definitionstyps hinzu.
         /// </summary>
+        /// <param name="quantity"></param>
         /// <param name="item">Die Definition.</param>
         public void AddUnit(int quantity, IInventoryable item)
         {

@@ -22,6 +22,9 @@ namespace OctoAwesome.GameServer.Commands
         {
             var updateHub = TypeContainer.Get<IUpdateHub>();
 
+            simulationChannel = new();
+            networkChannel = new();
+
             simulationChannelSub = updateHub.AddSource(simulationChannel, DefaultChannels.SIMULATION);
             networkChannelSub = updateHub.AddSource(networkChannel, DefaultChannels.NETWORK);
         }

@@ -48,8 +48,7 @@ namespace OctoAwesome
             set
             {
                 var localBlockIndex = LocalBlockIndex;
-                _block = new(value.X * Chunk.CHUNKSIZE_X + localBlockIndex.X,
-                    value.Y * Chunk.CHUNKSIZE_Y + localBlockIndex.Y, value.Z * Chunk.CHUNKSIZE_Z + localBlockIndex.Z);
+                _block = new(value.X * Chunk.CHUNKSIZE_X + localBlockIndex.X, value.Y * Chunk.CHUNKSIZE_Y + localBlockIndex.Y, value.Z * Chunk.CHUNKSIZE_Z + localBlockIndex.Z);
             }
         }
 
@@ -112,8 +111,7 @@ namespace OctoAwesome
             set
             {
                 var chunkIndex = ChunkIndex;
-                _block = new(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y,
-                    chunkIndex.Z * Chunk.CHUNKSIZE_Z);
+                _block = new(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y, chunkIndex.Z * Chunk.CHUNKSIZE_Z);
                 _position = value;
                 Normalize();
             }
@@ -138,8 +136,7 @@ namespace OctoAwesome
         /// </summary>
         private void Normalize()
         {
-            var shift = new Index3((int)Math.Floor(_position.X), (int)Math.Floor(_position.Y),
-                (int)Math.Floor(_position.Z));
+            var shift = new Index3((int)Math.Floor(_position.X), (int)Math.Floor(_position.Y), (int)Math.Floor(_position.Z));
 
             _block += shift;
             _position -= shift;
@@ -193,8 +190,7 @@ namespace OctoAwesome
         public override bool Equals(object obj)
         {
             if (obj is Coordinate coordinate)
-                return base.Equals(obj) || Planet == coordinate.Planet && _position == coordinate._position &&
-                    _block == coordinate._block;
+                return base.Equals(obj) || Planet == coordinate.Planet && _position == coordinate._position && _block == coordinate._block;
 
             return base.Equals(obj);
         }

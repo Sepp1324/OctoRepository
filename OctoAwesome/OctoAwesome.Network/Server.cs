@@ -16,10 +16,10 @@ namespace OctoAwesome.Network
 
         public Server()
         {
-            _ipv4Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _ipv6Socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-            _connectedClients = new List<ConnectedClient>();
-            _lockObj = new object();
+            _ipv4Socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _ipv6Socket = new(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            _connectedClients = new();
+            _lockObj = new();
         }
 
         public event EventHandler<ConnectedClient> OnClientConnected;

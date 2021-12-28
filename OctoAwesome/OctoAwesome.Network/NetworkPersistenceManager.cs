@@ -3,17 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using OctoAwesome.Components;
 using OctoAwesome.Logging;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Pooling;
+using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
-using OctoAwesome.Threading;
 
 namespace OctoAwesome.Network
 {
-    public class NetworkPersistenceManager : IPersistenceManager, IAsyncObserver<Package>
+    public class NetworkPersistenceManager : IPersistenceManager, IDisposable
     {
         private readonly IPool<Awaiter> _awaiterPool;
         private readonly Client _client;
@@ -27,7 +26,7 @@ namespace OctoAwesome.Network
         public NetworkPersistenceManager(ITypeContainer typeContainer, Client client)
         {
             _client = client;
-            _subscription = client.Subscribe(this);
+            _subscription = client.Packages.Subscribe(OnNext, OnError);
             _typeContainer = typeContainer;
 
             _packages = new();
@@ -36,7 +35,7 @@ namespace OctoAwesome.Network
             _packagePool = TypeContainer.Get<PackagePool>();
         }
 
-        public Task OnNext(Package package)
+        private void OnNext(Package package)
         {
             _logger.Trace($"Package with id:{package.UId} for Command: {package.OfficialCommand}");
 
@@ -59,24 +58,12 @@ namespace OctoAwesome.Network
 
                     break;
                 default:
-                    _logger.Warn($"Cant handle Command: {package.OfficialCommand}");
-                    return Task.CompletedTask;
+                    _logger.Warn($"Cannot handle Command: {package.OfficialCommand}");
+                    break;
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task OnError(Exception error)
-        {
-            _logger.Error(error.Message, error);
-            return Task.CompletedTask;
-        }
-
-        public Task OnCompleted()
-        {
-            _subscription.Dispose();
-            return Task.CompletedTask;
-        }
+        private void OnError(Exception error) => _logger.Error(error.Message, error);
 
         public void DeleteUniverse(Guid universeGuid)
         {
@@ -120,15 +107,15 @@ namespace OctoAwesome.Network
             return awaiter;
         }
 
-        public Awaiter Load(out Player player, Guid universeGuid, string playername)
+        public Awaiter Load(out Player player, Guid universeGuid, string playerName)
         {
-            var playernameBytes = Encoding.UTF8.GetBytes(playername);
+            var playerNameBytes = Encoding.UTF8.GetBytes(playerName);
 
             var package = _packagePool.Get();
             package.Command = (ushort)OfficialCommand.Whoami;
-            package.Payload = playernameBytes;
+            package.Payload = playerNameBytes;
 
-            player = new Player();
+            player = new();
             var awaiter = GetAwaiter(player, package.UId);
             _client.SendPackageAndRelease(package);
 
@@ -207,6 +194,13 @@ namespace OctoAwesome.Network
 
 
             //client.SendPackage(package);
+        }
+
+        public void Dispose()
+        {
+            _client?.Dispose();
+            _subscription?.Dispose();
+            _typeContainer?.Dispose();
         }
     }
 }

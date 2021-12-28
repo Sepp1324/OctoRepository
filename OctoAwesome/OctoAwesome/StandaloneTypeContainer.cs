@@ -24,16 +24,9 @@ namespace OctoAwesome
             _typeRegister.Add(registrar, type);
         }
 
-        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
-        {
-            Register(typeof(T), typeof(T), instanceBehaviour);
-        }
+        public void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(T), typeof(T), instanceBehaviour);
 
-        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance)
-            where T : class
-        {
-            Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
-        }
+        public void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class => Register(typeof(TRegistrar), typeof(T), instanceBehaviour);
 
         public void Register(Type registrar, Type type, object singleton)
         {
@@ -43,15 +36,9 @@ namespace OctoAwesome
             _typeRegister.Add(registrar, type);
         }
 
-        public void Register<T>(T singleton) where T : class
-        {
-            Register(typeof(T), typeof(T), singleton);
-        }
+        public void Register<T>(T singleton) where T : class => Register(typeof(T), typeof(T), singleton);
 
-        public void Register<TRegistrar, T>(object singleton) where T : class
-        {
-            Register(typeof(TRegistrar), typeof(T), singleton);
-        }
+        public void Register<TRegistrar, T>(object singleton) where T : class => Register(typeof(TRegistrar), typeof(T), singleton);
 
         public bool TryResolve(Type type, out object instance)
         {
@@ -75,16 +62,12 @@ namespace OctoAwesome
             if (!_typeRegister.TryGetValue(type, out var searchType))
                 return null;
 
-            return _typeInformationRegister.TryGetValue(searchType, out var typeInformation)
-                ? typeInformation.Instance
-                : null;
+            return _typeInformationRegister.TryGetValue(searchType, out var typeInformation) ? typeInformation.Instance : null;
         }
 
         public T GetOrNull<T>() where T : class => (T)GetOrNull(typeof(T));
 
-        public object GetUnregistered(Type type) =>
-            GetOrNull(type) ?? CreateObject(type) ??
-            throw new InvalidOperationException($"Can not create unregistered type of {type}");
+        public object GetUnregistered(Type type) => GetOrNull(type) ?? CreateObject(type) ?? throw new InvalidOperationException($"Can not create unregistered type of {type}");
 
         public T GetUnregistered<T>() where T : class => (T)GetUnregistered(typeof(T));
 
@@ -133,8 +116,7 @@ namespace OctoAwesome
         public void Dispose()
         {
             _typeRegister.Clear();
-            _typeInformationRegister.Values.Where(t => t.Behaviour == InstanceBehaviour.Singleton && t.Instance != this)
-                .Select(t => t.Instance as IDisposable).ToList().ForEach(i => i?.Dispose());
+            _typeInformationRegister.Values.Where(t => t.Behaviour == InstanceBehaviour.Singleton && t.Instance != this).Select(t => t.Instance as IDisposable).ToList().ForEach(i => i?.Dispose());
 
             _typeInformationRegister.Clear();
         }
@@ -144,15 +126,14 @@ namespace OctoAwesome
             private readonly Type _type;
 
             private readonly StandaloneTypeContainer _typeContainer;
-            private object _singeltonInstance;
+            private object _singletonInstance;
 
-            public TypeInformation(StandaloneTypeContainer container, Type type, InstanceBehaviour instanceBehaviour,
-                object instance = null)
+            public TypeInformation(StandaloneTypeContainer container, Type type, InstanceBehaviour instanceBehaviour, object instance = null)
             {
                 _type = type;
                 Behaviour = instanceBehaviour;
                 _typeContainer = container;
-                _singeltonInstance = instance;
+                _singletonInstance = instance;
             }
 
             public InstanceBehaviour Behaviour { get; }
@@ -161,13 +142,13 @@ namespace OctoAwesome
 
             private object CreateObject()
             {
-                if (Behaviour == InstanceBehaviour.Singleton && _singeltonInstance != null)
-                    return _singeltonInstance;
+                if (Behaviour == InstanceBehaviour.Singleton && _singletonInstance != null)
+                    return _singletonInstance;
 
                 var obj = _typeContainer.CreateObject(_type);
 
                 if (Behaviour == InstanceBehaviour.Singleton)
-                    _singeltonInstance = obj;
+                    _singletonInstance = obj;
 
                 return obj;
             }

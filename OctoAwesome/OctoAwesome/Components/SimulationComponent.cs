@@ -76,8 +76,7 @@ namespace OctoAwesome.Components
     /// <summary>
     ///     Basisklasse für Simulationskomponenten
     /// </summary>
-    public abstract class SimulationComponent<T, S, C1> : SimulationComponent, IHoldComponent<T>
-        where T : IContainsComponents where S : SimulationComponentRecord<T, C1> where C1 : Component
+    public abstract class SimulationComponent<T, S, C1> : SimulationComponent, IHoldComponent<T> where T : IContainsComponents where S : SimulationComponentRecord<T, C1> where C1 : Component
     {
         protected readonly List<S> values = new();
 
@@ -116,9 +115,7 @@ namespace OctoAwesome.Components
         /// </summary>
         /// <param name="value">instance of <typeparamref name="T" /> that is passed to <see cref="Add(T)" /></param>
         /// <returns>Converted <paramref name="value" /> as <typeparamref name="S" /></returns>
-        protected virtual void OnRemove(T value)
-        {
-        }
+        protected virtual void OnRemove(T value) { }
 
         protected virtual bool Compare(S left, T right) => Equals(left.Value, right);
 
@@ -150,11 +147,7 @@ namespace OctoAwesome.Components
     /// <summary>
     ///     Basisklasse für Simulationskomponenten
     /// </summary>
-    public abstract class SimulationComponent<T, S, C1, C2> : SimulationComponent, IHoldComponent<T>
-        where T : IContainsComponents
-        where S : SimulationComponentRecord<T, C1, C2>
-        where C1 : Component
-        where C2 : Component
+    public abstract class SimulationComponent<T, S, C1, C2> : SimulationComponent, IHoldComponent<T> where T : IContainsComponents where S : SimulationComponentRecord<T, C1, C2> where C1 : Component where C2 : Component
     {
         protected readonly List<S> values = new();
 
@@ -184,9 +177,7 @@ namespace OctoAwesome.Components
         /// </summary>
         /// <param name="value">instance of <typeparamref name="T" /> that is passed to <see cref="Add(T)" /></param>
         /// <returns>Converted <paramref name="value" /> as <typeparamref name="S" /></returns>
-        protected virtual S OnAdd(T value) =>
-            (S)new SimulationComponentRecord<T, C1, C2>(value, value.GetComponent<C1>(),
-                value.GetComponent<C2>());
+        protected virtual S OnAdd(T value) => (S)new SimulationComponentRecord<T, C1, C2>(value, value.GetComponent<C1>(), value.GetComponent<C2>());
 
         /// <summary>
         ///     Is called during <see cref="Remove(T)" /> to convert <paramref name="value" /> from <typeparamref name="T" /> to
@@ -194,9 +185,7 @@ namespace OctoAwesome.Components
         /// </summary>
         /// <param name="value">instance of <typeparamref name="T" /> that is passed to <see cref="Add(T)" /></param>
         /// <returns>Converted <paramref name="value" /> as <typeparamref name="S" /></returns>
-        protected virtual void OnRemove(T value)
-        {
-        }
+        protected virtual void OnRemove(T value) { }
 
         protected virtual bool Compare(S left, T right) => Equals(left.Value, right);
 
@@ -229,12 +218,7 @@ namespace OctoAwesome.Components
     /// <summary>
     ///     Basisklasse für Simulationskomponenten
     /// </summary>
-    public abstract class SimulationComponent<T, S, C1, C2, C3> : SimulationComponent, IHoldComponent<T>
-        where T : IContainsComponents
-        where S : SimulationComponentRecord<T, C1, C2, C3>
-        where C1 : Component
-        where C2 : Component
-        where C3 : Component
+    public abstract class SimulationComponent<T, S, C1, C2, C3> : SimulationComponent, IHoldComponent<T> where T : IContainsComponents where S : SimulationComponentRecord<T, C1, C2, C3> where C1 : Component where C2 : Component where C3 : Component
     {
         protected readonly List<S> values = new();
 
@@ -265,9 +249,7 @@ namespace OctoAwesome.Components
         /// </summary>
         /// <param name="value">instance of <typeparamref name="T" /> that is passed to <see cref="Add(T)" /></param>
         /// <returns>Converted <paramref name="value" /> as <typeparamref name="S" /></returns>
-        protected virtual S OnAdd(T value) =>
-            (S)new SimulationComponentRecord<T, C1, C2, C3>(value, value.GetComponent<C1>(),
-                value.GetComponent<C2>(), value.GetComponent<C3>());
+        protected virtual S OnAdd(T value) => (S)new SimulationComponentRecord<T, C1, C2, C3>(value, value.GetComponent<C1>(), value.GetComponent<C2>(), value.GetComponent<C3>());
 
         /// <summary>
         ///     Is called during <see cref="Remove(T)" /> to convert <paramref name="value" /> from <typeparamref name="T" /> to
@@ -275,10 +257,7 @@ namespace OctoAwesome.Components
         /// </summary>
         /// <param name="value">instance of <typeparamref name="T" /> that is passed to <see cref="Add(T)" /></param>
         /// <returns>Converted <paramref name="value" /> as <typeparamref name="S" /></returns>
-        protected virtual void OnRemove(T value)
-        {
-        }
-
+        protected virtual void OnRemove(T value) { }
 
         protected virtual bool Compare(S left, T right) => Equals(left.Value, right);
 

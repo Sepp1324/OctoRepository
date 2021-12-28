@@ -13,10 +13,7 @@ namespace OctoAwesome
         /// </summary>
         /// <param name="gameTime">Current GameTime</param>
         /// <param name="entity">InteractionPartner</param>
-        public void Interact(GameTime gameTime, Entity entity)
-        {
-            OnInteract(gameTime, entity);
-        }
+        public void Interact(GameTime gameTime, Entity entity) => OnInteract(gameTime, entity);
 
         /// <summary>
         ///     Event for Interaction with an <see cref="Entity" />

@@ -33,8 +33,7 @@ namespace OctoAwesome.Notifications
             if (reader.ReadByte() != (byte)BlockNotificationType.BlockChanged) //Read type of the notification
                 throw new InvalidCastException("this is the wrong type of notification");
 
-            BlockInfo = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(),
-                reader.ReadInt32());
+            BlockInfo = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadUInt16(), reader.ReadInt32());
             ChunkPos = new(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             Planet = reader.ReadInt32();
         }

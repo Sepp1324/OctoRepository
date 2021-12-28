@@ -1,6 +1,4 @@
-﻿//using OpenTK;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -78,10 +76,8 @@ namespace OctoAwesome.Network
         public void Save()
         {
             FileInfo.Delete();
-            using (var writer = new StreamWriter(FileInfo.OpenWrite()))
-            {
-                writer.Write(JsonConvert.SerializeObject(_dictionary, Formatting.Indented));
-            }
+            using var writer = new StreamWriter(FileInfo.OpenWrite());
+            writer.Write(JsonConvert.SerializeObject(_dictionary, Formatting.Indented));
         }
 
         private Dictionary<string, string> InternalLoad(FileInfo fileInfo)

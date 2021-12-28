@@ -31,11 +31,10 @@ namespace OctoAwesome
         bool IsChunkLoaded(Index2 position);
 
         /// <summary>
-        ///     Liefert den Chunk, sofern geladen.
+        /// Returns the Chunk if loaded
         /// </summary>
-        /// <param name="planet">Die Id des Planeten</param>
-        /// <param name="position">Die Position des zurückzugebenden Chunks</param>
-        /// <returns>Chunk Instanz oder null, falls nicht geladen</returns>
+        /// <param name="position">Position of the loaded Chunk</param>
+        /// <returns>Chunk-Instance, null if not loaded</returns>
         IChunkColumn Peek(Index2 position);
 
         /// <summary>

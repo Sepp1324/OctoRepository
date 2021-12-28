@@ -95,8 +95,7 @@ namespace OctoAwesome
         /// <param name="coordinate"><see cref="Coordinate" /> ot the <see cref="Entity" /></param>
         /// <param name="invertVelocity">Gibt an ob die geschwindigkeit invertiert werden soll</param>
         /// <returns></returns>
-        public static IEnumerable<CollisionPlane> GetEntityCollisionPlanes(float radius, float height, Vector3 velocity,
-            Coordinate coordinate, bool invertVelocity = true)
+        public static IEnumerable<CollisionPlane> GetEntityCollisionPlanes(float radius, float height, Vector3 velocity, Coordinate coordinate, bool invertVelocity = true)
         {
             var pos = coordinate.BlockPosition;
             var vel = invertVelocity ? new(-velocity.X, -velocity.Y, -velocity.Z) : velocity;
@@ -105,12 +104,10 @@ namespace OctoAwesome
             {
                 //Ebene X
                 case > 0:
-                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z),
-                        new(pos.X - radius, pos.Y + radius, pos.Z + height), new(-1, 0));
+                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z), new(pos.X - radius, pos.Y + radius, pos.Z + height), new(-1, 0));
                     break;
                 case < 0:
-                    yield return new(new(pos.X + radius, pos.Y - radius, pos.Z),
-                        new(pos.X + radius, pos.Y + radius, pos.Z + height), new(1, 0));
+                    yield return new(new(pos.X + radius, pos.Y - radius, pos.Z), new(pos.X + radius, pos.Y + radius, pos.Z + height), new(1, 0));
                     break;
             }
 
@@ -118,12 +115,10 @@ namespace OctoAwesome
             {
                 //Ebene Y
                 case > 0:
-                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z),
-                        new(pos.X + radius, pos.Y - radius, pos.Z + height), new(0, -1));
+                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z), new(pos.X + radius, pos.Y - radius, pos.Z + height), new(0, -1));
                     break;
                 case < 0:
-                    yield return new(new(pos.X - radius, pos.Y + radius, pos.Z),
-                        new(pos.X + radius, pos.Y + radius, pos.Z + height), new(0, 1));
+                    yield return new(new(pos.X - radius, pos.Y + radius, pos.Z), new(pos.X + radius, pos.Y + radius, pos.Z + height), new(0, 1));
                     break;
             }
 
@@ -131,12 +126,10 @@ namespace OctoAwesome
             {
                 //Ebene Z
                 case > 0:
-                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z),
-                        new(pos.X + radius, pos.Y + radius, pos.Z), new(0, 0, -1));
+                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z), new(pos.X + radius, pos.Y + radius, pos.Z), new(0, 0, -1));
                     break;
                 case < 0:
-                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z + height),
-                        new(pos.X + radius, pos.Y + radius, pos.Z + height), new(0, 0, 1));
+                    yield return new(new(pos.X - radius, pos.Y - radius, pos.Z + height), new(pos.X + radius, pos.Y + radius, pos.Z + height), new(0, 0, 1));
                     break;
             }
         }
@@ -156,44 +149,26 @@ namespace OctoAwesome
 
             if (vec.X < 0)
             {
-                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y ||
-                         p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y ||
-                         p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y ||
-                         p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
+                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y || p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y || p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y || p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
 
-                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z ||
-                         p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z ||
-                         p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z ||
-                         p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
+                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z || p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z || p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z || p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
 
                 result = rz && ry;
             }
             else if (vec.Y < 0)
             {
-                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X ||
-                         p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X ||
-                         p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X ||
-                         p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
+                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X || p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X || p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X || p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
 
-                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z ||
-                         p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z ||
-                         p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z ||
-                         p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
+                var rz = p2.edgepos1.Z > p1.edgepos1.Z && p2.edgepos1.Z < p1.edgepos2.Z || p2.edgepos2.Z < p1.edgepos2.Z && p2.edgepos2.Z > p1.edgepos1.Z || p1.edgepos1.Z > p2.edgepos1.Z && p1.edgepos1.Z < p2.edgepos2.Z || p1.edgepos2.Z < p2.edgepos2.Z && p1.edgepos2.Z > p2.edgepos1.Z;
 
 
                 result = rx && rz;
             }
             else if (vec.Z < 0)
             {
-                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X ||
-                         p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X ||
-                         p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X ||
-                         p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
+                var rx = p2.edgepos1.X > p1.edgepos1.X && p2.edgepos1.X < p1.edgepos2.X || p2.edgepos2.X < p1.edgepos2.X && p2.edgepos2.X > p1.edgepos1.X || p1.edgepos1.X > p2.edgepos1.X && p1.edgepos1.X < p2.edgepos2.X || p1.edgepos2.X < p2.edgepos2.X && p1.edgepos2.X > p2.edgepos1.X;
 
-                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y ||
-                         p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y ||
-                         p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y ||
-                         p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
+                var ry = p2.edgepos1.Y > p1.edgepos1.Y && p2.edgepos1.Y < p1.edgepos2.Y || p2.edgepos2.Y < p1.edgepos2.Y && p2.edgepos2.Y > p1.edgepos1.Y || p1.edgepos1.Y > p2.edgepos1.Y && p1.edgepos1.Y < p2.edgepos2.Y || p1.edgepos2.Y < p2.edgepos2.Y && p1.edgepos2.Y > p2.edgepos1.Y;
 
                 result = rx && ry;
             }

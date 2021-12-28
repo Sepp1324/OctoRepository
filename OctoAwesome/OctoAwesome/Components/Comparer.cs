@@ -18,9 +18,7 @@ namespace OctoAwesome.Components
             _compareFunc = compareFunc;
         }
 
-        public override bool Equals(object obj) =>
-            obj is Comparer<TOriginal, TSelected> comparer && Equals(comparer) ||
-            obj is TSelected rigth && Equals(rigth) || obj is TOriginal left && Equals(left);
+        public override bool Equals(object obj) => obj is Comparer<TOriginal, TSelected> comparer && Equals(comparer) || obj is TSelected right && Equals(right) || obj is TOriginal left && Equals(left);
 
         public bool Equals(Comparer<TOriginal, TSelected> other) => Equals(other.Value);
 
@@ -52,12 +50,8 @@ namespace OctoAwesome.Components
 
         public static implicit operator TOriginal(Comparer<TOriginal, TSelected> comparer) => comparer.Value;
 
-        public static implicit operator Comparer<TOriginal, TSelected>(
-            (TOriginal value, Func<TOriginal, TSelected, bool> comparer) tuple) =>
-            new(tuple.value, tuple.comparer);
+        public static implicit operator Comparer<TOriginal, TSelected>((TOriginal value, Func<TOriginal, TSelected, bool> comparer) tuple) => new(tuple.value, tuple.comparer);
 
-        public static implicit operator (TOriginal value, Func<TOriginal, TSelected, bool> comparer)(
-            Comparer<TOriginal, TSelected> comparer) =>
-            (comparer.Value, comparer._compareFunc);
+        public static implicit operator (TOriginal value, Func<TOriginal, TSelected, bool> comparer)(Comparer<TOriginal, TSelected> comparer) => (comparer.Value, comparer._compareFunc);
     }
 }

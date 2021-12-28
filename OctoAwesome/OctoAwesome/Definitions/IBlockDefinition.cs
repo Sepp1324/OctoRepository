@@ -33,10 +33,8 @@ namespace OctoAwesome.Definitions
         IMaterialDefinition Material { get; }
 
         /// <summary>
-        ///     Geplante Methode, mit der der Block auf Interaktion von aussen reagieren kann.
+        /// Planned Method the Block handles an Interaction from outside
         /// </summary>
-        /// <param name="block">Der Block-Typ des interagierenden Elements</param>
-        /// <param name="itemProperties">Die physikalischen Parameter des interagierenden Elements</param>
         BlockHitInformation Hit(BlockVolumeState blockVolume, IItem itemDefinition);
 
         /// <summary>
@@ -64,6 +62,7 @@ namespace OctoAwesome.Definitions
         /// <summary>
         ///     Rotation der Textur in 90° Schritten für die Oberseite (Positiv Z) des Blocks
         /// </summary>
+        /// <param name="wall"></param>
         /// <param name="manager">[Bitte ergänzen]</param>
         /// <param name="x">X-Anteil der Koordinate des Blocks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks</param>

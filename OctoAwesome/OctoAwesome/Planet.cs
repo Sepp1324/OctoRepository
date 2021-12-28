@@ -9,8 +9,6 @@ namespace OctoAwesome
     /// </summary>
     public class Planet : IPlanet
     {
-        private IDisposable _chunkSubscription;
-
         private bool _disposed;
 
         /// <summary>
@@ -109,12 +107,9 @@ namespace OctoAwesome
 
             _disposed = true;
 
-            _chunkSubscription.Dispose();
-
             if (GlobalChunkCache is IDisposable disposable)
                 disposable.Dispose();
 
-            _chunkSubscription = null;
             GlobalChunkCache = null;
         }
     }

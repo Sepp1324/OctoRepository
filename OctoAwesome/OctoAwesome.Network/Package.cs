@@ -6,7 +6,7 @@ namespace OctoAwesome.Network
     public sealed class Package : IPoolElement
     {
         /// <summary>
-        ///     Bytesize of Header
+        /// Byte-Size of the Header
         /// </summary>
         public const int HEAD_LENGTH = sizeof(ushort) + sizeof(int) + sizeof(uint);
 

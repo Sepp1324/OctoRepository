@@ -90,7 +90,6 @@ namespace OctoAwesome
         /// <summary>
         ///     Setzt den Zentrums-Chunk für diesen lokalen Cache.
         /// </summary>
-        /// <param name="planet">Der Planet, auf dem sich der Chunk befindet</param>
         /// <param name="index">Die Koordinaten an der sich der Chunk befindet</param>
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
         public bool SetCenter(Index2 index, Action<bool> successCallback = null)
@@ -284,7 +283,6 @@ namespace OctoAwesome
         ///     falls nötig
         /// </summary>
         /// <param name="token">Token, um zu prüfen, ob die aktualisierung abgeborchen werden soll</param>
-        /// <param name="planet">Der Planet, auf dem die Chunks aktualisiert werden sollen</param>
         /// <param name="index">Der ins Zentrum zu setzende Chunk</param>
         /// <param name="successCallback">Routine die Aufgerufen werden soll, falls das setzen erfolgreich war oder nicht</param>
         private void InternalSetCenter(CancellationToken token, Index2 index, Action<bool> successCallback)

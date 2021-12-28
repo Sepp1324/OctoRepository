@@ -7,14 +7,13 @@ using OctoAwesome.Threading;
 
 namespace OctoAwesome
 {
-    /// <summary>
-    /// </summary>
     public class Awaiter : IPoolElement, IDisposable
     {
         private readonly ManualResetEventSlim _manualReset;
         private readonly LockSemaphore _semaphore;
         private bool _alreadyDeserialized;
         private IPool _pool;
+        private bool _isPooled;
 
         public Awaiter()
         {
@@ -26,14 +25,15 @@ namespace OctoAwesome
 
         public bool Timeouted { get; private set; }
 
-        public void Dispose()
-        {
-            _manualReset.Dispose();
-        }
+        public void Dispose() => _manualReset.Dispose();
 
         public void Init(IPool pool)
         {
             _pool = pool;
+            Timeouted = false;
+            _isPooled = false;
+            _alreadyDeserialized = false;
+            Serializable = null;
             _manualReset.Reset();
         }
 
@@ -44,9 +44,7 @@ namespace OctoAwesome
                 if (!_manualReset.IsSet)
                     _manualReset.Set();
 
-                _alreadyDeserialized = false;
-                Timeouted = false;
-                Serializable = null;
+                _isPooled = true;
 
                 _pool.Push(this);
             }
@@ -55,7 +53,7 @@ namespace OctoAwesome
         public ISerializable WaitOn()
         {
             if (!_alreadyDeserialized)
-                Timeouted = !_manualReset.Wait(3000);
+                Timeouted = !_manualReset.Wait(10000);
 
             return Serializable;
         }

@@ -9,7 +9,7 @@ namespace OctoAwesome.Client.Screens
     internal class CreateUniverseScreen : BaseScreen
     {
         private readonly Button _createButton;
-        private new readonly ScreenComponent _manager;
+        private readonly ScreenComponent _manager;
 
         public CreateUniverseScreen(ScreenComponent manager) : base(manager)
         {

@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Threading.Tasks;
 using OctoAwesome.Logging;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
-using OctoAwesome.Threading;
 using OctoAwesome.Rx;
 
 namespace OctoAwesome.Network
 {
-    public class NetworkUpdateManager : IAsyncObserver<Package>, IDisposable
+    public class NetworkUpdateManager : IDisposable
     {
         private readonly IPool<BlockChangedNotification> _blockChangedNotificationPool;
         private readonly IPool<BlocksChangedNotification> _blocksChangedNotificationPool;
@@ -45,10 +43,10 @@ namespace OctoAwesome.Network
             _hubSubscription = updateHub.ListenOn(DefaultChannels.NETWORK).Subscribe(OnNext, error => _logger.Error(error.Message, error));
             _simulationSource = updateHub.AddSource(_simulationRelay, DefaultChannels.SIMULATION);
             _chunkSource = updateHub.AddSource(_chunkRelay, DefaultChannels.CHUNK);
-            _clientSubscription = client.Subscribe(this);
+            _clientSubscription = client.Packages.Subscribe(OnNext, OnError);
         }
 
-        public Task OnNext(Package package)
+        private void OnNext(Package package)
         {
             switch (package.OfficialCommand)
             {
@@ -70,11 +68,9 @@ namespace OctoAwesome.Network
                     chunkNotification.Release();
                     break;
             }
-
-            return Task.CompletedTask;
         }
 
-        public void OnNext(Notification value)
+        private void OnNext(Notification value)
         {
             ushort command;
             byte[] payload;
@@ -99,17 +95,7 @@ namespace OctoAwesome.Network
             _client.SendPackageAndRelease(package);
         }
 
-        public Task OnError(Exception error)
-        {
-            _logger.Error(error.Message, error);
-            return Task.CompletedTask;
-        }
-
-        public Task OnCompleted()
-        {
-            _clientSubscription.Dispose();
-            return Task.CompletedTask;
-        }
+        private void OnError(Exception error) => _logger.Error(error.Message, error);
 
         public void Dispose()
         {
@@ -118,6 +104,7 @@ namespace OctoAwesome.Network
             _chunkSource?.Dispose();
             _simulationRelay?.Dispose();
             _chunkRelay?.Dispose();
+            _clientSubscription?.Dispose();
         }
     }
 }

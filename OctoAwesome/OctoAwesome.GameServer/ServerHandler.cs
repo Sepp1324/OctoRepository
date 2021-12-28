@@ -5,11 +5,11 @@ using CommandManagementSystem;
 using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
-using OctoAwesome.Threading;
+using OctoAwesome.Rx;
 
 namespace OctoAwesome.GameServer
 {
-    public class ServerHandler : IAsyncObserver<Package>
+    public class ServerHandler
     {
         private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> _defaultManager;
 
@@ -32,11 +32,11 @@ namespace OctoAwesome.GameServer
             _defaultManager = new(typeof(ServerHandler).Namespace + ".Commands");
         }
 
-        public SimulationManager SimulationManager { get; set; }
+        private SimulationManager SimulationManager { get; set; }
 
-        public IUpdateHub UpdateHub { get; }
+        private IUpdateHub UpdateHub { get; }
 
-        public async Task OnNext(Package value)
+        private void OnNext(Package value)
         {
             if (value.Command == 0 && value.Payload.Length == 0)
             {
@@ -59,18 +59,11 @@ namespace OctoAwesome.GameServer
 
             if (value.Payload == null)
             {
-                _logger.Trace(
-                    $"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
+                _logger.Trace($"Payload is null, returning from Command {value.OfficialCommand} without sending return package.");
                 return;
             }
 
-            await value.BaseClient.SendPackageAsync(value);
-        }
-
-        public Task OnError(Exception error)
-        {
-            _logger.Error(error.Message, error);
-            return Task.CompletedTask;
+            value.BaseClient.SendPackageAsync(value);
         }
 
         public Task OnCompleted() => Task.CompletedTask;
@@ -85,7 +78,7 @@ namespace OctoAwesome.GameServer
         private void ServerOnClientConnected(object sender, ConnectedClient e)
         {
             _logger.Debug("Hurra ein neuer Spieler");
-            e.ServerSubscription = e.Subscribe(this);
+            e.ServerSubscription = e.Packages.Subscribe(OnNext, ex => _logger.Error(ex.Message, ex));
         }
     }
 }

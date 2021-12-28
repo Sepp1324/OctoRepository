@@ -38,8 +38,7 @@ namespace OctoAwesome
         ///     Generiert eine Säule von Chunks in der Höhe des Planeten aus dem angegebenen Stream.
         /// </summary>
         /// <param name="stream">Quellstream</param>
-        /// <param name="definitionManager">Der verwendete DefinitionManager</param>
-        /// <param name="planetId">Der Index des Planeten</param>
+        /// <param name="planet"></param>
         /// <param name="index">Die Position der Säule</param>
         /// <returns></returns>
         IChunkColumn GenerateColumn(Stream stream, IPlanet planet, Index2 index);

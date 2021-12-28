@@ -13,7 +13,7 @@ namespace OctoAwesome.Client.Screens
     {
         private readonly Button _deleteButton;
         private readonly Listbox<IUniverse> _levelList;
-        private new readonly ScreenComponent _manager;
+        private readonly ScreenComponent _manager;
         private readonly Label _seedLabel;
 
         private readonly ISettings _settings;

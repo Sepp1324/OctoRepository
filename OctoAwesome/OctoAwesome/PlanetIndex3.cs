@@ -1,17 +1,17 @@
 ﻿namespace OctoAwesome
 {
     /// <summary>
-    ///     Datenstruktur zur genauen bestimmung eines Chunks und seinen Planeten
+    /// Data-Structure to exactly define a Chunk and its Planet
     /// </summary>
     public struct PlanetIndex3
     {
         /// <summary>
-        ///     Die Planeten-ID
+        /// Planet-iD
         /// </summary>
         public int Planet;
 
         /// <summary>
-        ///     Die Position des Chunks
+        /// Position of the Chunk
         /// </summary>
         public Index3 ChunkIndex;
 
@@ -33,9 +33,7 @@
         /// <param name="x">X-Anteil des Indexes des Chunks</param>
         /// <param name="y">Y-Anteil des Indexes des Chunks</param>
         /// <param name="z">Z-Anteil des Indexes des Chunks</param>
-        public PlanetIndex3(int planet, int x, int y, int z) : this(planet, new(x, y, z))
-        {
-        }
+        public PlanetIndex3(int planet, int x, int y, int z) : this(planet, new(x, y, z)) { }
 
         /// <summary>
         ///     Überprüft, ob beide gegebenen PlanetIndex3 den gleichen Wert aufweisen.
@@ -61,8 +59,7 @@
         public override bool Equals(object obj)
         {
             if (obj is PlanetIndex3 other)
-                return other.Planet == Planet && other.ChunkIndex.X == ChunkIndex.X &&
-                       other.ChunkIndex.Y == ChunkIndex.Y && other.ChunkIndex.Z == ChunkIndex.Z;
+                return other.Planet == Planet && other.ChunkIndex.X == ChunkIndex.X && other.ChunkIndex.Y == ChunkIndex.Y && other.ChunkIndex.Z == ChunkIndex.Z;
 
             return false;
         }

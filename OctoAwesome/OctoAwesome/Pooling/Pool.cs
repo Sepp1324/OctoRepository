@@ -7,7 +7,7 @@ namespace OctoAwesome.Pooling
 {
     public sealed class Pool<T> : IPool<T> where T : IPoolElement, new()
     {
-        private static readonly Func<T> GetInstance;
+        private static readonly Func<T> getInstance;
 
         private readonly Stack<T> _internalStack;
         private readonly LockSemaphore _semaphoreExtended;
@@ -15,7 +15,7 @@ namespace OctoAwesome.Pooling
         static Pool()
         {
             var body = Expression.New(typeof(T));
-            GetInstance = Expression.Lambda<Func<T>>(body).Compile();
+            getInstance = Expression.Lambda<Func<T>>(body).Compile();
         }
 
         public Pool()
@@ -30,7 +30,7 @@ namespace OctoAwesome.Pooling
 
             using (_semaphoreExtended.Wait())
             {
-                obj = _internalStack.Count > 0 ? _internalStack.Pop() : GetInstance();
+                obj = _internalStack.Count > 0 ? _internalStack.Pop() : getInstance();
             }
 
             obj.Init(this);
