@@ -9,16 +9,11 @@ namespace OctoAwesome.Basics.Entities
     {
         public int JumpTime { get; set; }
 
-        protected override void OnInitialize(IResourceManager manager)
-        {
-            //Cache = new LocalChunkCache(manager.GlobalChunkCache, true, 2, 1);
-        }
-
         public override void Update(GameTime gameTime)
         {
             var body = Components.GetComponent<BodyPowerComponent>();
             var controller = Components.GetComponent<ControllableComponent>();
-            controller.MoveInput = new Vector2(0.5f, 0.5f);
+            controller.MoveInput = new(0.5f, 0.5f);
 
             if (JumpTime <= 0)
             {

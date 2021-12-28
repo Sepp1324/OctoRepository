@@ -1,80 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using OctoAwesome.Components;
+﻿using OctoAwesome.Components;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace OctoAwesome
 {
-    /// <summary>
-    ///     Container for Components
-    /// </summary>
-    /// <typeparam name="TComponent"></typeparam>
     public abstract class ComponentContainer<TComponent> : ISerializable, IIdentification, IContainsComponents, INotificationSubject<SerializableNotification> where TComponent : IComponent
     {
         /// <summary>
-        ///     Contains Components with an Implementation of <see cref="INotificationSubject{TNotification}" />
+        /// Contains all Components.
+        /// </summary>
+        public ComponentList<TComponent> Components { get; private set; }
+
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid Id { get; internal set; }
+
+        /// <summary>
+        /// Reference to the active Simulation.
+        /// </summary>
+        public Simulation Simulation { get; internal set; }
+
+        /// <summary>
+        /// Contains only Components with notification interface implementation.
         /// </summary>
         private readonly List<INotificationSubject<SerializableNotification>> _notificationComponents;
 
         /// <summary>
-        ///     Entities with periodic Update-Events
+        /// Entity die regelmäßig eine Updateevent bekommt
         /// </summary>
-        protected ComponentContainer()
+        public ComponentContainer()
         {
             Components = new(ValidateAddComponent, ValidateRemoveComponent, OnAddComponent, OnRemoveComponent);
             _notificationComponents = new();
             Id = Guid.Empty;
-        }
-
-        /// <summary>
-        ///     Contains all Components
-        /// </summary>
-        public ComponentList<TComponent> Components { get; }
-
-        /// <summary>
-        ///     Reference to the active Simulation
-        /// </summary>
-        public Simulation Simulation { get; internal set; }
-
-        public bool ContainsComponent<T>() => Components.ContainsComponent<T>();
-
-        public T GetComponent<T>() => Components.GetComponent<T>();
-
-        /// <summary>
-        ///     Id
-        /// </summary>
-        public Guid Id { get; internal set; }
-
-        public virtual void OnNotification(SerializableNotification notification) { }
-
-        public virtual void Push(SerializableNotification notification)
-        {
-            foreach (var component in _notificationComponents)
-                component?.OnNotification(notification);
-        }
-
-        /// <summary>
-        ///     Serializes an Entity with the given <see cref="BinaryWriter" />
-        /// </summary>
-        /// <param name="writer">Given <see cref="BinaryWriter" /></param>
-        public virtual void Serialize(BinaryWriter writer)
-        {
-            writer.Write(Id.ToByteArray());
-
-            Components.Serialize(writer);
-        }
-
-        /// <summary>
-        ///     Deserializes an Entity with the given <see cref="BinaryReader" />
-        /// </summary>
-        /// <param name="reader">Given <see cref="BinaryReader" /></param>
-        public virtual void Deserialize(BinaryReader reader)
-        {
-            Id = new(reader.ReadBytes(16));
-            Components.Deserialize(reader);
         }
 
         protected void OnRemoveComponent(TComponent component) { }
@@ -85,21 +48,21 @@ namespace OctoAwesome
                 instanceComponent.SetInstance(this);
 
             //HACK: Remove PositionComponent Dependency
-            if (component is LocalChunkCacheComponent cacheComponent)
-            {
-                if (cacheComponent.LocalChunkCache != null)
-                    return;
+            //if (component is LocalChunkCacheComponent cacheComponent)
+            //{
+            //    if (cacheComponent.LocalChunkCache != null)
+            //        return;
 
-                var positionComponent = Components.GetComponent<PositionComponent>();
+            //    var positionComponent = Components.GetComponent<PositionComponent>();
 
-                if (positionComponent == null)
-                    return;
+            //    if (positionComponent == null)
+            //        return;
 
-                cacheComponent.LocalChunkCache = new LocalChunkCache(positionComponent.Planet.GlobalChunkCache, 4, 2);
-            }
+            //cacheComponent.LocalChunkCache = new LocalChunkCache(positionComponent.Planet.GlobalChunkCache, 4, 2);
+            //}
 
-            if (component is INotificationSubject<SerializableNotification> notificationComponent)
-                _notificationComponents.Add(notificationComponent);
+            if (component is INotificationSubject<SerializableNotification> nofiticationComponent)
+                _notificationComponents.Add(nofiticationComponent);
         }
 
         protected virtual void ValidateAddComponent(TComponent component)
@@ -116,7 +79,45 @@ namespace OctoAwesome
 
         public void Initialize(IResourceManager manager) => OnInitialize(manager);
 
-        protected virtual void OnInitialize(IResourceManager manager) { }
+        protected virtual void OnInitialize(IResourceManager manager)
+        {
+            foreach (var component in Components)
+            {
+                if (component is LocalChunkCacheComponent localChunkCache)
+                {
+                    if (localChunkCache.LocalChunkCache != null)
+                        return;
+
+                    var positionComponent = Components.GetComponent<PositionComponent>();
+
+                    if (positionComponent == null)
+                        return;
+
+                    localChunkCache.LocalChunkCache = new LocalChunkCache(positionComponent.Planet.GlobalChunkCache, 4, 2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Serialisiert die Entität mit dem angegebenen BinaryWriter.
+        /// </summary>
+        /// <param name="writer">Der BinaryWriter, mit dem geschrieben wird.</param>
+        public virtual void Serialize(BinaryWriter writer)
+        {
+            writer.Write(Id.ToByteArray());
+
+            Components.Serialize(writer);
+        }
+
+        /// <summary>
+        /// Deserialisiert die Entität aus dem angegebenen BinaryReader.
+        /// </summary>
+        /// <param name="reader">Der BinaryWriter, mit dem gelesen wird.</param>
+        public virtual void Deserialize(BinaryReader reader)
+        {
+            Id = new Guid(reader.ReadBytes(16));
+            Components.Deserialize(reader);
+        }
 
         public virtual void RegisterDefault() { }
 
@@ -129,5 +130,17 @@ namespace OctoAwesome
 
             return base.Equals(obj);
         }
+
+        public virtual void OnNotification(SerializableNotification notification) { }
+
+        public virtual void Push(SerializableNotification notification)
+        {
+            foreach (var component in _notificationComponents)
+                component?.OnNotification(notification);
+        }
+
+        public bool ContainsComponent<T>() => Components.ContainsComponent<T>();
+       
+        public T GetComponent<T>() => Components.GetComponent<T>();
     }
 }
