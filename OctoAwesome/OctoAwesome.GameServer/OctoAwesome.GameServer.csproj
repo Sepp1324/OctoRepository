@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandManagementSystem" Version="3.0.0-alpha3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
