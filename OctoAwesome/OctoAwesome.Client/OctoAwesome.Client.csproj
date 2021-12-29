@@ -53,9 +53,9 @@
 		<ProjectReference Include="..\OctoAwesome.Runtime\OctoAwesome.Runtime.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Reference Include="engenious.CreatedContent.Content">
-			<HintPath>F:\Repos\octoawesome\OctoAwesome\OctoAwesome.Client\Content\engenious.CreatedContent.Content.dll</HintPath>
-		</Reference>
+	  <Reference Include="engenious.CreatedContent.Content">
+	    <HintPath>Content\engenious.CreatedContent.Content.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>
