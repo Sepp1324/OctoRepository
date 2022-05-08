@@ -240,7 +240,7 @@ namespace OctoAwesome.Client.Components
                 if (VertexBuffer == null)
                     return;
 
-                _graphicsDevice.RasterizerState = WireFrame ? wireFrameState : RasterizerState.CullCounterClockwise;
+                _graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
                 _graphicsDevice.VertexBuffer = VertexBuffer;
                 _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, VertexCount, 0, indexCount / 3);
             }

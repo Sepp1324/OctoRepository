@@ -74,10 +74,7 @@ namespace OctoAwesome.Rx
 
             public IObserver<T> Observer { get; }
 
-            public void Dispose()
-            {
-                _relay.Unsubscribe(this);
-            }
+            public void Dispose() => _relay.Unsubscribe(this);
         }
     }
 }

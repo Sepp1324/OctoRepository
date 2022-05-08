@@ -13,7 +13,7 @@ namespace OctoAwesome.GameServer.Commands
     public static class PlayerCommands
     {
         private static readonly ConcurrentRelay<Notification> simulationChannel;
-        private static readonly Relay<Notification> networkChannel;
+        private static readonly ConcurrentRelay<Notification> networkChannel;
 
         private static readonly IDisposable simulationChannelSub;
         private static readonly IDisposable networkChannelSub;

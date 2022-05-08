@@ -121,18 +121,18 @@ namespace OctoAwesome.Client.Controls
             _blockTextures = new(manager.GraphicsDevice, 1, bitmapSize, bitmapSize, textureCount);
             var layer = 0;
             foreach (var definition in definitions)
-            foreach (var bitmap in definition.Textures)
-            {
-                var texture = manager.Game.Assets.LoadBitmap(definition.GetType(), bitmap);
+                foreach (var bitmap in definition.Textures)
+                {
+                    var texture = manager.Game.Assets.LoadBitmap(definition.GetType(), bitmap);
 
-                var scaled = texture; //new Bitmap(bitmap, new System.Drawing.Size(bitmapSize, bitmapSize));
-                var data = new int[scaled.Width * scaled.Height];
-                var bitmapData = scaled.LockBits(new(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
-                _blockTextures.SetData(data, layer);
-                scaled.UnlockBits(bitmapData);
-                layer++;
-            }
+                    var scaled = texture; //new Bitmap(bitmap, new System.Drawing.Size(bitmapSize, bitmapSize));
+                    var data = new int[scaled.Width * scaled.Height];
+                    var bitmapData = scaled.LockBits(new(0, 0, scaled.Width, scaled.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                    Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
+                    _blockTextures.SetData(data, layer);
+                    scaled.UnlockBits(bitmapData);
+                    layer++;
+                }
 
             _planet = Manager.Game.ResourceManager.GetPlanet(_player.Position.Position.Planet);
 
@@ -145,12 +145,12 @@ namespace OctoAwesome.Client.Controls
             _orderedChunkRenderer = new((int)Math.Pow(2, VIEW_RANGE) * (int)Math.Pow(2, VIEW_RANGE) * _planet.Size.Z);
 
             for (var i = 0; i < _chunkRenderer.GetLength(0); i++)
-            for (var j = 0; j < _chunkRenderer.GetLength(1); j++)
-            {
-                var renderer = new ChunkRenderer(this, Manager.Game.DefinitionManager, _simpleShader, manager.GraphicsDevice, _camera.Projection, _blockTextures);
-                _chunkRenderer[i, j] = renderer;
-                _orderedChunkRenderer.Add(renderer);
-            }
+                for (var j = 0; j < _chunkRenderer.GetLength(1); j++)
+                {
+                    var renderer = new ChunkRenderer(this, Manager.Game.DefinitionManager, _simpleShader, manager.GraphicsDevice, _camera.Projection, _blockTextures);
+                    _chunkRenderer[i, j] = renderer;
+                    _orderedChunkRenderer.Add(renderer);
+                }
 
             var token = _cancellationTokenSource.Token;
 
@@ -230,7 +230,8 @@ namespace OctoAwesome.Client.Controls
             };
 
             MiniMapTexture = new(manager.GraphicsDevice, 128, 128, PixelInternalFormat.Rgb8); // , false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 0, RenderTargetUsage.PreserveContents);
-            ShadowMap = new(manager.GraphicsDevice, 8192, 8192, PixelInternalFormat.DepthComponent32);
+            const int multiply = 2;
+            ShadowMap = new(manager.GraphicsDevice, 8192 * multiply, 8192 * multiply, PixelInternalFormat.DepthComponent32);
             ShadowMap.SamplerState = new() { AddressU = TextureWrapMode.ClampToEdge, AddressV = TextureWrapMode.ClampToEdge, TextureCompareMode = TextureCompareMode.CompareRefToTexture, TextureCompareFunction = TextureCompareFunc.LessOrEequal };
             _miniMapProjectionMatrix = Matrix.CreateOrthographic(128, 128, 1, 10000);
         }
@@ -418,40 +419,40 @@ namespace OctoAwesome.Client.Controls
             //var pickEndPost = centerBlock + (camera.PickRay.Position + (camera.PickRay.Direction * Player.SELECTION_RANGE));
             //var pickStartPos = centerBlock + camera.PickRay.Position;
             for (var z = -Player.SELECTION_RANGE; z < Player.SELECTION_RANGE; z++)
-            for (var y = -Player.SELECTION_RANGE; y < Player.SELECTION_RANGE; y++)
-            for (var x = -Player.SELECTION_RANGE; x < Player.SELECTION_RANGE; x++)
-            {
-                var range = new Index3(x, y, z);
-                var pos = range + centerBlock;
-                var localBlock = _localChunkCache.GetBlockInfo(pos);
+                for (var y = -Player.SELECTION_RANGE; y < Player.SELECTION_RANGE; y++)
+                    for (var x = -Player.SELECTION_RANGE; x < Player.SELECTION_RANGE; x++)
+                    {
+                        var range = new Index3(x, y, z);
+                        var pos = range + centerBlock;
+                        var localBlock = _localChunkCache.GetBlockInfo(pos);
 
-                if (localBlock.Block == 0)
-                    continue;
+                        if (localBlock.Block == 0)
+                            continue;
 
-                var blockDefinition = Manager.Game.DefinitionManager.GetBlockDefinitionByIndex(localBlock.Block);
+                        var blockDefinition = Manager.Game.DefinitionManager.GetBlockDefinitionByIndex(localBlock.Block);
 
-                var distance = Block.Intersect(blockDefinition.GetCollisionBoxes(_localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, _camera.PickRay, out var collisionAxis);
+                        var distance = Block.Intersect(blockDefinition.GetCollisionBoxes(_localChunkCache, pos.X, pos.Y, pos.Z), pos - renderOffset, _camera.PickRay, out var collisionAxis);
 
-                if (distance.HasValue && distance.Value < bestDistance)
-                {
-                    pos.NormalizeXY(_planet.Size * Chunk.CHUNKSIZE);
-                    selected = pos;
-                    //var futureselected = PythonBresenham((int)pickStartPos.X, (int)pickStartPos.Y, (int)pickStartPos.Z, (int)pickEndPost.X, (int)pickEndPost.Y, (int)pickEndPost.Z);
-                    //if (futureselected is not null)
-                    //{
-                    //    futureselected.Value.NormalizeXY(planet.Size * Chunk.CHUNKSIZE);
+                        if (distance.HasValue && distance.Value < bestDistance)
+                        {
+                            pos.NormalizeXY(_planet.Size * Chunk.CHUNKSIZE);
+                            selected = pos;
+                            //var futureselected = PythonBresenham((int)pickStartPos.X, (int)pickStartPos.Y, (int)pickStartPos.Z, (int)pickEndPost.X, (int)pickEndPost.Y, (int)pickEndPost.Z);
+                            //if (futureselected is not null)
+                            //{
+                            //    futureselected.Value.NormalizeXY(planet.Size * Chunk.CHUNKSIZE);
 
-                    //    Debug.WriteLine($"Old Selection: {selected}, New Selection: {futureselected}");
+                            //    Debug.WriteLine($"Old Selection: {selected}, New Selection: {futureselected}");
 
-                    //    selected = futureselected;
-                    //}
-                    selectedAxis = collisionAxis;
-                    bestDistance = distance.Value;
-                    selectionPoint = _camera.PickRay.Position + _camera.PickRay.Direction * distance -
-                                     (selected - renderOffset);
-                    block = localBlock;
-                }
-            }
+                            //    selected = futureselected;
+                            //}
+                            selectedAxis = collisionAxis;
+                            bestDistance = distance.Value;
+                            selectionPoint = _camera.PickRay.Position + _camera.PickRay.Direction * distance -
+                                             (selected - renderOffset);
+                            block = localBlock;
+                        }
+                    }
 
             return block;
         }
@@ -502,7 +503,7 @@ namespace OctoAwesome.Client.Controls
 
             ControlTexture ??= new(Manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
 
-            const float octoDaysPerEarthDay = 360f;
+            const float octoDaysPerEarthDay = 3600f; // TODO: 360
             const float inclinationVariance = MathHelper.Pi / 3f;
 
             var playerPosX = _player.Position.Position.GlobalPosition.X / (_planet.Size.X * Chunk.CHUNKSIZE_X) * MathHelper.TwoPi;
@@ -581,7 +582,7 @@ namespace OctoAwesome.Client.Controls
 
             var offsetX = -0.5f * (cropBoundingBox.Max.X + cropBoundingBox.Min.X) * scaleX;
             var offsetY = -0.5f * (cropBoundingBox.Max.Y + cropBoundingBox.Min.Y) * scaleY;
-            var offsetZ = -0.5f *(cropBoundingBox.Max.Z + cropBoundingBox.Min.Z) * scaleZ;
+            var offsetZ = -0.5f * (cropBoundingBox.Max.Z + cropBoundingBox.Min.Z) * scaleZ;
             return new(scaleX, 0.0f, 0.0f, 0.0f, 0.0f, scaleY, 0.0f, 0.0f, 0.0f, 0.0f, scaleZ, 0.0f, offsetX, offsetY, offsetZ, 1.0f);
         }
 
@@ -674,7 +675,7 @@ namespace OctoAwesome.Client.Controls
 
             DrawSelectionBox(chunkOffset);
 
-            Manager.GraphicsDevice.Debug.RenderBoundingFrustum(new(cropMatrix), Matrix.CreateTranslation(chunkOffset * new Vector3(Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Chunk.CHUNKSIZE_Z)), _camera.View, _camera.Projection);
+            Manager.GraphicsDevice.Debug.RenderBoundingFrustum(new(cropMatrix), Matrix.Identity, _camera.View, _camera.Projection);
 
             Manager.GraphicsDevice.SetRenderTarget(null!);
         }
@@ -733,7 +734,7 @@ namespace OctoAwesome.Client.Controls
             _sunEffect.CurrentTechnique?.Passes[0].Apply();
             _sunEffect.Texture = _sunTexture;
             var billboard = Matrix.Invert(_camera.View);
-            billboard.Translation = _player.Position.Position.LocalPosition + sunDirection * -10;
+            billboard.Translation = _player.Position.Position.LocalPosition + _player.CurrentEntityHead.Offset + sunDirection * -10;
             _sunEffect.World = billboard;
             _sunEffect.View = _camera.View;
             _sunEffect.Projection = _camera.Projection;
@@ -803,20 +804,20 @@ namespace OctoAwesome.Client.Controls
                     });
 
                 for (var x = 0; x < Span; x++)
-                for (var y = 0; y < Span; y++)
-                {
-                    var local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
-                    local.NormalizeXY(_planet.Size);
+                    for (var y = 0; y < Span; y++)
+                    {
+                        var local = new Index2(x - SpanOver2, y - SpanOver2) + destinationChunk;
+                        local.NormalizeXY(_planet.Size);
 
-                    var virtualX = local.X & Mask;
-                    var virtualY = local.Y & Mask;
+                        var virtualX = local.X & Mask;
+                        var virtualY = local.Y & Mask;
 
-                    var rendererIndex = virtualX + (virtualY << VIEW_RANGE);
+                        var rendererIndex = virtualX + (virtualY << VIEW_RANGE);
 
-                    for (var z = 0; z < _planet.Size.Z; z++)
-                        _chunkRenderer[rendererIndex, z].SetChunk(_localChunkCache, new Index3(local.X, local.Y, z),
-                            _player.Position.Planet);
-                }
+                        for (var z = 0; z < _planet.Size.Z; z++)
+                            _chunkRenderer[rendererIndex, z].SetChunk(_localChunkCache, new Index3(local.X, local.Y, z),
+                                _player.Position.Planet);
+                    }
 
                 var comparisonIndex = _player.Position.Position.ChunkIndex;
                 _orderedChunkRenderer.Sort((x, y) =>
@@ -881,8 +882,8 @@ namespace OctoAwesome.Client.Controls
                 _forceResetEvent.WaitOne();
 
                 while (!_forcedRenders.IsEmpty)
-                while (_forcedRenders.TryDequeue(out var r))
-                    r.RegenerateVertexBuffer();
+                    while (_forcedRenders.TryDequeue(out var r))
+                        r.RegenerateVertexBuffer();
             }
         }
 
