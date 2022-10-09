@@ -1,38 +1,30 @@
-﻿using OctoAwesome.Basics.Definitions.Materials;
-using OctoAwesome.Basics.Languages;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
-    /// <summary>
-    /// Definition for Gravel
-    /// </summary>
     public sealed class GravelBlockDefinition : BlockDefinition
     {
-        /// <summary>
-        /// Definition for Gravel
-        /// </summary>
-        /// <param name="material"><see cref="GravelMaterialDefinition"/></param>
-        public GravelBlockDefinition(GravelMaterialDefinition material) => Material = material;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.Gravel; }
+        }
 
-        /// <summary>
-        /// Block-Name
-        /// </summary>
-        public override string Name => OctoBasics.Gravel;
+        public override string Icon
+        {
+            get { return "gravel"; }
+        }
 
-        /// <summary>
-        /// Block-Inventory-Item
-        /// </summary>
-        public override string Icon => "gravel";
 
-        /// <summary>
-        /// Block-Textures
-        /// </summary>
-        public override string[] Textures { get; } = { "gravel" };
+        public override string[] Textures { get; } = new[] {"gravel"};
 
-        /// <summary>
-        /// Block-Material
-        /// </summary>
         public override IMaterialDefinition Material { get; }
+
+        public GravelBlockDefinition(GravelMaterialDefinition material)
+        {
+            Material = material;
+        }
     }
 }

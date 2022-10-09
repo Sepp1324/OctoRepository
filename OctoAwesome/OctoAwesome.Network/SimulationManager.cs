@@ -1,31 +1,56 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using engenious;
+﻿using engenious;
 using OctoAwesome.Definitions;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public class SimulationManager
     {
-        private readonly object _mainLock;
+        public bool IsRunning { get; private set; }
 
-        private readonly ISettings _settings;
-        private readonly UpdateHub _updateHub;
+        public Simulation Simulation
+        {
+            get
+            {
+                lock (mainLock)
+                    return simulation;
+            }
+            set
+            {
+                lock (mainLock)
+                    simulation = value;
+            }
+        }
 
-        private Task _backgroundTask;
-        private CancellationTokenSource _cancellationTokenSource;
+        public GameTime GameTime { get; private set; }
 
-        private Simulation _simulation;
+        public ResourceManager ResourceManager { get; private set; }
+        public GameService Service { get; }
+
+        private Simulation simulation;
+        private readonly ExtensionLoader extensionLoader;
+
+        private Task backgroundTask;
+        private CancellationTokenSource cancellationTokenSource;
+
+        private readonly ISettings settings;
+        private readonly UpdateHub updateHub;
+        private readonly object mainLock;
 
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
-            _mainLock = new();
+            mainLock = new object();           
 
-            _settings = settings;
-            _updateHub = updateHub;
+            this.settings = settings;
+            this.updateHub = updateHub;
+
 
             TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
@@ -37,90 +62,70 @@ namespace OctoAwesome.Network
             TypeContainer.Register<ResourceManager>(InstanceBehaviour.Singleton);
             TypeContainer.Register<IResourceManager, ResourceManager>(InstanceBehaviour.Singleton);
 
-            var extensionLoader = TypeContainer.Get<ExtensionLoader>();
+            extensionLoader = TypeContainer.Get<ExtensionLoader>();
             extensionLoader.LoadExtensions();
 
             ResourceManager = TypeContainer.Get<ResourceManager>();
 
-            Service = new(ResourceManager);
-            _simulation = new(ResourceManager, extensionLoader, Service)
+            Service = new GameService(ResourceManager);
+            simulation = new Simulation(ResourceManager, extensionLoader, Service)
             {
                 IsServerSide = true
             };
+            
         }
-
-        public bool IsRunning { get; private set; }
-
-        public Simulation Simulation
-        {
-            get
-            {
-                lock (_mainLock)
-                {
-                    return _simulation;
-                }
-            }
-            set
-            {
-                lock (_mainLock)
-                {
-                    _simulation = value;
-                }
-            }
-        }
-
-        public GameTime GameTime { get; private set; }
-
-        public ResourceManager ResourceManager { get; }
-
-        public GameService Service { get; }
 
         public void Start()
         {
             IsRunning = true;
-            GameTime = new();
+            GameTime = new GameTime();
 
-            _cancellationTokenSource = new();
-            var token = _cancellationTokenSource.Token;
-            _backgroundTask = new(SimulationLoop, token, token, TaskCreationOptions.LongRunning);
+            cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+            backgroundTask = new Task(SimulationLoop, token, token, TaskCreationOptions.LongRunning);
 
             //TODO: Load and Save logic for Server (Multiple games etc.....)
-            var universe = _settings.Get<string>("LastUniverse");
+            var universe = settings.Get<string>("LastUniverse");
 
             if (string.IsNullOrWhiteSpace(universe))
             {
-                var guid = _simulation.NewGame("melmack", new Random().Next().ToString());
-                _settings.Set("LastUniverse", guid.ToString());
+                var guid = simulation.NewGame("melmack", new Random().Next().ToString());
+                settings.Set("LastUniverse", guid.ToString());
             }
             else
             {
-                if (!_simulation.TryLoadGame(new(universe)))
+                if (!simulation.TryLoadGame(new Guid(universe)))
                 {
-                    var guid = _simulation.NewGame("melmack", new Random().Next().ToString());
-                    _settings.Set("LastUniverse", guid.ToString());
+                    var guid = simulation.NewGame("melmack", new Random().Next().ToString());
+                    settings.Set("LastUniverse", guid.ToString());
                 }
             }
 
-            _backgroundTask.Start();
+            backgroundTask.Start();
         }
 
         public void Stop()
         {
             IsRunning = false;
-            _simulation.ExitGame();
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
+            simulation.ExitGame();
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
         }
 
-        public IUniverse GetUniverse() => ResourceManager.CurrentUniverse;
+        public IUniverse GetUniverse()
+            => ResourceManager.CurrentUniverse;
 
-        public IUniverse NewUniverse() => throw new NotImplementedException();
+        public IUniverse NewUniverse()
+        {
+            throw new NotImplementedException();
+        }
 
         public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
 
-        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2) => ResourceManager.LoadChunkColumn(planet, index2);
-
-        public IChunkColumn LoadColumn(int planetId, Index2 index2) => LoadColumn(GetPlanet(planetId), index2);
+        public IChunkColumn LoadColumn(IPlanet planet, Index2 index2)
+            => planet.GlobalChunkCache.Subscribe(index2);
+        public IChunkColumn LoadColumn(int planetId, Index2 index2)
+            => LoadColumn(GetPlanet(planetId), index2);
 
         private void SimulationLoop(object state)
         {

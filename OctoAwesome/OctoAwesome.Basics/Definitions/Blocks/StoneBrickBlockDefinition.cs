@@ -1,19 +1,31 @@
-﻿using OctoAwesome.Basics.Definitions.Materials;
-using OctoAwesome.Basics.Languages;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class StoneBrickBlockDefinition : BlockDefinition
     {
-        public StoneBrickBlockDefinition(StoneMaterialDefinition material) => Material = material;
+        public override string Name
+        {
+            get { return Languages.OctoBasics.StoneBrick; }
+        }
 
-        public override string Name => OctoBasics.StoneBrick;
+        public override string Icon
+        {
+            get { return "brick_grey"; }
+        }
 
-        public override string Icon => "brick_grey";
 
-        public override string[] Textures { get; } = { "brick_grey" };
+        public override string[] Textures { get; } =  new[] {"brick_grey",};
 
         public override IMaterialDefinition Material { get; }
+
+        public StoneBrickBlockDefinition(StoneMaterialDefinition material)
+        {
+            Material = material;
+        }
+
     }
 }

@@ -1,41 +1,45 @@
-﻿using System;
+﻿using OctoAwesome.Threading;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using OctoAwesome.Threading;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Screens
 {
     public sealed class QuoteProvider
     {
-        private readonly FileInfo _fileInfo;
-        private readonly Random _random;
+        private readonly FileInfo fileInfo;
+        private readonly Random random;
+        private bool loaded;
+        private string[] quotes;
 
-        private readonly LockSemaphore _semaphoreExtended;
-        private bool _loaded;
-        private string[] _quotes;
+        private readonly LockSemaphore semaphoreExtended;
 
         public QuoteProvider(FileInfo fileInfo)
         {
-            _fileInfo = fileInfo;
-            _random = new();
-            _semaphoreExtended = new(1, 1);
+            this.fileInfo = fileInfo;
+            random = new Random();
+            semaphoreExtended = new LockSemaphore(1, 1);
         }
 
         public string GetRandomQuote()
         {
-            using (_semaphoreExtended.Wait())
+            using (semaphoreExtended.Wait())
             {
                 Load();
-                return _quotes[_random.Next(0, _quotes.Length)];
+                return quotes[random.Next(0, quotes.Length)];
             }
         }
 
         private void Load()
         {
-            if (_loaded)
+            if (loaded)
                 return;
 
-            _loaded = true;
-            _quotes = File.ReadAllLines(_fileInfo.FullName);
+            loaded = true;
+            quotes = File.ReadAllLines(fileInfo.FullName);
         }
     }
 }

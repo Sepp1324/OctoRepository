@@ -1,71 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using OctoAwesome.Notifications;
+﻿using System.Collections.Generic;
+using System;
+using System.IO;
 using OctoAwesome.Serialization;
 
 namespace OctoAwesome
 {
     /// <summary>
-    ///     Base-Interface for a ChunkColumn
+    /// Basisinterface für Eine Chunksäule
     /// </summary>
     public interface IChunkColumn : ISerializable
     {
         /// <summary>
-        ///     States if the <see cref="IChunkColumn" /> already got edited by a <see cref="IMapPopulator" />
+        /// Gibt an, ob die IChunkColumn schon von einem <see cref="IMapPopulator"/> bearbeitet wurde.
         /// </summary>
         bool Populated { get; set; }
 
         /// <summary>
-        ///     Current <see cref="Planet" />
+        /// Der Index des Planeten.
         /// </summary>
         IPlanet Planet { get; }
 
         /// <summary>
-        ///     Position of the <see cref="ChunkColumn" />
+        /// Die Position der Säule.
         /// </summary>
         Index2 Index { get; }
 
         /// <summary>
-        ///     Heights within the CunkColumn
+        /// Höhen innerhalb der Chunk-Säule (oberste Blöcke)
         /// </summary>
         int[,] Heights { get; }
 
         /// <summary>
-        ///     <see cref="Chunks" /> of the <see cref="ChunkColumn" />
+        /// Die Chunks der Säule.
         /// </summary>
         IChunk[] Chunks { get; }
 
         /// <summary>
-        ///     Returns the Blocks of the given Coordinate
+        /// Liefet den Block an der angegebenen Koordinate zurück.
         /// </summary>
-        /// <param name="index">Coordinate of the Block within the <see cref="ChunkColumn" /></param>
-        /// <returns>Block-ID of the given Coordinate</returns>
+        /// <param name="index">Koordinate des Blocks innerhalb des Chunkgs</param>
+        /// <returns>Die Block-ID an der angegebenen Koordinate</returns>
         ushort GetBlock(Index3 index);
 
         /// <summary>
-        ///     Returns List of <see cref="Block" /> at the given Coordinate
+        /// Liefet den Block an der angegebenen Koordinate zurück.
         /// </summary>
-        /// <param name="x">X-Axis of Block-Coordinate</param>
-        /// <param name="y">Y-Axis of Block-Coordinate</param>
-        /// <param name="z">Z-Axis of Block-Coordinate</param>
-        /// <returns>Block-ID of the given Coordinate</returns>
+        /// <param name="x">X-Anteil der Koordinate des Blocks</param>
+        /// <param name="y">Y-Anteil der Koordinate des Blocks</param>
+        /// <param name="z">Z-Anteil der Koordinate des Blocks</param>
+        /// <returns>Block-ID der angegebenen Koordinate</returns>
         ushort GetBlock(int x, int y, int z);
 
         /// <summary>
-        ///     Action for ChunkColumn Changes
-        /// </summary>
-        event Action<IChunkColumn, IChunk> Changed;
-
-        /// <summary>
-        ///     Overrides the Block of the given Position
+        /// Überschreibt den Block an der angegebenen Position.
         /// </summary>
         /// <param name="index">Koordinate des Zielblocks innerhalb des Chunks.</param>
         /// <param name="block">Neuer Block oder null, falls der vorhandene Block gelöscht werden soll</param>
-        /// <param name="meta">(Optional) MetaInformation of the Block</param>
+        /// <param name="meta">(Optional) Metainformationen für den Block</param>
         void SetBlock(Index3 index, ushort block, int meta = 0);
 
         /// <summary>
-        ///     Overrides the Block of the given Position
+        /// Überschreibt den Block an der angegebenen Koordinate.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -75,7 +70,7 @@ namespace OctoAwesome
         void SetBlock(int x, int y, int z, ushort block, int meta = 0);
 
         /// <summary>
-        ///     Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
+        /// Gibt die Metadaten des Blocks an der angegebenen Koordinate zurück.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -84,7 +79,7 @@ namespace OctoAwesome
         int GetBlockMeta(int x, int y, int z);
 
         /// <summary>
-        ///     Überschreibt den Block an der angegebenen Koordinate.
+        /// Überschreibt den Block an der angegebenen Koordinate.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -93,7 +88,7 @@ namespace OctoAwesome
         void SetBlockMeta(int x, int y, int z, int meta);
 
         /// <summary>
-        ///     Liefert alle Ressourcen im Block an der angegebenen Koordinate zurück.
+        /// Liefert alle Ressourcen im Block an der angegebenen Koordinate zurück.
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
@@ -102,32 +97,20 @@ namespace OctoAwesome
         ushort[] GetBlockResources(int x, int y, int z);
 
         /// <summary>
-        ///     Ändert die Ressourcen des Blocks an der angegebenen Koordinate
+        /// Ändert die Ressourcen des Blocks an der angegebenen Koordinate
         /// </summary>
         /// <param name="x">X-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="y">Y-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
         /// <param name="z">Z-Anteil der Koordinate des Blocks innerhalb des Chunks</param>
-        /// <param name="resources">Ein <see cref="ushort" />-Array, das alle Ressourcen enthält</param>
+        /// <param name="resources">Ein <see cref="ushort"/>-Array, das alle Ressourcen enthält</param>
         void SetBlockResources(int x, int y, int z, ushort[] resources);
-
-        /// <summary>
-        ///     Event for Block-Update within a ChunkColumn
-        /// </summary>
-        /// <param name="notification"></param>
-        void OnUpdate(SerializableNotification notification);
-
-        void Update(SerializableNotification notification);
-
+        void OnUpdate(Notifications.SerializableNotification notification);
+        void Update(Notifications.SerializableNotification notification);
         void ForEachEntity(Action<Entity> action);
-
         IEnumerable<FailEntityChunkArgs> FailChunkEntity();
-
         void Remove(Entity entity);
-
         void Add(Entity entity);
-
         void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos);
-
         void FlagDirty();
     }
 }

@@ -1,5 +1,6 @@
-﻿using System;
-using OctoAwesome.Database;
+﻿using OctoAwesome.Database;
+using System;
+using System.Security.Cryptography;
 
 namespace OctoAwesome.Serialization
 {
@@ -12,25 +13,26 @@ namespace OctoAwesome.Serialization
         public Index2Tag(Index2 index) => Index = index;
 
         public void FromBytes(byte[] array, int startIndex)
-        {
-            Index = new(BitConverter.ToInt32(array, startIndex), BitConverter.ToInt32(array, startIndex + sizeof(int)));
-        }
+            => Index = new Index2(BitConverter.ToInt32(array, startIndex),
+                                  BitConverter.ToInt32(array, startIndex + sizeof(int)));
 
         public byte[] GetBytes()
         {
             var byteArray = new byte[Length];
-            BitConverter.TryWriteBytes(byteArray[..sizeof(int)], Index.X);
-            BitConverter.TryWriteBytes(byteArray[sizeof(int)..(sizeof(int) * 2)], Index.Y);
+            BitConverter.TryWriteBytes(byteArray[0..sizeof(int)], Index.X);
+            BitConverter.TryWriteBytes(byteArray[sizeof(int)..(sizeof(int)*2)], Index.Y);
             return byteArray;
         }
 
-        public override bool Equals(object obj) => obj is Index2Tag tag && Equals(tag);
+        public override bool Equals(object obj) 
+            => obj is Index2Tag tag && Equals(tag);
 
-        public bool Equals(Index2Tag other) => Length == other.Length && Index.Equals(other.Index);
+        public bool Equals(Index2Tag other) 
+            => Length == other.Length && Index.Equals(other.Index);
 
         public override int GetHashCode()
         {
-            var hashCode = 802246856;
+            int hashCode = 802246856;
             hashCode = hashCode * -1521134295 + Length.GetHashCode();
             hashCode = hashCode * -1521134295 + Index.GetHashCode();
             return hashCode;
@@ -38,12 +40,14 @@ namespace OctoAwesome.Serialization
 
         public void WriteBytes(Span<byte> span)
         {
-            BitConverter.TryWriteBytes(span[..sizeof(int)], Index.X);
+            BitConverter.TryWriteBytes(span[0..sizeof(int)], Index.X);
             BitConverter.TryWriteBytes(span[sizeof(int)..(sizeof(int) * 2)], Index.Y);
         }
 
-        public static bool operator ==(Index2Tag left, Index2Tag right) => left.Equals(right);
+        public static bool operator ==(Index2Tag left, Index2Tag right) 
+            => left.Equals(right);
 
-        public static bool operator !=(Index2Tag left, Index2Tag right) => !(left == right);
+        public static bool operator !=(Index2Tag left, Index2Tag right) 
+            => !(left == right);
     }
 }

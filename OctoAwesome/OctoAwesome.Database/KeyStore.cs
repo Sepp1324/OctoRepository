@@ -1,45 +1,40 @@
-﻿using System;
+﻿using OctoAwesome.Database.Checks;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using OctoAwesome.Database.Checks;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Database
 {
     internal class KeyStore<TTag> : IDisposable where TTag : ITag, new()
     {
-        private readonly Dictionary<TTag, Key<TTag>> _keys;
-        private readonly Reader _reader;
-        private readonly Writer _writer;
+        public int EmptyKeys { get; private set; }
+        public IReadOnlyList<TTag> Tags => keys.Keys.ToArray();
+        public IReadOnlyList<Key<TTag>> Keys => keys.Values.ToArray();
+        private readonly Dictionary<TTag, Key<TTag>> keys;
+        private readonly Writer writer;
+        private readonly Reader reader;
 
         public KeyStore(Writer writer, Reader reader)
         {
-            _keys = new();
+            keys = new Dictionary<TTag, Key<TTag>>();
 
-            _writer = writer;
-            _reader = reader;
-        }
-
-        public int EmptyKeys { get; private set; }
-
-        public IReadOnlyList<TTag> Tags => _keys.Keys.ToArray();
-
-        public IReadOnlyList<Key<TTag>> Keys => _keys.Values.ToArray();
-
-        public void Dispose()
-        {
-            _keys.Clear();
-            _writer.Dispose(); //TODO: Move to owner
+            this.writer = writer;
+            this.reader = reader;
         }
 
         public void Open()
         {
-            _keys.Clear();
+            keys.Clear();
             EmptyKeys = 0;
 
-            _writer.Open();
-            var buffer = _reader.Read(0, -1);
+            writer.Open();
+            var buffer = reader.Read(0, -1);
 
-            for (var i = 0; i < buffer.Length; i += Key<TTag>.KEY_SIZE)
+            for (int i = 0; i < buffer.Length; i += Key<TTag>.KEY_SIZE)
             {
                 var key = Key<TTag>.FromBytes(buffer, i);
 
@@ -52,35 +47,49 @@ namespace OctoAwesome.Database
                     continue;
                 }
 
-                _keys.Add(key.Tag, key);
+                keys.Add(key.Tag, key);
             }
         }
 
-        public void Close() => _writer.Close();
+        public void Close()
+        {
+            writer.Close();
+        }
 
-        internal Key<TTag> GetKey(TTag tag) => _keys[tag];
+        internal Key<TTag> GetKey(TTag tag)
+            => keys[tag];
 
         internal void Update(Key<TTag> key)
         {
-            var oldKey = _keys[key.Tag];
-            _keys[key.Tag] = new Key<TTag>(key.Tag, key.Index, key.ValueLength, oldKey.Position);
-            key.WriteBytes(_writer, oldKey.Position, true);
+            var oldKey = keys[key.Tag];
+            keys[key.Tag] = new Key<TTag>(key.Tag, key.Index, key.ValueLength, oldKey.Position);
+            key.WriteBytes(writer, oldKey.Position, true);
         }
 
-        internal bool Contains(TTag tag) => _keys.ContainsKey(tag);
+        internal bool Contains(TTag tag)
+        {
+            return keys.ContainsKey(tag);
+        }
 
         internal void Add(Key<TTag> key)
         {
-            key = new Key<TTag>(key.Tag, key.Index, key.ValueLength, _writer.ToEnd());
-            _keys.Add(key.Tag, key);
-            key.WriteBytes(_writer, _writer.ToEnd(), true);
+            key = new Key<TTag>(key.Tag, key.Index, key.ValueLength, writer.ToEnd());
+            keys.Add(key.Tag, key);
+            key.WriteBytes(writer, writer.ToEnd(), true);
+
         }
 
         internal void Remove(TTag tag, out Key<TTag> key)
         {
-            key = _keys[tag];
-            _keys.Remove(tag);
-            key.WriteBytes(_writer, key.Position, true);
+            key = keys[tag];
+            keys.Remove(tag);
+            key.WriteBytes(writer, key.Position, true);
+        }
+
+        public void Dispose()
+        {
+            keys.Clear();
+            writer.Dispose(); //TODO: Move to owner
         }
     }
 }

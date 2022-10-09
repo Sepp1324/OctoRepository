@@ -1,27 +1,33 @@
-﻿using System;
-using System.Net.Sockets;
-using OctoAwesome.Network.Pooling;
+﻿using OctoAwesome.Network.Pooling;
+using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
-using OctoAwesome.Serialization;
+using OctoAwesome.Pooling;
 using OctoAwesome.Rx;
+using OctoAwesome.Serialization;
+using System;
+using System.Buffers;
+using System.IO;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
     public sealed class ConnectedClient : BaseClient, IDisposable
     {
-        private readonly PackagePool _packagePool;
+        private readonly IDisposable networkSubscription;
+        public IDisposable ServerSubscription { get; set; }
 
-        private readonly IDisposable _networkSubscription;
+        private readonly PackagePool packagePool;
 
         public ConnectedClient(Socket socket) : base(socket)
         {
-            _packagePool = TypeContainer.Get<PackagePool>();
-            _networkSubscription = TypeContainer.Get<IUpdateHub>().ListenOn(DefaultChannels.NETWORK).Subscribe(OnNext, OnError);
+            packagePool = TypeContainer.Get<PackagePool>();
+            var updateHub = TypeContainer.Get<IUpdateHub>();
+            networkSubscription = updateHub.ListenOn(DefaultChannels.Network).Subscribe(OnNext, OnError);
         }
 
-        public IDisposable NetworkChannelSubscription { get; set; }
-
-        public IDisposable ServerSubscription { get; set; }
 
         private void OnError(Exception error)
         {
@@ -57,12 +63,15 @@ namespace OctoAwesome.Network
 
         private void BuildAndSendPackage(byte[] data, OfficialCommand officialCommand)
         {
-            var package = _packagePool.Get();
+            var package = packagePool.Get();
             package.Payload = data;
             package.Command = (ushort)officialCommand;
-            SendPackageAndRelease(package);
+            SendPackageAndRelase(package);
         }
 
-        public void Dispose() => _networkSubscription?.Dispose();
+        public void Dispose()
+        {
+            networkSubscription.Dispose();
+        }
     }
 }

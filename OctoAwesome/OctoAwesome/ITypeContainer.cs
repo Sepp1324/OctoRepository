@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OctoAwesome.Logging;
+using System;
 
 namespace OctoAwesome
 {
@@ -10,9 +11,9 @@ namespace OctoAwesome
         void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour);
         void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class;
         void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class;
-        void Register(Type registrar, Type type, object singleton);
-        void Register<T>(T singleton) where T : class;
-        void Register<TRegistrar, T>(object singleton) where T : class;
+        void Register(Type registrar, Type type, object singelton);
+        void Register<T>(T singelton) where T : class;
+        void Register<TRegistrar, T>(object singelton) where T : class;
 
         bool TryResolve(Type type, out object instance);
         bool TryResolve<T>(out T instance) where T : class;

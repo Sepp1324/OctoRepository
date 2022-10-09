@@ -1,59 +1,64 @@
-﻿using System;
+﻿using OctoAwesome.Noise;
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
     public abstract class LargeBiomeBase : BiomeBase
     {
-        protected LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange) : base(planet, 0, 0, valueRangeOffset, valueRange) { }
+
+
+        public LargeBiomeBase(IPlanet planet, float valueRangeOffset, float valueRange)
+            : base(planet, 0, 0, valueRangeOffset, valueRange)
+        {
+        }
 
         protected void SortSubBiomes()
         {
             SubBiomes = SubBiomes.OrderBy(a => a.MinValue).ToList();
 
             if (SubBiomes.Count > 0 && (SubBiomes.First().MinValue > 0f || SubBiomes.Last().MaxValue < 1f))
+            {
                 throw new InvalidOperationException("MinValue oder MaxValue der Biome nicht in gültigem Bereich");
+            }
         }
 
-        private IBiome ChooseBiome(float value, out IBiome secondBiome)
+        protected IBiome ChooseBiome(float value, out IBiome secondBiome)
         {
             secondBiome = null;
-            var betweenPossible = false;
-            for (var i = 0; i < SubBiomes.Count; i++)
+            bool betweenPossible = false;
+            for (int i = 0; i < SubBiomes.Count; i++)
             {
                 if (betweenPossible && value < SubBiomes[i].MinValue)
                 {
                     secondBiome = SubBiomes[i];
                     return SubBiomes[i - 1];
                 }
-
-                if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
+                else if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
                     return SubBiomes[i];
-
                 betweenPossible = value > SubBiomes[i].MaxValue;
             }
-
             return null;
         }
 
         protected int ChooseBiome(float value, out int secondBiome)
         {
             secondBiome = -1;
-            var betweenPossible = false;
-            for (var i = 0; i < SubBiomes.Count; i++)
+            bool betweenPossible = false;
+            for (int i = 0; i < SubBiomes.Count; i++)
             {
                 if (betweenPossible && value < SubBiomes[i].MinValue)
                 {
                     secondBiome = i;
                     return i - 1;
                 }
-
-                if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
+                else if (SubBiomes[i].MaxValue >= value && SubBiomes[i].MinValue <= value)
                     return i;
-
                 betweenPossible = value > SubBiomes[i].MaxValue;
             }
-
             return -1;
         }
 
@@ -68,17 +73,23 @@ namespace OctoAwesome.Basics.Biomes
         {
             if (biome2 != null)
             {
-                var diff = biome2.MinValue - biome1.MaxValue;
+                float diff = biome2.MinValue - biome1.MaxValue;
                 region -= biome1.MaxValue;
                 region /= diff;
                 return CurveFunction(region);
             }
-
-            return biome1 != null ? 0f : 0f;
+            else if (biome1 != null)
+            {
+                return 0f;
+            }
+            return 0f;
         }
 
-        protected virtual float CurveFunction(float inputValue) => inputValue;
+        protected virtual float CurveFunction(float inputValue)
+        {
+            return inputValue;
+        }
 
-        public override float[] GetHeigthMap(Index2 chunkIndex, float[] heightmap) => base.GetHeigthMap(chunkIndex, heightmap);
+        public override float[] GetHeightmap(Index2 chunkIndex, float[] heightmap) => base.GetHeightmap(chunkIndex, heightmap);
     }
 }

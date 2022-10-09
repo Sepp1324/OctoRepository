@@ -1,47 +1,63 @@
 ﻿using engenious;
-using engenious.UI;
+using OctoAwesome.Basics.EntityComponents;
 using OctoAwesome.Basics.EntityComponents.UIComponents;
 using OctoAwesome.EntityComponents;
+using OctoAwesome.Serialization;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.FunctionBlocks
 {
+    [SerializationId(1, 3)]
     public class Chest : FunctionalBlock
     {
-        private readonly AnimationComponent _animationComponent;
-        private readonly TransferUIComponent _transferUiComponent;
+        internal InventoryComponent inventoryComponent;
+        internal AnimationComponent animationComponent;
+        internal TransferUIComponent transferUiComponent;
+
+        public Chest()
+        {
+
+        }
+
+        public override void Deserialize(BinaryReader reader)
+        {
+            base.Deserialize(reader);
+            //Doesnt get called
+        }
 
         public Chest(Coordinate position)
         {
-            var inventoryComponent = new InventoryComponent();
-            _animationComponent = new();
-            _transferUiComponent = new(inventoryComponent);
-            _transferUiComponent.Closed += TransferUiComponentClosed;
-            Components.AddComponent(inventoryComponent);
-            Components.AddComponent(new PositionComponent
+
+            Components.AddComponent(new PositionComponent()
             {
                 Position = position
             });
 
-            Components.AddComponent(new BodyComponent { Height = 0.4f, Radius = 0.2f });
-            Components.AddComponent(new BoxCollisionComponent(new[] { new BoundingBox(new(0, 0), new(1, 1, 1)) }));
-            Components.AddComponent(new RenderComponent { Name = "Chest", ModelName = "chest", TextureName = "texchestmodel", BaseZRotation = -90 }, true);
-            Components.AddComponent(_transferUiComponent, true);
-            Components.AddComponent(_animationComponent);
+
+            //Simulation.Entities.FirstOrDefault(x=>x.)
         }
 
-        private void TransferUiComponentClosed(object sender, NavigationEventArgs e)
+        internal void TransferUiComponentClosed(object sender, engenious.UI.NavigationEventArgs e)
         {
-            _animationComponent.AnimationSpeed = -60f;
+            animationComponent.AnimationSpeed = -60f;
         }
 
         protected override void OnInteract(GameTime gameTime, Entity entity)
         {
-            if (entity is not Player p) 
-                return;
-
-            _transferUiComponent.Show(p);
-            _animationComponent.CurrentTime = 0f;
-            _animationComponent.AnimationSpeed = 60f;
+            if (entity is Player p)
+            {
+                transferUiComponent.Show(p);
+                animationComponent.CurrentTime = 0f;
+                animationComponent.AnimationSpeed = 60f;
+            }
+            else
+            {
+            }
         }
     }
 }

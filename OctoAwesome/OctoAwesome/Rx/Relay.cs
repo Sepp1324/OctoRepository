@@ -5,62 +5,77 @@ namespace OctoAwesome.Rx
 {
     public class Relay<T> : IObservable<T>, IObserver<T>, IDisposable
     {
-        private readonly List<RelaySubscription> _subscriptions;
+        private readonly List<RelaySubscription> subscriptions;
 
-        public Relay() => _subscriptions = new();
-
-        public void Dispose()
+        public Relay()
         {
-            foreach (var subscription in _subscriptions)
-                subscription.Dispose();
+            subscriptions = new();
+        }
 
-            _subscriptions.Clear();
+        public void OnCompleted()
+        {
+            for (int i = 0; i < subscriptions.Count; i++)
+            {
+                subscriptions[i]?.Observer.OnCompleted();
+            }
+        }
+
+        public void OnError(Exception error)
+        {
+            for (int i = 0; i < subscriptions.Count; i++)
+            {
+                subscriptions[i]?.Observer.OnError(error);
+            }
+        }
+
+        public void OnNext(T value)
+        {
+            for (int i = 0; i < subscriptions.Count; i++)
+            {
+                subscriptions[i]?.Observer.OnNext(value);
+            }
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
             var sub = new RelaySubscription(this, observer);
-            _subscriptions.Add(sub);
+            subscriptions.Add(sub);
             return sub;
         }
 
-        public void OnCompleted()
+        public void Dispose()
         {
-            foreach (var subscription in _subscriptions)
-                subscription?.Observer.OnCompleted();
-        }
+            foreach (var subscription in subscriptions)
+            {
+                subscription.Dispose();
+            }
 
-        public void OnError(Exception error)
-        {
-            foreach (var subscription in _subscriptions)
-                subscription?.Observer.OnError(error);
-        }
-
-        public void OnNext(T value)
-        {
-            foreach (var subscription in _subscriptions)
-                subscription?.Observer.OnNext(value);
+            subscriptions.Clear();
         }
 
         private void Unsubscribe(RelaySubscription subscription)
         {
-            _subscriptions.Remove(subscription);
+            subscriptions.Remove(subscription);
         }
+
 
         private class RelaySubscription : IDisposable
         {
-            private readonly Relay<T> _relay;
+            public IObserver<T> Observer { get; }
+
+            private readonly Relay<T> relay;
 
             public RelaySubscription(Relay<T> relay, IObserver<T> observer)
             {
-                _relay = relay;
+                this.relay = relay;
 
                 Observer = observer;
             }
 
-            public IObserver<T> Observer { get; }
-
-            public void Dispose() => _relay.Unsubscribe(this);
+            public void Dispose()
+            {
+                relay.Unsubscribe(this);
+            }
         }
     }
 }

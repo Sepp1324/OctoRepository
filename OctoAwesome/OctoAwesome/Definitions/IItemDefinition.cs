@@ -1,22 +1,15 @@
 ﻿using OctoAwesome.Definitions.Items;
+using OctoAwesome.Information;
+using System;
 
 namespace OctoAwesome.Definitions
 {
     /// <summary>
-    ///     Interface für die Definition eînes Items
+    /// Interface für die Definition eînes Items
     /// </summary>
     public interface IItemDefinition : IDefinition
     {
-        /// <summary>
-        /// </summary>
-        /// <param name="material"></param>
-        /// <returns></returns>
         bool CanMineMaterial(IMaterialDefinition material);
-
-        /// <summary>
-        /// </summary>
-        /// <param name="material"></param>
-        /// <returns></returns>
         Item Create(IMaterialDefinition material);
     }
 }

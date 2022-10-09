@@ -2,20 +2,23 @@
 {
     public class Polynomial
     {
-        private readonly float[] _coefficients;
+        private readonly float[] coeffecients;
 
-        public Polynomial(params float[] coefficients) => _coefficients = coefficients;
+        public Polynomial(params float[] coeffecients)
+            => this.coeffecients = coeffecients;
 
         public float Evaluate(float px)
         {
-            if (_coefficients.Length == 0) return 0;
-
-            var result = _coefficients[0];
-            var x = px;
-
-            for (var i = 1; i < _coefficients.Length; ++i)
+            if (coeffecients.Length == 0)
             {
-                result += x * _coefficients[i];
+                return 0;
+            }
+
+            var result = coeffecients[0];
+            float x = px;
+            for (var i = 1; i < coeffecients.Length; ++i)
+            {
+                result += x * coeffecients[i];
                 x *= px;
             }
 

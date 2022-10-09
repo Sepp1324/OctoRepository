@@ -1,77 +1,69 @@
-﻿using System;
+﻿using OctoAwesome.Definitions;
+using OctoAwesome.Serialization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Runtime
 {
     /// <summary>
-    ///     ExtensionLoader
+    /// ExtensionLoader
     /// </summary>
     public sealed class ExtensionLoader : IExtensionLoader, IExtensionResolver
     {
-        private const string SETTINGS_KEY = "DisabledExtensions";
+        private const string SETTINGSKEY = "DisabledExtensions";
 
-        private readonly Dictionary<Type, List<Type>> _definitionsLookup;
-        private readonly ITypeContainer _definitionTypeContainer;
 
-        private readonly ISettings _settings;
-        private readonly ITypeContainer _typeContainer;
+        private readonly Dictionary<Type, List<Action<ComponentContainer>>> componentContainerExtender;
 
-        private readonly List<Type> _entities;
+        private readonly List<Action<Simulation>> simulationExtender;
 
-        private readonly Dictionary<Type, List<Action<Entity>>> _entityExtender;
+        private readonly List<IMapGenerator> mapGenerators;
 
-        private readonly List<IMapGenerator> _mapGenerators;
-
-        private readonly List<IMapPopulator> _mapPopulators;
-
-        private readonly List<Action<Simulation>> _simulationExtender;
+        private readonly List<IMapPopulator> mapPopulators;
+        private readonly SerializationIdTypeProvider serializationIdTypeProvider;
 
         /// <summary>
-        ///     Constructor
+        /// List of Loaded Extensions
+        /// </summary>
+        public List<IExtension> LoadedExtensions { get; private set; }
+
+        /// <summary>
+        /// List of active Extensions
+        /// </summary>
+        public List<IExtension> ActiveExtensions { get; private set; }
+
+        private readonly Dictionary<Type, List<Type>> definitionsLookup;
+
+        private readonly ISettings settings;
+        private readonly ITypeContainer typeContainer;
+        private readonly ITypeContainer definitionTypeContainer;
+
+        /// <summary>
+        /// Constructor
         /// </summary>
         /// <param name="settings">Current Gamesettings</param>
-        public ExtensionLoader(ITypeContainer typeContainer, ISettings settings)
+        public ExtensionLoader(ITypeContainer typeContainer, ISettings settings, SerializationIdTypeProvider serializationIdTypeProvider)
         {
-            _settings = settings;
-            _typeContainer = typeContainer;
-            _definitionTypeContainer = new StandaloneTypeContainer();
-            _definitionsLookup = new();
-            _entities = new();
-            _entityExtender = new();
-            _simulationExtender = new();
-            _mapGenerators = new();
-            _mapPopulators = new();
-            LoadedExtensions = new();
-            ActiveExtensions = new();
+            this.settings = settings;
+            this.typeContainer = typeContainer;
+            this.serializationIdTypeProvider = serializationIdTypeProvider;
+            definitionTypeContainer = new StandaloneTypeContainer();
+            definitionsLookup = new Dictionary<Type, List<Type>>();
+            componentContainerExtender = new Dictionary<Type, List<Action<ComponentContainer>>>();
+            simulationExtender = new List<Action<Simulation>>();
+            mapGenerators = new List<IMapGenerator>();
+            mapPopulators = new List<IMapPopulator>();
+            LoadedExtensions = new List<IExtension>();
+            ActiveExtensions = new List<IExtension>();
+
         }
 
         /// <summary>
-        ///     List of Loaded Extensions
-        /// </summary>
-        public List<IExtension> LoadedExtensions { get; }
-
-        /// <summary>
-        ///     List of active Extensions
-        /// </summary>
-        public List<IExtension> ActiveExtensions { get; }
-
-        /// <summary>
-        ///     Activate the Extenisons
-        /// </summary>
-        /// <param name="disabledExtensions">List of Extensions</param>
-        public void ApplyExtensions(IList<IExtension> disabledExtensions)
-        {
-            var types = disabledExtensions.Select(e => e.GetType().FullName).ToArray();
-            _settings.Set(SETTINGS_KEY, types);
-        }
-
-        /// <summary>
-        ///     Load all Plugins
+        /// Load all Plugins
         /// </summary>
         public void LoadExtensions()
         {
@@ -81,44 +73,50 @@ namespace OctoAwesome.Runtime
             if (tempAssembly == null)
                 tempAssembly = Assembly.GetAssembly(GetType());
 
-            DirectoryInfo dir = new(Path.GetDirectoryName(tempAssembly!.Location!)!);
+            DirectoryInfo dir = new (Path.GetDirectoryName(tempAssembly!.Location!)!);
             assemblies.AddRange(LoadAssemblies(dir));
 
-            DirectoryInfo plugins = new(Path.Combine(dir.FullName, "plugins"));
+            DirectoryInfo plugins = new (Path.Combine(dir.FullName, "plugins"));
             if (plugins.Exists)
                 assemblies.AddRange(LoadAssemblies(plugins));
 
-            var disabledExtensions = _settings.KeyExists(SETTINGS_KEY) ? _settings.GetArray<string>(SETTINGS_KEY) : Array.Empty<string>();
+            var disabledExtensions = settings.KeyExists(SETTINGSKEY) ? settings.GetArray<string>(SETTINGSKEY) : Array.Empty<string>();
 
             foreach (var assembly in assemblies)
             {
-                var types = assembly.GetTypes();
+                var types = assembly
+                    .GetTypes();
 
                 foreach (var type in types)
+                {
                     if (typeof(IExtension).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                    {
                         try
                         {
-                            var extension = (IExtension)Activator.CreateInstance(type)!;
+                            IExtension extension = (IExtension)Activator.CreateInstance(type)!;
 
-                            extension.Register(_typeContainer);
-                            extension.Register(this, _typeContainer);
+                            extension.Register(typeContainer);
+                            extension.Register(this, typeContainer);
 
                             if (disabledExtensions.Contains(type.FullName))
                                 LoadedExtensions.Add(extension);
                             else
                                 ActiveExtensions.Add(extension);
                         }
-                        catch
+                        catch 
                         {
                             // TODO: Logging
                         }
+                    }
+                }
             }
         }
 
         private IEnumerable<Assembly> LoadAssemblies(DirectoryInfo directory)
         {
-            var assemblies = new List<Assembly>();
+            List<Assembly> assemblies = new List<Assembly>();
             foreach (var file in directory.GetFiles("*.dll"))
+            {
                 try
                 {
                     var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(file.FullName);
@@ -128,14 +126,24 @@ namespace OctoAwesome.Runtime
                 {
                     // TODO: Error Handling
                 }
-
+            }
             return assemblies;
+        }
+
+        /// <summary>
+        /// Activate the Extenisons
+        /// </summary>
+        /// <param name="disabledExtensions">List of Extensions</param>
+        public void ApplyExtensions(IList<IExtension> disabledExtensions)
+        {
+            var types = disabledExtensions.Select(e => e.GetType().FullName).ToArray();
+            settings.Set(SETTINGSKEY, types);
         }
 
         #region Loader Methods
 
         /// <summary>
-        ///     Registers a new Definition.
+        /// Registers a new Definition.
         /// </summary>
         /// <param name="definition">Definition Instance</param>
         public void RegisterDefinition(Type definition)
@@ -146,114 +154,147 @@ namespace OctoAwesome.Runtime
             var interfaceTypes = definition.GetInterfaces();
 
             foreach (var interfaceType in interfaceTypes)
-                if (_definitionsLookup.TryGetValue(interfaceType, out var typeList))
+            {
+                if (definitionsLookup.TryGetValue(interfaceType, out var typeList))
+                {
                     typeList.Add(definition);
+                }
                 else
-                    _definitionsLookup.Add(interfaceType, new List<Type> { definition });
+                {
+                    definitionsLookup.Add(interfaceType, new List<Type> { definition });
+                }
+            }
 
-            _definitionTypeContainer.Register(definition, definition, InstanceBehaviour.Singleton);
+            definitionTypeContainer.Register(definition, definition, InstanceBehaviour.Singleton);
         }
 
         /// <summary>
-        ///     Removes an existing Definition Type.
+        /// Removes an existing Definition Type.
         /// </summary>
         /// <typeparam name="T">Definition Type</typeparam>
-        public void RemoveDefinition<T>() where T : IDefinition => throw new NotSupportedException("Currently not supported by TypeContainer");
-
-        /// <summary>
-        ///     Registers a new Entity.
-        /// </summary>
-        /// <typeparam name="T">Entity Type</typeparam>
-        public void RegisterEntity<T>() where T : Entity
+        public void RemoveDefinition<T>() where T : IDefinition
         {
-            var type = typeof(T);
-            if (_entities.Contains(type))
-                throw new ArgumentException("Already registered");
-
-            _entities.Add(type);
+            throw new NotSupportedException("Currently not supported by TypeContainer");
         }
 
         /// <summary>
-        ///     Adds a new Extender for the given Entity Type.
+        /// Registers a new Entity.
+        /// </summary>
+        /// <typeparam name="T">Entity Type</typeparam>
+        public void RegisterSerializationType<T>()
+        {
+            Type type = typeof(T);
+            var serId = type.SerializationId();
+
+            if (serId == 0)
+                throw new ArgumentException($"Missing {nameof(SerializationIdAttribute)} on type {type.Name}, so it cant be registered.");
+
+            serializationIdTypeProvider.Register(serId, type);
+        }
+
+        /// <summary>
+        /// Adds a new Extender for the given Entity Type.
         /// </summary>
         /// <typeparam name="T">Entity Type</typeparam>
         /// <param name="extenderDelegate">Extender Delegate</param>
-        public void RegisterEntityExtender<T>(Action<Entity> extenderDelegate) where T : Entity
+        public void RegisterEntityExtender<T>(Action<ComponentContainer> extenderDelegate) where T : ComponentContainer
         {
-            var type = typeof(T);
-            if (!_entityExtender.TryGetValue(type, out var list))
+            Type type = typeof(T);
+            List<Action<ComponentContainer>> list;
+            if (!componentContainerExtender.TryGetValue(type, out list))
             {
-                list = new();
-                _entityExtender.Add(type, list);
+                list = new List<Action<ComponentContainer>>();
+                componentContainerExtender.Add(type, list);
             }
-
             list.Add(extenderDelegate);
         }
 
-        public void RegisterDefaultEntityExtender<T>() where T : Entity => RegisterEntityExtender<T>(e => e.RegisterDefault());
+        public void RegisterDefaultEntityExtender<T>() where T : ComponentContainer
+            => RegisterEntityExtender<T>((e) => e.RegisterDefault());
 
         /// <summary>
-        ///     Adds a new Extender for the simulation.
+        /// Adds a new Extender for the simulation.
         /// </summary>
         /// <param name="extenderDelegate"></param>
-        public void RegisterSimulationExtender(Action<Simulation> extenderDelegate) => _simulationExtender?.Add(extenderDelegate);
+        public void RegisterSimulationExtender(Action<Simulation> extenderDelegate)
+        {
+            simulationExtender.Add(extenderDelegate);
+        }
 
         /// <summary>
-        ///     Adds a new Map Generator.
+        /// Adds a new Map Generator.
         /// </summary>
-        public void RegisterMapGenerator(IMapGenerator generator) => _mapGenerators.Add(generator); //TODO: Checks
+        public void RegisterMapGenerator(IMapGenerator generator)
+        {
+            // TODO: Checks
+            mapGenerators.Add(generator);
+        }
 
-        public void RegisterMapPopulator(IMapPopulator populator) => _mapPopulators.Add(populator);
+        public void RegisterMapPopulator(IMapPopulator populator)
+        {
+            mapPopulators.Add(populator);
+        }
+
 
 
         /// <summary>
-        ///     Removes an existing Entity Type.
+        /// Removes an existing Entity Type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveEntity<T>() where T : Entity => _entities.Remove(typeof(T));
+        public void RemoveEntity<T>() where T : ComponentContainer
+        {
+            throw new NotSupportedException();
+        }
 
         /// <summary>
-        ///     Removes an existing Map Generator.
+        /// Removes an existing Map Generator.
         /// </summary>
         /// <typeparam name="T">Map Generator Type</typeparam>
-        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator => _mapGenerators.Remove(item);
+        public void RemoveMapGenerator<T>(T item) where T : IMapGenerator
+        {
+            mapGenerators.Remove(item);
+        }
 
-        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator => _mapPopulators.Remove(item);
+        public void RemoveMapPopulator<T>(T item) where T : IMapPopulator
+        {
+            mapPopulators.Remove(item);
+        }
 
         #endregion
 
         #region Resolver Methods
 
         /// <summary>
-        ///     Extend a Simulation
+        /// Extend a Simulation
         /// </summary>
         /// <param name="simulation">Simulation</param>
         public void ExtendSimulation(Simulation simulation)
         {
-            foreach (var extender in _simulationExtender)
+            foreach (var extender in simulationExtender)
                 extender(simulation);
         }
 
         /// <summary>
-        ///     Extend a Entity
+        /// Extend a Entity
         /// </summary>
         /// <param name="entity">Entity</param>
-        public void ExtendEntity(Entity entity)
+        public void ExtendEntity(ComponentContainer entity)
         {
-            var stack = new List<Type>();
-            var t = entity.GetType();
+            List<Type> stack = new List<Type>();
+            Type t = entity.GetType();
             stack.Add(t);
             do
             {
                 t = t!.BaseType;
                 stack.Add(t);
-            } while (t != typeof(Entity));
-
+            }
+            while (t != typeof(ComponentContainer));
             stack.Reverse();
 
             foreach (var type in stack)
             {
-                if (!_entityExtender.TryGetValue(type, out var list))
+                List<Action<ComponentContainer>> list;
+                if (!componentContainerExtender.TryGetValue(type, out list))
                     continue;
 
                 foreach (var item in list)
@@ -262,30 +303,36 @@ namespace OctoAwesome.Runtime
         }
 
         /// <summary>
-        ///     Return a List of Definitions
+        /// Return a List of Definitions
         /// </summary>
         /// <typeparam name="T">Definitiontype</typeparam>
         /// <returns>List</returns>
         public IEnumerable<T> GetDefinitions<T>() where T : class, IDefinition
         {
-            if (!_definitionsLookup.TryGetValue(typeof(T), out var definitionTypes)) 
-                yield break;
-
-            foreach (var type in definitionTypes)
-                yield return (T)_definitionTypeContainer.Get(type);
+            if (definitionsLookup.TryGetValue(typeof(T), out var definitionTypes))
+            {
+                foreach (var type in definitionTypes)
+                    yield return (T)definitionTypeContainer.Get(type);
+            }
         }
 
         /// <summary>
-        ///     Return a List of MapGenerators
+        /// Return a List of MapGenerators
         /// </summary>
         /// <returns>List of Generators</returns>
-        public IEnumerable<IMapGenerator> GetMapGenerator() => _mapGenerators;
+        public IEnumerable<IMapGenerator> GetMapGenerator()
+        {
+            return mapGenerators;
+        }
 
         /// <summary>
-        ///     Return a List of Populators
+        /// Return a List of Populators
         /// </summary>
         /// <returns>List of Populators</returns>
-        public IEnumerable<IMapPopulator> GetMapPopulator() => _mapPopulators;
+        public IEnumerable<IMapPopulator> GetMapPopulator()
+        {
+            return mapPopulators;
+        }
 
         #endregion
     }

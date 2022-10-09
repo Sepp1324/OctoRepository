@@ -1,26 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using engenious;
-using engenious.Input;
-using engenious.UI;
+﻿using OctoAwesome;
 using OctoAwesome.Client.Components;
 using OctoAwesome.Client.Controls;
+using OctoAwesome.Runtime;
+using System;
+using System.Configuration;
+using System.Linq;
+using engenious.UI;
+using EventArgs = System.EventArgs;
+using engenious;
+using engenious.Input;
+using System.Collections.Generic;
+using OctoAwesome.Notifications;
 using OctoAwesome.Common;
 using OctoAwesome.Definitions;
-using OctoAwesome.Notifications;
-using OctoAwesome.Runtime;
 using OctoAwesome.UI.Components;
-using OctoAwesome.UI.Languages;
-using EventArgs = System.EventArgs;
 
 namespace OctoAwesome.Client
 {
     /// <summary>
-    ///     This is the main type for your game
+    /// This is the main type for your game
     /// </summary>
     internal class OctoGame : Game
     {
-        public OctoGame()
+        private readonly ITypeContainer typeContainer;
+
+        //GraphicsDeviceManager graphics;
+
+        public CameraComponent Camera { get; private set; }
+
+        public PlayerComponent Player { get; private set; }
+
+        public SimulationComponent Simulation { get; private set; }
+
+        public GameService Service { get; private set; }
+
+        public ScreenComponent Screen { get; private set; }
+
+        public KeyMapper KeyMapper { get; private set; }
+
+        public AssetComponent Assets { get; private set; }
+
+        public Settings Settings { get; private set; }
+
+        public IDefinitionManager DefinitionManager { get; private set; }
+
+        public IResourceManager ResourceManager { get; private set; }
+
+        public ExtensionLoader ExtensionLoader { get; private set; }
+
+        public EntityGameComponent Entity { get; private set; }
+
+        public OctoGame() : base()
         {
             //graphics = new GraphicsDeviceManager(this);
             //graphics.PreferredBackBufferWidth = 1080;
@@ -32,8 +62,8 @@ namespace OctoAwesome.Client
             IsMouseVisible = true;
             //Icon = Properties.Resources.octoawesome;
 
-            var typeContainer = TypeContainer.Get<ITypeContainer>();
-            Screen = new(this);
+            typeContainer = TypeContainer.Get<ITypeContainer>();
+            Screen = new ScreenComponent(this);
 
             typeContainer.Register<BaseScreenComponent>(Screen);
             typeContainer.Register<ScreenComponent>(Screen);
@@ -43,8 +73,8 @@ namespace OctoAwesome.Client
 
             Settings = typeContainer.Get<Settings>();
 
-            KeyMapper = new(Screen, Settings);
-            Assets = new(this, Settings);
+            KeyMapper = new KeyMapper(Screen, Settings);
+            Assets = new AssetComponent(Screen, Settings);
 
             typeContainer.Register(Assets);
 
@@ -57,27 +87,30 @@ namespace OctoAwesome.Client
             Service = typeContainer.Get<GameService>();
             //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 15);
 
-            var width = Settings.Get("Width", 1680);
-            var height = Settings.Get("Height", 1050);
+            int width = Settings.Get("Width", 1680);
+            int height = Settings.Get("Height", 1050);
             Window.ClientSize = new Size(width, height);
 
             Window.Fullscreen = Settings.Get("EnableFullscreen", false);
 
             if (Settings.KeyExists("Viewrange"))
             {
-                var viewRange = Settings.Get<int>("Viewrange");
+                var viewrange = Settings.Get<int>("Viewrange");
 
-                if (viewRange < 1)
+                if (viewrange < 1)
                     throw new NotSupportedException("Viewrange in app.config darf nicht kleiner 1 sein");
 
-                SceneControl.VIEW_RANGE = viewRange;
+                SceneControl.VIEWRANGE = viewrange;
             }
 
+
+
+           
             Components.Add(Assets);
             Components.Add(Screen);
 
-            #region GameComponents
 
+            #region GameComponents
             DefinitionManager = typeContainer.Get<DefinitionManager>();
 
             //var persistenceManager = new DiskPersistenceManager(ExtensionLoader, DefinitionManager, Settings);
@@ -85,20 +118,21 @@ namespace OctoAwesome.Client
             ResourceManager = typeContainer.Get<ContainerResourceManager>();
 
 
-            Player = new(this, ResourceManager);
+            Player = new PlayerComponent(this, ResourceManager);
             Player.UpdateOrder = 2;
             Components.Add(Player);
 
-            Simulation = new(this, ExtensionLoader, ResourceManager);
+            Simulation = new Components.SimulationComponent(this,
+              ExtensionLoader, ResourceManager);
 
-            Entity = new(this, Simulation);
+            Entity = new Components.EntityGameComponent(this, Simulation);
             Entity.UpdateOrder = 2;
             Components.Add(Entity);
 
             Simulation.UpdateOrder = 3;
             Components.Add(Simulation);
 
-            Camera = new(this);
+            Camera = new CameraComponent(this);
             Camera.UpdateOrder = 4;
             Components.Add(Camera);
 
@@ -115,38 +149,14 @@ namespace OctoAwesome.Client
                 //graphics.ApplyChanges();
             };*/
             SetKeyBindings();
+
         }
-
-        //GraphicsDeviceManager graphics;
-
-        public CameraComponent Camera { get; }
-
-        public PlayerComponent Player { get; }
-
-        public SimulationComponent Simulation { get; }
-
-        public GameService Service { get; }
-
-        public ScreenComponent Screen { get; }
-
-        public KeyMapper KeyMapper { get; }
-
-        public AssetComponent Assets { get; }
-
-        public Settings Settings { get; }
-
-        public IDefinitionManager DefinitionManager { get; }
-
-        public IResourceManager ResourceManager { get; }
-
-        public ExtensionLoader ExtensionLoader { get; }
-
-        public EntityGameComponent Entity { get; }
 
         private static void Register(ITypeContainer typeContainer)
         {
             typeContainer.Register<Settings>(InstanceBehaviour.Singleton);
             typeContainer.Register<ISettings, Settings>(InstanceBehaviour.Singleton);
+            typeContainer.Register<SerializationIdTypeProvider>(InstanceBehaviour.Singleton);
             typeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
             typeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
             typeContainer.Register<IExtensionResolver, ExtensionLoader>(InstanceBehaviour.Singleton);
@@ -162,34 +172,32 @@ namespace OctoAwesome.Client
 
         private void SetKeyBindings()
         {
-            KeyMapper.RegisterBinding("octoawesome:forward", OctoKeys.forward);
-            KeyMapper.RegisterBinding("octoawesome:left", OctoKeys.left);
-            KeyMapper.RegisterBinding("octoawesome:backward", OctoKeys.backward);
-            KeyMapper.RegisterBinding("octoawesome:right", OctoKeys.right);
-            KeyMapper.RegisterBinding("octoawesome:headup", OctoKeys.headup);
-            KeyMapper.RegisterBinding("octoawesome:headdown", OctoKeys.headdown);
-            KeyMapper.RegisterBinding("octoawesome:headleft", OctoKeys.headleft);
-            KeyMapper.RegisterBinding("octoawesome:headright", OctoKeys.headright);
-            KeyMapper.RegisterBinding("octoawesome:interact", OctoKeys.interact);
-            KeyMapper.RegisterBinding("octoawesome:apply", OctoKeys.apply);
-            KeyMapper.RegisterBinding("octoawesome:flymode", OctoKeys.flymode);
-            KeyMapper.RegisterBinding("octoawesome:jump", OctoKeys.jump);
+            KeyMapper.RegisterBinding("octoawesome:forward", UI.Languages.OctoKeys.forward);
+            KeyMapper.RegisterBinding("octoawesome:left", UI.Languages.OctoKeys.left);
+            KeyMapper.RegisterBinding("octoawesome:backward", UI.Languages.OctoKeys.backward);
+            KeyMapper.RegisterBinding("octoawesome:right", UI.Languages.OctoKeys.right);
+            KeyMapper.RegisterBinding("octoawesome:headup", UI.Languages.OctoKeys.headup);
+            KeyMapper.RegisterBinding("octoawesome:headdown", UI.Languages.OctoKeys.headdown);
+            KeyMapper.RegisterBinding("octoawesome:headleft", UI.Languages.OctoKeys.headleft);
+            KeyMapper.RegisterBinding("octoawesome:headright", UI.Languages.OctoKeys.headright);
+            KeyMapper.RegisterBinding("octoawesome:interact", UI.Languages.OctoKeys.interact);
+            KeyMapper.RegisterBinding("octoawesome:apply", UI.Languages.OctoKeys.apply);
+            KeyMapper.RegisterBinding("octoawesome:flymode", UI.Languages.OctoKeys.flymode);
+            KeyMapper.RegisterBinding("octoawesome:jump", UI.Languages.OctoKeys.jump);
+            for (int i = 0; i < 10; i++)
+                KeyMapper.RegisterBinding("octoawesome:slot" + i, UI.Languages.OctoKeys.ResourceManager.GetString("slot" + i));
+            KeyMapper.RegisterBinding("octoawesome:debug.allblocks", UI.Languages.OctoKeys.debug_allblocks);
+            KeyMapper.RegisterBinding("octoawesome:debug.control", UI.Languages.OctoKeys.debug_control);
+            KeyMapper.RegisterBinding("octoawesome:inventory", UI.Languages.OctoKeys.inventory);
+            KeyMapper.RegisterBinding("octoawesome:hidecontrols", UI.Languages.OctoKeys.hidecontrols);
+            KeyMapper.RegisterBinding("octoawesome:exit", UI.Languages.OctoKeys.exit);
+            KeyMapper.RegisterBinding("octoawesome:freemouse", UI.Languages.OctoKeys.freemouse);
+            KeyMapper.RegisterBinding("octoawesome:fullscreen", UI.Languages.OctoKeys.fullscreen);
+            KeyMapper.RegisterBinding("octoawesome:teleport", UI.Languages.OctoKeys.teleport);
+            KeyMapper.RegisterBinding("octoawesome:toggleAmbientOcclusion", UI.Languages.OctoKeys.toggleAmbientOcclusion);
+            KeyMapper.RegisterBinding("octoawesome:toggleWireFrame", UI.Languages.OctoKeys.toggleWireFrame);
 
-            for (var i = 0; i < 10; i++)
-                KeyMapper.RegisterBinding("octoawesome:slot" + i, OctoKeys.ResourceManager.GetString("slot" + i));
-
-            KeyMapper.RegisterBinding("octoawesome:debug.allblocks", OctoKeys.debug_allblocks);
-            KeyMapper.RegisterBinding("octoawesome:debug.control", OctoKeys.debug_control);
-            KeyMapper.RegisterBinding("octoawesome:inventory", OctoKeys.inventory);
-            KeyMapper.RegisterBinding("octoawesome:hidecontrols", OctoKeys.hidecontrols);
-            KeyMapper.RegisterBinding("octoawesome:exit", OctoKeys.exit);
-            KeyMapper.RegisterBinding("octoawesome:freemouse", OctoKeys.freemouse);
-            KeyMapper.RegisterBinding("octoawesome:fullscreen", OctoKeys.fullscreen);
-            KeyMapper.RegisterBinding("octoawesome:teleport", OctoKeys.teleport);
-            KeyMapper.RegisterBinding("octoawesome:toggleAmbientOcclusion", OctoKeys.toggleAmbientOcclusion);
-            KeyMapper.RegisterBinding("octoawesome:toggleWireFrame", OctoKeys.toggleWireFrame);
-
-            var standardKeys = new Dictionary<string, Keys>
+            Dictionary<string, Keys> standardKeys = new Dictionary<string, Keys>()
             {
                 { "octoawesome:forward", Keys.W },
                 { "octoawesome:left", Keys.A },
@@ -230,7 +238,9 @@ namespace OctoAwesome.Client
             KeyMapper.AddAction("octoawesome:fullscreen", type =>
             {
                 if (type == KeyMapper.KeyType.Down)
+                {
                     Window.Fullscreen = !Window.Fullscreen;
+                }
             });
         }
 

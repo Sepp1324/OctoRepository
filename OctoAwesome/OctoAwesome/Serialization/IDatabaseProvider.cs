@@ -1,5 +1,5 @@
-﻿using System;
-using OctoAwesome.Database;
+﻿using OctoAwesome.Database;
+using System;
 
 namespace OctoAwesome
 {

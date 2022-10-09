@@ -1,32 +1,32 @@
 ﻿namespace OctoAwesome
 {
     /// <summary>
-    ///     Auflistung der Spielstatusse.
+    /// Auflistung der Spielstatusse.
     /// </summary>
     public enum SimulationState
     {
         /// <summary>
-        ///     Undefinierter Spielstatus.
+        /// Undefinierter Spielstatus.
         /// </summary>
         Undefined,
 
         /// <summary>
-        ///     Das Spiel ist bereit.
+        /// Das Spiel ist bereit.
         /// </summary>
         Ready,
 
         /// <summary>
-        ///     Das Spiel läuft.
+        /// Das Spiel läuft.
         /// </summary>
         Running,
 
         /// <summary>
-        ///     Das Spiel ist pausiert.
+        /// Das Spiel ist pausiert.
         /// </summary>
         Paused,
 
         /// <summary>
-        ///     Das Spiel ist beendet.
+        /// Das Spiel ist beendet.
         /// </summary>
         Finished
     }

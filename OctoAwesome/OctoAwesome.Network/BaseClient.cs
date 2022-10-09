@@ -1,65 +1,66 @@
-﻿using System;
+﻿using OctoAwesome.Network.Pooling;
+using OctoAwesome.Rx;
+using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoAwesome.Network.Pooling;
-using OctoAwesome.Rx;
 
 namespace OctoAwesome.Network
 {
     public abstract class BaseClient : IDisposable
     {
-        private static uint _nextId;
+        private static uint NextId => ++nextId;
+        private static uint nextId;
 
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly PackagePool _packagePool;
-        protected readonly SocketAsyncEventArgs ReceiveArgs;
-        private readonly SocketAsyncEventArgs _sendArgs;
-        private readonly object _sendLock;
+        static BaseClient()
+        {
+            nextId = 0;
+        }
+        public uint Id { get; }
 
-        private readonly (byte[] data, int len)[] _sendQueue;
-        private Package _currentPackage;
-        private byte _nextSendQueueWriteIndex;
-
-        private byte _readSendQueueIndex;
-        private bool _sending;
+        public IObservable<Package> Packages => packages;
 
         protected Socket Socket;
+        protected readonly SocketAsyncEventArgs ReceiveArgs;
 
-        private readonly ConcurrentRelay<Package> _packages;
+        private byte readSendQueueIndex;
+        private byte nextSendQueueWriteIndex;
+        private bool sending;
+        private Package currentPackage;
+        private readonly PackagePool packagePool;
+        private readonly SocketAsyncEventArgs sendArgs;
 
-        static BaseClient() => _nextId = 0;
+        private readonly (byte[] data, int len)[] sendQueue;
+        private readonly object sendLock;
+        private readonly CancellationTokenSource cancellationTokenSource;
+
+        private readonly ConcurrentRelay<Package> packages;
 
         protected BaseClient()
         {
-            _packages = new();
-            _sendQueue = new (byte[] data, int len)[256];
-            _sendLock = new();
-            ReceiveArgs = new();
+            packages = new ConcurrentRelay<Package>();
+
+            sendQueue = new (byte[] data, int len)[256];
+            sendLock = new object();
+            ReceiveArgs = new SocketAsyncEventArgs();
             ReceiveArgs.Completed += OnReceived;
             ReceiveArgs.SetBuffer(ArrayPool<byte>.Shared.Rent(1024 * 1024), 0, 1024 * 1024);
-            _packagePool = TypeContainer.Get<PackagePool>();
+            packagePool = TypeContainer.Get<PackagePool>();
 
-            _sendArgs = new();
-            _sendArgs.Completed += OnSent;
+            sendArgs = new SocketAsyncEventArgs();
+            sendArgs.Completed += OnSent;
 
-            _cancellationTokenSource = new();
+            cancellationTokenSource = new CancellationTokenSource();
 
             Id = NextId;
         }
-
         protected BaseClient(Socket socket) : this()
         {
             Socket = socket;
             Socket.NoDelay = true;
         }
-
-        private static uint NextId => ++_nextId;
-
-        public uint Id { get; }
-
-        public IObservable<Package> Packages => _packages;
 
         public Task Start()
         {
@@ -69,22 +70,25 @@ namespace OctoAwesome.Network
                     return;
 
                 Receive(ReceiveArgs);
-            }, _cancellationTokenSource.Token);
+            }, cancellationTokenSource.Token);
         }
 
-        public void Stop() => _cancellationTokenSource.Cancel();
+        public void Stop()
+        {
+            cancellationTokenSource.Cancel();
+        }
 
         public Task SendAsync(byte[] data, int len)
         {
-            lock (_sendLock)
+            lock (sendLock)
             {
-                if (_sending)
+                if (sending)
                 {
-                    _sendQueue[_nextSendQueueWriteIndex++] = (data, len);
+                    sendQueue[nextSendQueueWriteIndex++] = (data, len);
                     return Task.CompletedTask;
                 }
 
-                _sending = true;
+                sending = true;
             }
 
             return Task.Run(() => SendInternal(data, len));
@@ -92,18 +96,18 @@ namespace OctoAwesome.Network
 
         public async Task SendPackageAsync(Package package)
         {
-            var bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
+            byte[] bytes = new byte[package.Payload.Length + Package.HEAD_LENGTH];
             package.SerializePackage(bytes, 0);
             await SendAsync(bytes, bytes.Length);
         }
 
-        public async Task SendPackageAndReleaseAsync(Package package)
+        public async Task SendPackageAndRelaseAsync(Package package)
         {
             await SendPackageAsync(package);
             package.Release();
         }
 
-        public void SendPackageAndRelease(Package package)
+        public void SendPackageAndRelase(Package package)
         {
             var task = Task.Run(async () => await SendPackageAsync(package));
             task.Wait();
@@ -114,22 +118,23 @@ namespace OctoAwesome.Network
         {
             while (true)
             {
-                _sendArgs.SetBuffer(data, 0, len);
+                sendArgs.SetBuffer(data, 0, len);
 
-                if (Socket.SendAsync(_sendArgs))
+                Console.WriteLine("Send now a package");
+                if (Socket.SendAsync(sendArgs))
                     return;
 
-                lock (_sendLock)
+                lock (sendLock)
                 {
-                    if (_readSendQueueIndex < _nextSendQueueWriteIndex)
+                    if (readSendQueueIndex < nextSendQueueWriteIndex)
                     {
-                        (data, len) = _sendQueue[_readSendQueueIndex++];
+                        (data, len) = sendQueue[readSendQueueIndex++];
                     }
                     else
                     {
-                        _nextSendQueueWriteIndex = 0;
-                        _readSendQueueIndex = 0;
-                        _sending = false;
+                        nextSendQueueWriteIndex = 0;
+                        readSendQueueIndex = 0;
+                        sending = false;
                         return;
                     }
                 }
@@ -141,17 +146,17 @@ namespace OctoAwesome.Network
             byte[] data;
             int len;
 
-            lock (_sendLock)
+            lock (sendLock)
             {
-                if (_readSendQueueIndex < _nextSendQueueWriteIndex)
+                if (readSendQueueIndex < nextSendQueueWriteIndex)
                 {
-                    (data, len) = _sendQueue[_readSendQueueIndex++];
+                    (data, len) = sendQueue[readSendQueueIndex++];
                 }
                 else
                 {
-                    _nextSendQueueWriteIndex = 0;
-                    _readSendQueueIndex = 0;
-                    _sending = false;
+                    nextSendQueueWriteIndex = 0;
+                    readSendQueueIndex = 0;
+                    sending = false;
                     return;
                 }
             }
@@ -159,7 +164,10 @@ namespace OctoAwesome.Network
             SendInternal(data, len);
         }
 
-        private void OnReceived(object sender, SocketAsyncEventArgs e) => Task.Run(() => Receive(e));
+        private void OnReceived(object sender, SocketAsyncEventArgs e)
+        {
+            Receive(e);
+        }
 
         protected void Receive(SocketAsyncEventArgs e)
         {
@@ -168,23 +176,25 @@ namespace OctoAwesome.Network
                 if (e.BytesTransferred < 1)
                     return;
 
-                var offset = 0;
+                int offset = 0;
 
                 do
                 {
                     offset += DataReceived(e.Buffer, e.BytesTransferred, offset);
+
                 } while (offset < e.BytesTransferred);
+
             } while (!Socket.ReceiveAsync(e));
         }
 
         private int DataReceived(byte[] buffer, int length, int bufferOffset)
         {
-            var offset = 0;
+            int offset = 0;
 
-            if (_currentPackage == null)
+            if (currentPackage == null)
             {
-                _currentPackage = _packagePool.GetBlank();
-                _currentPackage.BaseClient = this;
+                currentPackage = packagePool.GetBlank();
+                currentPackage.BaseClient = this;
 
                 if (length - bufferOffset < Package.HEAD_LENGTH)
                 {
@@ -193,19 +203,28 @@ namespace OctoAwesome.Network
                     ex.Data.Add(nameof(bufferOffset), bufferOffset);
                     throw ex;
                 }
-
-                if (_currentPackage.TryDeserializeHeader(buffer, bufferOffset))
-                    offset += Package.HEAD_LENGTH;
                 else
-                    throw new InvalidCastException("Cannot deserialize header with these bytes :(");
+                {
+                    if (currentPackage.TryDeserializeHeader(buffer, bufferOffset))
+                    {
+                        offset += Package.HEAD_LENGTH;
+                    }
+                    else
+                    {
+                        throw new InvalidCastException("Can not deserialize header with these bytes :(");
+                    }
+                }
             }
 
-            offset += _currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));
+            offset += currentPackage.DeserializePayload(buffer, bufferOffset + offset, length - (bufferOffset + offset));
 
-            if (_currentPackage.IsComplete)
+            if (currentPackage.IsComplete)
             {
-                _packages.OnNext(_currentPackage);
-                _currentPackage = null;
+                var package = currentPackage;
+
+                Debug.WriteLine("Package:  " + package.UId);
+                packages.OnNext(package);
+                currentPackage = null;
             }
 
             return offset;
@@ -213,10 +232,10 @@ namespace OctoAwesome.Network
 
         public void Dispose()
         {
-            _cancellationTokenSource?.Dispose();
+            packages?.Dispose();
             ReceiveArgs?.Dispose();
-            _sendArgs?.Dispose();
-            _packages?.Dispose();
+            sendArgs?.Dispose();
+            cancellationTokenSource?.Dispose();
         }
     }
 }

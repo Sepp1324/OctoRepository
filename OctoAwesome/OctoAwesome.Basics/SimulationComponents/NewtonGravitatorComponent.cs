@@ -1,11 +1,11 @@
-﻿using engenious;
-using OctoAwesome.Basics.EntityComponents;
-using OctoAwesome.Components;
+﻿using OctoAwesome.Basics.EntityComponents;
+using engenious;
 using OctoAwesome.EntityComponents;
+using OctoAwesome.Components;
 using SimulationComponentRecord = OctoAwesome.Components.SimulationComponentRecord<
-    OctoAwesome.Entity,
-    OctoAwesome.Basics.EntityComponents.GravityComponent,
-    OctoAwesome.EntityComponents.BodyComponent>;
+                                    OctoAwesome.Entity,
+                                    OctoAwesome.Basics.EntityComponents.GravityComponent,
+                                    OctoAwesome.EntityComponents.BodyComponent>;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
@@ -22,8 +22,7 @@ namespace OctoAwesome.Basics.SimulationComponents
             var positionComponent = gravityEntity.Entity.Components.GetComponent<PositionComponent>();
             if (positionComponent != null)
             {
-                var id = positionComponent.Position.Planet;
-                var planet = gravityEntity.Entity.Simulation.ResourceManager.GetPlanet(id);
+                var planet = positionComponent.Planet;
                 gravity = planet.Gravity;
             }
 
@@ -31,12 +30,10 @@ namespace OctoAwesome.Basics.SimulationComponents
         }
 
         protected override GravityEntity OnAdd(Entity entity)
-        {
-            return new(
+            => new GravityEntity(
                 entity,
                 entity.Components.GetComponent<GravityComponent>(),
                 entity.Components.GetComponent<BodyComponent>());
-        }
 
         public record GravityEntity(Entity Entity, GravityComponent GravityComponent, BodyComponent BodyComponent)
             : SimulationComponentRecord(Entity, GravityComponent, BodyComponent);

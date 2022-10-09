@@ -1,5 +1,4 @@
-﻿using System;
-using engenious;
+﻿using engenious;
 using engenious.Graphics;
 using engenious.Input;
 using engenious.UI;
@@ -7,24 +6,27 @@ using engenious.UI.Controls;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.UI.Components;
 using OctoAwesome.UI.Controls;
+using System;
+using System.Collections.Generic;
 
 namespace OctoAwesome.Basics.UI.Screens
 {
     public class TransferScreen : Screen
     {
+        public event EventHandler<NavigationEventArgs> Closed;
+
         private readonly AssetComponent assetComponent;
+        private readonly Texture2D panelBackground;
         private readonly InventoryControl inventoryA;
         private readonly InventoryControl inventoryB;
-        private readonly Label massLabel;
         private readonly Label nameLabel;
-        private readonly Texture2D panelBackground;
+        private readonly Label massLabel;
         private readonly Label volumeLabel;
 
         private InventoryComponent componentA;
         private InventoryComponent componentB;
 
-        public TransferScreen(BaseScreenComponent manager, AssetComponent assetComponent,
-            InventoryComponent inventoryComponentA, InventoryComponent inventoryComponentB) : base(manager)
+        public TransferScreen(BaseScreenComponent manager, AssetComponent assetComponent, InventoryComponent inventoryComponentA, InventoryComponent inventoryComponentB) : base(manager)
         {
             Background = new BorderBrush(Color.Black * 0.3f);
             IsOverlay = true;
@@ -36,14 +38,14 @@ namespace OctoAwesome.Basics.UI.Screens
             var grid = new Grid(manager)
             {
                 Width = 800,
-                Height = 500
+                Height = 500,
             };
 
-            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Fixed, Width = 600 });
-            grid.Columns.Add(new ColumnDefinition { ResizeMode = ResizeMode.Fixed, Width = 200 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Parts, Height = 100 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Parts, Height = 5 });
-            grid.Rows.Add(new RowDefinition { ResizeMode = ResizeMode.Parts, Height = 100 });
+            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 600 });
+            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Fixed, Width = 200 });
+            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 100 });
+            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 5, });
+            grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Parts, Height = 100 });
 
             Controls.Add(grid);
 
@@ -52,7 +54,7 @@ namespace OctoAwesome.Basics.UI.Screens
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
-                Padding = Border.All(20)
+                Padding = Border.All(20),
             };
 
             inventoryA.EndDrop += (s, e) => OnInventoryDrop(inventoryB, componentB, inventoryA, componentA, e);
@@ -62,7 +64,7 @@ namespace OctoAwesome.Basics.UI.Screens
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
-                Padding = Border.All(20)
+                Padding = Border.All(20),
             };
 
             inventoryB.EndDrop += (s, e) => OnInventoryDrop(inventoryA, componentA, inventoryB, componentB, e);
@@ -76,7 +78,8 @@ namespace OctoAwesome.Basics.UI.Screens
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Background = NineTileBrush.FromSingleTexture(panelBackground, 30, 30),
                 Padding = Border.All(20),
-                Margin = Border.All(10, 0, 0, 0)
+                Margin = Border.All(10, 0, 0, 0),
+
             };
 
             nameLabel = new Label(manager);
@@ -88,10 +91,7 @@ namespace OctoAwesome.Basics.UI.Screens
             grid.AddControl(infoPanel, 1, 0, 1, 3);
         }
 
-        public event EventHandler<NavigationEventArgs> Closed;
-
-        private void OnInventoryDrop(InventoryControl sourceControl, InventoryComponent source,
-            InventoryControl targetControl, InventoryComponent target, DragEventArgs e)
+        private void OnInventoryDrop(InventoryControl sourceControl, InventoryComponent source, InventoryControl targetControl, InventoryComponent target, DragEventArgs e)
         {
             if (e.Content is InventorySlot slot)
             {
@@ -102,6 +102,7 @@ namespace OctoAwesome.Basics.UI.Screens
                 sourceControl.Rebuild(source.Inventory);
                 targetControl.Rebuild(target.Inventory);
             }
+
         }
 
         internal void Rebuild(InventoryComponent inventoryComponentA, InventoryComponent inventoryComponentB)
@@ -115,6 +116,7 @@ namespace OctoAwesome.Basics.UI.Screens
 
         protected override void OnKeyDown(KeyEventArgs args)
         {
+
             if (Manager.CanGoBack && (args.Key == Keys.Escape || args.Key == Keys.I))
             {
                 args.Handled = true;

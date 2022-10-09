@@ -1,6 +1,10 @@
-﻿using System;
+﻿using OctoAwesome.Database;
+
+using System;
 using System.Collections.Generic;
-using OctoAwesome.Database;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
@@ -23,7 +27,7 @@ namespace OctoAwesome.Serialization
             var y = BitConverter.ToInt32(array, startIndex + sizeof(int));
             var z = BitConverter.ToInt32(array, startIndex + sizeof(int) * 2);
             FlatIndex = BitConverter.ToInt32(array, startIndex + sizeof(int) * 3);
-            ChunkPositon = new(x, y, z);
+            ChunkPositon = new Index3(x, y, z);
         }
 
         public byte[] GetBytes()
@@ -31,41 +35,48 @@ namespace OctoAwesome.Serialization
             var array = new byte[Length];
 
             const int intSize = sizeof(int);
-            BitConverter.TryWriteBytes(array[..(intSize * 1)], ChunkPositon.X);
+            BitConverter.TryWriteBytes(array[0..(intSize * 1)], ChunkPositon.X);
             BitConverter.TryWriteBytes(array[(intSize * 1)..(intSize * 2)], ChunkPositon.Y);
             BitConverter.TryWriteBytes(array[(intSize * 2)..(intSize * 3)], ChunkPositon.Z);
             BitConverter.TryWriteBytes(array[(intSize * 3)..(intSize * 4)], FlatIndex);
 
             return array;
         }
-
         public void WriteBytes(Span<byte> span)
         {
             const int intSize = sizeof(int);
-            BitConverter.TryWriteBytes(span[..(intSize * 1)], ChunkPositon.X);
+            BitConverter.TryWriteBytes(span[0..(intSize * 1)], ChunkPositon.X);
             BitConverter.TryWriteBytes(span[(intSize * 1)..(intSize * 2)], ChunkPositon.Y);
             BitConverter.TryWriteBytes(span[(intSize * 2)..(intSize * 3)], ChunkPositon.Z);
             BitConverter.TryWriteBytes(span[(intSize * 3)..(intSize * 4)], FlatIndex);
         }
 
-        public override bool Equals(object obj) => obj is ChunkDiffTag tag && Equals(tag);
+        public override bool Equals(object obj)
+            => obj is ChunkDiffTag tag && Equals(tag);
 
-        public bool Equals(ChunkDiffTag other) =>
-            Length == other.Length && FlatIndex == other.FlatIndex &&
-            EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
+        public bool Equals(ChunkDiffTag other)
+            => Length == other.Length &&
+                FlatIndex == other.FlatIndex && 
+                EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
 
 
         public override int GetHashCode()
         {
-            var hashCode = 1893591923;
+            int hashCode = 1893591923;
             hashCode = hashCode * -1521134295 + Length.GetHashCode();
             hashCode = hashCode * -1521134295 + ChunkPositon.GetHashCode();
             hashCode = hashCode * -1521134295 + FlatIndex.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(ChunkDiffTag left, ChunkDiffTag right) => left.Equals(right);
+        public static bool operator ==(ChunkDiffTag left, ChunkDiffTag right)
+        {
+            return left.Equals(right);
+        }
 
-        public static bool operator !=(ChunkDiffTag left, ChunkDiffTag right) => !(left == right);
+        public static bool operator !=(ChunkDiffTag left, ChunkDiffTag right)
+        {
+            return !(left == right);
+        }
     }
 }

@@ -1,7 +1,11 @@
-﻿namespace OctoAwesome.Definitions
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OctoAwesome.Definitions
 {
-    /// <summary>
-    /// </summary>
     public interface IGasMaterialDefinition : IMaterialDefinition
     {
     }

@@ -1,43 +1,70 @@
-﻿using System;
-using OctoAwesome.Basics.Definitions.Blocks;
+﻿using OctoAwesome.Basics.Definitions.Blocks;
 using OctoAwesome.Definitions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Trees
 {
     public class BirchTreeDefinition : TreeDefinition
     {
-        private ushort _leave;
-        private ushort _water;
-        private ushort _wood;
+        private ushort wood;
+        private ushort leave;
+        private ushort water;
 
-        public override int Order => 15;
+        public override int Order
+        {
+            get
+            {
+                return 15;
+            }
+        }
 
-        public override float MaxTemperature => 30;
+        public override float MaxTemperature
+        {
+            get
+            {
+                return 30;
+            }
+        }
 
-        public override float MinTemperature => -5;
+        public override float MinTemperature
+        {
+            get
+            {
+                return -5;
+            }
+        }
 
-        public override int GetDensity(IPlanet planet, Index3 index) => 4;
+        public override int GetDensity(IPlanet planet, Index3 index)
+        {
+            return 4;
+        }
 
         public override void Init(IDefinitionManager definitionManager)
         {
-            _wood = definitionManager.GetDefinitionIndex<BirchWoodBlockDefinition>();
-            _leave = definitionManager.GetDefinitionIndex<LeavesBlockDefinition>();
-            _water = definitionManager.GetDefinitionIndex<WaterBlockDefinition>();
+            wood = definitionManager.GetDefinitionIndex<BirchWoodBlockDefinition>();
+            leave = definitionManager.GetDefinitionIndex<LeavesBlockDefinition>();
+            water = definitionManager.GetDefinitionIndex<WaterBlockDefinition>();
         }
 
         public override void PlantTree(IPlanet planet, Index3 index, LocalBuilder builder, int seed)
         {
-            var ground = builder.GetBlock(0, 0, -1);
-            if (ground == _water) return;
+            ushort ground = builder.GetBlock(0, 0, -1);
+            if (ground == water) return;
 
-            var rand = new Random(seed);
-            var height = rand.Next(3, 7);
-            var radius = rand.Next(3, height);
+            Random rand = new Random(seed);
+            int height = rand.Next(3, 7);
+            int radius = rand.Next(3, height);
 
-            builder.FillSphere(0, 0, height, radius, _leave);
+            builder.FillSphere(0, 0, height, radius, leave);
 
             var infos = new BlockInfo[height + 2];
-            for (var i = 0; i < height + 2; i++) infos[i] = (0, 0, i, _wood);
+            for (int i = 0; i < height + 2; i++)
+            {
+                infos[i] = (0, 0, i, wood);
+            }
             builder.SetBlocks(false, infos);
         }
     }

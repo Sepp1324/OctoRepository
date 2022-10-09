@@ -1,34 +1,49 @@
-﻿using OctoAwesome.Basics.Definitions.Materials;
-using OctoAwesome.Basics.Languages;
+﻿using System;
+using System.Drawing;
+using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
     public sealed class GrassBlockDefinition : BlockDefinition
     {
-        public GrassBlockDefinition(DirtMaterialDefinition material) => Material = material;
-
-        public override string Name => OctoBasics.Grass;
-
-        public override string Icon => "grass_top";
-
-        public override string[] Textures { get; } =
+        public override string Name
         {
-            "grass_top",
-            "dirt",
-            "dirt_grass"
-        };
+            get { return Languages.OctoBasics.Grass; }
+        }
+
+        public override string Icon
+        {
+            get { return "grass_top"; }
+        }
+
+        public override string[] Textures { get; } = new[] {
+                    "grass_top",
+                    "dirt",
+                    "dirt_grass",
+                };
 
         public override IMaterialDefinition Material { get; }
 
+        public GrassBlockDefinition(DirtMaterialDefinition material)
+        {
+            Material = material;
+        }
+
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
-            return wall switch
+            if (wall == Wall.Top)
             {
-                Wall.Top => 0,
-                Wall.Bottom => 1,
-                _ => 2
-            };
+                return 0;
+            }
+            else if (wall == Wall.Bottom)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
+            }
         }
     }
 }

@@ -1,22 +1,30 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    internal class HoeDefinition : IItemDefinition
+    class HoeDefinition : IItemDefinition
     {
+        public string Name { get; }
+        public string Icon { get; }
+
         public HoeDefinition()
         {
             Name = "Hoe";
             Icon = "hoe_iron";
         }
 
-        public string Name { get; }
+        public bool CanMineMaterial(IMaterialDefinition material)
+        {
+            return false;
+        }
 
-        public string Icon { get; }
-
-        public bool CanMineMaterial(IMaterialDefinition material) => false;
-
-        public Item Create(IMaterialDefinition material) => new Hoe(this, material);
+        public Item Create(IMaterialDefinition material)
+            => new Hoe(this, material);
     }
 }

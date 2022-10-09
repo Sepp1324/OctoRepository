@@ -2,23 +2,27 @@
 using engenious.UI;
 using engenious.UI.Controls;
 using OctoAwesome.Client.Components;
-using OctoAwesome.UI.Languages;
+using System;
 
 namespace OctoAwesome.Client.Screens
 {
-    internal class CreateUniverseScreen : BaseScreen
+    class CreateUniverseScreen : BaseScreen
     {
-        private readonly Button _createButton;
-        private readonly ScreenComponent _manager;
+        new readonly ScreenComponent Manager;
+        private readonly Textbox nameInput;
+        private readonly Textbox seedInput;
+        readonly Button createButton;
+
+        private readonly ISettings settings;
 
         public CreateUniverseScreen(ScreenComponent manager) : base(manager)
         {
-            _manager = manager;
-            ISettings settings = manager.Game.Settings;
+            Manager = manager;
+            settings = manager.Game.Settings;
 
-            Padding = new(0, 0, 0, 0);
+            Padding = new Border(0, 0, 0, 0);
 
-            Title = OctoClient.CreateUniverse;
+            Title = UI.Languages.OctoClient.CreateUniverse;
 
             SetDefaultBackground();
 
@@ -39,41 +43,45 @@ namespace OctoAwesome.Client.Screens
             };
             panel.Controls.Add(grid);
 
-            grid.Columns.Add(new() { ResizeMode = ResizeMode.Auto });
-            grid.Columns.Add(new() { Width = 1, ResizeMode = ResizeMode.Parts });
+            grid.Columns.Add(new ColumnDefinition() { ResizeMode = ResizeMode.Auto });
+            grid.Columns.Add(new ColumnDefinition() { Width = 1, ResizeMode = ResizeMode.Parts });
 
-            var nameInput = GetTextbox();
-            nameInput.TextChanged += (s, e) => { _createButton.Visible = !string.IsNullOrEmpty(e.NewValue); };
-            AddLabeledControl(grid, $"{OctoClient.Name}: ", nameInput);
+            nameInput = GetTextbox();
+            nameInput.TextChanged += (s, e) =>
+            {
+                createButton.Visible = !string.IsNullOrEmpty(e.NewValue);
+            };
+            AddLabeledControl(grid, string.Format("{0}: ", UI.Languages.OctoClient.Name), nameInput);
 
-            var seedInput = GetTextbox();
-            AddLabeledControl(grid, $"{OctoClient.Seed}: ", seedInput);
+            seedInput = GetTextbox();
+            AddLabeledControl(grid, string.Format("{0}: ", UI.Languages.OctoClient.Seed), seedInput);
 
-            _createButton = new TextButton(manager, OctoClient.Create);
-            _createButton.HorizontalAlignment = HorizontalAlignment.Right;
-            _createButton.VerticalAlignment = VerticalAlignment.Bottom;
-            _createButton.Visible = false;
-            _createButton.LeftMouseClick += (s, e) =>
+            createButton = new TextButton(manager, UI.Languages.OctoClient.Create);
+            createButton.HorizontalAlignment = HorizontalAlignment.Right;
+            createButton.VerticalAlignment = VerticalAlignment.Bottom;
+            createButton.Visible = false;
+            createButton.LeftMouseClick += (s, e) =>
             {
                 if (string.IsNullOrEmpty(nameInput.Text))
                     return;
-
+                
                 manager.Player.SetEntity(null);
 
-                var guid = _manager.Game.Simulation.NewGame(nameInput.Text, seedInput.Text);
+                Guid guid = Manager.Game.Simulation.NewGame(nameInput.Text, seedInput.Text);
                 settings.Set("LastUniverse", guid.ToString());
 
-                var player = manager.Game.Simulation.LoginPlayer("");
+                Player player = manager.Game.Simulation.LoginPlayer("");
                 manager.Game.Player.SetEntity(player);
 
                 manager.NavigateToScreen(new LoadingScreen(manager));
             };
-            panel.Controls.Add(_createButton);
+            panel.Controls.Add(createButton);
+
         }
 
         private Textbox GetTextbox()
         {
-            var t = new Textbox(_manager)
+            var t = new Textbox(Manager)
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,

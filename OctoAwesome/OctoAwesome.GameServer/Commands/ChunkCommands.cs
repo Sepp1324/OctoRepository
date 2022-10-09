@@ -1,7 +1,11 @@
-﻿using System;
-using System.IO;
-using CommandManagementSystem.Attributes;
+﻿using CommandManagementSystem.Attributes;
 using OctoAwesome.Network;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
@@ -17,11 +21,11 @@ namespace OctoAwesome.GameServer.Commands
             using (var memoryStream = new MemoryStream(parameter.Data))
             using (var reader = new BinaryReader(memoryStream))
             {
-                guid = new(reader.ReadBytes(16));
+                guid = new Guid(reader.ReadBytes(16));
                 planetId = reader.ReadInt32();
-                index2 = new(reader.ReadInt32(), reader.ReadInt32());
+                index2 = new Index2(reader.ReadInt32(), reader.ReadInt32());
             }
-
+                      
             var column = TypeContainer.Get<SimulationManager>().LoadColumn(planetId, index2);
 
             using (var memoryStream = new MemoryStream())

@@ -1,40 +1,36 @@
-﻿using System;
-using System.IO;
+﻿using OctoAwesome.Pooling;
 using OctoAwesome.Serialization;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OctoAwesome.Notifications
 {
     public sealed class FunctionalBlockNotification : SerializableNotification
     {
-        public enum ActionType
+        public ActionType Type { get; set; }
+        public Guid BlockId { get; set; }
+        public FunctionalBlock Block
         {
-            None,
-            Add,
-            Remove,
-            Update,
-            Request
+            get => block; set
+            {
+                block = value;
+                BlockId = value?.Id ?? default;
+            }
         }
 
-        private FunctionalBlock _block;
+        private FunctionalBlock block;
 
         public FunctionalBlockNotification()
         {
         }
 
-        public FunctionalBlockNotification(Guid id) : this() => BlockId = id;
-
-        public ActionType Type { get; set; }
-
-        public Guid BlockId { get; set; }
-
-        public FunctionalBlock Block
+        public FunctionalBlockNotification(Guid id) : this()
         {
-            get => _block;
-            set
-            {
-                _block = value;
-                BlockId = value?.Id ?? default;
-            }
+            BlockId = id;
         }
 
         public override void Deserialize(BinaryReader reader)
@@ -42,14 +38,11 @@ namespace OctoAwesome.Notifications
             Type = (ActionType)reader.ReadInt32();
 
 
-            if (Type == ActionType.Add)
-            {
-            }
+            if (Type == ActionType.Add) { }
             //Block = Serializer.Deserialize()
             else
-            {
-                BlockId = new(reader.ReadBytes(16));
-            }
+                BlockId = new Guid(reader.ReadBytes(16));
+
         }
 
         public override void Serialize(BinaryWriter writer)
@@ -66,6 +59,7 @@ namespace OctoAwesome.Notifications
             {
                 writer.Write(BlockId.ToByteArray());
             }
+           
         }
 
         protected override void OnRelease()
@@ -74,6 +68,15 @@ namespace OctoAwesome.Notifications
             Block = default;
 
             base.OnRelease();
+        }
+
+        public enum ActionType
+        {
+            None,
+            Add,
+            Remove,
+            Update,
+            Request
         }
     }
 }

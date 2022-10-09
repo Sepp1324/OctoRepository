@@ -1,4 +1,6 @@
-﻿namespace OctoAwesome.Database.Checks
+﻿using System.IO;
+
+namespace OctoAwesome.Database.Checks
 {
     public interface ICheckable
     {
