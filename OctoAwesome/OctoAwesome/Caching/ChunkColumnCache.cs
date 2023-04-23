@@ -1,15 +1,21 @@
-﻿using OctoAwesome.EntityComponents;
-using System.Collections.Generic;
-using System;
+﻿using System;
 using System.Linq;
 
 namespace OctoAwesome.Caching
 {
+    /// <summary>
+    /// Cache for <see cref="IChunkColumn"/> instances.
+    /// </summary>
     public class ChunkColumnCache : Cache<Index2, IChunkColumn>
     {
         private readonly IResourceManager resourceManager;
         private readonly IPlanet planet;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChunkColumnCache"/> class.
+        /// </summary>
+        /// <param name="resourceManager">The resource manager for managing resource assets.</param>
+        /// <param name="planet">The planet to cache the chunk columns for.</param>
         public ChunkColumnCache(IResourceManager resourceManager, IPlanet planet)
         {
             this.resourceManager = resourceManager;
@@ -17,11 +23,11 @@ namespace OctoAwesome.Caching
         }
 
         //TODO Implement Reference Count and return to pool
-        sealed internal override void CollectGarbage()
+        internal sealed override void CollectGarbage()
         {
             for (int i = valueCache.Count - 1; i >= 0; i--)
             {
-                using var @lock = lockSemaphore.EnterExclusivScope();
+                using var @lock = lockSemaphore.EnterExclusiveScope();
 
                 var element = valueCache.ElementAt(i);
                 if (element.Value.LastAccessTime.Add(ClearTime) < DateTime.Now)
@@ -32,10 +38,11 @@ namespace OctoAwesome.Caching
         }
 
 
-        protected override IChunkColumn Load(Index2 key)
+        /// <inheritdoc />
+        protected override IChunkColumn? Load(Index2 key)
             => resourceManager.LoadChunkColumn(planet, key);
 
-        private IChunkColumn GetBy(Index3 chunkColumnIndex, LoadingMode loadingMode)
+        private IChunkColumn? GetBy(Index3 chunkColumnIndex, LoadingMode loadingMode)
         {
             if (planet.Id != chunkColumnIndex.Z)
                 return default;
@@ -43,11 +50,13 @@ namespace OctoAwesome.Caching
         }
 
 
-        public override TV Get<TK, TV>(TK key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
+        /// <inheritdoc />
+        public override TV? Get<TK, TV>(TK key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
+            where TV : default
             => key switch
             {
-                Index2 chunkColumnIndex => GenericCaster<TV, IChunkColumn>.Cast(GetBy(chunkColumnIndex, loadingMode)),
-                Index3 chunkColumnIndex => GenericCaster<TV, IChunkColumn>.Cast(GetBy(chunkColumnIndex, loadingMode)),
+                Index2 chunkColumnIndex => GenericCaster<IChunkColumn, TV>.Cast(GetBy(chunkColumnIndex, loadingMode)),
+                Index3 chunkColumnIndex => GenericCaster<IChunkColumn, TV>.Cast(GetBy(chunkColumnIndex, loadingMode)),
                 _ => throw new NotSupportedException()
             };
 

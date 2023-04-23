@@ -1,47 +1,60 @@
 ﻿using engenious.UI;
 using System;
+using System.Diagnostics;
 using engenious;
 using engenious.Graphics;
-using OctoAwesome.UI.Components;
+using OctoAwesome.Client.UI.Components;
 using OctoAwesome.EntityComponents;
 
-namespace OctoAwesome.UI.Controls
+namespace OctoAwesome.Client.UI.Controls
 {
+    /// <summary>
+    /// A control for displaying a dynamic compass.
+    /// </summary>
     public class CompassControl : Control
     {
         private readonly Texture2D compassTexture;
 
         private readonly AssetComponent assets;
 
-        public HeadComponent HeadComponent { get; set; }
+        private readonly HeadComponent headComponent;
 
-        public CompassControl(BaseScreenComponent screenManager, AssetComponent assets, HeadComponent headComponent ) : base(screenManager)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompassControl"/> class.
+        /// </summary>
+        /// <param name="assets">The asset component to load resource assets from.</param>
+        /// <param name="headComponent">The head component which determines the compass heading.</param>
+        public CompassControl(AssetComponent assets, HeadComponent headComponent)
         {
             this.assets = assets;
 
-            HeadComponent = headComponent;
+            this.headComponent = headComponent;
             Padding = Border.All(7);
 
-            Texture2D background = assets.LoadTexture( "buttonLong_brown_pressed");
+            var background = assets.LoadTexture("buttonLong_brown_pressed");
+            Debug.Assert(background != null, nameof(background) + " != null");
             Background = NineTileBrush.FromSingleTexture(background, 7, 7);
-            compassTexture = assets.LoadTexture(GetType(), "compass");
+            var compassText = assets.LoadTexture(GetType(), "compass");
+            Debug.Assert(compassText != null, nameof(compassText) + " != null");
+            compassTexture = compassText;
         }
 
+        /// <inheritdoc />
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
-            if (HeadComponent is null  || !assets.Ready)
+            if (!assets.Ready)
                 return;
 
-            float compassValue = HeadComponent.Angle / (float)(2 * Math.PI);
+            float compassValue = headComponent.Angle / (float)(2 * Math.PI);
             compassValue %= 1f;
             if (compassValue < 0)
                 compassValue += 1f;
 
             int offset = (int)(compassTexture.Width * compassValue);
             offset -= contentArea.Width / 2;
-            int offsetY = (compassTexture.Height -contentArea.Height) / 2;
+            int offsetY = (compassTexture.Height - contentArea.Height) / 2;
 
-            batch.Draw(compassTexture, new Rectangle(contentArea.X,contentArea.Y-offsetY,contentArea.Width,contentArea.Height), new Rectangle(offset, 0, contentArea.Width, contentArea.Height+offsetY), Color.White * alpha);
+            batch.Draw(compassTexture, new Rectangle(contentArea.X, contentArea.Y - offsetY, contentArea.Width, contentArea.Height), new Rectangle(offset, 0, contentArea.Width, contentArea.Height + offsetY), Color.White * alpha);
         }
     }
 }

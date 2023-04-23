@@ -2,19 +2,18 @@
 using OctoAwesome.Common;
 using OctoAwesome.Definitions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+
 namespace OctoAwesome.Runtime
 {
     // sealed -> prevent abuse of third party´s
+    // TODO: These calculations should not be left to the extensions.
     /// <summary>
-    /// Diese Berechnungen sollten nicht der Extension überlassen werden.
+    /// Game service for common game functions.
     /// </summary>
     public sealed class GameService : IGameService
     {
-        /// <summary>
-        /// <see cref="IDefinitionManager"/> der lokalen Daten.
-        /// </summary>
+        /// <inheritdoc />
         public IDefinitionManager DefinitionManager => manager.DefinitionManager;
         /// <summary>
         /// GAP.
@@ -22,7 +21,7 @@ namespace OctoAwesome.Runtime
         public const float GAP = 0.01f;
         private readonly IResourceManager manager;
         /// <summary>
-        /// Standart Konstruktor.
+        /// Initializes a new instance of the <see cref="GameService"/> class.
         /// </summary>
         /// <param name="resourceManager">ResourceManger</param>
         public GameService(IResourceManager resourceManager)
@@ -30,58 +29,47 @@ namespace OctoAwesome.Runtime
             manager = resourceManager;
         }
         /// <summary>
-        /// Gibt einen <see cref="ILocalChunkCache"/> zurück
+        /// Creates a <see cref="ILocalChunkCache"/>.
         /// </summary>
-        /// <param name="passive">Gibt an ob der Cache passiv ist</param>
-        /// <param name="dimensions">Dimensionen des Caches</param>
-        /// <param name="range">Ausdehnung des Caches</param>
-        /// <returns></returns>
+        /// <param name="passive">A value indicating whether the local chunk cache should be passive.</param>
+        /// <param name="dimensions">Dimensions of the local chunk cache in dualistic logarithmic scale.</param>
+        /// <param name="range">The range of the chunk cache in all axis directions.</param>
+        /// <returns>The created local chunk cache.</returns>
         public ILocalChunkCache GetLocalCache(bool passive, int dimensions, int range)
         {
             //new LocalChunkCache(manager.GlobalChunkCache, false, 2, 1);
-            return null;
+            throw new NotImplementedException();
         }
-        /// <summary>
-        /// Berechnet die Geschwindigkeit einer <see cref="Entity"/> nach der Kollision mit der Welt. (Original Lassi)
-        /// </summary>
-        /// <param name="gameTime">Simulation time</param>
-        /// <param name="position">Position der <see cref="Entity"/></param>
-        /// <param name="cache"><see cref="ILocalChunkCache"/> as workspace</param>
-        /// <param name="radius">Radius der <see cref="Entity"/></param>
-        /// <param name="height">Höhe der <see cref="Entity"/></param>
-        /// <param name="deltaPosition">Positionsänderung zwischen zwei Simulationsdurchläufen</param>
-        /// <param name="velocity">Berechnete Geschwindigkeit</param>
-        /// <exception cref="ArgumentNullException">Cache</exception>
-        /// <returns>Geschwindigkeit der <see cref="Entity"/> nach der Killisionsprüfung</returns>
-        public Vector3 WorldCollision(GameTime gameTime, Coordinate position, ILocalChunkCache cache, float radius, float height, 
+
+        /// <inheritdoc />
+        public Vector3 WorldCollision(GameTime gameTime, Coordinate position, ILocalChunkCache cache, float radius, float height,
             Vector3 deltaPosition, Vector3 velocity)
         {
-            if (cache == null)
-                throw new ArgumentNullException(nameof(cache));
+            Debug.Assert(cache != null, nameof(cache) + " != null");
 
             Vector3 move = deltaPosition;
 
-            //Blocks finden die eine Kollision verursachen könnten
-            int minx = (int) Math.Floor(Math.Min(
+            // Find blocks which could cause a collision
+            int minx = (int)Math.Floor(Math.Min(
                 position.BlockPosition.X - radius,
                 position.BlockPosition.X - radius + deltaPosition.X));
-            int maxx = (int) Math.Ceiling(Math.Max(
+            int maxx = (int)Math.Ceiling(Math.Max(
                 position.BlockPosition.X + radius,
                 position.BlockPosition.X + radius + deltaPosition.X));
-            int miny = (int) Math.Floor(Math.Min(
+            int miny = (int)Math.Floor(Math.Min(
                 position.BlockPosition.Y - radius,
                 position.BlockPosition.Y - radius + deltaPosition.Y));
-            int maxy = (int) Math.Ceiling(Math.Max(
+            int maxy = (int)Math.Ceiling(Math.Max(
                 position.BlockPosition.Y + radius,
                 position.BlockPosition.Y + radius + deltaPosition.Y));
-            int minz = (int) Math.Floor(Math.Min(
+            int minz = (int)Math.Floor(Math.Min(
                 position.BlockPosition.Z,
                 position.BlockPosition.Z + deltaPosition.Z));
-            int maxz = (int) Math.Ceiling(Math.Max(
+            int maxz = (int)Math.Ceiling(Math.Max(
                 position.BlockPosition.Z + height,
                 position.BlockPosition.Z + height + deltaPosition.Z));
 
-            //Beteiligte Flächen des Spielers
+            // Collision planes of the entity
             var playerplanes = CollisionPlane.GetEntityCollisionPlanes(radius, height, velocity, position);
 
             for (int z = minz; z <= maxz; z++)
@@ -100,7 +88,7 @@ namespace OctoAwesome.Runtime
                             continue;
 
                         var blockplanes = CollisionPlane.GetBlockCollisionPlanes(pos, velocity);
-                        
+
                         foreach (var playerPlane in playerplanes)
                         {
                             foreach (var blockPlane in blockplanes)
@@ -150,10 +138,10 @@ namespace OctoAwesome.Runtime
             return velocity;
         }
         /// <summary>
-        /// Bietet andere Dienste.
+        /// Retrieves services by type.
         /// </summary>
-        /// <param name="serviceType">Type of Service</param>
-        /// <returns></returns>
+        /// <param name="serviceType">The type of the service to get.</param>
+        /// <returns>The retrieved service.</returns>
         public object GetService(Type serviceType) => throw new NotImplementedException();
     }
 }

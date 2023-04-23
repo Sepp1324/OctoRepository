@@ -1,33 +1,32 @@
-﻿using OctoAwesome.Basics.Properties;
-
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Basics.Definitions.Materials;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for red plank blocks.
+    /// </summary>
     public sealed class RedPlankBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.RedPlank; }
-        }
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.RedPlank;
 
-        public override string Icon
-        {
-            get { return "planks"; }
-        }
+        /// <inheritdoc />
+        public override string Icon => "planks_red";
 
-        public override bool HasMetaData { get { return true; } }
+        /// <inheritdoc />
+        public override bool HasMetaData => true;
 
-        public override string[] Textures { get; } = new[] { "planks" };
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "planks_red" };
 
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RedPlankBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this wood plank block definition.</param>
         public RedPlankBlockDefinition(WoodMaterialDefinition material)
         {
             Material = material;

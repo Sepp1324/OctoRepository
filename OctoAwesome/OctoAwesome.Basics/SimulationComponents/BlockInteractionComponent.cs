@@ -1,17 +1,17 @@
-﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using engenious;
-using OctoAwesome.Services;
-using OctoAwesome.Definitions.Items;
-using OctoAwesome.Definitions;
+﻿using engenious;
+
 using OctoAwesome.Components;
+using OctoAwesome.Definitions;
+using OctoAwesome.Basics.Definitions.Items;
+using OctoAwesome.EntityComponents;
+using System.Diagnostics;
+using OctoAwesome.Services;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
+    /// <summary>
+    /// Component for simulation with block interactions.
+    /// </summary>
     public class BlockInteractionComponent : SimulationComponent<
         Entity,
         SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent>,
@@ -22,43 +22,55 @@ namespace OctoAwesome.Basics.SimulationComponents
         private readonly BlockCollectionService service;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlockInteractionComponent"/> class.
+        /// </summary>
+        /// <param name="simulation">The simulation the block interactions should happen in.</param>
+        /// <param name="interactionService">
+        /// The interaction service to actually interact with blocks in the simulation.
+        /// </param>
         public BlockInteractionComponent(Simulation simulation, BlockCollectionService interactionService)
         {
             this.simulation = simulation;
             service = interactionService;
         }
 
+        /// <inheritdoc />
         protected override void UpdateValue(GameTime gameTime, SimulationComponentRecord<Entity, ControllableComponent, InventoryComponent> value)
         {
             var entity = value.Value;
             var controller = value.Component1;
             var inventory = value.Component2;
 
-            var toolbar = entity.Components.GetComponent<ToolBarComponent>();
-            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
+            var toolbar = entity.Components.Get<ToolBarComponent>();
+            var cache = entity.Components.Get<LocalChunkCacheComponent>()?.LocalChunkCache;
+            Debug.Assert(cache != null, nameof(cache) + " != null");
 
             controller
                 .Selection?
                 .Visit(
-                blockInfo => InteractWith(blockInfo, inventory, toolbar, cache),
-                functionalBlock => functionalBlock?.Interact(gameTime, entity),
-                entity => { }
+                    blockInfo =>
+                    {
+                        Debug.Assert(toolbar != null, nameof(toolbar) + " != null");
+                        InteractWith(blockInfo, inventory, toolbar, cache);
+                    },
+                    componentContainer => componentContainer?.Interact(gameTime, entity)
                 );
 
             if (toolbar != null && controller.ApplyBlock.HasValue)
             {
                 if (toolbar.ActiveTool != null)
                 {
-                    Index3 add = new Index3();
-                    switch (controller.ApplySide)
+                    Index3 add = controller.ApplySide switch
                     {
-                        case OrientationFlags.SideWest: add = new Index3(-1, 0, 0); break;
-                        case OrientationFlags.SideEast: add = new Index3(1, 0, 0); break;
-                        case OrientationFlags.SideSouth: add = new Index3(0, -1, 0); break;
-                        case OrientationFlags.SideNorth: add = new Index3(0, 1, 0); break;
-                        case OrientationFlags.SideBottom: add = new Index3(0, 0, -1); break;
-                        case OrientationFlags.SideTop: add = new Index3(0, 0, 1); break;
-                    }
+                        OrientationFlags.SideWest => new Index3(-1, 0, 0),
+                        OrientationFlags.SideEast => new Index3(1, 0, 0),
+                        OrientationFlags.SideSouth => new Index3(0, -1, 0),
+                        OrientationFlags.SideNorth => new Index3(0, 1, 0),
+                        OrientationFlags.SideBottom => new Index3(0, 0, -1),
+                        OrientationFlags.SideTop => new Index3(0, 0, 1),
+                        _ => new Index3(),
+                    };
 
                     if (toolbar.ActiveTool.Item is IBlockDefinition definition)
                     {
@@ -66,8 +78,8 @@ namespace OctoAwesome.Basics.SimulationComponents
                         var boxes = definition.GetCollisionBoxes(cache, idx.X, idx.Y, idx.Z);
 
                         bool intersects = false;
-                        var positioncomponent = entity.Components.GetComponent<PositionComponent>();
-                        var bodycomponent = entity.Components.GetComponent<BodyComponent>();
+                        var positioncomponent = entity.Components.Get<PositionComponent>();
+                        var bodycomponent = entity.Components.Get<BodyComponent>();
 
                         if (positioncomponent != null && bodycomponent != null)
                         {
@@ -83,7 +95,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                                     positioncomponent.Position.GlobalBlockIndex.Z + positioncomponent.Position.BlockPosition.Z + bodycomponent.Height - gap)
                                 );
 
-                            // Nicht in sich selbst reinbauen
+                            // Do not build in oneself
                             for (var i = 0; i < boxes.Length; i++)
                             {
                                 var box = boxes[i];
@@ -97,7 +109,7 @@ namespace OctoAwesome.Basics.SimulationComponents
 
                         if (!intersects)
                         {
-                            if (inventory.RemoveUnit(toolbar.ActiveTool))
+                            if (inventory.RemoveUnit(toolbar.ActiveTool) > 0)
                             {
                                 cache.SetBlock(idx, simulation.ResourceManager.DefinitionManager.GetDefinitionIndex(definition));
                                 cache.SetBlockMeta(idx, (int)controller.ApplySide);
@@ -116,33 +128,29 @@ namespace OctoAwesome.Basics.SimulationComponents
             if (!lastBlock.IsEmpty && lastBlock.Block != 0)
             {
                 IItem activeItem;
-                if (toolbar.ActiveTool.Item is IItem item)
-                {
+                if (toolbar.ActiveTool?.Item is IItem item)
                     activeItem = item;
-                }
                 else
-                {
-                    activeItem = toolbar.HandSlot.Item as IItem;
-                }
+                    activeItem = Hand.Instance;
+
+                Debug.Assert(activeItem != null, nameof(activeItem) + " != null");
 
                 var blockHitInformation = service.Hit(lastBlock, activeItem, cache);
 
-                if (blockHitInformation.Valid)
-                    foreach (var (Quantity, Definition) in blockHitInformation.List)
+                if (blockHitInformation.Valid && blockHitInformation.List != null)
+                    foreach (var (quantity, definition) in blockHitInformation.List)
                     {
                         if (activeItem is IFluidInventory fluidInventory
-                            && Definition is IBlockDefinition fluidBlock
-                            && fluidBlock.Material is IFluidMaterialDefinition)
+                            && definition is IBlockDefinition { Material: IFluidMaterialDefinition } fluidBlock)
                         {
-                            fluidInventory.AddFluid(Quantity, fluidBlock);
+                            fluidInventory.AddFluid(quantity, fluidBlock);
                         }
-                        else if (Definition is IInventoryable invDef)
+                        else if (definition is IInventoryable invDef)
                         {
-                            inventory.AddUnit(Quantity, invDef);
+                            inventory.Add(invDef, quantity);
                         }
 
                     }
-
 
             }
         }

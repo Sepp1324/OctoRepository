@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OctoAwesome.UI.Languages {
+namespace OctoAwesome.Client.UI.Languages {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace OctoAwesome.UI.Languages {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OctoAwesome.UI.Languages.OctoKeys", typeof(OctoKeys).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OctoAwesome.Client.UI.Languages.OctoKeys", typeof(OctoKeys).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -84,6 +84,24 @@ namespace OctoAwesome.UI.Languages {
         public static string debug_allblocks {
             get {
                 return ResourceManager.GetString("debug_allblocks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DEBUG: All Foods in Inventory.
+        /// </summary>
+        public static string debug_allfoods {
+            get {
+                return ResourceManager.GetString("debug_allfoods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DEBUG: All Items in Inventory.
+        /// </summary>
+        public static string debug_allitems {
+            get {
+                return ResourceManager.GetString("debug_allitems", resourceCulture);
             }
         }
         

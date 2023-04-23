@@ -1,25 +1,34 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class Bucket : Item, IFluidInventory
+    /// <summary>
+    /// Bucket item for inventories.
+    /// </summary>
+    public class Bucket : Item, IFluidInventory
     {
+        /// <inheritdoc />
         public int Quantity { get; private set; }
-        public IBlockDefinition FluidBlock { get; private set; }
+
+        /// <inheritdoc />
+        public IBlockDefinition? FluidBlock { get; private set; }
+
+        /// <inheritdoc />
         public int MaxQuantity { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bucket"/> class.
+        /// </summary>
+        /// <param name="definition">The bucket item definition.</param>
+        /// <param name="materialDefinition">The material definition the bucket is made out of.</param>
         public Bucket(BucketDefinition definition, IMaterialDefinition materialDefinition)
             : base(definition, materialDefinition)
         {
             MaxQuantity = 125;
         }
 
+        /// <inheritdoc />
         public void AddFluid(int quantity, IBlockDefinition fluidBlock)
         {
             if (!Definition.CanMineMaterial(fluidBlock.Material))
@@ -29,6 +38,7 @@ namespace OctoAwesome.Basics.Definitions.Items
             FluidBlock = fluidBlock;
         }
 
+        /// <inheritdoc />
         public override int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining, int volumePerHit)
         {
             if (!Definition.CanMineMaterial(material))

@@ -1,12 +1,11 @@
-﻿using OctoAwesome.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OctoAwesome
 {
+    /// <summary>
+    /// Static interface to a <see cref="StandaloneTypeContainer"/> singleton.
+    /// </summary>
     public static class TypeContainer
     {
         private static readonly ITypeContainer instance;
@@ -14,45 +13,71 @@ namespace OctoAwesome
         static TypeContainer()
         {
             instance = new StandaloneTypeContainer();
-            instance.Register(instance as StandaloneTypeContainer);
+            instance.Register((StandaloneTypeContainer)instance);
             instance.Register<ITypeContainer, StandaloneTypeContainer>(instance);
         }
 
-        public static object CreateObject(Type type)
+        /// <inheritdoc cref="ITypeContainer.CreateObject"/>
+        public static object? CreateObject(Type type)
             => instance.CreateObject(type);
-        public static T CreateObject<T>() where T : class
+
+        /// <inheritdoc cref="ITypeContainer.CreateObject{T}"/>
+        public static T? CreateObject<T>() where T : class
             => instance.CreateObject<T>();
 
-        public static void Register(Type registrar, Type type, InstanceBehaviour instanceBehaviour)
-            => instance.Register(registrar, type, instanceBehaviour);
-        public static void Register<T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
-            => instance.Register<T>(instanceBehaviour);
-        public static void Register<TRegistrar, T>(InstanceBehaviour instanceBehaviour = InstanceBehaviour.Instance) where T : class
-            => instance.Register<TRegistrar, T>(instanceBehaviour);
-        public static void Register(Type registrar, Type type, object singelton)
-             => instance.Register(registrar, type, singelton);
-        public static void Register<T>(T singelton) where T : class
-             => instance.Register(singelton);
-        public static void Register<TRegistrar, T>(object singelton) where T : class
-             => instance.Register<TRegistrar, T>(singelton);
+        /// <inheritdoc cref="ITypeContainer.Register(Type, Type, InstanceBehavior)"/>
+        public static void Register(Type registrar, Type type, InstanceBehavior instanceBehavior)
+            => instance.Register(registrar, type, instanceBehavior);
 
-        public static bool TryResolve(Type type, out object resolvedInstance)
-             => instance.TryResolve(type, out resolvedInstance);
-        public static bool TryResolve<T>(out T resolvedInstance) where T : class
-            => instance.TryResolve(out resolvedInstance);
+        /// <inheritdoc cref="ITypeContainer.Register{T}(InstanceBehavior)"/>
+        public static void Register<T>(InstanceBehavior instanceBehavior = InstanceBehavior.Instance) where T : class
 
+            => instance.Register<T>(instanceBehavior);
+        /// <inheritdoc cref="ITypeContainer.Register{TRegistrar, T}(InstanceBehavior)"/>
+        public static void Register<TRegistrar, T>(InstanceBehavior instanceBehavior = InstanceBehavior.Instance) where T : class
+            => instance.Register<TRegistrar, T>(instanceBehavior);
+
+        /// <inheritdoc cref="ITypeContainer.Register(Type, Type, object)"/>
+        public static void Register(Type registrar, Type type, object singleton)
+             => instance.Register(registrar, type, singleton);
+
+        /// <inheritdoc cref="ITypeContainer.Register{T}(T)"/>
+        public static void Register<T>(T singleton) where T : class
+             => instance.Register(singleton);
+
+        /// <inheritdoc cref="ITypeContainer.Register{TRegistrar, T}(object)"/>
+        public static void Register<TRegistrar, T>(object singleton) where T : class
+             => instance.Register<TRegistrar, T>(singleton);
+
+        /// <inheritdoc cref="ITypeContainer.TryGet"/>
+        public static bool TryResolve(Type type, [MaybeNullWhen(false)] out object resolvedInstance)
+             => instance.TryGet(type, out resolvedInstance);
+
+        /// <inheritdoc cref="ITypeContainer.TryGet{T}"/>
+        public static bool TryResolve<T>([MaybeNullWhen(false)] out T resolvedInstance) where T : class
+            => instance.TryGet(out resolvedInstance);
+
+        /// <inheritdoc cref="ITypeContainer.Get"/>
         public static object Get(Type type)
             => instance.Get(type);
+
+        /// <inheritdoc cref="ITypeContainer.Get{T}"/>
         public static T Get<T>() where T : class
             => instance.Get<T>();
 
-        public static object GetOrNull(Type type)
+        /// <inheritdoc cref="ITypeContainer.GetOrNull"/>
+        public static object? GetOrNull(Type type)
             => instance.GetOrNull(type);
-        public static T GetOrNull<T>() where T : class
+
+        /// <inheritdoc cref="ITypeContainer.GetOrNull{T}"/>
+        public static T? GetOrNull<T>() where T : class
             => instance.GetOrNull<T>();
 
+        /// <inheritdoc cref="ITypeContainer.GetUnregistered"/>
         public static object GetUnregistered(Type type)
             => instance.GetUnregistered(type);
+
+        /// <inheritdoc cref="ITypeContainer.GetUnregistered{T}"/>
         public static T GetUnregistered<T>() where T : class
             => instance.GetUnregistered<T>();
 

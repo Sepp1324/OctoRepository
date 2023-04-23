@@ -1,19 +1,19 @@
-﻿using OctoAwesome.Runtime;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
+
 using engenious;
+
 using OctoAwesome.EntityComponents;
+using OctoAwesome.Extension;
 using OctoAwesome.SumTypes;
 
 namespace OctoAwesome.Client.Components
 {
     internal sealed class PlayerComponent : GameComponent
     {
-        private new OctoGame Game;
 
-        private IResourceManager resourceManager;
+        private readonly IResourceManager resourceManager;
 
         #region External Input
 
@@ -29,7 +29,7 @@ namespace OctoAwesome.Client.Components
 
         public bool FlymodeInput { get; set; }
 
-        public bool[] SlotInput { get; private set; } = new bool[10];
+        public bool[] SlotInput { get; } = new bool[10];
 
         public bool SlotLeftInput { get; set; }
 
@@ -37,20 +37,34 @@ namespace OctoAwesome.Client.Components
 
         #endregion
 
-        public Entity CurrentEntity { get; private set; }
 
-        public HeadComponent CurrentEntityHead { get; private set; }
+        private HeadComponent? currentEntityHead;
+        private ControllableComponent? currentController;
+        private InventoryComponent? inventory;
+        private ToolBarComponent? toolbar;
+        private PositionComponent? position;
+        private Entity? currentEntity;
 
-        public ControllableComponent CurrentController { get; private set; }
+        public Entity CurrentEntity
+            => NullabilityHelper.NotNullAssert(currentEntity, $"{nameof(CurrentEntity)} was not initialized!");
 
-        public InventoryComponent Inventory { get; private set; }
+        public HeadComponent CurrentEntityHead
+            => NullabilityHelper.NotNullAssert(currentEntityHead, $"{nameof(CurrentEntityHead)} was not initialized!");
 
-        public ToolBarComponent Toolbar { get; private set; }
+        public ControllableComponent CurrentController
+            => NullabilityHelper.NotNullAssert(currentController, $"{nameof(CurrentController)} was not initialized!");
 
-        public PositionComponent Position { get; private set; }
+        public InventoryComponent Inventory
+            => NullabilityHelper.NotNullAssert(inventory, $"{nameof(Inventory)} was not initialized!");
+
+        public ToolBarComponent Toolbar
+            => NullabilityHelper.NotNullAssert(toolbar, $"{nameof(Toolbar)} was not initialized!");
+
+        public PositionComponent Position
+            => NullabilityHelper.NotNullAssert(position, $"{nameof(Position)} was not initialized!");
 
         // public ActorHost ActorHost { get; private set; }
-        public Selection Selection { get; set; }
+        public Selection? Selection { get; set; }
         public Index3? SelectedBox { get; set; }
 
         public Vector2? SelectedPoint { get; set; }
@@ -65,49 +79,52 @@ namespace OctoAwesome.Client.Components
             : base(game)
         {
             this.resourceManager = resourceManager;
-            Game = game;
+            Enabled = false;
         }
 
-        public void SetEntity(Entity entity)
+        public void Unload()
         {
+            Enabled = false;
+            currentEntity = null;
+            currentEntityHead = null;
+            Selection = null;
+            SelectedBox = null;
+            SelectedPoint = null;
+        }
 
-            if (entity == null)
-            {
-                CurrentEntityHead = null;
-            }
-            else
-            {
-                // Map other Components
+        public void Load(Entity entity)
+        {
+            // Map other Components
 
-                CurrentController = entity.Components.GetComponent<ControllableComponent>();
+            currentEntity = entity;
 
-                CurrentEntityHead = entity.Components.GetComponent<HeadComponent>();
-                if (CurrentEntityHead is null) 
-                    CurrentEntityHead = new() { Offset = new(0, 0, 3.2f) };
+            var controlComp = entity.Components.Get<ControllableComponent>();
 
-                Inventory = entity.Components.GetComponent<InventoryComponent>();
-                if (Inventory is null) 
-                    Inventory = new();
+            Debug.Assert(controlComp != null, nameof(controlComp) + " != null");
+            currentController = controlComp;
 
-                Toolbar = entity.Components.GetComponent<ToolBarComponent>();
-                if (Toolbar is null) 
-                    Toolbar = new();
+            currentEntityHead = entity.Components.Get<HeadComponent>();
+            if (currentEntityHead is null)
+                currentEntityHead = new() { Offset = new(0, 0, 3.2f) };
 
-                Position = entity.Components.GetComponent<PositionComponent>();
-                if (Position is null) 
-                    Position = new() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
-            }
-            CurrentEntity = entity;
+            inventory = entity.Components.Get<InventoryComponent>();
+            if (inventory is null)
+                inventory = new();
+
+            toolbar = entity.Components.Get<ToolBarComponent>();
+            if (toolbar is null)
+                toolbar = new();
+
+            position = entity.Components.Get<PositionComponent>();
+            if (position is null)
+                position = new() { Position = new Coordinate(0, new Index3(0, 0, 0), new Vector3(0, 0, 0)) };
+            
+            
+            Enabled = true;
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (!Enabled)
-                return;
-
-            if (CurrentEntity == null)
-                return;
-
             CurrentEntityHead.Angle += (float)gameTime.ElapsedGameTime.TotalSeconds * HeadInput.X;
             CurrentEntityHead.Tilt += (float)gameTime.ElapsedGameTime.TotalSeconds * HeadInput.Y;
             CurrentEntityHead.Tilt = Math.Min(1.5f, Math.Max(-1.5f, CurrentEntityHead.Tilt));
@@ -119,11 +136,11 @@ namespace OctoAwesome.Client.Components
             CurrentController.JumpInput = JumpInput;
             JumpInput = false;
 
-            if (InteractInput && SelectedBox.HasValue)
+            if (InteractInput && SelectedBox.HasValue )
                 CurrentController.Selection = Selection;
             else
                 CurrentController.Selection = null;
-                       
+
             if (InteractInput && SelectedBox.HasValue)
                 CurrentController.InteractBlock = SelectedBox.Value;
             else
@@ -140,7 +157,7 @@ namespace OctoAwesome.Client.Components
             //    ActorHost.Player.FlyMode = !ActorHost.Player.FlyMode;
             //FlymodeInput = false;
 
-            if (Toolbar.Tools != null && Toolbar.Tools.Length > 0)
+            if (Toolbar.Tools.Length > 0)
             {
                 for (int i = 0; i < Math.Min(Toolbar.Tools.Length, SlotInput.Length); i++)
                 {
@@ -150,7 +167,7 @@ namespace OctoAwesome.Client.Components
                 }
             }
 
-            //Index des aktiven Werkzeugs ermitteln   
+            // Determine index of the active tool
             if (SlotLeftInput)
             {
                 Toolbar.ActiveIndex--;
@@ -167,28 +184,59 @@ namespace OctoAwesome.Client.Components
         }
 
         /// <summary>
-        /// DEBUG METHODE: NICHT FÜR VERWENDUNG IM SPIEL!
+        /// DEBUG METHOD: NOT FOR USAGE IN GAME!
         /// </summary>
         internal void AllBlocksDebug()
         {
-            var inventory = CurrentEntity.Components.GetComponent<InventoryComponent>();
+            var inventory = CurrentEntity.Components.Get<InventoryComponent>();
             if (inventory == null)
                 return;
 
             var blockDefinitions = resourceManager.DefinitionManager.BlockDefinitions;
             foreach (var blockDefinition in blockDefinitions)
-                inventory.AddUnit(blockDefinition.VolumePerUnit, blockDefinition);
+                inventory.Add(blockDefinition, blockDefinition.VolumePerUnit);
+
+        }
+
+        internal void AllFoodsDebug()
+        {
+            var inventory = CurrentEntity.Components.Get<InventoryComponent>();
+            if (inventory == null)
+                return;
 
             var itemDefinitions = resourceManager.DefinitionManager.ItemDefinitions;
-            var wood = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Wood");
-            var stone = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.Name == "Stone");
+            var foodMaterial = resourceManager.DefinitionManager.FoodDefinitions.FirstOrDefault();
+            if (foodMaterial is null)
+                return;
             foreach (var itemDefinition in itemDefinitions)
             {
-                var woodItem = itemDefinition.Create(wood);
-                inventory.AddUnit(woodItem.VolumePerUnit, woodItem);
-                var stoneItem = itemDefinition.Create(stone);
-                inventory.AddUnit(stoneItem.VolumePerUnit, stoneItem);
+                var fooditem = itemDefinition.Create(foodMaterial);
+                if (fooditem is not null)
+                    inventory.Add(fooditem, fooditem.VolumePerUnit);
             }
+
         }
+
+        internal void AllItemsDebug()
+        {
+            var inventory = CurrentEntity.Components.Get<InventoryComponent>();
+            if (inventory == null)
+                return;
+
+            var itemDefinitions = resourceManager.DefinitionManager.ItemDefinitions;
+            var wood = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.DisplayName == "Wood");
+            var stone = resourceManager.DefinitionManager.MaterialDefinitions.FirstOrDefault(d => d.DisplayName == "Stone");
+            foreach (var itemDefinition in itemDefinitions)
+            {
+                if (wood is not null && itemDefinition.Create(wood) is { } woodItem)
+                    inventory.Add(woodItem, woodItem.VolumePerUnit);
+                
+                if (stone is not null && itemDefinition.Create(stone) is { } stoneItem)
+                    inventory.Add(stoneItem, stoneItem.VolumePerUnit);
+
+            }
+
+        }
+
     }
 }

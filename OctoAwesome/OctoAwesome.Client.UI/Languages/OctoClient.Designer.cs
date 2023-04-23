@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OctoAwesome.UI.Languages {
+namespace OctoAwesome.Client.UI.Languages {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace OctoAwesome.UI.Languages {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OctoAwesome.UI.Languages.OctoClient", typeof(OctoClient).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OctoAwesome.Client.UI.Languages.OctoClient", typeof(OctoClient).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -394,6 +394,15 @@ namespace OctoAwesome.UI.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Planet.
+        /// </summary>
+        public static string Planet {
+            get {
+                return ResourceManager.GetString("Planet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Play.
         /// </summary>
         public static string Play {
@@ -507,6 +516,15 @@ namespace OctoAwesome.UI.Languages {
         public static string Start {
             get {
                 return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Targeted Block.
+        /// </summary>
+        public static string TargetedBlock {
+            get {
+                return ResourceManager.GetString("TargetedBlock", resourceCulture);
             }
         }
         

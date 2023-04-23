@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace OctoAwesome.Serialization
 {
-    public interface ISerializableEnumerable<T> : IEnumerable<T>, ISerializable where T : ISerializable
+    /// <summary>
+    /// Interface for serializable enumerable.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the enumeration.</typeparam>
+    public interface ISerializableEnumerable<out T> : IEnumerable<T>, ISerializable where T : ISerializable
     {
     }
 }

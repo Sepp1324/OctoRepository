@@ -1,38 +1,52 @@
 ﻿using OctoAwesome.Definitions;
-using OctoAwesome.Definitions.Items;
-using OctoAwesome.Information;
 using OctoAwesome.Pooling;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace OctoAwesome.Services
 {
+    /// <summary>
+    /// Service for applying hits to blocks.
+    /// </summary>
     public sealed class BlockCollectionService
     {
         private readonly IPool<BlockVolumeState> blockCollectionPool;
         private readonly IDefinitionManager definitionManager;
 
-        private readonly Dictionary<BlockInfo, BlockVolumeState> blockCollectionInformations;
+        private readonly Dictionary<BlockInfo, BlockVolumeState> blockCollectionInformation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlockCollectionService"/> class.
+        /// </summary>
+        /// <param name="blockCollectionPool">The memory pool for <see cref="BlockVolumeState"/>.</param>
+        /// <param name="definitionManager">The definition manager.</param>
         public BlockCollectionService(IPool<BlockVolumeState> blockCollectionPool, IDefinitionManager definitionManager)
         {
             this.blockCollectionPool = blockCollectionPool;
             this.definitionManager = definitionManager;
-            blockCollectionInformations = new Dictionary<BlockInfo, BlockVolumeState>();
+            blockCollectionInformation = new Dictionary<BlockInfo, BlockVolumeState>();
         }
 
-        public (bool Valid, IReadOnlyList<(int Quantity, IDefinition Definition)> List) Hit(BlockInfo block, IItem item, ILocalChunkCache cache)
+        /// <summary>
+        /// Execute a hit on a block using an item.
+        /// </summary>
+        /// <param name="block">The information of the block to hit on.</param>
+        /// <param name="item">The item to hit with.</param>
+        /// <param name="cache">The local chunk cache to update the block after being hit.</param>
+        /// <returns>
+        /// A tuple with first item being a value indicating whether the hit was valid
+        /// and a second item which contains a list of item definitions with quantities.
+        /// </returns>
+        public (bool Valid, IReadOnlyList<(int Quantity, IDefinition Definition)>? List) Hit(BlockInfo block, IItem item, ILocalChunkCache cache)
         {
-            BlockVolumeState volumeState;
-            if (!blockCollectionInformations.TryGetValue(block, out volumeState))
+            if (!blockCollectionInformation.TryGetValue(block, out var volumeState))
             {
                 var definition = definitionManager.GetBlockDefinitionByIndex(block.Block);
-                volumeState = blockCollectionPool.Get();
+                volumeState = blockCollectionPool.Rent();
+                Debug.Assert(definition != null, nameof(definition) + " != null");
                 volumeState.Initialize(block, definition, DateTimeOffset.Now);
-                blockCollectionInformations.Add(block, volumeState);
+                blockCollectionInformation.Add(block, volumeState);
             }
 
             volumeState.TryReset();
@@ -40,14 +54,14 @@ namespace OctoAwesome.Services
             var blockHitInformation = volumeState.BlockDefinition.Hit(volumeState, item);
 
             if (!blockHitInformation.IsHitValid)
-                return (false, null);           
+                return (false, null);
 
             volumeState.VolumeRemaining -= blockHitInformation.Quantity;
             volumeState.RestoreTime();
 
             if (volumeState.VolumeRemaining < 1)
             {
-                blockCollectionInformations.Remove(block);
+                blockCollectionInformation.Remove(block);
                 volumeState.Release();
                 cache.SetBlock(block.Position, 0);
                 return (true, blockHitInformation.Definitions);

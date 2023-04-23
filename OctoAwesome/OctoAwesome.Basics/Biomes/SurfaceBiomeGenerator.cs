@@ -1,4 +1,4 @@
-﻿using OctoAwesome.Noise;
+﻿using OctoAwesome.Basics.Noise;
 
 using System;
 using System.Buffers;
@@ -8,20 +8,30 @@ using System.Text;
 
 namespace OctoAwesome.Basics.Biomes
 {
+    /// <summary>
+    /// Biome generator root that generates the whole planet.
+    /// </summary>
     public class SurfaceBiomeGenerator : LargeBiomeBase
     {
+        /// <summary>
+        /// Gets the sea level the land mass starts generating at (in blocks).
+        /// </summary>
         public int SeaLevel
         {
             get;
-            private set;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SurfaceBiomeGenerator"/> class.
+        /// </summary>
+        /// <param name="planet">The planet the biome should be generated on.</param>
+        /// <param name="seaLevel">The height level the landmass should start generating at (in blocks).</param>
         public SurfaceBiomeGenerator(IPlanet planet, int seaLevel)
-            : base(planet, 0f, 1f)
+            : base(planet, 0f, 1f, 0f, 1f,
+                new SimplexNoiseGenerator(planet.Seed) { FrequencyX = 1f / 10000, FrequencyY = 1f / 10000, Factor = 1f })
         {
 
             SeaLevel = seaLevel;
-            BiomeNoiseGenerator = new SimplexNoiseGenerator(planet.Seed) { FrequencyX = 1f / 10000, FrequencyY = 1f / 10000, Factor = 1f };
 
             float offset = (float)seaLevel / (Planet.Size.Z * Chunk.CHUNKSIZE_Z);
 
@@ -31,6 +41,7 @@ namespace OctoAwesome.Basics.Biomes
             SortSubBiomes();
         }
 
+        /// <inheritdoc />
         protected override float CurveFunction(float inputValue)
         {
             return CurveFunction(inputValue, -0.08f, 200);
@@ -44,21 +55,22 @@ namespace OctoAwesome.Basics.Biomes
             return Math.Min(Math.Max(inputValue, 0f), 1f);
         }
 
-        public override float[] GetHeightmap(Index2 chunkIndex, float[] heightmap)
+        /// <inheritdoc />
+        public override void FillHeightmap(Index2 chunkIndex, float[] heightmap)
         {
             Index2 blockIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
 
             var regions = ArrayPool<float>.Shared.Rent(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             for (int i = 0; i < regions.Length; i++)
                 regions[i] = 0;
-            BiomeNoiseGenerator.GetTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y, regions);
+            BiomeNoiseGenerator.FillTileableNoiseMap2D(blockIndex.X, blockIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y, regions);
 
-            float[] biomeValues = ArrayPool<float>.Shared.Rent(SubBiomes.Count * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y); //float[SubBiomes.COunt][,]
+            float[] biomeValues = ArrayPool<float>.Shared.Rent(SubBiomes.Count * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y); //float[SubBiomes.Count][,]
 
             var tempArray = ArrayPool<float>.Shared.Rent(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             for (int i = 0; i < SubBiomes.Count; i++)
             {
-                SubBiomes[i].GetHeightmap(chunkIndex, tempArray);
+                SubBiomes[i].FillHeightmap(chunkIndex, tempArray);
                 Array.Copy(tempArray, 0, biomeValues, i * Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y, Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             }
             ArrayPool<float>.Shared.Return(tempArray);
@@ -72,7 +84,7 @@ namespace OctoAwesome.Basics.Biomes
                     int biome2;
                     int biome1 = ChooseBiome(region, out biome2);
 
-                    float interpolationValue = 0f;
+                    float interpolationValue;
                     if (biome2 != -1)
                     {
                         interpolationValue = CalculateInterpolationValue(region, SubBiomes[biome1], SubBiomes[biome2]);
@@ -84,7 +96,6 @@ namespace OctoAwesome.Basics.Biomes
             }
             ArrayPool<float>.Shared.Return(regions);
             ArrayPool<float>.Shared.Return(biomeValues);
-            return heightmap;
         }
     }
 }

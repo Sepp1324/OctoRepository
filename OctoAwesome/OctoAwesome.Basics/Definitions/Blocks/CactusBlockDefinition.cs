@@ -1,26 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for cactus blocks.
+    /// </summary>
     public class CactusBlockDefinition : BlockDefinition
     {
+        /// <inheritdoc />
         public override string Icon => "cactus_inside";
 
-        public override string Name => Languages.OctoBasics.Cactus;
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.Cactus;
 
-        public override string[] Textures { get; }
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "cactus_inside", "cactus_side", "cactus_top" };
 
-        public CactusBlockDefinition()
+        /// <inheritdoc />
+        public override IMaterialDefinition Material { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CactusBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this cactus block definition.</param>
+        public CactusBlockDefinition(CactusMaterialDefinition material)
         {
-            Textures = new[] {"cactus_inside","cactus_side","cactus_top" };
+            Material = material;
         }
 
+        /// <inheritdoc />
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)
         {
@@ -158,6 +167,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             return -1;
         }
 
+        /// <inheritdoc />
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
 
@@ -198,13 +208,6 @@ namespace OctoAwesome.Basics.Definitions.Blocks
                 default:
                     return base.GetTextureRotation(wall, manager, x, y, z); //should never ever happen
             }
-        }
-
-        public override IMaterialDefinition Material { get; }
-
-        public CactusBlockDefinition(CactusMaterialDefinition material) : this()
-        {
-            Material = material;
         }
     }
 }

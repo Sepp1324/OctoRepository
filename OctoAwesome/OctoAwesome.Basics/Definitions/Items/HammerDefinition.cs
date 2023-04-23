@@ -1,30 +1,29 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
-    class HammerDefinition : IItemDefinition
+    /// <summary>
+    /// Hammer item definition.
+    /// </summary>
+    public class HammerDefinition : IItemDefinition
     {
-        public string Name { get; }
-        public string Icon { get; }
+        /// <inheritdoc />
+        public string DisplayName => "Hammer";
 
-        public HammerDefinition()
-        {
-            Name = "Hammer";
-            Icon = "hammer_iron";
-        }
+        /// <inheritdoc />
+        public string Icon => "hammer_iron";
 
+        /// <inheritdoc />
         public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            return false;
-        }
+            => false;
 
-        public Item Create(IMaterialDefinition material)
-            => new Hammer(this, material);
+        /// <inheritdoc />
+        public Item? Create(IMaterialDefinition material)
+        {
+            if (material is IFoodMaterialDefinition)
+                return null;
+            return new Hammer(this, material);
+        }
     }
 }

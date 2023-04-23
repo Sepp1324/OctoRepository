@@ -2,94 +2,131 @@
 using OctoAwesome.Serialization;
 using OctoAwesome.Threading;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using OctoAwesome.Extension;
 
 namespace OctoAwesome
 {
+    /// <summary>
+    /// For awaiting a result from an asynchronous task.
+    /// </summary>
     public class Awaiter : IPoolElement, IDisposable
     {
-        public ISerializable Serializable { get; set; }
-        public bool Timeouted { get; private set; }
+        /// <summary>
+        /// Gets or sets the result for the awaiter.
+        /// </summary>
+        public ISerializable? Result { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether awaiting has timed out.
+        /// </summary>
+        public bool TimedOut { get; private set; }
         private readonly ManualResetEventSlim manualReset;
         private readonly LockSemaphore semaphore;
         private bool alreadyDeserialized;
-        private IPool pool;
+        private IPool? pool;
+        private IPool Pool
+        {
+            get => NullabilityHelper.NotNullAssert(pool, $"{nameof(IPoolElement)} was not initialized!");
+            set => pool = NullabilityHelper.NotNullAssert(value, $"{nameof(Pool)} cannot be initialized with null!");
+        }
+
         private bool isPooled;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Awaiter"/> class.
+        /// </summary>
         public Awaiter()
         {
             manualReset = new ManualResetEventSlim(false);
             semaphore = new LockSemaphore(1, 1);
         }
 
-        public ISerializable WaitOn()
+        /// <summary>
+        /// Waits on the result or time outs(10000s).
+        /// </summary>
+        /// <returns>The result; or <c>null</c> if there is no result yet.</returns>
+        public ISerializable? WaitOn()
         {
+            Debug.Assert(!isPooled, "Is released into pool!");
             if (!alreadyDeserialized)
-                Timeouted = !manualReset.Wait(10000);
+                TimedOut = !manualReset.Wait(10000);
 
-            return Serializable;
+            return Result;
         }
 
-        public void WaitOnAndRelease()
+        /// <summary>
+        /// Waits on the result or time outs(10000s) and releases the awaiter.
+        /// </summary>
+        /// <returns>The result; or <c>null</c> if there is no result yet.</returns>
+        public ISerializable? WaitOnAndRelease()
         {
-            WaitOn();
+            Debug.Assert(!isPooled, "Is released into pool!");
+            var res = WaitOn();
             Release();
+            return res;
         }
 
-        public void SetResult(ISerializable serializable)
+        /// <summary>
+        /// Sets the awaiter result to the given value.
+        /// </summary>
+        /// <param name="result"></param>
+        public void SetResult(ISerializable result)
         {
+            Debug.Assert(!isPooled, "Is released into pool!");
             using (semaphore.Wait())
             {
-                Serializable = serializable;
+                Result = result;
                 manualReset.Set();
                 alreadyDeserialized = true;
             }
         }
 
+        /// <summary>
+        /// Try to set the awaiter result from a byte array.
+        /// </summary>
+        /// <param name="bytes">The byte array to try to deserialize the result from.</param>
+        /// <returns>Whether the result could be set from the byte array.</returns>
+        /// <exception cref="ArgumentNullException">Throws when <see cref="Result"/> is <c>null</c>.</exception>
         public bool TrySetResult(byte[] bytes)
         {
+            Debug.Assert(!isPooled, "Is released into pool!");
             try
             {
                 using (semaphore.Wait())
                 {
-                    if (Timeouted)
+                    if (TimedOut)
                         return false;
 
-                    if (Serializable == null)
-                        throw new ArgumentNullException(nameof(Serializable));
-
-                    using (var stream = new MemoryStream(bytes))
-                    using (var reader = new BinaryReader(stream))
-                    {
-                        Serializable.Deserialize(reader);
-                    }
+                    if (Result == null)
+                        throw new ArgumentNullException(nameof(Result));
+                    Result = Serializer.Deserialize(Result, bytes);
+   
                     manualReset.Set();
                     return alreadyDeserialized = true;
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ;
                 return false;
             }
         }
 
+        /// <inheritdoc />
         public void Init(IPool pool)
         {
-            this.pool = pool;
-            Timeouted = false;
+            Pool = pool;
+            TimedOut = false;
             isPooled = false;
             alreadyDeserialized = false;
-            Serializable = null;
+            Result = null;
             manualReset.Reset();
         }
 
+        /// <inheritdoc />
         public void Release()
         {
             using (semaphore.Wait())
@@ -99,10 +136,12 @@ namespace OctoAwesome
 
                 isPooled = true;
 
-                pool.Push(this);
+                Pool.Return(this);
+                pool = null;
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             manualReset.Dispose();

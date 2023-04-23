@@ -1,27 +1,29 @@
-﻿using System;
-using System.Drawing;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for green cotton blocks.
+    /// </summary>
     public sealed class GreenCottonBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.GreenCotton; }
-        }
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.GreenCotton;
 
-        public override string Icon
-        {
-            get { return "cotton_green"; }
-        }
+        /// <inheritdoc />
+        public override string Icon => "cotton_green";
 
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "cotton_green" };
 
-        public override string[] Textures { get; } =  new[] {"cotton_green"};
-
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GreenCottonBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this cotton block definition.</param>
         public GreenCottonBlockDefinition(CottonMaterialDefinition material)
         {
             Material = material;

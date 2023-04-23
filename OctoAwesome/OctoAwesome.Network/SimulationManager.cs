@@ -1,41 +1,47 @@
 ﻿using engenious;
+
+using OctoAwesome.Crafting;
 using OctoAwesome.Definitions;
+using OctoAwesome.Extension;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
+    /// <summary>
+    /// Manager for an OctoAwesome game simulation.
+    /// </summary>
     public class SimulationManager
     {
+        /// <summary>
+        /// Gets a value indicating whether the simulation is currently running.
+        /// </summary>
         public bool IsRunning { get; private set; }
 
-        public Simulation Simulation
-        {
-            get
-            {
-                lock (mainLock)
-                    return simulation;
-            }
-            set
-            {
-                lock (mainLock)
-                    simulation = value;
-            }
-        }
+        /// <summary>
+        /// Gets the simulation.
+        /// </summary>
+        public Simulation Simulation => simulation;
 
+        /// <summary>
+        /// Gets the current game time.
+        /// </summary>
         public GameTime GameTime { get; private set; }
 
-        public ResourceManager ResourceManager { get; private set; }
+        /// <summary>
+        /// Gets the resource manager used to load resource assets.
+        /// </summary>
+        public ResourceManager ResourceManager { get; }
+
+        /// <summary>
+        /// Gets the game service.
+        /// </summary>
         public GameService Service { get; }
 
         private Simulation simulation;
-        private readonly ExtensionLoader extensionLoader;
 
         private Task backgroundTask;
         private CancellationTokenSource cancellationTokenSource;
@@ -44,59 +50,72 @@ namespace OctoAwesome.Network
         private readonly UpdateHub updateHub;
         private readonly object mainLock;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimulationManager"/> class.
+        /// </summary>
+        /// <param name="settings">The game settings for the simulation.</param>
+        /// <param name="updateHub">The update hub.</param>
         public SimulationManager(ISettings settings, UpdateHub updateHub)
         {
-            mainLock = new object();           
+            mainLock = new object();
 
             this.settings = settings;
             this.updateHub = updateHub;
 
+            var typeContainer = TypeContainer.Get<ITypeContainer>();
 
-            TypeContainer.Register<ExtensionLoader>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<IExtensionLoader, ExtensionLoader>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<IExtensionResolver, ExtensionLoader>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<DefinitionManager>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<IDefinitionManager, DefinitionManager>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<DiskPersistenceManager>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<IPersistenceManager, DiskPersistenceManager>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<ResourceManager>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<IResourceManager, ResourceManager>(InstanceBehaviour.Singleton);
+            typeContainer.Register<ExtensionLoader>(InstanceBehavior.Singleton);
+            typeContainer.Register<ExtensionService>(InstanceBehavior.Singleton);
+            typeContainer.Register<DefinitionManager>(InstanceBehavior.Singleton);
+            typeContainer.Register<IDefinitionManager, DefinitionManager>(InstanceBehavior.Singleton);
+            typeContainer.Register<DiskPersistenceManager>(InstanceBehavior.Singleton);
+            typeContainer.Register<IPersistenceManager, DiskPersistenceManager>(InstanceBehavior.Singleton);
+            typeContainer.Register<ResourceManager>(InstanceBehavior.Singleton);
+            typeContainer.Register<IResourceManager, ResourceManager>(InstanceBehavior.Singleton);
 
-            extensionLoader = TypeContainer.Get<ExtensionLoader>();
+            typeContainer.Register<SerializationIdTypeProvider>(InstanceBehavior.Singleton);
+            typeContainer.Register<GameService>(InstanceBehavior.Singleton);
+            typeContainer.Register<RecipeService, RecipeService>(InstanceBehavior.Singleton);
+
+            var extensionLoader = typeContainer.Get<ExtensionLoader>();
             extensionLoader.LoadExtensions();
 
-            ResourceManager = TypeContainer.Get<ResourceManager>();
+            var extensionService = typeContainer.Get<ExtensionService>();
 
-            Service = new GameService(ResourceManager);
-            simulation = new Simulation(ResourceManager, extensionLoader, Service)
+            ResourceManager = typeContainer.Get<ResourceManager>();
+
+            Service = typeContainer.Get<GameService>();
+            simulation = new Simulation(ResourceManager, extensionService, Service)
             {
                 IsServerSide = true
             };
-            
-        }
-
-        public void Start()
-        {
-            IsRunning = true;
-            GameTime = new GameTime();
 
             cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
             backgroundTask = new Task(SimulationLoop, token, token, TaskCreationOptions.LongRunning);
+        }
+
+        /// <summary>
+        /// Start the game simulation.
+        /// </summary>
+        public void Start()
+        {
+            IsRunning = true;
+            GameTime = new GameTime();
 
             //TODO: Load and Save logic for Server (Multiple games etc.....)
             var universe = settings.Get<string>("LastUniverse");
 
             if (string.IsNullOrWhiteSpace(universe))
             {
-                var guid = simulation.NewGame("melmack", new Random().Next().ToString());
+                var guid = Simulation.NewGame("melmack", new Random().Next().ToString());
                 settings.Set("LastUniverse", guid.ToString());
             }
             else
             {
-                if (!simulation.TryLoadGame(new Guid(universe)))
+                if (!Simulation.TryLoadGame(new Guid(universe)))
                 {
-                    var guid = simulation.NewGame("melmack", new Random().Next().ToString());
+                    var guid = Simulation.NewGame("melmack", new Random().Next().ToString());
                     settings.Set("LastUniverse", guid.ToString());
                 }
             }
@@ -104,30 +123,62 @@ namespace OctoAwesome.Network
             backgroundTask.Start();
         }
 
+        /// <summary>
+        /// Stop the game simulation.
+        /// </summary>
         public void Stop()
         {
             IsRunning = false;
-            simulation.ExitGame();
-            cancellationTokenSource?.Cancel();
-            cancellationTokenSource?.Dispose();
+            Simulation.ExitGame();
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
         }
 
+        /// <summary>
+        /// Gets the currently loaded universe.
+        /// </summary>
+        /// <returns>The currently loaded universe.</returns>
         public IUniverse GetUniverse()
-            => ResourceManager.CurrentUniverse;
+            => NullabilityHelper.NotNullAssert(ResourceManager.CurrentUniverse);
 
+        /// <summary>
+        /// Creates a new universe.
+        /// </summary>
+        /// <returns>The newly created universe.</returns>
+        /// <exception cref="NotImplementedException">Currently not implemented.</exception>
         public IUniverse NewUniverse()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Gets a planet by a given id.
+        /// </summary>
+        /// <param name="planetId">The planet id to get the planet for.</param>
+        /// <returns>The loaded or newly generated planet.</returns>
         public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
 
+        /// <summary>
+        /// Loads a chunk column at a given location for a specified planet.
+        /// </summary>
+        /// <param name="planet">The planet to load the chunk column from.</param>
+        /// <param name="index2">The location to load the chunk column at.</param>
+        /// <returns>The loaded chunk column.</returns>
+        /// <seealso cref="LoadColumn(int,OctoAwesome.Index2)"/>
         public IChunkColumn LoadColumn(IPlanet planet, Index2 index2)
             => planet.GlobalChunkCache.Subscribe(index2);
+
+        /// <summary>
+        /// Loads a chunk column at a given location for a specified planet.
+        /// </summary>
+        /// <param name="planetId">The id of the planet to load the chunk column from.</param>
+        /// <param name="index2">The location to load the chunk column at.</param>
+        /// <returns>The loaded chunk column.</returns>
+        /// <seealso cref="LoadColumn(IPlanet,OctoAwesome.Index2)"/>
         public IChunkColumn LoadColumn(int planetId, Index2 index2)
             => LoadColumn(GetPlanet(planetId), index2);
 
-        private void SimulationLoop(object state)
+        private void SimulationLoop(object? state)
         {
             var token = state is CancellationToken stateToken ? stateToken : CancellationToken.None;
 

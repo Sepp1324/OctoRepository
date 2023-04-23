@@ -2,25 +2,39 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
+    /// <summary>
+    /// Tag for changed block in a chunk.
+    /// </summary>
     public struct ChunkDiffTag : ITag, IEquatable<ChunkDiffTag>
     {
+        /// <inheritdoc />
         public int Length => sizeof(int) * 4;
 
-        public Index3 ChunkPositon { get; set; }
-        public int FlatIndex { get; set; }
+        /// <summary>
+        /// Gets the underlying chunk position.
+        /// </summary>
+        public Index3 ChunkPositon { get; private set; }
 
+        /// <summary>
+        /// Gets the underlying flat block index.
+        /// </summary>
+        public int FlatIndex { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Index3Tag"/> struct.
+        /// </summary>
+        /// <param name="chunkPosition">The underlying chunk position.</param>
+        /// <param name="flatIndex">The underlying flat block index.</param>
         public ChunkDiffTag(Index3 chunkPosition, int flatIndex)
         {
             ChunkPositon = chunkPosition;
             FlatIndex = flatIndex;
         }
 
+        /// <inheritdoc />
         public void FromBytes(byte[] array, int startIndex)
         {
             var x = BitConverter.ToInt32(array, startIndex);
@@ -30,6 +44,7 @@ namespace OctoAwesome.Serialization
             ChunkPositon = new Index3(x, y, z);
         }
 
+        /// <inheritdoc />
         public byte[] GetBytes()
         {
             var array = new byte[Length];
@@ -42,6 +57,8 @@ namespace OctoAwesome.Serialization
 
             return array;
         }
+
+        /// <inheritdoc />
         public void WriteBytes(Span<byte> span)
         {
             const int intSize = sizeof(int);
@@ -51,15 +68,18 @@ namespace OctoAwesome.Serialization
             BitConverter.TryWriteBytes(span[(intSize * 3)..(intSize * 4)], FlatIndex);
         }
 
-        public override bool Equals(object obj)
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
             => obj is ChunkDiffTag tag && Equals(tag);
 
+        /// <inheritdoc />
         public bool Equals(ChunkDiffTag other)
             => Length == other.Length &&
-                FlatIndex == other.FlatIndex && 
+                FlatIndex == other.FlatIndex &&
                 EqualityComparer<Index3>.Default.Equals(ChunkPositon, other.ChunkPositon);
 
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             int hashCode = 1893591923;
@@ -69,11 +89,23 @@ namespace OctoAwesome.Serialization
             return hashCode;
         }
 
+        /// <summary>
+        /// Compares whether two <see cref="ChunkDiffTag"/> structs are equal.
+        /// </summary>
+        /// <param name="left">The first tag to compare to.</param>
+        /// <param name="right">The second tag to compare with.</param>
+        /// <returns>A value indicating whether the two tags are equal.</returns>
         public static bool operator ==(ChunkDiffTag left, ChunkDiffTag right)
         {
             return left.Equals(right);
         }
 
+        /// <summary>
+        /// Compares whether two <see cref="ChunkDiffTag"/> structs are unequal.
+        /// </summary>
+        /// <param name="left">The first tag to compare to.</param>
+        /// <param name="right">The second tag to compare with.</param>
+        /// <returns>A value indicating whether the two tags are unequal.</returns>
         public static bool operator !=(ChunkDiffTag left, ChunkDiffTag right)
         {
             return !(left == right);

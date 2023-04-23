@@ -1,51 +1,62 @@
 ﻿using System;
+using System.Diagnostics;
 using engenious;
 using OctoAwesome.Basics.EntityComponents;
-using System.Linq;
 using OctoAwesome.EntityComponents;
 using engenious.Helper;
 using OctoAwesome.Components;
 
 namespace OctoAwesome.Basics.SimulationComponents
 {
+    /// <summary>
+    /// Component for simulation with moveable entities.
+    /// </summary>
     public sealed class MoveComponent : SimulationComponent<
         Entity,
         SimulationComponentRecord<Entity, MoveableComponent, PositionComponent>,
         MoveableComponent,
         PositionComponent>
     {
+        /// <inheritdoc />
         protected override SimulationComponentRecord<Entity, MoveableComponent, PositionComponent> OnAdd(Entity entity)
         {
-            var poscomp = entity.Components.GetComponent<PositionComponent>();
-            var movecomp = entity.Components.GetComponent<MoveableComponent>();
-            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
+            var poscomp = entity.Components.Get<PositionComponent>();
+            var movecomp = entity.Components.Get<MoveableComponent>();
+            var chunkCacheComponent = entity.Components.Get<LocalChunkCacheComponent>();
 
-            var planet = cache.Planet;
+            Debug.Assert(poscomp != null, nameof(poscomp) + " != null");
+            Debug.Assert(movecomp != null, nameof(movecomp) + " != null");
+            Debug.Assert(chunkCacheComponent != null, nameof(chunkCacheComponent) + " != null");
+
+            var chunkCache = chunkCacheComponent.LocalChunkCache;
+
+            var planet = chunkCache.Planet;
             poscomp.Position.NormalizeChunkIndexXY(planet.Size);
-            cache.SetCenter(new Index2(poscomp.Position.ChunkIndex));
+            chunkCache.SetCenter(new Index2(poscomp.Position.ChunkIndex));
             return new SimulationComponentRecord<Entity, MoveableComponent, PositionComponent>(entity, movecomp, poscomp);
         }
 
+        /// <inheritdoc />
         protected override void UpdateValue(GameTime gameTime, SimulationComponentRecord<Entity, MoveableComponent, PositionComponent> value)
         {
             var entity = value.Value;
             var movecomp = value.Component1;
             var poscomp = value.Component2;
 
-            if (movecomp is null || poscomp is null)
-                return;
-
             if (entity.Id == Guid.Empty)
                 return;
 
-            //TODO:Sehr unschön
+            //TODO: very ugly
 
-            if (entity.Components.ContainsComponent<BoxCollisionComponent>())
+            if (entity.Components.Contains<BoxCollisionComponent>())
             {
                 CheckBoxCollision(gameTime, entity, movecomp, poscomp);
             }
 
-            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
+            var cacheComp = entity.Components.Get<LocalChunkCacheComponent>();
+
+            Debug.Assert(cacheComp != null, nameof(cacheComp) + " != null");
+            var cache = cacheComp.LocalChunkCache;
 
             var newposition = poscomp.Position + movecomp.PositionMove;
             newposition.NormalizeChunkIndexXY(cache.Planet.Size);
@@ -75,23 +86,21 @@ namespace OctoAwesome.Basics.SimulationComponents
             //Direction
             if (movecomp.PositionMove.LengthSquared != 0)
             {
-                poscomp.Direction = (float)MathHelper.WrapAngle((float)Math.Atan2(movecomp.PositionMove.Y, movecomp.PositionMove.X));
+                poscomp.Direction = MathHelper.WrapAngle((float)Math.Atan2(movecomp.PositionMove.Y, movecomp.PositionMove.X));
             }
         }
 
         private void CheckBoxCollision(GameTime gameTime, Entity entity, MoveableComponent movecomp, PositionComponent poscomp)
         {
-            if (!entity.Components.ContainsComponent<BodyComponent>())
+            if (!entity.Components.TryGet<BodyComponent>(out var bc)
+                || !entity.Components.TryGet<LocalChunkCacheComponent>(out var localChunkCacheComponent))
                 return;
-
-            BodyComponent bc = entity.Components.GetComponent<BodyComponent>();
-
 
             Coordinate position = poscomp.Position;
 
             Vector3 move = movecomp.PositionMove;
 
-            //Blocks finden die eine Kollision verursachen könnten
+            // Find blocks which could cause a collision
             int minx = (int)Math.Floor(Math.Min(
                 position.BlockPosition.X - bc.Radius,
                 position.BlockPosition.X - bc.Radius + movecomp.PositionMove.X));
@@ -111,12 +120,12 @@ namespace OctoAwesome.Basics.SimulationComponents
                 position.BlockPosition.Z + bc.Height,
                 position.BlockPosition.Z + bc.Height + movecomp.PositionMove.Z));
 
-            //Beteiligte Flächen des Spielers
+            // The relevant collision planes of the player
             var playerplanes = CollisionPlane.GetEntityCollisionPlanes(bc.Radius, bc.Height, movecomp.Velocity, poscomp.Position);
 
             bool abort = false;
 
-            var cache = entity.Components.GetComponent<LocalChunkCacheComponent>().LocalChunkCache;
+            var cache = localChunkCacheComponent.LocalChunkCache;
 
             for (int z = minz; z <= maxz && !abort; z++)
             {
@@ -144,7 +153,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                             {
                                 if (!CollisionPlane.Intersect(blockPlane, playerPlane))
                                     continue;
-                                    
+
                                 var distance = CollisionPlane.GetDistance(blockPlane, playerPlane);
 
                                 if (!CollisionPlane.CheckDistance(distance, move))
@@ -192,7 +201,7 @@ namespace OctoAwesome.Basics.SimulationComponents
                 }
             }
 
-            // TODO: Was ist für den Fall Gravitation = 0 oder im Scheitelpunkt des Sprungs?
+            // TODO: What should happen if gravity == 0 or we are at the apex of a jump?
             //movecomp.OnGround = Player.Velocity.Z == 0f;
 
             movecomp.PositionMove = movecomp.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;

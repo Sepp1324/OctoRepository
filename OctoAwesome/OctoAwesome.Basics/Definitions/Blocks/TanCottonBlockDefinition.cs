@@ -1,27 +1,29 @@
-﻿using System;
-using System.Drawing;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for tan cotton blocks.
+    /// </summary>
     public sealed class TanCottonBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.TanCotton; }
-        }
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.TanCotton;
 
-        public override string Icon
-        {
-            get { return "cotton_tan"; }
-        }
+        /// <inheritdoc />
+        public override string Icon => "cotton_tan";
 
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "cotton_tan" };
 
-        public override string[] Textures { get; } = new[] {"cotton_tan"};
-
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TanCottonBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this cotton block definition.</param>
         public TanCottonBlockDefinition(CottonMaterialDefinition material)
         {
             Material = material;

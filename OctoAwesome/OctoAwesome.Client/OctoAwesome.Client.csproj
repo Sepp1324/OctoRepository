@@ -1,62 +1,75 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <Nullable>warnings</Nullable>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>11</LangVersion>
 
-    <ApplicationIcon>octoawesome.ico</ApplicationIcon>
-    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-  </PropertyGroup>
+		<ApplicationIcon>octoawesome.ico</ApplicationIcon>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>$(MSBuildThisFileDirectory)\Generated</CompilerGeneratedFilesOutputPath>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\Debug\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\Release\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <EngeniousContentReference Include="Content\Content.ecp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\simple.fx" />
-    <Content Include="Content\BoldFont.png" />
-    <Content Include="Content\GameFont.png" />
-    <Content Include="Content\HeadlineFont.png" />
-    <Content Include="Content\Hud.png" />
-    <Content Include="Copyright.txt" />
-    <None Include="de\LoadingScreenQuotes.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="FEEDBACK.txt" />
-    <Content Include="octoawesome.ico" />
-    <Content Include="TODO.txt" />
-  </ItemGroup>
+	<ItemGroup>
+		<RuntimeHostConfigurationOption Include="System.Drawing.EnableUnixSupport" Value="true" />
+		<Content Include="Content\**" />
+		<Content Include="Copyright.txt" />
 
-  <ItemGroup>
-    <PackageReference Include="engenious" Version="0.5.1.4-alpha" />
-    <PackageReference Include="engenious.ContentTool" Version="0.5.1.8-alpha" />
-    <PackageReference Include="engenious.UI" Version="0.5.1.1-alpha" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
-    <PackageReference Include="System.IO" Version="4.3.0" />
-    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
-    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
-    <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OctoAwesome.Client.UI\OctoAwesome.UI.csproj" />
-    <ProjectReference Include="..\OctoAwesome.Network\OctoAwesome.Network.csproj" />
-    <ProjectReference Include="..\OctoAwesome.Runtime\OctoAwesome.Runtime.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="engenious.CreatedContent.Content">
-      <HintPath>F:\Repos\octoawesome\OctoAwesome\OctoAwesome.Client\Content\engenious.CreatedContent.Content.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+		<None Include="de\LoadingScreenQuotes.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<Content Include="FEEDBACK.txt" />
+		<Content Include="octoawesome.ico" />
+		<Content Include="TODO.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Content\bin\**" />
+		<Compile Remove="Content\obj\**" />
+		<EmbeddedResource Remove="Content\bin\**" />
+		<EmbeddedResource Remove="Content\obj\**" />
+		<None Remove="Content\bin\**" />
+		<None Remove="Content\obj\**" />
+		<Content Remove="Content\bin\**" />
+		<Content Remove="Content\obj\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Content\Fonts\Emoji.spritefont" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="engenious" Version="0.7.1-alpha" />
+		<PackageReference Include="engenious.ContentTool" Version="0.7.1.4-alpha" PrivateAssets="all" />
+		<PackageReference Include="engenious.ContentTool.SourceGen" Version="0.7.1.4-alpha" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+		<PackageReference Include="engenious.UI" Version="0.7.1-alpha" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="OpenAL.Soft" Version="1.19.1" Condition="$(RuntimeIdentifier.StartsWith('win')) Or ('$(RuntimeIdentifier)' == '' AND $([MSBuild]::IsOSPlatform('Windows')))" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
+		<PackageReference Include="System.IO" Version="4.3.0" />
+		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
+		<PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+		<PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\OctoAwesome.Basics\OctoAwesome.Basics.csproj" />
+		<ProjectReference Include="..\OctoAwesome.Client.UI\OctoAwesome.Client.UI.csproj" />
+		<ProjectReference Include="..\OctoAwesome.Network\OctoAwesome.Network.csproj" />
+		<ProjectReference Include="..\OctoAwesome.Runtime\OctoAwesome.Runtime.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EngeniousContentReference Include="Content\Content.ecp" />
+		<Compile Remove="Generated\**" />
+		<None Include="Generated\**" />
+	</ItemGroup>
 
 </Project>

@@ -1,62 +1,28 @@
-﻿using OctoAwesome.Basics.Properties;
-using OctoAwesome.Information;
-using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
+    /// <summary>
+    /// Pickaxe item definition.
+    /// </summary>
     public class PickaxeDefinition : IItemDefinition
     {
-        public string Icon
-        {
-            get
-            {
-                return "pick_iron";
-            }
-        }
+        /// <inheritdoc />
+        public string Icon => "pick_iron";
 
-        public string Name
-        {
-            get
-            {
-                return "Pickaxe";
-            }
-        }
+        /// <inheritdoc />
+        public string DisplayName => "Pickaxe";
 
-        public int StackLimit
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
-        public float VolumePerUnit
-        {
-            get
-            {
-                return 10;
-            }
-        }
-
-
+        /// <inheritdoc />
         public bool CanMineMaterial(IMaterialDefinition material)
-        {
-            if(material is ISolidMaterialDefinition solid)
-            {
-                return true;
-            }
+            => material is ISolidMaterialDefinition;
 
-            return false;
-        }
-
-        public Item Create(IMaterialDefinition material)
+        /// <inheritdoc />
+        public Item? Create(IMaterialDefinition material)
         {
+            if (material is IFoodMaterialDefinition)
+                return null;
             return new Pickaxe(this, material);
         }
     }

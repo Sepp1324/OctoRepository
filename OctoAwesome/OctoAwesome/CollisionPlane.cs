@@ -1,99 +1,98 @@
 ﻿using engenious;
-using System;
 using System.Collections.Generic;
 
 namespace OctoAwesome
 {
     /// <summary>
-    /// Stellt eine Fläche dar, welche mit anderen Flächen Kollidieren kann
+    /// A 3D plane used for collision detection.
     /// </summary>
     public struct CollisionPlane
     {
         /// <summary>
-        /// Normalenvector der Fläche
+        /// The normal vector of the plane.
         /// </summary>
         public Vector3 normal;
         /// <summary>
-        /// Mittelpunkt der Fläche
+        /// The center point to span the plane with.
         /// </summary>
         public Vector3 pos;
         /// <summary>
-        /// Erste Ecke der Fläche
+        /// The first edge to span the plane with.
         /// </summary>
         public Vector3 edgepos1;
         /// <summary>
-        /// Zweite Ecke der Fläche
+        /// The second edge to span the plane with.
         /// </summary>
         public Vector3 edgepos2;
 
         /// <summary>
-        /// Konstruktur
+        /// Initializes a new instance of the <see cref="CollisionPlane"/> struct.
         /// </summary>
-        /// <param name="pos1">Ecke 1</param>
-        /// <param name="pos2">Ecke 2</param>
-        /// <param name="normal">Normalenvektor</param>
-        public CollisionPlane(Vector3 pos1,Vector3 pos2, Vector3 normal)
+        /// <param name="pos1">The first edge to span the plane with.</param>
+        /// <param name="pos2">The second edge to span the plane with.</param>
+        /// <param name="normal">The normal vector of the plane.</param>
+        public CollisionPlane(Vector3 pos1, Vector3 pos2, Vector3 normal)
         {
             this.normal = normal;
             this.edgepos1 = pos1;
             this.edgepos2 = pos2;
 
-            pos = (pos2 - pos1 ) /2f + pos1;
+            pos = (pos2 - pos1) / 2f + pos1;
         }
 
         /// <summary>
-        /// Gibt alle möglichen Flächen eines Blockes zurück
+        /// Gets an enumeration of all possible collision planes for a specific block.
         /// </summary>
-        /// <param name="pos">Position des Blockes</param>
-        /// <param name="movevector">Bewegungsvector</param>
-        /// <returns>Liste aller beteiligten Flächen</returns>
-        public static IEnumerable<CollisionPlane> GetBlockCollisionPlanes(Index3 pos, Vector3 movevector)
+        /// <param name="pos">The position of the block</param>
+        /// <param name="moveVector">The movement vector to check the collision with.</param>
+        /// <returns>An enumeration of all possible collision planes.</returns>
+        public static IEnumerable<CollisionPlane> GetBlockCollisionPlanes(Index3 pos, Vector3 moveVector)
         {
-            //Ebene X
-            if (movevector.X > 0)
+            // X axis plane
+            if (moveVector.X > 0)
             {
                 yield return new CollisionPlane(
                     new Vector3(pos.X, pos.Y, pos.Z),
-                    new Vector3(pos.X, pos.Y + 1f, pos.Z + 1f), 
-                    new Vector3(-1, 0, 0));
+                    new Vector3(pos.X, pos.Y + 1f, pos.Z + 1f),
+                    new Vector3(-1, 0));
             }
-            else if (movevector.X < 0)
+            else if (moveVector.X < 0)
             {
                 yield return new CollisionPlane(
                     new Vector3(pos.X + 1f, pos.Y, pos.Z),
                     new Vector3(pos.X + 1f, pos.Y + 1f, pos.Z + 1f),
-                    new Vector3(1, 0, 0));
+                    new Vector3(1, 0));
             }
 
-            //Ebene Y
-            if (movevector.Y > 0)
+            // Y axis plane
+            if (moveVector.Y > 0)
             {
                 yield return new CollisionPlane(
                     new Vector3(pos.X, pos.Y, pos.Z),
                     new Vector3(pos.X + 1f, pos.Y, pos.Z + 1f),
-                    new Vector3(0, -1, 0));
+                    new Vector3(0, -1));
             }
-            else if (movevector.Y < 0)
+            else if (moveVector.Y < 0)
             {
                 yield return new CollisionPlane(
-                    new Vector3(pos.X , pos.Y + 1f, pos.Z),
+                    new Vector3(pos.X, pos.Y + 1f, pos.Z),
                     new Vector3(pos.X + 1f, pos.Y + 1f, pos.Z + 1f),
-                    new Vector3(0, 1, 0));
+                    new Vector3(0, 1));
             }
 
-            //Ebene Z
-            if (movevector.Z > 0)
+            // Z axis plane
+            if (moveVector.Z > 0)
             {
                 yield return new CollisionPlane(
-                    new Vector3(pos.X, pos.Y , pos.Z ),
-                    new Vector3(pos.X + 1f, pos.Y + 1f , pos.Z ),
-                    new Vector3(0,0, -1));
+                    new Vector3(pos.X, pos.Y, pos.Z),
+                    new Vector3(pos.X + 1f, pos.Y + 1f, pos.Z),
+                    new Vector3(0, 0, -1));
             }
-            else if (movevector.Z < 0)
+            else if (moveVector.Z < 0)
             {
                 yield return new CollisionPlane(
-                    new Vector3(pos.X , pos.Y  , pos.Z + 1f),
-                    new Vector3(pos.X + 1f, pos.Y +1f, pos.Z + 1f),
+                    new Vector3(pos.X, pos.Y, pos.Z + 1f),
+                    new Vector3(pos.X + 1f, pos.Y + 1f, pos.Z + 1f),
                     new Vector3(0, 0, 1));
             }
 
@@ -101,53 +100,53 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt alle Flächen eines Spielers zurück
+        /// Gets an enumeration of all possible collision planes for an entity.
         /// </summary>
-        /// <param name="radius">radius of the <see cref="Entity"/></param>
-        /// <param name="height">height of the <see cref="Entity"/></param>
-        /// <param name="velocity">velocity of the <see cref="Entity"/></param>
-        /// <param name="coordinate"><see cref="Coordinate"/> ot the <see cref="Entity"/></param>
-        /// <param name="invertvelocity">Gibt an ob die geschwindigkeit invertiert werden soll</param>
-        /// <returns></returns>
-        public static IEnumerable<CollisionPlane> GetEntityCollisionPlanes(float radius, float height, Vector3 velocity, 
-            Coordinate coordinate, bool invertvelocity = true)
+        /// <param name="radius">The radius of the <see cref="Entity"/>.</param>
+        /// <param name="height">The height of the <see cref="Entity"/>.</param>
+        /// <param name="velocity">The velocity of the <see cref="Entity"/>.</param>
+        /// <param name="coordinate">The <see cref="Coordinate"/> ot the <see cref="Entity"/>.</param>
+        /// <param name="invertVelocity">A value indicating whether the velocity should be inverted.</param>
+        /// <returns>An enumeration of all possible collision planes.</returns>
+        public static IEnumerable<CollisionPlane> GetEntityCollisionPlanes(float radius, float height, Vector3 velocity,
+            Coordinate coordinate, bool invertVelocity = true)
         {
             var pos = coordinate.BlockPosition;
-            Vector3 vel =  invertvelocity ? new Vector3(-velocity.X, -velocity.Y, - velocity.Z) : velocity;
+            Vector3 vel = invertVelocity ? new Vector3(-velocity.X, -velocity.Y, -velocity.Z) : velocity;
 
-            //Ebene X
-                if (vel.X > 0)
+            // X axis plane
+            if (vel.X > 0)
             {
                 yield return new CollisionPlane(
                     new Vector3(pos.X - radius, pos.Y - radius, pos.Z),
                     new Vector3(pos.X - radius, pos.Y + radius, pos.Z + height),
-                    new Vector3(-1, 0, 0));
+                    new Vector3(-1, 0));
             }
             else if (vel.X < 0)
             {
                 yield return new CollisionPlane(
                     new Vector3(pos.X + radius, pos.Y - radius, pos.Z),
                     new Vector3(pos.X + radius, pos.Y + radius, pos.Z + height),
-                    new Vector3(1, 0, 0));
+                    new Vector3(1, 0));
             }
 
-            //Ebene Y
+            // Y axis plane
             if (vel.Y > 0)
             {
                 yield return new CollisionPlane(
-                    new Vector3(pos.X - radius, pos.Y - radius, pos.Z ),
+                    new Vector3(pos.X - radius, pos.Y - radius, pos.Z),
                     new Vector3(pos.X + radius, pos.Y - radius, pos.Z + height),
-                    new Vector3(0, -1, 0));
+                    new Vector3(0, -1));
             }
             else if (vel.Y < 0)
             {
                 yield return new CollisionPlane(
-                    new Vector3(pos.X - radius, pos.Y + radius, pos.Z ),
+                    new Vector3(pos.X - radius, pos.Y + radius, pos.Z),
                     new Vector3(pos.X + radius, pos.Y + radius, pos.Z + height),
-                    new Vector3(0, 1, 0));
+                    new Vector3(0, 1));
             }
 
-            //Ebene Z
+            // Z axis plane
             if (vel.Z > 0)
             {
                 yield return new CollisionPlane(
@@ -158,21 +157,22 @@ namespace OctoAwesome
             else if (vel.Z < 0)
             {
                 yield return new CollisionPlane(
-                    new Vector3(pos.X - radius, pos.Y - radius , pos.Z + height),
+                    new Vector3(pos.X - radius, pos.Y - radius, pos.Z + height),
                     new Vector3(pos.X + radius, pos.Y + radius, pos.Z + height),
                     new Vector3(0, 0, 1));
             }
         }
 
         /// <summary>
-        /// Gibt zurück ob zwei Flächen miteinander Kollidieren können(Achtung noch keine gedrehten Flächen)
+        /// Gets a value indicating whether.
         /// </summary>
-        /// <param name="p1">Fläche 1</param>
-        /// <param name="p2">Fläche 2</param>
-        /// <returns>Ergebnis der Kollisions</returns>
+        /// <param name="p1">The first plane to check collision to.</param>
+        /// <param name="p2">The second plane to check collision with.</param>
+        /// <returns>A value indicating whether the two planes collided with each other.</returns>
+        /// <remarks>Rotated planes are not supported yet.</remarks>
         public static bool Intersect(CollisionPlane p1, CollisionPlane p2)
         {
-            //TODO: Erweitern auf schräge Fläche
+            //TODO: Extend for slanted planes
             var vec = p1.normal * p2.normal;
 
             bool result = false;
@@ -225,39 +225,38 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// Gibt den Abstand zweier Flächen zurück(Mittelpunkt zu Mittelpunkt)
+        /// Gets distance between two planes(Center point to center point).
         /// </summary>
-        /// <param name="p1">Fläche 1</param>
-        /// <param name="p2">Fläche 2</param>
-        /// <returns>Abstand der Flächen zueinander</returns>
+        /// <param name="p1">The first plane to check collision to.</param>
+        /// <param name="p2">The second plane to check collision with.</param>
+        /// <returns>Distance between two planes.</returns>
         public static Vector3 GetDistance(CollisionPlane p1, CollisionPlane p2)
         {
             var alpha = p1.normal * p2.normal;
 
 
-            var dvector = new Vector3();
-            dvector.X = alpha.X != 0 ? 1 : 0;
-            dvector.Y = alpha.Y != 0 ? 1 : 0;
-            dvector.Z = alpha.Z != 0 ? 1 : 0;
+            var dVector = new Vector3();
+            dVector.X = alpha.X != 0 ? 1 : 0;
+            dVector.Y = alpha.Y != 0 ? 1 : 0;
+            dVector.Z = alpha.Z != 0 ? 1 : 0;
 
-            var distance = (p1.pos - p2.pos) * dvector;
+            var distance = (p1.pos - p2.pos) * dVector;
 
             return distance;
         }
 
         /// <summary>
-        /// Überprüft ob Vektor 2 größer als Vektor 1 ist
+        /// Checks whether <paramref name="d2"/> is bigger than <paramref name="d1"/>.
         /// </summary>
-        /// <param name="d1">Vektor 1</param>
-        /// <param name="d2">Vektor 2</param>
-        /// <returns>Ergebnis</returns>
+        /// <param name="d1">The vector to compare to.</param>
+        /// <param name="d2">The vector to compare with.</param>
+        /// <returns>A value indicating whether <paramref name="d2"/> is bigger than <paramref name="d1"/>.</returns>
         public static bool CheckDistance(Vector3 d1, Vector3 d2)
         {
-            
             if (d1.X == 0 || d1.Y == 0 || d1.Z == 0)
                 return true;
 
-            var diff = d1 - d2; 
+            var diff = d1 - d2;
 
             var rx = d1.X > 0 ? diff.X < 0 : diff.X > 0;
             var ry = d1.Y > 0 ? diff.Y < 0 : diff.Y > 0;
@@ -266,7 +265,5 @@ namespace OctoAwesome
 
             return rx || ry || rz;
         }
-
-       
     }
 }

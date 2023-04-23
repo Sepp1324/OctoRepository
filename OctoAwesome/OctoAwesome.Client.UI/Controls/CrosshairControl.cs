@@ -1,38 +1,69 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using engenious.UI;
 using engenious;
 using engenious.Graphics;
-using OctoAwesome.UI.Components;
+using OctoAwesome.Client.UI.Components;
 
-namespace OctoAwesome.UI.Controls
+namespace OctoAwesome.Client.UI.Controls
 {
+    /// <summary>
+    /// Control for displaying a crosshair.
+    /// </summary>
     public class CrosshairControl : Control
     {
-        public Texture2D Texture;
-        public float Transparency;
-        public Color Color;
+        private readonly Texture2D texture;
+        private readonly float transparency;
 
-        AssetComponent assets;
+        private readonly AssetComponent assets;
 
-        public CrosshairControl(BaseScreenComponent manager, AssetComponent asset) : base(manager)
+        private static int crosshairSize = 8;
+
+        /// <summary>
+        /// Gets or sets the size of the crosshair cursor.
+        /// </summary>
+        public static int CrosshairSize
+        {
+            get => crosshairSize;
+            set => crosshairSize = Math.Clamp(value, 0, MaxSize);
+        }
+
+        /// <summary>
+        /// Gets or sets the color of the crosshair cursor.
+        /// </summary>
+        public static Color CrosshairColor { get; set; } = Color.White;
+
+
+        /// <summary>
+        /// Maximum size of the crosshair cursor.
+        /// </summary>
+        public const int MaxSize = 100;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CrosshairControl"/> control.
+        /// </summary>
+        /// <param name="asset">The asset component to load resources from.</param>
+        public CrosshairControl(AssetComponent asset)
         {
             assets = asset;
 
-            Transparency = 0.5f;
-            Color = Color.White;
+            transparency = 0.5f;
 
-            Texture = assets.LoadTexture(GetType(), "octocross");
+            var crossTexture = assets.LoadTexture(GetType(), "octocross");
+            Debug.Assert(crossTexture != null, nameof(crossTexture) + " != null");
+            texture = crossTexture;
         }
 
+        /// <inheritdoc />
         protected override void OnDrawContent(SpriteBatch batch, Rectangle contentArea, GameTime gameTime, float alpha)
         {
             if (!assets.Ready)
                 return;
 
-            batch.Draw(Texture, contentArea, Color * Transparency);
+            var color = CrosshairColor;
+            Width = Height = CrosshairSize;
+
+            batch.Draw(texture, contentArea, color * transparency);
         }
     }
 }

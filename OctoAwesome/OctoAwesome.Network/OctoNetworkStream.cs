@@ -2,10 +2,11 @@
 
 namespace OctoAwesome.Network
 {
+    /// <summary>
+    /// Double buffered network stream implementation.
+    /// </summary>
     public class OctoNetworkStream
     {
-        public int Length => writeBuffer.Length;
-
         private byte[] readBuffer;
         private byte[] writeBuffer;
 
@@ -25,6 +26,10 @@ namespace OctoAwesome.Network
 
         private bool writingProcess;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OctoNetworkStream"/> class.
+        /// </summary>
+        /// <param name="capacity">The buffer capacity per buffer.</param>
         public OctoNetworkStream(int capacity = 1024)
         {
             bufferA = new byte[capacity];
@@ -39,6 +44,13 @@ namespace OctoAwesome.Network
             writeLock = new object();
         }
 
+        /// <summary>
+        /// Writes a given range from a byte buffer to the stream.
+        /// </summary>
+        /// <param name="buffer">The buffer array to write to the stream.</param>
+        /// <param name="offset">The buffer slice offset to get from <paramref name="buffer"/>.</param>
+        /// <param name="count">The buffer slice count to get from <paramref name="buffer"/>.</param>
+        /// <returns>The number of bytes written.</returns>
         public int Write(byte[] buffer, int offset, int count)
         {
             writingProcess = true;
@@ -66,6 +78,11 @@ namespace OctoAwesome.Network
             return count;
         }
 
+        /// <summary>
+        /// Writes a single byte to the stream.
+        /// </summary>
+        /// <param name="data">The single byte to write.</param>
+        /// <returns>The number of bytes that where written.</returns>
         public int Write(byte data)
         {
             writingProcess = true;
@@ -86,6 +103,13 @@ namespace OctoAwesome.Network
             return 1;
         }
 
+        /// <summary>
+        /// Reads from the stream into a buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to read into.</param>
+        /// <param name="offset">The slice buffer offset to start reading into.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns>The actually read number of bytes.</returns>
         public int Read(byte[] buffer, int offset, int count)
         {
             if (!writingProcess)
@@ -107,6 +131,11 @@ namespace OctoAwesome.Network
             return count;
         }
 
+        /// <summary>
+        /// Gets the number of bytes available with a maximum value of <paramref name="count"/>.
+        /// </summary>
+        /// <param name="count">The maximum data to make available.</param>
+        /// <returns>The available number of readable bytes in the stream.</returns>
         public int DataAvailable(int count)
         {
             if (!writingProcess)
@@ -129,13 +158,11 @@ namespace OctoAwesome.Network
                 lock (writeLock)
                 {
                     if (readPosition > maxReadCount)
-                        throw new IndexOutOfRangeException("ReadPositin is greater than MaxReadCount in OctoNetworkStream");
-                    else if (readPosition < maxReadCount)
+                        throw new IndexOutOfRangeException("ReadPosition is greater than MaxReadCount in OctoNetworkStream");
+                    if (readPosition < maxReadCount)
                         return;
 
-                    var refBuf = writeBuffer;
-                    writeBuffer = readBuffer;
-                    readBuffer = refBuf;
+                    (writeBuffer, readBuffer) = (readBuffer, writeBuffer);
                     maxReadCount = writePosition;
                     writePosition = 0;
                     readPosition = 0;

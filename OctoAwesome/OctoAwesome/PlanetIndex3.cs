@@ -1,25 +1,27 @@
-﻿namespace OctoAwesome
+﻿using System;
+
+namespace OctoAwesome
 {
     /// <summary>
-    /// Datenstruktur zur genauen bestimmung eines Chunks und seinen Planeten
+    /// A position of a chunk on a planet.
     /// </summary>
-    public struct PlanetIndex3
+    public struct PlanetIndex3 : IEquatable<PlanetIndex3>
     {
         /// <summary>
-        /// Die Planeten-ID
+        /// The planet id.
         /// </summary>
         public int Planet;
 
         /// <summary>
-        /// Die Position des Chunks
+        /// The chunk position.
         /// </summary>
         public Index3 ChunkIndex;
 
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse PlanetIndex3
+        /// Initializes a new instance of the <see cref="PlanetIndex3"/> struct.
         /// </summary>
-        /// <param name="planet">Der Index des Planeten</param>
-        /// <param name="chunkIndex">Der <see cref="Index3"/> des Chunks</param>
+        /// <param name="planet">The id of the planet.</param>
+        /// <param name="chunkIndex">The <see cref="Index3"/> position of the chunk.</param>
         public PlanetIndex3(int planet, Index3 chunkIndex)
         {
             Planet = planet;
@@ -27,56 +29,48 @@
         }
 
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse PlanetIndex3
+        /// Initializes a new instance of the <see cref="PlanetIndex3"/> struct.
         /// </summary>
-        /// <param name="planet">Der Index des Planeten</param>
-        /// <param name="x">X-Anteil des Indexes des Chunks</param>
-        /// <param name="y">Y-Anteil des Indexes des Chunks</param>
-        /// <param name="z">Z-Anteil des Indexes des Chunks</param>
+        /// <param name="planet">The id of the planet</param>
+        /// <param name="x">The X component of the chunk position.</param>
+        /// <param name="y">The Y component of the chunk position.</param>
+        /// <param name="z">The Z component of the chunk position.</param>
         public PlanetIndex3(int planet, int x, int y, int z) : this(planet, new Index3(x, y, z)) { }
 
         /// <summary>
-        /// Überprüft, ob beide gegebenen PlanetIndex3 den gleichen Wert aufweisen.
+        /// Compares whether two <see cref="PlanetIndex3"/> reference the same position.
         /// </summary>
-        /// <param name="i1"></param>
-        /// <param name="i2"></param>
-        /// <returns></returns>
+        /// <param name="i1">The first <see cref="PlanetIndex3"/> to compare with.</param>
+        /// <param name="i2">The second <see cref="PlanetIndex3"/> to compare to.</param>
+        /// <returns>Whether the two positions are equal.</returns>
         public static bool operator ==(PlanetIndex3 i1, PlanetIndex3 i2)
             => i1.Equals(i2);
 
         /// <summary>
-        /// Überprüft, ob beide gegebenen PlanetIndex3 nicht den gleichen Wert aufweisen.
+        /// Compares whether two <see cref="PlanetIndex3"/> do not reference the same position.
         /// </summary>
-        /// <param name="i1"></param>
-        /// <param name="i2"></param>
-        /// <returns></returns>
+        /// <param name="i1">The first <see cref="PlanetIndex3"/> to compare with.</param>
+        /// <param name="i2">The second <see cref="PlanetIndex3"/> to compare to.</param>
+        /// <returns>Whether the two positions are unequal.</returns>
         public static bool operator !=(PlanetIndex3 i1, PlanetIndex3 i2)
             => !i1.Equals(i2);
 
-        /// <summary>
-        /// Überprüft, ob der gegebene PlanetIndex3 den gleichen Wert aufweist, wie das gegebene Objekt.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
+        /// <inheritdoc />
+        public bool Equals(PlanetIndex3 other)
         {
-            if (obj is PlanetIndex3 other)
-                return other.Planet == Planet &&
-                    other.ChunkIndex.X == ChunkIndex.X &&
-                    other.ChunkIndex.Y == ChunkIndex.Y && 
-                    other.ChunkIndex.Z == ChunkIndex.Z;
-
-            return false;
+            return Planet == other.Planet && ChunkIndex.Equals(other.ChunkIndex);
         }
 
-        /// <summary>
-        /// Erzeugt einen möglichst eindeutigen Hashcode des PlanetIndex3s
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode() 
-            => (Planet << 24) +
-               (ChunkIndex.X << 16) +
-               (ChunkIndex.Y << 8) +
-               ChunkIndex.Z;
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            return obj is PlanetIndex3 other && Equals(other);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Planet, ChunkIndex);
+        }
     }
 }

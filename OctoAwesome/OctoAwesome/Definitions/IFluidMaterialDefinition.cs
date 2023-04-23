@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome.Definitions
+﻿namespace OctoAwesome.Definitions
 {
+    /// <summary>
+    /// Represents the physical properties of fluid a block/item/...
+    /// </summary>
     public interface IFluidMaterialDefinition : IMaterialDefinition
     {
         /// <summary>
-        /// Viscosity describes the tenacity of liquids
-        /// This value is in µPa·s
+        /// Gets the viscosity describing the tenacity of liquids.
+        /// This value is in µPa·s.
         /// </summary>
         int Viscosity { get; }
     }

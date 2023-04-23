@@ -1,28 +1,29 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
+    /// <summary>
+    /// Chest item definition.
+    /// </summary>
     public class ChestItemDefinition : IItemDefinition
     {
-        public string Name { get; }
-        public string Icon { get; }
+        /// <inheritdoc />
+        public string DisplayName => "Chest";
 
-        public ChestItemDefinition()
-        {
-            Name = "Chest";
-            Icon = "chest";
-        }
+        /// <inheritdoc />
+        public string Icon => "chest";
 
-        public bool CanMineMaterial(IMaterialDefinition material) 
+        /// <inheritdoc />
+        public bool CanMineMaterial(IMaterialDefinition material)
             => false;
 
-        public Item Create(IMaterialDefinition material) 
-            => new ChestItem(this, material);
+        /// <inheritdoc />
+        public Item? Create(IMaterialDefinition material)
+        {
+            if (material is IFoodMaterialDefinition)
+                return null;
+            return new ChestItem(this, material);
+        }
     }
 }

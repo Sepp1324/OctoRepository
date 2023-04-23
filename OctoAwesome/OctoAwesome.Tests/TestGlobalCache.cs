@@ -1,8 +1,6 @@
 ﻿using OctoAwesome.Notifications;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Tests
 {
@@ -32,12 +30,13 @@ namespace OctoAwesome.Tests
 
         public IPlanet Planet => throw new NotImplementedException();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestGlobalCache" /> class.
+        /// </summary>
         public TestGlobalCache()
         {
             Loaded = new List<PlanetIndex3>();
         }
-
-        public event EventHandler<IChunkColumn> ChunkColumnChanged;
 
         public void Reset()
         {
@@ -51,10 +50,10 @@ namespace OctoAwesome.Tests
             SaveCounter++;
         }
 
-        public IChunkColumn Subscribe(IPlanet planet, Index2 position,bool passiv)
+        public IChunkColumn Subscribe(IPlanet planet, Index2 position, bool passiv)
         {
             LoadCounter++;
-            return new ChunkColumn(new IChunk[] {new Chunk(new Index3(position,0),planet),new Chunk(new Index3(position,1),planet),new Chunk(new Index3(position,2),planet) },planet, position);
+            return new ChunkColumn(new IChunk[] { new Chunk(new Index3(position, 0), planet), new Chunk(new Index3(position, 1), planet), new Chunk(new Index3(position, 2), planet) }, planet, position);
         }
 
         public IChunkColumn Subscribe(Index2 position) => throw new NotImplementedException();

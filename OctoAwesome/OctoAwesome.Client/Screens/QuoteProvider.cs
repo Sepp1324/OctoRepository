@@ -1,13 +1,12 @@
 ﻿using OctoAwesome.Threading;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client.Screens
 {
+    /// <summary>
+    /// Provider that holds quotes and can provide random ones.
+    /// </summary>
     public sealed class QuoteProvider
     {
         private readonly FileInfo fileInfo;
@@ -17,13 +16,22 @@ namespace OctoAwesome.Client.Screens
 
         private readonly LockSemaphore semaphoreExtended;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuoteProvider"/> class.
+        /// </summary>
+        /// <param name="fileInfo">File info of the file to load the quotes from.</param>
         public QuoteProvider(FileInfo fileInfo)
         {
             this.fileInfo = fileInfo;
             random = new Random();
             semaphoreExtended = new LockSemaphore(1, 1);
+            quotes = Array.Empty<string>();
         }
 
+        /// <summary>
+        /// Gets a random quote.
+        /// </summary>
+        /// <returns>The random quote.</returns>
         public string GetRandomQuote()
         {
             using (semaphoreExtended.Wait())

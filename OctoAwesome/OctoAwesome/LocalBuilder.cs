@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 
 namespace OctoAwesome
 {
     /// <summary>
-    /// Erzeugt ein lokales Koordinatensystem.
+    /// A builder for managing 2x2 chunk columns relative to a given origin coordinate system.
     /// </summary>
     public class LocalBuilder
     {
@@ -15,15 +14,15 @@ namespace OctoAwesome
         private readonly IChunkColumn column00, column01, column10, column11;
 
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse LocalBuilder
+        /// Initializes a new instance of the <see cref="LocalBuilder"/> class.
         /// </summary>
-        /// <param name="originX"></param>
-        /// <param name="originY"></param>
-        /// <param name="originZ"></param>
-        /// <param name="column00"></param>
-        /// <param name="column10"></param>
-        /// <param name="column01"></param>
-        /// <param name="column11"></param>
+        /// <param name="originX">The x component of the origin of the local coordinate system.</param>
+        /// <param name="originY">The y component of the origin of the local coordinate system.</param>
+        /// <param name="originZ">The z component of the origin of the local coordinate system.</param>
+        /// <param name="column00">The chunk at chunk index (0, 0).</param>
+        /// <param name="column10">The chunk at chunk index (1, 0).</param>
+        /// <param name="column01">The chunk at chunk index (0, 1).</param>
+        /// <param name="column11">The chunk at chunk index (1, 1).</param>
         public LocalBuilder(int originX, int originY, int originZ, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
             this.originX = originX;
@@ -37,18 +36,18 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
+        /// Select a chunk column by a coordinate in relative coordinates to <see cref="column00"/>.
         /// </summary>
-        /// <param name="column00"></param>
-        /// <param name="column10"></param>
-        /// <param name="column01"></param>
-        /// <param name="column11"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        public static IChunkColumn GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
+        /// <param name="column00">The chunk at chunk index (0, 0).</param>
+        /// <param name="column10">The chunk at chunk index (1, 0).</param>
+        /// <param name="column01">The chunk at chunk index (0, 1).</param>
+        /// <param name="column11">The chunk at chunk index (1, 1).</param>
+        /// <param name="x">The x component to get the chunk at(In block coordinates).</param>
+        /// <param name="y">The y component to get the chunk at(In block coordinates).</param>
+        /// <returns>The chunk column the given coordinate contains; <c>null</c> if out of range.</returns>
+        public static IChunkColumn? GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
-            IChunkColumn column;
+            IChunkColumn? column = null;
 
             if (x >= Chunk.CHUNKSIZE_X && y >= Chunk.CHUNKSIZE_Y)
                 column = column11;
@@ -63,35 +62,39 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
+        /// Gets the surface height at a coordinate in relative coordinates to <see cref="column00"/>.
         /// </summary>
-        /// <param name="column00"></param>
-        /// <param name="column10"></param>
-        /// <param name="column01"></param>
-        /// <param name="column11"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
+        /// <param name="column00">The chunk at chunk index (0, 0).</param>
+        /// <param name="column10">The chunk at chunk index (1, 0).</param>
+        /// <param name="column01">The chunk at chunk index (0, 1).</param>
+        /// <param name="column11">The chunk at chunk index (1, 1).</param>
+        /// <param name="x">The x component of the coordinate to get the surface height at.</param>
+        /// <param name="y">The y component of the coordinate to get the surface height at.</param>
+        /// <returns>The surface height at the given coordinate; <c>-1</c> if out of range.</returns>
         public static int GetSurfaceHeight(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
-            IChunkColumn curColumn = GetColumn(column00, column10, column01, column11, x, y);
+            var curColumn = GetColumn(column00, column10, column01, column11, x, y);
+            if (curColumn == null)
+                return -1;
             return curColumn.Heights[x % Chunk.CHUNKSIZE_X, y % Chunk.CHUNKSIZE_Y];
         }
 
         /// <summary>
-        /// 
+        /// Set a block at a coordinate relative to <see cref="column00"/>.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="block"></param>
-        /// <param name="meta"></param>
+        /// <param name="x">The x component of the coordinate to set the block at.</param>
+        /// <param name="y">The y component of the coordinate to set the block at.</param>
+        /// <param name="z">The z component of the coordinate to set the block at.</param>
+        /// <param name="block">The block type id to set the block to.</param>
+        /// <param name="meta">The meta data to set the block to.</param>
         public void SetBlock(int x, int y, int z, ushort block, int meta = 0)
         {
             x += originX;
             y += originY;
             z += originZ;
-            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+            var column = GetColumn(column00, column10, column01, column11, x, y);
+
+            Debug.Assert(column != null, nameof(column) + " != null");
             var index = z / Chunk.CHUNKSIZE_Z;
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
@@ -101,9 +104,10 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
+        /// Sets multiple blocks relative to <see cref="column00"/>.
         /// </summary>
-        /// <param name="blockInfos"></param>
+        /// <param name="issueNotification">A value indicating whether the block changes should be notified.</param>
+        /// <param name="blockInfos">The blocks to set.</param>
         public void SetBlocks(bool issueNotification, params BlockInfo[] blockInfos)
             => blockInfos
                     .Select(b =>
@@ -111,7 +115,9 @@ namespace OctoAwesome
                         var x = b.Position.X + originX;
                         var y = b.Position.Y + originY;
                         var z = b.Position.Z + originZ;
-                        IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+                        var column = GetColumn(column00, column10, column01, column11, x, y);
+
+                        Debug.Assert(column != null, nameof(column) + " != null");
                         var index = z / Chunk.CHUNKSIZE_Z;
                         x %= Chunk.CHUNKSIZE_X;
                         y %= Chunk.CHUNKSIZE_Y;
@@ -124,16 +130,15 @@ namespace OctoAwesome
                         .GroupBy(i => i.index)
                         .ForEach(i => column.Key.Chunks[i.Key].SetBlocks(issueNotification, i.Select(b => b.info).ToArray())));
 
-
         /// <summary>
-        /// 
+        /// Fills a sphere centered around coordinate relative to <see cref="column00"/>.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="radius"></param>
-        /// <param name="block"></param>
-        /// <param name="meta"></param>
+        /// <param name="x">The x component of the center coordinate to.</param>
+        /// <param name="y">The y component of the center coordinate to.</param>
+        /// <param name="z">The z component of the center coordinate to.</param>
+        /// <param name="radius">The radius of the sphere to fill.</param>
+        /// <param name="block">The block type id to fill the sphere with.</param>
+        /// <param name="meta">The meta data to fill the sphere with.</param>
         public void FillSphere(int x, int y, int z, int radius, ushort block, int meta = 0)
         {
             var blockInfos = new List<BlockInfo>(radius * 6);
@@ -153,18 +158,19 @@ namespace OctoAwesome
         }
 
         /// <summary>
-        /// 
+        /// Gets the block id at a coordinate in relative coordinates to <see cref="column00"/>.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <returns></returns>
+        /// <param name="x">The x component of the coordinate to get the block id at.</param>
+        /// <param name="y">The y component of the coordinate to get the block id at.</param>
+        /// <param name="z">The z component of the coordinate to get the block id at.</param>
+        /// <returns>The block id.</returns>
         public ushort GetBlock(int x, int y, int z)
         {
             x += originX;
             y += originY;
             z += originZ;
-            IChunkColumn column = GetColumn(column00, column10, column01, column11, x, y);
+            var column = GetColumn(column00, column10, column01, column11, x, y);
+            Debug.Assert(column != null, nameof(column) + " != null");
             x %= Chunk.CHUNKSIZE_X;
             y %= Chunk.CHUNKSIZE_Y;
             return column.GetBlock(x, y, z);

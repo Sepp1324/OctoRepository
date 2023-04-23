@@ -1,35 +1,40 @@
 ﻿using OctoAwesome.Basics.Definitions.Materials;
-using OctoAwesome.Basics.Properties;
 using OctoAwesome.Definitions;
-using OctoAwesome.Information;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for birch wood logs.
+    /// </summary>
     public sealed class BirchWoodBlockDefinition : BlockDefinition
     {
-        public override string Name => Languages.OctoBasics.BirchWood;
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.BirchWood;
 
+        /// <inheritdoc />
         public override string Icon => "birch_wood_top";
 
+        /// <inheritdoc />
         public override bool HasMetaData => true;
 
-        public override string[] Textures{ get; } = new[] {
-                "birch_wood_top",
-                "birch_wood_side" };
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "birch_wood_top",
+                                                      "birch_wood_side" };
 
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BirchWoodBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this wood block definition.</param>
         public BirchWoodBlockDefinition(WoodMaterialDefinition material)
         {
             Material = material;
         }
 
+        /// <inheritdoc />
         public override int GetTextureIndex(Wall wall, ILocalChunkCache manager,
             int x, int y, int z)
         {
@@ -96,6 +101,7 @@ namespace OctoAwesome.Basics.Definitions.Blocks
             return -1;
         }
 
+        /// <inheritdoc />
         public override int GetTextureRotation(Wall wall, ILocalChunkCache manager, int x, int y, int z)
         {
             OrientationFlags orientation = (OrientationFlags)manager.GetBlockMeta(x, y, z);

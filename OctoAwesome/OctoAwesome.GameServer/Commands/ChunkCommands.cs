@@ -1,17 +1,22 @@
-﻿using CommandManagementSystem.Attributes;
+﻿
 using OctoAwesome.Network;
+using OctoAwesome.Serialization;
+
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
-    public class ChunkCommands
+    /// <summary>
+    /// Contains commands for chunk loading and saving remotely.
+    /// </summary>
+    public static class ChunkCommands
     {
-        [Command((ushort)OfficialCommand.LoadColumn)]
+        /// <summary>
+        /// Loads column data from <see cref="CommandParameter"/> given location.
+        /// </summary>
+        /// <param name="parameter">The <see cref="CommandParameter"/> given location to load the column at.</param>
+        /// <returns>The loaded chunk column data.</returns>
         public static byte[] LoadColumn(CommandParameter parameter)
         {
             Guid guid;
@@ -25,27 +30,20 @@ namespace OctoAwesome.GameServer.Commands
                 planetId = reader.ReadInt32();
                 index2 = new Index2(reader.ReadInt32(), reader.ReadInt32());
             }
-                      
+
             var column = TypeContainer.Get<SimulationManager>().LoadColumn(planetId, index2);
 
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new BinaryWriter(memoryStream))
-            {
-                column.Serialize(writer);
-                return memoryStream.ToArray();
-            }
+            return Serializer.Serialize(column);
         }
 
-        [Command((ushort)OfficialCommand.SaveColumn)]
-        public static byte[] SaveColumn(CommandParameter parameter)
+        /// <summary>
+        /// Saves chunk column data received from <see cref="CommandParameter"/>.
+        /// </summary>
+        /// <param name="parameter">The <see cref="CommandParameter"/> containing the chunk column data.</param>
+        /// <returns><c>null</c></returns>
+        public static byte[]? SaveColumn(CommandParameter parameter)
         {
-            var chunkColumn = new ChunkColumn(null);
-
-            using (var memoryStream = new MemoryStream(parameter.Data))
-            using (var reader = new BinaryReader(memoryStream))
-            {
-                chunkColumn.Deserialize(reader);
-            }
+            var chunkColumn = Serializer.Deserialize<ChunkColumn>(parameter.Data);
 
             TypeContainer.Get<SimulationManager>().Simulation.ResourceManager.SaveChunkColumn(chunkColumn);
 

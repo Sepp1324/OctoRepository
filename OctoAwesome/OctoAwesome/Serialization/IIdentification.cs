@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Serialization
 {
+    /// <summary>
+    /// Interface for objects identifiable by a <see cref="Guid"/>.
+    /// </summary>
     public interface IIdentification
     {
-        Guid Id { get;  }
+        /// <summary>
+        /// Gets the identifying <see cref="Guid"/> for this instance.
+        /// </summary>
+        Guid Id { get; }
     }
 }

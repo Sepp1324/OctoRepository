@@ -1,51 +1,77 @@
 ﻿using engenious;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using OctoAwesome.Extension;
 
 namespace OctoAwesome.Definitions.Items
 {
     /// <summary>
-    /// Basisklasse für alle nicht-lebendigen Spielelemente (für lebendige Spielelemente siehe <see cref="Entity"/>
+    /// Base class for items.
     /// </summary>
     public abstract class Item : IItem, IInventoryable, ISerializable
     {
-        /// <summary>
-        /// Der Zustand des Items
-        /// </summary>
+        /// <inheritdoc />
         public int Condition { get; set; }
 
-        /// <summary>
-        /// Die Koordinate, an der das Item in der Welt herumliegt, falls es nicht im Inventar ist
-        /// </summary>
+        /// <inheritdoc />
         public Coordinate? Position { get; set; }
 
-        public IItemDefinition Definition { get; protected set; }
+        /// <inheritdoc />
+        public IItemDefinition Definition
+        {
+            get => NullabilityHelper.NotNullAssert(definition, $"{nameof(Definition)} was not initialized!");
+            private set => definition = NullabilityHelper.NotNullAssert(value, $"{nameof(Definition)} cannot be initialized with null!");
+        }
 
-        public IMaterialDefinition Material { get; protected set; }
+        /// <inheritdoc />
+        public IMaterialDefinition Material
+        {
+            get => NullabilityHelper.NotNullAssert(material, $"{nameof(Material)} was not initialized!");
+            private set => material = NullabilityHelper.NotNullAssert(value, $"{nameof(Material)} cannot be initialized with null!");
+        }
 
+        /// <inheritdoc />
         public virtual int VolumePerUnit => 1;
 
+        /// <inheritdoc />
         public virtual int StackLimit => 1;
 
+        /// <inheritdoc />
+        public int Density => Material.Density;
+
         private readonly IDefinitionManager definitionManager;
+        private IItemDefinition? definition;
+        private IMaterialDefinition? material;
 
         /// <summary>
-        /// Erzeugt eine neue Instanz der Klasse Item.
+        /// Initializes a new instance of the <see cref="Item"/> class.
         /// </summary>
-        public Item(IItemDefinition definition, IMaterialDefinition material)
+        /// <remarks>This is only to be used for deserialization.</remarks>
+        protected Item()
         {
-            Definition = definition;
-            Material = material;
             Condition = 99;
 
             definitionManager = TypeContainer.Get<IDefinitionManager>();
         }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Item"/> class.
+        /// </summary>
+        /// <param name="definition">The item definition.</param>
+        /// <param name="material">The material definition.</param>
+        public Item(IItemDefinition definition, IMaterialDefinition material)
+            : this()
+        {
+            Definition = definition;
+            Material = material;
+        }
 
+        /// <inheritdoc />
         public virtual int Hit(IMaterialDefinition material, BlockInfo blockInfo, decimal volumeRemaining, int volumePerHit)
         {
-            //TODO Condition Berechnung
+            //TODO Condition calculation
 
             if (!Definition.CanMineMaterial(material))
                 return 0;
@@ -63,6 +89,7 @@ namespace OctoAwesome.Definitions.Items
             return ((Material.Hardness - material.Hardness) * 3 + 100) * volumePerHit / 100;
         }
 
+        /// <inheritdoc />
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.Write(Definition.GetType().FullName!);
@@ -71,6 +98,10 @@ namespace OctoAwesome.Definitions.Items
             InternalSerialize(writer);
         }
 
+        /// <summary>
+        /// Serializes <see cref="Condition"/>, and <see cref="Position"/> to a binary writer.
+        /// </summary>
+        /// <param name="writer">The binary writer to serialize to.</param>
         protected void InternalSerialize(BinaryWriter writer)
         {
             writer.Write(Condition);
@@ -87,22 +118,24 @@ namespace OctoAwesome.Definitions.Items
             }
         }
 
-        public static void Serialize(BinaryWriter writer, Item item)
-        {
-            writer.Write(item.Definition.GetType().FullName!);
-            writer.Write(item.Material.GetType().FullName!);
-
-            item.InternalSerialize(writer);
-        }
-
+        /// <inheritdoc />
         public virtual void Deserialize(BinaryReader reader)
         {
-            Definition = definitionManager.GetDefinitionByTypeName<IItemDefinition>(reader.ReadString());
-            Material = definitionManager.GetDefinitionByTypeName<IMaterialDefinition>(reader.ReadString());
+            var definition = definitionManager.GetDefinitionByTypeName<IItemDefinition>(reader.ReadString());
+            var material = definitionManager.GetDefinitionByTypeName<IMaterialDefinition>(reader.ReadString());
+
+            Debug.Assert(definition != null, nameof(this.definition) + " != null");
+            Debug.Assert(material != null, nameof(this.material) + " != null");
+            Definition = definition;
+            Material = material;
 
             InternalDeserialize(reader);
         }
 
+        /// <summary>
+        /// Deserializes <see cref="Condition"/>, and <see cref="Position"/> from a binary reader.
+        /// </summary>
+        /// <param name="reader">The binary reader to deserialize from.</param>
         protected void InternalDeserialize(BinaryReader reader)
         {
             Condition = reader.ReadInt32();
@@ -121,15 +154,34 @@ namespace OctoAwesome.Definitions.Items
             }
         }
 
+        /// <summary>
+        /// Deserializes an item of a given type from a binary reader.
+        /// </summary>
+        /// <param name="reader">The binary reader to deserialize the item from.</param>
+        /// <param name="itemType">The type of the item to deserialize.</param>
+        /// <param name="manager">
+        /// The definition manager to use for resolving <see cref="Material"/> and <see cref="Definition"/>.
+        /// </param>
+        /// <returns>The deserialized item.</returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown when the created type is not of type <see cref="Item"/>.
+        /// </exception>
         public static Item Deserialize(BinaryReader reader, Type itemType, IDefinitionManager manager)
         {
             var definition = manager.GetDefinitionByTypeName<IItemDefinition>(reader.ReadString());
             var material = manager.GetDefinitionByTypeName<IMaterialDefinition>(reader.ReadString());
 
-            var item = Activator.CreateInstance(itemType, new object[] {definition, material } ) as Item;
+            if (Activator.CreateInstance(itemType, definition, material) is not Item item)
+                throw new ArgumentException($"Type of {itemType.Name} is not of type Item.");
 
             item.InternalDeserialize(reader);
             return item;
         }
+
+        /// <summary>
+        /// Get Definition with which the item was constructed
+        /// </summary>
+        /// <returns>The current <see cref="IItemDefinition"/></returns>
+        public IDefinition GetDefinition() => Definition;
     }
 }

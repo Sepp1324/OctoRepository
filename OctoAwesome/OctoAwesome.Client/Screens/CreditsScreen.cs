@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using OctoAwesome.Client.Components;
 using engenious.UI;
-using engenious;
 using OctoAwesome.Client.Crew;
 using engenious.UI.Controls;
+using OctoAwesome.Client.UI.Components;
+using OctoAwesome.UI.Screens;
 
 namespace OctoAwesome.Client.Screens
 {
-    class CreditsScreen : BaseScreen
+    internal class CreditsScreen : BaseScreen
     {
-        public CreditsScreen(ScreenComponent manager) : base(manager)
+        public CreditsScreen(AssetComponent assets)
+            : base(assets)
         {
             Padding = new Border(0, 0, 0, 0);
 
@@ -20,16 +19,17 @@ namespace OctoAwesome.Client.Screens
 
             SetDefaultBackground();
 
-            List<CrewMember> crew = CrewMember.getCrew(manager);
+            List<CrewMember> crew = CrewMember.GetCrew(assets);
 
-            ScrollContainer crewScroll = new ScrollContainer(manager)
+            ScrollContainer crewScroll = new ScrollContainer()
             {
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Margin = new Border(10, 10, 10, 10),
                 CanFocus = false
             };
 
-            StackPanel crewList = new StackPanel(manager) {
+            StackPanel crewList = new StackPanel()
+            {
                 MinWidth = 700,
                 Padding = new Border(10, 0, 10, 0),
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -37,20 +37,20 @@ namespace OctoAwesome.Client.Screens
             };
             crewScroll.Content = crewList;
 
-            foreach(CrewMember member in crew)
+            foreach (CrewMember member in crew)
             {
-                Button memberButton = new TextButton(manager, member.Username);
+                Button memberButton = new TextButton(member.Username);
                 memberButton.HorizontalAlignment = HorizontalAlignment.Stretch;
                 memberButton.Margin = new Border(5, 5, 5, 5);
 
                 memberButton.LeftMouseClick += (s, e) =>
                 {
-                    manager.NavigateToScreen(new CrewMemberScreen(manager, member));
+                    ScreenManager.NavigateToScreen(new CrewMemberScreen(assets, member));
                 };
 
                 crewList.Controls.Add(memberButton);
             }
-            
+
 
             Controls.Add(crewScroll);
         }

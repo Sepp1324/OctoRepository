@@ -14,6 +14,7 @@ namespace OctoAwesome.Client.Components
             : base(game)
         {
             player = game.Player;
+            Frustum = new BoundingFrustum(Matrix.Identity);
         }
 
         public override void Initialize()
@@ -26,15 +27,12 @@ namespace OctoAwesome.Client.Components
         public void RecreateProjection()
         {
             Projection = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f, 10000f);
+                MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, NearPlaneDistance, FarPlaneDistance);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (!Enabled)
-                return;
-
-            if (player == null || player.CurrentEntity == null)
+            if (!player.Enabled)
                 return;
 
             Entity entity = player.CurrentEntity;
@@ -72,7 +70,7 @@ namespace OctoAwesome.Client.Components
                     position.Position.LocalPosition.Y,
                     0f),
                 new Vector3(
-                    (float)Math.Cos(head.Angle), 
+                    (float)Math.Cos(head.Angle),
                     (float)Math.Sin(-head.Angle), 0f));
 
             float centerX = GraphicsDevice.Viewport.Width / 2;
@@ -83,7 +81,7 @@ namespace OctoAwesome.Client.Components
             Vector3 direction = farPoint - nearPoint;
             direction.Normalize();
             PickRay = new Ray(nearPoint, direction);
-            Frustum = new BoundingFrustum(Projection*View);
+            Frustum.Matrix = Projection * View;
         }
 
         public Index3 CameraChunk { get; private set; }

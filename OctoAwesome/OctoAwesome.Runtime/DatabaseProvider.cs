@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Runtime
 {
+    /// <summary>
+    /// Provider for databases.
+    /// </summary>
     public sealed class DatabaseProvider : IDisposable, IDatabaseProvider
     {
         private readonly string rootPath;
@@ -21,7 +22,12 @@ namespace OctoAwesome.Runtime
         private readonly Dictionary<(Type Type, Guid Universe), Database.Database> universeDatabaseRegister;
         private readonly Dictionary<Type, Database.Database> globalDatabaseRegister;
 
-        public DatabaseProvider(string rootPath, ILogger logger)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatabaseProvider"/> class.
+        /// </summary>
+        /// <param name="rootPath">The root path to load databases from.</param>
+        /// <param name="logger">The logger to log messages to.</param>
+        public DatabaseProvider(string rootPath, ILogger? logger)
         {
             this.rootPath = rootPath;
             this.logger = (logger ?? NullLogger.Default).As(nameof(DatabaseProvider));
@@ -33,14 +39,15 @@ namespace OctoAwesome.Runtime
             globalDatabaseRegister = new Dictionary<Type, Database.Database>();
         }
 
+        /// <inheritdoc />
         public Database<T> GetDatabase<T>(bool fixedValueSize) where T : ITag, new()
         {
             Type key = typeof(T);
             using (globalSemaphore.Wait())
             {
-                if (globalDatabaseRegister.TryGetValue(key, out Database.Database database))
+                if (globalDatabaseRegister.TryGetValue(key, out var database))
                 {
-                    return database as Database<T>;
+                    return (Database<T>)database;
                 }
                 else
                 {
@@ -62,14 +69,15 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <inheritdoc />
         public Database<T> GetDatabase<T>(Guid universeGuid, bool fixedValueSize) where T : ITag, new()
         {
             (Type, Guid universeGuid) key = (typeof(T), universeGuid);
             using (universeSemaphore.Wait())
             {
-                if (universeDatabaseRegister.TryGetValue(key, out Database.Database database))
+                if (universeDatabaseRegister.TryGetValue(key, out var database))
                 {
-                    return database as Database<T>;
+                    return (Database<T>)database;
                 }
                 else
                 {
@@ -91,14 +99,15 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <inheritdoc />
         public Database<T> GetDatabase<T>(Guid universeGuid, int planetId, bool fixedValueSize) where T : ITag, new()
         {
             (Type, Guid universeGuid, int planetId) key = (typeof(T), universeGuid, planetId);
             using (planetSemaphore.Wait())
             {
-                if (planetDatabaseRegister.TryGetValue(key, out Database.Database database))
+                if (planetDatabaseRegister.TryGetValue(key, out var database))
                 {
-                    return database as Database<T>;
+                    return (Database<T>)database;
                 }
                 else
                 {
@@ -119,6 +128,7 @@ namespace OctoAwesome.Runtime
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             foreach (KeyValuePair<(Type Type, Guid Universe, int PlanetId), Database.Database> database in planetDatabaseRegister)
@@ -139,7 +149,7 @@ namespace OctoAwesome.Runtime
             globalSemaphore.Dispose();
         }
 
-        private Database<T> CreateDatabase<T>(string path, bool fixedValueSize, string typeName = null) where T : ITag, new()
+        private Database<T> CreateDatabase<T>(string path, bool fixedValueSize, string? typeName = null) where T : ITag, new()
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -160,7 +170,7 @@ namespace OctoAwesome.Runtime
 
                 do
                 {
-                    path = Path.Combine(path, typeName!);
+                    path = Path.Combine(path, typeName);
                     type = type.GenericTypeArguments.First();
 
                     if (type.GenericTypeArguments.Length == 0)
@@ -171,7 +181,7 @@ namespace OctoAwesome.Runtime
 
                     typeName = type.Name;
 
-                } while (type != default);
+                } while (true);
 
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);

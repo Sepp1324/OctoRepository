@@ -1,33 +1,32 @@
-﻿using OctoAwesome.Basics.Properties;
-using OctoAwesome.Information;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using OctoAwesome.Definitions;
+﻿using OctoAwesome.Definitions;
 using OctoAwesome.Basics.Definitions.Materials;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for plank blocks.
+    /// </summary>
     public sealed class PlankBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Plank; }
-        }
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.Plank;
 
-        public override string Icon
-        {
-            get { return "planks_red"; }
-        }
+        /// <inheritdoc />
+        public override string Icon => "planks";
 
-        public override bool HasMetaData { get { return true; } }
+        /// <inheritdoc />
+        public override bool HasMetaData => true;
 
-        public override string[] Textures { get; } = new[] {"planks_red"};
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "planks" };
 
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlankBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this wood plank block definition.</param>
         public PlankBlockDefinition(WoodMaterialDefinition material)
         {
             Material = material;

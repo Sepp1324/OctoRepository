@@ -1,62 +1,84 @@
 ﻿using engenious;
 using OctoAwesome.Basics.EntityComponents;
-using OctoAwesome.Basics.EntityComponents.UIComponents;
 using OctoAwesome.EntityComponents;
+using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
+using OctoAwesome.UI.Components;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Extension;
 
 namespace OctoAwesome.Basics.FunctionBlocks
 {
+    /// <summary>
+    /// Chest entity implementation.
+    /// </summary>
     [SerializationId(1, 3)]
-    public class Chest : FunctionalBlock
+    public class Chest : Entity
     {
-        internal InventoryComponent inventoryComponent;
-        internal AnimationComponent animationComponent;
-        internal TransferUIComponent transferUiComponent;
+        internal AnimationComponent AnimationComponent
+        {
+            get => NullabilityHelper.NotNullAssert(animationComponent, $"{nameof(AnimationComponent)} was not initialized!");
+            set => animationComponent = NullabilityHelper.NotNullAssert(value, $"{nameof(AnimationComponent)} cannot be initialized with null!");
+        }
 
+        private IDisposable? changedSub;
+        private AnimationComponent? animationComponent;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chest"/> class.
+        /// </summary>
+        /// <remarks>Only used for deserialization.</remarks>
         public Chest()
         {
 
         }
 
+        /// <inheritdoc />
         public override void Deserialize(BinaryReader reader)
         {
             base.Deserialize(reader);
             //Doesnt get called
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chest"/> class.
+        /// </summary>
+        /// <param name="position">The position the chest is at.</param>
         public Chest(Coordinate position)
         {
-
-            Components.AddComponent(new PositionComponent()
+            Components.AddIfTypeNotExists(new PositionComponent()
             {
                 Position = position
             });
-
-
-            //Simulation.Entities.FirstOrDefault(x=>x.)
         }
 
-        internal void TransferUiComponentClosed(object sender, engenious.UI.NavigationEventArgs e)
+
+        private void UiComponentChanged((ComponentContainer, string, bool show) e)
         {
-            animationComponent.AnimationSpeed = -60f;
+            if (e.show)
+                return;
+            AnimationComponent.AnimationSpeed = -60f;
+            changedSub?.Dispose();
+
         }
 
+        /// <inheritdoc />
         protected override void OnInteract(GameTime gameTime, Entity entity)
         {
-            if (entity is Player p)
+            if (TryGetComponent<UiKeyComponent>(out  var ownUiKeyComponent) 
+                && entity.TryGetComponent<TransferComponent>(out var transferComponent) 
+                && entity.TryGetComponent<UiMappingComponent>(out var lastUiMappingComponent)
+                && this.TryGetComponent<InventoryComponent>(out var inventoryComponent))
             {
-                transferUiComponent.Show(p);
-                animationComponent.CurrentTime = 0f;
-                animationComponent.AnimationSpeed = 60f;
-            }
-            else
-            {
+                transferComponent.Targets.Clear();
+                transferComponent.Targets.Add(inventoryComponent);
+                lastUiMappingComponent.Changed.OnNext((entity, ownUiKeyComponent.PrimaryKey, true));
+                changedSub?.Dispose();
+                changedSub = lastUiMappingComponent.Changed.Subscribe(UiComponentChanged);
+
+                AnimationComponent.CurrentTime = 0f;
+                AnimationComponent.AnimationSpeed = 60f;
             }
         }
     }

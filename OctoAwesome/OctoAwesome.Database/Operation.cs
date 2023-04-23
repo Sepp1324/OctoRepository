@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
+    /// <summary>
+    /// Enumeration of operation access types.
+    /// </summary>
     [Flags]
     public enum Operation
     {
@@ -18,6 +19,6 @@ namespace OctoAwesome.Database
         /// <summary>
         /// Indicates that lock is exclusive for this operation
         /// </summary>
-        Exclusive = 1 << 2 
+        Exclusive = 1 << 2
     }
 }

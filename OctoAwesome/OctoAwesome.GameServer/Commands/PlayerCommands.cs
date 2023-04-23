@@ -1,22 +1,18 @@
-﻿using CommandManagementSystem.Attributes;
-using engenious;
+﻿using engenious;
 using OctoAwesome.EntityComponents;
 using OctoAwesome.Network;
-using OctoAwesome.Network.ServerNotifications;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
+    /// <summary>
+    /// Contains remote player commands.
+    /// </summary>
     public static class PlayerCommands
     {
         private static readonly ConcurrentRelay<Notification> simulationChannel;
@@ -35,14 +31,18 @@ namespace OctoAwesome.GameServer.Commands
             networkChannelSub = updateHub.AddSource(networkChannel, DefaultChannels.Network);
         }
 
-        [Command((ushort)OfficialCommand.Whoami)]
+        /// <summary>
+        /// Manifests player received from <see cref="CommandParameter"/>.
+        /// </summary>
+        /// <param name="parameter">The <see cref="CommandParameter"/> containing the player data.</param>
+        /// <returns><c>null</c></returns>
         public static byte[] Whoami(CommandParameter parameter)
         {
             var updateHub = TypeContainer.Get<IUpdateHub>();
             string playername = Encoding.UTF8.GetString(parameter.Data);
             var player = new Player();
             var entityNotificationPool = TypeContainer.Get<IPool<EntityNotification>>();
-            var entityNotification = entityNotificationPool.Get();
+            var entityNotification = entityNotificationPool.Rent();
             entityNotification.Entity = player;
             entityNotification.Type = EntityNotification.ActionType.Add;
 
@@ -51,12 +51,12 @@ namespace OctoAwesome.GameServer.Commands
 
 
             var remotePlayer = new RemoteEntity(player);
-            remotePlayer.Components.AddComponent(new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 78), new Vector3(0, 0, 0)) });
-            remotePlayer.Components.AddComponent(new RenderComponent() { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 }, true);
-            remotePlayer.Components.AddComponent(new BodyComponent() { Mass = 50f, Height = 2f, Radius = 1.5f });
+            remotePlayer.Components.AddIfTypeNotExists(new PositionComponent() { Position = new Coordinate(0, new Index3(0, 0, 78), new Vector3(0, 0, 0)) });
+            remotePlayer.Components.AddIfNotExists(new RenderComponent() { Name = "Wauzi", ModelName = "dog", TextureName = "texdog", BaseZRotation = -90 });
+            remotePlayer.Components.AddIfTypeNotExists(new BodyComponent() { Mass = 50f, Height = 2f, Radius = 1.5f });
 
             Console.WriteLine(playername);
-            entityNotification = entityNotificationPool.Get();
+            entityNotification = entityNotificationPool.Rent();
             entityNotification.Entity = remotePlayer;
             entityNotification.Type = EntityNotification.ActionType.Add;
 

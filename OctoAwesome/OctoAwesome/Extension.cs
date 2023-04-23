@@ -1,5 +1,7 @@
 ﻿using engenious;
 using OctoAwesome.EntityComponents;
+using OctoAwesome.Extension;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,26 +10,32 @@ using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
-    //TODO:Eventuell auslagern
+    //TODO: Perhaps outsource
 
-    public sealed class Extension : IExtension
+    /// <summary>
+    /// The base extension implementation.
+    /// </summary>
+    internal sealed class CoreExtension : IExtension
     {
+        /// <inheritdoc />
         public string Description => "OctoAwesome";
 
+        /// <inheritdoc />
         public string Name => "OctoAwesome";
 
-        public void Register(IExtensionLoader extensionLoader, ITypeContainer typeContainer)
+        /// <inheritdoc />
+        public void Register(OctoAwesome.Extension.ExtensionService extensionLoader)
         {
-            extensionLoader.RegisterEntityExtender<Player>((player) =>
+            extensionLoader.Extend<Player>((player) =>
             {
-                var p = (Player)player;
-                p.Components.AddComponent(new ControllableComponent());
-                p.Components.AddComponent(new HeadComponent() { Offset = new Vector3(0, 0, 3.2f) });
-                p.Components.AddComponent(new InventoryComponent());
-                p.Components.AddComponent(new ToolBarComponent());
+                player.Components.AddIfTypeNotExists(new ControllableComponent());
+                player.Components.AddIfTypeNotExists(new HeadComponent() { Offset = new Vector3(0, 0, 3.2f) });
+                player.Components.AddIfTypeNotExists(new InventoryComponent(true, 120));
+                player.Components.AddIfTypeNotExists(new ToolBarComponent());
             });
         }
 
+        /// <inheritdoc />
         public void Register(ITypeContainer typeContainer) { }
     }
 }

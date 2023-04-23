@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome
+﻿namespace OctoAwesome
 {
+    /// <summary>
+    /// Enumeration of application client types.
+    /// </summary>
     public enum ClientType
     {
+        /// <summary>
+        /// The application is a desktop client.
+        /// </summary>
         DesktopClient,
+        /// <summary>
+        /// The application is a game server.
+        /// </summary>
         GameServer
     }
 }

@@ -1,25 +1,29 @@
 ﻿
 using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Materials
 {
+    /// <summary>
+    /// Material definition for clay.
+    /// </summary>
     public class ClayMaterialDefinition : ISolidMaterialDefinition
     {
+        /// <inheritdoc />
         public int Hardness => 3;
 
+        /// <inheritdoc />
         public int Density => 2000;
 
+        /// <inheritdoc />
         public int Granularity => 25;
 
+        /// <inheritdoc />
         public int FractureToughness => 60;
 
-        public string Name => "Clay";
+        /// <inheritdoc />
+        public string DisplayName => "Clay";
 
+        /// <inheritdoc />
         public string Icon => string.Empty;
     }
 }

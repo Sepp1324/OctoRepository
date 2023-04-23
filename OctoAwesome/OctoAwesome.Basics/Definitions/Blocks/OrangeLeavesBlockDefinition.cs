@@ -1,27 +1,29 @@
-﻿using System;
-using System.Drawing;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for orange leave blocks.
+    /// </summary>
     public sealed class OrangeLeavesBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.OrangeLeaves; }
-        }
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.OrangeLeaves;
 
-        public override string Icon
-        {
-            get { return "leaves_orange"; }
-        }
+        /// <inheritdoc />
+        public override string Icon => "leaves_orange";
 
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "leaves_orange" };
 
-        public override string[] Textures { get; } = new[] {"leaves_orange"};
-
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrangeLeavesBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this leave block definition.</param>
         public OrangeLeavesBlockDefinition(LeaveMaterialDefinition material)
         {
             Material = material;

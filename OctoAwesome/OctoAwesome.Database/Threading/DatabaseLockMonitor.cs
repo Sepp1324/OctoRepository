@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace OctoAwesome.Database.Threading
 {
+    /// <summary>
+    /// Helper class for managing locks on databases.
+    /// </summary>
     public sealed class DatabaseLockMonitor : IDisposable
     {
         private int readLocks;
@@ -19,6 +20,9 @@ namespace OctoAwesome.Database.Threading
         private readonly ManualResetEvent exclusiveEvent;
         private readonly SemaphoreSlim semaphoreSlim;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatabaseLockMonitor"/>.
+        /// </summary>
         public DatabaseLockMonitor()
         {
             readEvent = new ManualResetEvent(true);
@@ -33,6 +37,13 @@ namespace OctoAwesome.Database.Threading
             exclusiveLocks = false;
         }
 
+        /// <summary>
+        /// Checks whether <see cref="Operation"/> flag types can be executed in the current lock state.
+        /// </summary>
+        /// <param name="operation">The <see cref="Operation"/> flag types to check for.</param>
+        /// <returns>
+        /// A value indicating whether <see cref="Operation"/> flag types can be executed in the current lock state.
+        /// </returns>
         public bool CheckLock(Operation operation)
         {
             semaphoreSlim.Wait();
@@ -55,6 +66,10 @@ namespace OctoAwesome.Database.Threading
             return true;
         }
 
+        /// <summary>
+        /// Wait till <see cref="Operation"/> flag types lock can be acquired.
+        /// </summary>
+        /// <param name="operation">The <see cref="Operation"/> flag types lock to wait for to be acquirable.</param>
         public void Wait(Operation operation)
         {
             //if (operation.HasFlag(Operation.Exclusive))
@@ -111,7 +126,11 @@ namespace OctoAwesome.Database.Threading
             }
         }
 
-        public void SetLock(Operation operation)
+        /// <summary>
+        /// Acquire a lock for a specified <see cref="Operation"/> flag types.
+        /// </summary>
+        /// <param name="operation">The <see cref="Operation"/> flag types to acquire the lock for.</param>
+        public void AcquireLock(Operation operation)
         {
             semaphoreSlim.Wait();
             try
@@ -143,6 +162,10 @@ namespace OctoAwesome.Database.Threading
             }
         }
 
+        /// <summary>
+        /// Release a lock for a specified <see cref="Operation"/> flag types.
+        /// </summary>
+        /// <param name="operation">The <see cref="Operation"/> flag types to release the lock for.</param>
         public void ReleaseLock(Operation operation)
         {
             semaphoreSlim.Wait();
@@ -169,6 +192,7 @@ namespace OctoAwesome.Database.Threading
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             readEvent.Dispose();

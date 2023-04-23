@@ -1,36 +1,29 @@
 ﻿using OctoAwesome.Definitions;
 using OctoAwesome.Definitions.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Items
 {
+    /// <summary>
+    /// Axe item definition.
+    /// </summary>
     public class AxeDefinition : IItemDefinition
-    {    
+    {
+        /// <inheritdoc />
+        public string DisplayName => "Axe";
 
-        public string Name { get; }
-        public string Icon { get; }
+        /// <inheritdoc />
+        public string Icon => "axe_iron";
 
-        public AxeDefinition()
-        {
-            Name = "Axe";
-            Icon = "axe_iron";
-        }
-
+        /// <inheritdoc />
         public bool CanMineMaterial(IMaterialDefinition material)
+            => material is ISolidMaterialDefinition;
+
+        /// <inheritdoc />
+        public Item? Create(IMaterialDefinition material)
         {
-            if (material is ISolidMaterialDefinition solid)
-            {
-                return true;
-            }
-
-            return false;
+            if (material is IFoodMaterialDefinition)
+                return null;
+            return new Axe(this, material);
         }
-
-        public Item Create(IMaterialDefinition material) 
-            => new Axe(this, material);
     }
 }

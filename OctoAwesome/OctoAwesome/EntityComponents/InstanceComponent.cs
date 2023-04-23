@@ -1,47 +1,74 @@
-﻿using OctoAwesome.Components;
-using OctoAwesome.Notifications;
+﻿using OctoAwesome.Notifications;
 using OctoAwesome.Serialization;
 using System;
 using System.IO;
+using OctoAwesome.Extension;
 
 namespace OctoAwesome.EntityComponents
 {
     /// <summary>
-    /// Base Class for all Entity Components.
+    /// Base Class for components that need to interact with a component container.
     /// </summary>
-    public abstract class InstanceComponent<T> : Component, INotificationSubject<SerializableNotification> 
-        where T: ComponentContainer
+    /// <typeparam name="T">The component container that needs to be interacted with.</typeparam>
+    public abstract class InstanceComponent<T> : Component, INotificationSubject<SerializableNotification>
+        where T : ComponentContainer
     {
-        /// <summary>
-        /// Reference to the Entity.
-        /// </summary>
-        public T Instance { get; private set; }
+        private T? instance;
 
+        /// <summary>
+        /// Gets the reference to the <see cref="ComponentContainer{TComponent}"/>.
+        /// </summary>
+        public T Instance
+        {
+            get => NullabilityHelper.NotNullAssert(instance, $"{nameof(Instance)} was not initialized!");
+            private set => instance = NullabilityHelper.NotNullAssert(value, $"{nameof(Instance)} cannot be initialized with null!");
+        }
+
+        /// <summary>
+        /// Gets the unique identifier for the <see cref="Instance"/>.
+        /// </summary>
         public Guid InstanceId { get; set; }
 
+        /// <summary>
+        /// Gets the instance type id.
+        /// </summary>
+        /// <seealso cref="SerializationIdTypeProvider"/>
         public ulong InstanceTypeId { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstanceComponent{T}"/> class.
+        /// </summary>
         public InstanceComponent()
         {
         }
 
-        public void SetInstance(T instance)
+        /// <summary>
+        /// Sets the component container instance (<see cref="Instance"/>).
+        /// </summary>
+        /// <param name="value">The component container instance to set to.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <c>null</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown if the <see cref="Instance"/> was already set.</exception>
+        public void SetInstance(T value)
         {
-            if (instance is not null && Instance?.Id == instance.Id)
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            if (instance?.Id == value.Id)
                 return;
 
-            var type = instance.GetType();
-            if (Instance != null)
+            var type = value.GetType();
+            if (instance != null)
             {
                 throw new NotSupportedException("Can not change the " + type.Name);
             }
-            
+
             InstanceTypeId = type.SerializationId();
-            InstanceId = instance.Id;
-            Instance = instance;
+            InstanceId = value.Id;
+            Instance = value;
             OnSetInstance();
         }
 
+        /// <inheritdoc />
         public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);
@@ -49,6 +76,7 @@ namespace OctoAwesome.EntityComponents
             writer.Write(InstanceTypeId);
         }
 
+        /// <inheritdoc />
         public override void Deserialize(BinaryReader reader)
         {
             base.Deserialize(reader);
@@ -57,18 +85,25 @@ namespace OctoAwesome.EntityComponents
             InstanceTypeId = reader.ReadUInt64();
         }
 
+        /// <summary>
+        /// Gets called when the instance was set to a new value.
+        /// </summary>
         protected virtual void OnSetInstance()
         {
 
         }
+
+        /// <inheritdoc />
         public virtual void OnNotification(SerializableNotification notification)
         {
 
         }
+
+        /// <inheritdoc />
         public virtual void Push(SerializableNotification notification)
         {
-            Instance?.OnNotification(notification);
+            instance?.OnNotification(notification);
         }
-        
+
     }
 }

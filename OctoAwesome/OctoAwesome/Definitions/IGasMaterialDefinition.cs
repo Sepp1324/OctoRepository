@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctoAwesome.Definitions
+﻿namespace OctoAwesome.Definitions
 {
+    /// <summary>
+    /// Represents the physical properties of gaseous a block/item/...
+    /// </summary>
     public interface IGasMaterialDefinition : IMaterialDefinition
     {
     }

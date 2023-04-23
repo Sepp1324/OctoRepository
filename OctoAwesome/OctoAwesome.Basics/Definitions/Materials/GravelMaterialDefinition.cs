@@ -1,24 +1,28 @@
 ﻿using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Materials
 {
+    /// <summary>
+    /// Material definition for gravel.
+    /// </summary>
     public class GravelMaterialDefinition : ISolidMaterialDefinition
     {
+        /// <inheritdoc />
         public int Hardness => 60;
 
+        /// <inheritdoc />
         public int Density => 1440;
 
+        /// <inheritdoc />
         public int Granularity => 70;
 
+        /// <inheritdoc />
         public int FractureToughness => 0;
 
-        public string Name => "Gravel";
+        /// <inheritdoc />
+        public string DisplayName => "Gravel";
 
+        /// <inheritdoc />
         public string Icon => string.Empty;
     }
 }

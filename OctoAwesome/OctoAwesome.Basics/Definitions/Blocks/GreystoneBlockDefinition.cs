@@ -1,27 +1,29 @@
-﻿using System;
-using System.Drawing;
-using OctoAwesome.Basics.Definitions.Materials;
+﻿using OctoAwesome.Basics.Definitions.Materials;
 using OctoAwesome.Definitions;
 
 namespace OctoAwesome.Basics.Definitions.Blocks
 {
+    /// <summary>
+    /// Block definition for grey-stone blocks.
+    /// </summary>
     public sealed class GreystoneBlockDefinition : BlockDefinition
     {
-        public override string Name
-        {
-            get { return Languages.OctoBasics.Greystone; }
-        }
+        /// <inheritdoc />
+        public override string DisplayName => Languages.OctoBasics.Greystone;
 
-        public override string Icon
-        {
-            get { return "greystone"; }
-        }
+        /// <inheritdoc />
+        public override string Icon => "greystone";
 
+        /// <inheritdoc />
+        public override string[] Textures { get; } = { "greystone" };
 
-        public override string[] Textures { get; } = new[] { "greystone" };
-
+        /// <inheritdoc />
         public override IMaterialDefinition Material { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GreystoneBlockDefinition"/> class.
+        /// </summary>
+        /// <param name="material">The material definition for this stone block definition.</param>
         public GreystoneBlockDefinition(StoneMaterialDefinition material)
         {
             Material = material;

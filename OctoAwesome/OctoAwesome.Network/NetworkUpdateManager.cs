@@ -1,5 +1,4 @@
 ﻿using OctoAwesome.Logging;
-using OctoAwesome.Network;
 using OctoAwesome.Network.Pooling;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
@@ -9,6 +8,9 @@ using System;
 
 namespace OctoAwesome.Network
 {
+    /// <summary>
+    /// Manages updates received and to be sent over network.
+    /// </summary>
     public class NetworkUpdateManager : IDisposable
     {
         private readonly Client client;
@@ -25,6 +27,11 @@ namespace OctoAwesome.Network
         private readonly Relay<Notification> simulation;
         private readonly Relay<Notification> chunk;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NetworkUpdateManager"/> class.
+        /// </summary>
+        /// <param name="client">The network client that is connected to the remote server.</param>
+        /// <param name="updateHub">The update hub to receive updates from.</param>
         public NetworkUpdateManager(Client client, IUpdateHub updateHub)
         {
             this.client = client;
@@ -38,7 +45,7 @@ namespace OctoAwesome.Network
             simulation = new Relay<Notification>();
             chunk = new Relay<Notification>();
 
-            hubSubscription 
+            hubSubscription
                 = updateHub
                 .ListenOn(DefaultChannels.Network)
                 .Subscribe(OnNext, error => logger.Error(error.Message, error));
@@ -47,9 +54,13 @@ namespace OctoAwesome.Network
             chunkSource = updateHub.AddSource(chunk, DefaultChannels.Chunk);
 
             clientSubscription = client.Packages.Subscribe(package => OnNext(package), err => OnError(err));
-            
+
         }
 
+        /// <summary>
+        /// Gets called when a new package is received.
+        /// </summary>
+        /// <param name="package">The received package.</param>
         public void OnNext(Package package)
         {
             switch (package.OfficialCommand)
@@ -84,6 +95,10 @@ namespace OctoAwesome.Network
 
         }
 
+        /// <summary>
+        /// Gets called when a new notification is received.
+        /// </summary>
+        /// <param name="value">The received notification.</param>
         public void OnNext(Notification value)
         {
             ushort command;
@@ -101,25 +116,30 @@ namespace OctoAwesome.Network
                 default:
                     return;
             }
-            var package = packagePool.Get();
+            var package = packagePool.Rent();
             package.Command = command;
             package.Payload = payload;
-            client.SendPackageAndRelase(package);
+            client.SendPackageAndRelease(package);
         }
 
+        /// <summary>
+        /// Gets called when an error occured while receiving.
+        /// </summary>
+        /// <param name="error">The error that occured.</param>
         public void OnError(Exception error)
         {
             logger.Error(error.Message, error);
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
-            hubSubscription?.Dispose();
-            simulationSource?.Dispose();
-            chunkSource?.Dispose();
-            chunk?.Dispose();
-            simulation?.Dispose();
-            clientSubscription?.Dispose();
+            hubSubscription.Dispose();
+            simulationSource.Dispose();
+            chunkSource.Dispose();
+            chunk.Dispose();
+            simulation.Dispose();
+            clientSubscription.Dispose();
         }
     }
 }

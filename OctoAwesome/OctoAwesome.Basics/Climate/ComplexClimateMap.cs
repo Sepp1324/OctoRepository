@@ -1,24 +1,31 @@
-﻿using OctoAwesome.Noise;
+﻿using OctoAwesome.Basics.Noise;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics.Climate
 {
+    /// <summary>
+    /// Climate map for <see cref="ComplexPlanet"/> implementation.
+    /// </summary>
     public class ComplexClimateMap : IClimateMap
     {
+        /// <inheritdoc />
         public IPlanet Planet => planet;
 
-        ComplexPlanet planet;
-        private INoise tempFluctuationGenerator;
+        private readonly ComplexPlanet planet;
+        private readonly INoise tempFluctuationGenerator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComplexClimateMap"/> class.
+        /// </summary>
+        /// <param name="planet">The planet the complex climate map is for.</param>
         public ComplexClimateMap(ComplexPlanet planet)
         {
             this.planet = planet;
-            tempFluctuationGenerator = new SimplexNoiseGenerator(planet.Seed - 1, 1f / 64, 1f / 64) { Octaves = 3};
+            tempFluctuationGenerator = new SimplexNoiseGenerator(planet.Seed - 1, 1f / 64, 1f / 64) { Octaves = 3 };
         }
 
+        /// <inheritdoc />
         public float GetTemperature(Index3 blockIndex)
         {
             int equator = (Planet.Size.Y * Chunk.CHUNKSIZE_Y) / 2;
@@ -31,10 +38,11 @@ namespace OctoAwesome.Basics.Climate
             float temperature = tempFluctuation + equatorTemperature + temperatureDifference * (float)Math.Sin((Math.PI / 2) * distance / equator);  //equatorTemperature + distance * temperatureDifference / equator;
             float height = (float)(blockIndex.Z - planet.BiomeGenerator.SeaLevel) / (Planet.Size.Z * Chunk.CHUNKSIZE_Z - planet.BiomeGenerator.SeaLevel);
             height = Math.Max(height, 0);
-            height = height*height;
+            height = height * height;
             return temperature - height * temperatureDecreasePerBlock;
         }
 
+        /// <inheritdoc />
         public int GetPrecipitation(Index3 blockIndex)
         {
             int maxPrecipitation = 100;

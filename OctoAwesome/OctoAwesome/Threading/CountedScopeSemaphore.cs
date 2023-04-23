@@ -1,43 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace OctoAwesome.Threading
 {
+    /// <summary>
+    /// Semaphore for shared recursive scoped locking.
+    /// </summary>
+    /// <remarks>
+    /// <list type="bullet">
+    ///   <item>Can be exclusively locked.</item>
+    ///   <item>Non exclusive locks can be locked recursively.</item>
+    ///   <item>Multiple non exclusive locks are allowed on different threads.</item>
+    /// </list>
+    /// </remarks>
     public class CountedScopeSemaphore : IDisposable
     {
-        private readonly ManualResetEventSlim superLock;
+        private readonly ManualResetEventSlim exclusiveLock;
         private readonly ManualResetEventSlim mainLock;
 
         private readonly object lockObject;
         private readonly object countLockObject;
         private int counter;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CountedScopeSemaphore"/> class.
+        /// </summary>
         public CountedScopeSemaphore()
         {
             mainLock = new ManualResetEventSlim(true);
-            superLock = new ManualResetEventSlim(true);
+            exclusiveLock = new ManualResetEventSlim(true);
             lockObject = new object();
             countLockObject = new object();
         }
 
-        public SuperScope EnterExclusivScope()
+        /// <summary>
+        /// Enters an exclusive lock scope, which can be left by disposing the returned instance.
+        /// </summary>
+        /// <returns>An exclusive scope wrapper used for leaving the scope.</returns>
+        /// <remarks>using(#.EnterExclusiveScope())...</remarks>
+        public ExclusiveScope EnterExclusiveScope()
         {
             lock (lockObject)
             {
                 mainLock.Wait();
-                superLock.Wait();
-                superLock.Reset();
+                exclusiveLock.Wait();
+                exclusiveLock.Reset();
             }
-            return new SuperScope(this);
+            return new ExclusiveScope(this);
         }
 
+        /// <summary>
+        /// Enters a counted lock scope, which can be left by disposing the returned instance.
+        /// </summary>
+        /// <returns>A counting scope wrapper used for leaving the scope.</returns>
+        /// <remarks>using(#.EnterCountScope())...</remarks>
         public CountScope EnterCountScope()
         {
             lock (lockObject)
             {
-                superLock.Wait();
+                exclusiveLock.Wait();
                 lock (countLockObject)
                 {
                     counter++;
@@ -46,13 +67,13 @@ namespace OctoAwesome.Threading
                 }
             }
 
-
             return new CountScope(this);
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
-            superLock.Dispose();
+            exclusiveLock.Dispose();
             mainLock.Dispose();
         }
 
@@ -66,66 +87,117 @@ namespace OctoAwesome.Threading
             }
         }
 
-        private void LeaveSuperScope()
+        private void LeaveExclusiveScope()
         {
-            superLock.Set();
+            exclusiveLock.Set();
         }
 
+        /// <summary>
+        /// Counted scope wrapper struct for leaving counted scope of <see cref="CountedScopeSemaphore"/> on dispose.
+        /// </summary>
         public readonly struct CountScope : IDisposable, IEquatable<CountScope>
         {
-            public static CountScope Empty => new CountScope(null);
-
             private readonly CountedScopeSemaphore internalSemaphore;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ExclusiveScope"/> struct.
+            /// </summary>
+            /// <param name="countingSemaphore">The locked semaphore to leave counted scope on dispose.</param>
             public CountScope(CountedScopeSemaphore countingSemaphore)
             {
                 internalSemaphore = countingSemaphore;
             }
 
+            /// <summary>
+            /// Leaves the counted scope of the <see cref="CountedScopeSemaphore"/>.
+            /// </summary>
             public void Dispose()
             {
-                internalSemaphore?.LeaveMainScope();
+                internalSemaphore.LeaveMainScope();
             }
 
-            public override bool Equals(object obj)
+            /// <inheritdoc />
+            public override bool Equals(object? obj)
                 => obj is CountScope scope
                   && Equals(scope);
+
+            /// <inheritdoc />
             public bool Equals(CountScope other)
                 => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
 
+            /// <inheritdoc />
             public override int GetHashCode()
                 => 37286538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
 
+            /// <summary>
+            /// Compares whether two <see cref="CountScope"/> structs are equal.
+            /// </summary>
+            /// <param name="left">The first scope to compare to.</param>
+            /// <param name="right">The second scope to compare with.</param>
+            /// <returns>A value indicating whether the two scopes are equal.</returns>
             public static bool operator ==(CountScope left, CountScope right)
                 => left.Equals(right);
+
+            /// <summary>
+            /// Compares whether two <see cref="CountScope"/> structs are unequal.
+            /// </summary>
+            /// <param name="left">The first scope to compare to.</param>
+            /// <param name="right">The second scope to compare with.</param>
+            /// <returns>A value indicating whether the two scopes are unequal.</returns>
             public static bool operator !=(CountScope left, CountScope right)
                 => !(left == right);
         }
 
-        public readonly struct SuperScope : IDisposable, IEquatable<SuperScope>
+        /// <summary>
+        /// Exclusive scope wrapper struct for leaving exclusive scope of <see cref="CountedScopeSemaphore"/> on dispose.
+        /// </summary>
+        public readonly struct ExclusiveScope : IDisposable, IEquatable<ExclusiveScope>
         {
-            public static SuperScope Empty => new SuperScope(null);
-
             private readonly CountedScopeSemaphore internalSemaphore;
 
-            public SuperScope(CountedScopeSemaphore semaphore)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ExclusiveScope"/> struct.
+            /// </summary>
+            /// <param name="semaphore">The locked semaphore to leave exclusive scope on dispose.</param>
+            public ExclusiveScope(CountedScopeSemaphore semaphore)
             {
                 internalSemaphore = semaphore;
             }
 
+            /// <summary>
+            /// Leaves the exclusive scope of the <see cref="CountedScopeSemaphore"/>.
+            /// </summary>
             public void Dispose()
             {
-                internalSemaphore?.LeaveSuperScope();
+                internalSemaphore?.LeaveExclusiveScope();
             }
 
-            public override bool Equals(object obj) => obj is SuperScope scope && Equals(scope);
-            public bool Equals(SuperScope other)
+            /// <inheritdoc />
+            public override bool Equals(object? obj) => obj is ExclusiveScope scope && Equals(scope);
+
+            /// <inheritdoc />
+            public bool Equals(ExclusiveScope other)
                 => EqualityComparer<CountedScopeSemaphore>.Default.Equals(internalSemaphore, other.internalSemaphore);
+
+            /// <inheritdoc />
             public override int GetHashCode()
                 => 37296538 + EqualityComparer<CountedScopeSemaphore>.Default.GetHashCode(internalSemaphore);
 
-            public static bool operator ==(SuperScope left, SuperScope right) => left.Equals(right);
-            public static bool operator !=(SuperScope left, SuperScope right) => !(left == right);
+            /// <summary>
+            /// Compares whether two <see cref="ExclusiveScope"/> structs are equal.
+            /// </summary>
+            /// <param name="left">The first scope to compare to.</param>
+            /// <param name="right">The second scope to compare with.</param>
+            /// <returns>A value indicating whether the two scopes are equal.</returns>
+            public static bool operator ==(ExclusiveScope left, ExclusiveScope right) => left.Equals(right);
+
+            /// <summary>
+            /// Compares whether two <see cref="ExclusiveScope"/> structs are unequal.
+            /// </summary>
+            /// <param name="left">The first scope to compare to.</param>
+            /// <param name="right">The second scope to compare with.</param>
+            /// <returns>A value indicating whether the two scopes are unequal.</returns>
+            public static bool operator !=(ExclusiveScope left, ExclusiveScope right) => !(left == right);
         }
     }
 }

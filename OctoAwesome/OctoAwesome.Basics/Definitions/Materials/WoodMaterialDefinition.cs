@@ -1,24 +1,28 @@
 ﻿using OctoAwesome.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Definitions.Materials
 {
+    /// <summary>
+    /// Material definition for wood.
+    /// </summary>
     public class WoodMaterialDefinition : ISolidMaterialDefinition
     {
+        /// <inheritdoc />
         public int Hardness => 35;
 
+        /// <inheritdoc />
         public int Density => 680;
 
+        /// <inheritdoc />
         public int Granularity => 1;
 
+        /// <inheritdoc />
         public int FractureToughness => 200;
 
-        public string Name => "Wood";
+        /// <inheritdoc />
+        public string DisplayName => "Wood";
 
+        /// <inheritdoc />
         public string Icon => string.Empty;
     }
 }

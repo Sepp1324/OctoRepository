@@ -1,40 +1,69 @@
-﻿using CommandManagementSystem;
-using OctoAwesome.Logging;
+﻿using OctoAwesome.Logging;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using System;
 using System.Net;
-using System.Threading.Tasks;
 using OctoAwesome.Rx;
-
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using OctoAwesome.GameServer.Commands;
+using System.Linq;
 
 namespace OctoAwesome.GameServer
 {
+    /// <summary>
+    /// Handler for server connection and simulation.
+    /// </summary>
     public class ServerHandler
     {
-        public SimulationManager SimulationManager { get; set; }
-        public IUpdateHub UpdateHub { get; private set; }
+        /// <summary>
+        /// Gets the simulation manager.
+        /// </summary>
+        public SimulationManager SimulationManager { get; }
+
+        /// <summary>
+        /// Gets the update hub.
+        /// </summary>
+        public IUpdateHub UpdateHub { get; }
 
         private readonly ILogger logger;
         private readonly Server server;
-        private readonly DefaultCommandManager<ushort, CommandParameter, byte[]> defaultManager;
+        public readonly ConcurrentDictionary<ushort, CommandFunc> CommandFunctions;
 
+        public delegate byte[]? CommandFunc(CommandParameter parameter);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerHandler"/> class.
+        /// </summary>
         public ServerHandler()
         {
             logger = (TypeContainer.GetOrNull<ILogger>() ?? NullLogger.Default).As(typeof(ServerHandler));
 
-            TypeContainer.Register<UpdateHub>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<IUpdateHub, UpdateHub>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<Server>(InstanceBehaviour.Singleton);
-            TypeContainer.Register<SimulationManager>(InstanceBehaviour.Singleton);
+            TypeContainer.Register<UpdateHub>(InstanceBehavior.Singleton);
+            TypeContainer.Register<IUpdateHub, UpdateHub>(InstanceBehavior.Singleton);
+            TypeContainer.Register<Server>(InstanceBehavior.Singleton);
+            TypeContainer.Register<SimulationManager>(InstanceBehavior.Singleton);
 
             SimulationManager = TypeContainer.Get<SimulationManager>();
             UpdateHub = TypeContainer.Get<IUpdateHub>();
             server = TypeContainer.Get<Server>();
 
-            defaultManager = new DefaultCommandManager<ushort, CommandParameter, byte[]>(typeof(ServerHandler).Namespace + ".Commands");
+            CommandFunctions = new ConcurrentDictionary<ushort, CommandFunc>(new List<(OfficialCommand, CommandFunc)>
+                {
+                    (OfficialCommand.Whoami, PlayerCommands.Whoami),
+                    (OfficialCommand.EntityNotification, NotificationCommands.EntityNotification),
+                    (OfficialCommand.ChunkNotification, NotificationCommands.ChunkNotification),
+                    (OfficialCommand.GetUniverse, GeneralCommands.GetUniverse),
+                    (OfficialCommand.GetPlanet, GeneralCommands.GetPlanet),
+                    (OfficialCommand.SaveColumn, ChunkCommands.SaveColumn),
+                    (OfficialCommand.LoadColumn, ChunkCommands.LoadColumn),
+                }
+                .ToDictionary(x => (ushort)x.Item1, x => x.Item2));
         }
 
+        /// <summary>
+        /// Start the game server simulation and connection.
+        /// </summary>
         public void Start()
         {
             SimulationManager.Start(); //Temp
@@ -42,12 +71,16 @@ namespace OctoAwesome.GameServer
             server.OnClientConnected += ServerOnClientConnected;
         }
 
-        private void ServerOnClientConnected(object sender, ConnectedClient e)
+        private void ServerOnClientConnected(object? sender, ConnectedClient e)
         {
             logger.Debug("Hurra ein neuer Spieler");
-            e.ServerSubscription = e.Packages.Subscribe(e => OnNext(e), ex => logger.Error(ex.Message, ex));
+            e.ServerSubscription = e.Packages.Subscribe(OnNext, ex => logger.Error(ex.Message, ex));
         }
 
+        /// <summary>
+        /// Gets called when a new package is received.
+        /// </summary>
+        /// <param name="value">The received package.</param>
         public void OnNext(Package value)
         {
             if (value.Command == 0 && value.Payload.Length == 0)
@@ -58,11 +91,11 @@ namespace OctoAwesome.GameServer
             logger.Trace("Received a new Package with ID: " + value.UId);
             try
             {
-                value.Payload = defaultManager.Dispatch(value.Command, new CommandParameter(value.BaseClient.Id, value.Payload));
+                value.Payload = CommandFunctions[value.Command](new CommandParameter(value.BaseClient.Id, value.Payload));
             }
             catch (Exception ex)
             {
-                logger.Error("Dispatch failed in Command " + value.OfficialCommand, ex);
+                logger.Error($"Dispatch failed in Command {value.OfficialCommand}\r\n{ex}", ex);
                 return;
             }
 
@@ -74,7 +107,7 @@ namespace OctoAwesome.GameServer
                 return;
             }
 
-            value.BaseClient.SendPackageAsync(value);
+            _ = value.BaseClient.SendPackageAsync(value);
         }
     }
 }

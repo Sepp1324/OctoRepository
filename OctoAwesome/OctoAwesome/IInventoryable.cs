@@ -1,25 +1,45 @@
 ﻿using OctoAwesome.Definitions;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome
 {
     /// <summary>
-    /// Basis-Interface für alle im Inventar-Verwaltbaren Definitionen.
+    /// Interface for all inventory manageable definitions.
     /// </summary>
     public interface IInventoryable
     {
         /// <summary>
-        /// Gibt das Volumen für eine Einheit an.
+        /// Gets the dm^3 per unit.
         /// </summary>
         int VolumePerUnit { get; }
+        
+        /// <summary>
+        /// Gets a value indicating how many item units can be stacked in one inventory slot.
+        /// </summary>
+        /// <remarks>Measured in block count not un multiples of <see cref="VolumePerUnit"/>!</remarks>
+        int StackLimit { get; }
 
         /// <summary>
-        /// Gibt an, wie viele dieses Items im Inventar in einem Slot gestapelt werden können (in Anzahl der Blöcke, nicht in Vielfachen der <see cref="VolumePerUnit"/>!).
+        /// Gets a value indicating how dense the inventoryable is in g/dm^3
         /// </summary>
-        int StackLimit { get; }
+        int Density { get; }
+
+        /// <summary>
+        /// Gets a value indicating how much a unit weighs in g.
+        /// </summary>
+        int Weight => VolumePerUnit * Density;
+
+        /// <summary>
+        /// Gets the current material definition that was used to construct this inventoryable
+        /// </summary>
+        /// <returns></returns>
+        IMaterialDefinition Material { get; }
+
+        /// <summary>
+        /// Get the current definiton for this inventoryable, as all inventoryables should have one
+        /// </summary>
+        /// <returns></returns>
+        IDefinition GetDefinition();
     }
 }

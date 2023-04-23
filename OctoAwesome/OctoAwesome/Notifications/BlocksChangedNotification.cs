@@ -1,19 +1,33 @@
-﻿using NLog.Targets.Wrappers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OctoAwesome.Extension;
 
 namespace OctoAwesome.Notifications
 {
+    /// <summary>
+    /// Notification for changed blocks.
+    /// </summary>
     public sealed class BlocksChangedNotification : SerializableNotification, IChunkNotification
     {
-        public ICollection<BlockInfo> BlockInfos { get; set; }
+        private ICollection<BlockInfo>? blockInfos;
+
+        /// <summary>
+        /// Gets or sets the collection of block info of the changed blocks.
+        /// </summary>
+        public ICollection<BlockInfo> BlockInfos
+        {
+            get => NullabilityHelper.NotNullAssert(blockInfos, $"{nameof(BlockInfos)} was not initialized!");
+            set => blockInfos = NullabilityHelper.NotNullAssert(value, $"{nameof(BlockInfos)} cannot be initialized with null!");
+        }
+
+        /// <inheritdoc />
         public Index3 ChunkPos { get; internal set; }
+
+        /// <inheritdoc />
         public int Planet { get; internal set; }
 
+        /// <inheritdoc />
         public override void Deserialize(BinaryReader reader)
         {
             if (reader.ReadByte() != (byte)BlockNotificationType.BlocksChanged)//Read type of the notification
@@ -38,8 +52,11 @@ namespace OctoAwesome.Notifications
                     block: reader.ReadUInt16(),
                     meta: reader.ReadInt32()));
             }
+
+            BlockInfos = list;
         }
 
+        /// <inheritdoc />
         public override void Serialize(BinaryWriter writer)
         {
             writer.Write((byte)BlockNotificationType.BlocksChanged); //indicate that this is a multi Block Notification
@@ -59,9 +76,10 @@ namespace OctoAwesome.Notifications
             }
         }
 
+        /// <inheritdoc />
         protected override void OnRelease()
         {
-            BlockInfos = default;
+            blockInfos = default;
             ChunkPos = default;
             Planet = default;
 

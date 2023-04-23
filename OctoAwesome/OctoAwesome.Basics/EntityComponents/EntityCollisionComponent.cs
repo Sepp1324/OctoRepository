@@ -1,12 +1,10 @@
 ﻿using OctoAwesome.EntityComponents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.EntityComponents
 {
+    /// <summary>
+    /// Component for entities that should have collision.
+    /// </summary>
     public sealed class EntityCollisionComponent : CollisionComponent
     {
     }

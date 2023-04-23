@@ -7,16 +7,24 @@ using System.IO;
 
 namespace OctoAwesome.Client.Cache
 {
-    internal partial class VerticesForChunk : IDisposable, ISerializable
+    internal class VerticesForChunk : IDisposable, ISerializable
     {
         public int Version { get; set; }
         public Index3 ChunkPosition { get; set; }
-        public VertexPositionNormalTextureLight[] Vertices { get; set; }
+        public VertexPositionNormalTextureLight[]? Vertices { get; set; }        
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VerticesForChunk" /> class.
+        /// </summary>
         public VerticesForChunk()
         {
 
         }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VerticesForChunk" /> class.
+        /// </summary>
         public VerticesForChunk(int version, Index3 chunkPosition, VertexPositionNormalTextureLight[] vertices)
         {
             Version = version;
@@ -48,6 +56,13 @@ namespace OctoAwesome.Client.Cache
             writer.Write(ChunkPosition.X);
             writer.Write(ChunkPosition.Y);
             writer.Write(ChunkPosition.Z);
+
+            if (Vertices == null)
+            {
+                writer.Write(0);
+                return;
+            }
+
             writer.Write(Vertices.Length);
             foreach (var vert in Vertices)
             {

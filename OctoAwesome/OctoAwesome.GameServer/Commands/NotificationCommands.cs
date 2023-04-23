@@ -1,17 +1,16 @@
-﻿using CommandManagementSystem.Attributes;
+﻿
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Pooling;
 using OctoAwesome.Rx;
 using OctoAwesome.Serialization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.GameServer.Commands
 {
+    /// <summary>
+    /// Contains remote notification commands.
+    /// </summary>
     public static class NotificationCommands
     {
         private static readonly IPool<EntityNotification> entityNotificationPool;
@@ -41,8 +40,12 @@ namespace OctoAwesome.GameServer.Commands
             chunkChannelSub = updateHub.AddSource(chunkChannel, DefaultChannels.Chunk);
         }
 
-        [Command((ushort)OfficialCommand.EntityNotification)]
-        public static byte[] EntityNotification(CommandParameter parameter)
+        /// <summary>
+        /// Manifests entity changes received from <see cref="CommandParameter"/>.
+        /// </summary>
+        /// <param name="parameter">The <see cref="CommandParameter"/> containing the entity notification data.</param>
+        /// <returns><c>null</c></returns>
+        public static byte[]? EntityNotification(CommandParameter parameter)
         {
             var entityNotification = Serializer.DeserializePoolElement(entityNotificationPool, parameter.Data);
             entityNotification.SenderId = parameter.ClientId;
@@ -54,8 +57,12 @@ namespace OctoAwesome.GameServer.Commands
             return null;
         }
 
-        [Command((ushort)OfficialCommand.ChunkNotification)]
-        public static byte[] ChunkNotification(CommandParameter parameter)
+        /// <summary>
+        /// Manifests block changes received from <see cref="CommandParameter"/>.
+        /// </summary>
+        /// <param name="parameter">The <see cref="CommandParameter"/> containing the chunk notification data.</param>
+        /// <returns><c>null</c></returns>
+        public static byte[]? ChunkNotification(CommandParameter parameter)
         {
             var notificationType = (BlockNotificationType)parameter.Data[0];
             Notification chunkNotification;

@@ -1,17 +1,40 @@
 ﻿using OctoAwesome.Threading;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace OctoAwesome.Caching
 {
+    /// <summary>
+    /// Base class for caching.
+    /// </summary>
     public abstract class Cache
     {
+        /// <summary>
+        /// Gets the type of the cached items.
+        /// </summary>
         public abstract Type TypeOfTValue { get; }
+        /// <summary>
+        /// Gets the type used as identifying keys.
+        /// </summary>
         public abstract Type TypeOfTKey { get; }
-        public bool IsStarted { get; internal set; }
+        /// <summary>
+        /// Gets a value indicating whether the caching was started.
+        /// </summary>
+        public bool IsStarted { get; private set; }
 
-        public abstract TValue Get<TKey, TValue>(TKey key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists);
+        /// <summary>
+        /// Gets a value from the cache.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the identifying key to get the value by.</typeparam>
+        /// <typeparam name="TValue">The type of the value to get the value of.</typeparam>
+        /// <param name="key">The identifying key to get the value by.</param>
+        /// <param name="loadingMode">The <see cref="LoadingMode"/> used.</param>
+        /// <returns>The value from the cache.</returns>
+        public abstract TValue? Get<TKey, TValue>(TKey key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
+            where TKey : notnull;
 
         internal virtual void Start()
         {
@@ -26,19 +49,49 @@ namespace OctoAwesome.Caching
         internal abstract void CollectGarbage();
     }
 
+    /// <summary>
+    /// Base class for caching of specific types.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the identifying key to get the cache value by.</typeparam>
+    /// <typeparam name="TValue">The type of the cached items.</typeparam>
     public abstract class Cache<TKey, TValue> : Cache
+        where TKey : notnull
     {
+        /// <inheritdoc />
         public override Type TypeOfTValue { get; } = typeof(TValue);
+
+        /// <inheritdoc />
         public override Type TypeOfTKey { get; } = typeof(TKey);
 
+        /// <summary>
+        /// Gets the time span to wait before an unused cache items gets garbage collected.
+        /// </summary>
         protected TimeSpan ClearTime { get; set; } = TimeSpan.FromMinutes(15);
+
+        /// <summary>
+        /// Semaphore for thread safety measures of cache.
+        /// </summary>
         protected readonly CountedScopeSemaphore lockSemaphore = new();
 
+        /// <summary>
+        /// Holds the actual cache items.
+        /// </summary>
         protected readonly Dictionary<TKey, CacheItem> valueCache = new();
 
-        protected virtual TValue GetBy(TKey key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
+        /// <summary>
+        /// Gets a value from the cache.
+        /// </summary>
+        /// <param name="key">The identifying key to get the value by.</param>
+        /// <param name="loadingMode">The <see cref="LoadingMode"/> used.</param>
+        /// <returns>The value from the cache.</returns>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when <paramref name="loadingMode"/> has an invalid value.
+        /// </exception>
+        protected virtual TValue? GetBy(TKey key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
         {
-            CacheItem cacheItem;
+            Debug.Assert(IsStarted, IsStarted + " == true");
+
+            CacheItem? cacheItem;
             bool result;
             using (var @lock = lockSemaphore.EnterCountScope())
             {
@@ -46,20 +99,22 @@ namespace OctoAwesome.Caching
             }
 
             if (result
-                && cacheItem.LastAccessTime.Add(ClearTime) < DateTime.Now)
+                && cacheItem!.LastAccessTime.Add(ClearTime) < DateTime.Now)
             {
                 cacheItem.LastAccessTime = DateTime.Now;
             }
 
             if (result)
-                return cacheItem.Value;
+                return cacheItem!.Value;
 
             if (loadingMode == LoadingMode.LoadIfNotExists)
             {
                 var loadedValue = Load(key);
+                if (loadedValue is null)
+                    return default;
                 cacheItem = new(loadedValue);
 
-                using var @lock = lockSemaphore.EnterExclusivScope();
+                using var @lock = lockSemaphore.EnterExclusiveScope();
                 valueCache[key] = cacheItem;
             }
             else if (loadingMode == LoadingMode.OnlyCached)
@@ -74,20 +129,31 @@ namespace OctoAwesome.Caching
             return cacheItem.Value;
         }
 
-        protected abstract TValue Load(TKey key);
+        /// <summary>
+        /// Loads a value from non-cache storage.
+        /// </summary>
+        /// <param name="key">The identifying key to load the value by.</param>
+        /// <returns>The loaded value.</returns>
+        protected abstract TValue? Load(TKey key);
 
+        /// <summary>
+        /// Add or update a cache item identified by the given key.
+        /// </summary>
+        /// <param name="key">The key to identify the cache item by.</param>
+        /// <param name="value">The new value to cache.</param>
+        /// <returns>The cache item created for the cached value.</returns>
         protected CacheItem AddOrUpdate(TKey key, TValue value)
         {
-            using var @lock = lockSemaphore.EnterExclusivScope();
+            using var @lock = lockSemaphore.EnterExclusiveScope();
             return valueCache[key] = new(value);
         }
-               
+
 
         internal override void CollectGarbage()
         {
             for (int i = valueCache.Count - 1; i >= 0; i--)
             {
-                using var @lock = lockSemaphore.EnterExclusivScope();
+                using var @lock = lockSemaphore.EnterExclusiveScope();
 
                 var element = valueCache.ElementAt(i);
                 if (element.Value.LastAccessTime.Add(ClearTime) < DateTime.Now)
@@ -95,44 +161,51 @@ namespace OctoAwesome.Caching
             }
         }
 
-        internal virtual bool Remove(TKey key, out TValue value)
+        internal virtual bool Remove(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            using var @lock = lockSemaphore.EnterExclusivScope();
+            using var @lock = lockSemaphore.EnterExclusiveScope();
 
             var returnValue
                 = valueCache
                 .Remove(key, out var cacheItem);
 
-            if (returnValue)
-            {
-                value = cacheItem!.Value;
-            }
-            else
-            {
-                value = default;
-            }
+            value = returnValue ? cacheItem!.Value : default;
 
             return returnValue;
         }
 
-        public override TV Get<TK, TV>(TK key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
+        /// <inheritdoc />
+        public override TV? Get<TK, TV>(TK key, LoadingMode loadingMode = LoadingMode.LoadIfNotExists)
+            where TV : default
         {
-            return GenericCaster<TV, TValue>
+            return GenericCaster<TValue, TV>
                 .Cast(
-                    GetBy(GenericCaster<TKey, TK>.Cast(key), loadingMode)
+                    GetBy(GenericCaster<TK, TKey>.Cast(key), loadingMode)
                 );
         }
 
+        /// <summary>
+        /// Cached item.
+        /// </summary>
         protected class CacheItem
         {
             internal DateTime LastAccessTime { get; set; }
             internal TValue Value { get; set; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CacheItem"/> class.
+            /// </summary>
+            /// <param name="value">The cached value.</param>
             public CacheItem(TValue value)
+                : this(DateTime.Now, value)
             {
-                LastAccessTime = DateTime.Now;
-                Value = value;
             }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CacheItem"/> class.
+            /// </summary>
+            /// <param name="lastAccessTime">The last time the item was accessed.</param>
+            /// <param name="value">The cached value.</param>
             public CacheItem(DateTime lastAccessTime, TValue value)
             {
                 LastAccessTime = lastAccessTime;

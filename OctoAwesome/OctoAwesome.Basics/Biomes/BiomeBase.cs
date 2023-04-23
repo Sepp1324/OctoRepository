@@ -1,31 +1,48 @@
-﻿using OctoAwesome.Noise;
+﻿using OctoAwesome.Basics.Noise;
 
-using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Basics.Biomes
 {
+    /// <summary>
+    /// Base class for biomes.
+    /// </summary>
     public abstract class BiomeBase : IBiome
     {
-        public IPlanet Planet { get; private set; }
+        /// <inheritdoc />
+        public IPlanet Planet { get; }
 
-        public List<IBiome> SubBiomes { get; protected set; }
+        /// <summary>
+        /// Gets a list of sub biomes this biome can consist of.
+        /// </summary>
+        public List<IBiome> SubBiomes { get; }
 
-        public INoise BiomeNoiseGenerator { get; protected set; }
+        /// <inheritdoc />
+        public INoise BiomeNoiseGenerator { get; }
 
-        public float MinValue { get; protected set; }
+        /// <inheritdoc />
+        public float MinValue { get; }
 
-        public float MaxValue { get; protected set; }
+        /// <inheritdoc />
+        public float MaxValue { get; }
 
-        public float ValueRangeOffset { get; protected set; }
+        /// <inheritdoc />
+        public float ValueRangeOffset { get; }
 
-        public float ValueRange { get; protected set; }
+        /// <inheritdoc />
+        public float ValueRange { get; }
 
-        public BiomeBase(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BiomeBase"/> class.
+        /// </summary>
+        /// <param name="planet">The planet the biome should be generated on.</param>
+        /// <param name="minValue">The minimum mapping value where the biome is generated.</param>
+        /// <param name="maxValue">The maximum mapping value where the biome is generated.</param>
+        /// <param name="valueRangeOffset">The value offset the biome height starts at.</param>
+        /// <param name="valueRange">The value range the biome height has.</param>
+        /// <param name="biomeNoiseGenerator">The noise generator used for generating the biome features.</param>
+        protected BiomeBase(IPlanet planet, float minValue, float maxValue, float valueRangeOffset, float valueRange, INoise biomeNoiseGenerator)
         {
             SubBiomes = new List<IBiome>();
             Planet = planet;
@@ -33,16 +50,17 @@ namespace OctoAwesome.Basics.Biomes
             MaxValue = maxValue;
             ValueRangeOffset = valueRangeOffset;
             ValueRange = valueRange;
+            BiomeNoiseGenerator = biomeNoiseGenerator;
         }
 
-        public virtual float[] GetHeightmap(Index2 chunkIndex, float[] heightmap)
+        /// <inheritdoc />
+        public virtual void FillHeightmap(Index2 chunkIndex, float[] heightmap)
         {
-
             chunkIndex = new Index2(chunkIndex.X * Chunk.CHUNKSIZE_X, chunkIndex.Y * Chunk.CHUNKSIZE_Y);
             float[] heights = ArrayPool<float>.Shared.Rent(Chunk.CHUNKSIZE_X * Chunk.CHUNKSIZE_Y);
             for (int i = 0; i < heights.Length; i++)
                 heights[i] = 0;
-            BiomeNoiseGenerator.GetTileableNoiseMap2D(chunkIndex.X, chunkIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y, heights);
+            BiomeNoiseGenerator.FillTileableNoiseMap2D(chunkIndex.X, chunkIndex.Y, Chunk.CHUNKSIZE_X, Chunk.CHUNKSIZE_Y, Planet.Size.X * Chunk.CHUNKSIZE_X, Planet.Size.Y * Chunk.CHUNKSIZE_Y, heights);
 
             for (int x = 0; x < Chunk.CHUNKSIZE_X; x++)
             {
@@ -52,7 +70,6 @@ namespace OctoAwesome.Basics.Biomes
                 }
             }
             ArrayPool<float>.Shared.Return(heights);
-            return heightmap;
         }
     }
 }

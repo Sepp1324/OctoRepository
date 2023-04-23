@@ -1,23 +1,30 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Network
 {
+    /// <summary>
+    /// OctoAwesome server implementation.
+    /// </summary>
     public class Server //TODO: Should use a base class or interface
     {
-        public event EventHandler<ConnectedClient> OnClientConnected;
+        /// <summary>
+        /// Called when a new client has connected to the server.
+        /// </summary>
+        public event EventHandler<ConnectedClient>? OnClientConnected;
 
         private readonly Socket ipv4Socket;
         private readonly Socket ipv6Socket;
         private readonly List<ConnectedClient> connectedClients;
         private readonly object lockObj;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Server"/> class.
+        /// </summary>
         public Server()
         {
             ipv4Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -27,6 +34,10 @@ namespace OctoAwesome.Network
 
         }
 
+        /// <summary>
+        /// Starts to listen for connections on the given endpoints.
+        /// </summary>
+        /// <param name="endpoints">The endpoints to listen on.</param>
         public void Start(params IPEndPoint[] endpoints)
         {
             connectedClients.Clear();
@@ -49,6 +60,11 @@ namespace OctoAwesome.Network
                 ipv6Socket.BeginAccept(OnClientAccepted, ipv6Socket);
             }
         }
+        /// <summary>
+        /// Starts listening on the specified host and port.
+        /// </summary>
+        /// <param name="host">The host to listen on.</param>
+        /// <param name="port">The port to listen on.</param>
         public void Start(string host, ushort port)
         {
             var address = Dns.GetHostAddresses(host).Where(
@@ -59,9 +75,10 @@ namespace OctoAwesome.Network
 
         private void OnClientAccepted(IAsyncResult ar)
         {
+            Debug.Assert(ar.AsyncState != null, "ar.AsyncState != null");
             var socket = (Socket)ar.AsyncState;
 
-            var tmpSocket = socket!.EndAccept(ar);
+            var tmpSocket = socket.EndAccept(ar);
 
             tmpSocket.NoDelay = true;
 

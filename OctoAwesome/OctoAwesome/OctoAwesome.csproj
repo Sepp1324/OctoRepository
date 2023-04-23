@@ -1,20 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Nullable>warnings</Nullable>
-
-    <DocumentationFile>..\bin\Release\OctoAwesome.xml</DocumentationFile>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
 
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\Debug\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\Release\</OutputPath>
-  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Properties\**" />
@@ -23,15 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotVariant" Version="0.3.1" />
-    <PackageReference Include="engenious" Version="0.5.1.4-alpha" />
-    <PackageReference Include="NLog" Version="4.7.7" />
-    <PackageReference Include="System.Interactive" Version="5.0.0" />
+    <PackageReference Include="dotVariant" Version="0.5.3" />
+    <PackageReference Include="engenious" Version="0.7.1-alpha" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
+    <PackageReference Include="NLog" Version="5.0.4" />
+    <PackageReference Include="System.Interactive" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OctoAwesome.Database\OctoAwesome.Database.csproj" />
   </ItemGroup>
-
   
 </Project>

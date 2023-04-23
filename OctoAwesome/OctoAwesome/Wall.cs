@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace OctoAwesome
+﻿namespace OctoAwesome
 {
+    /// <summary>
+    /// Enumeration of block wall sides.
+    /// </summary>
     public enum Wall
     {
         /// <summary>
@@ -27,6 +28,6 @@ namespace OctoAwesome
         /// <summary>
         /// South -Y
         /// </summary>
-        Front 
+        Front
     }
 }

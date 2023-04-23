@@ -1,23 +1,33 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Database
 {
+    /// <summary>
+    /// Helper class for defregmentation key store and value store files.
+    /// </summary>
+    /// <typeparam name="TTag">The type of the tag contained in the store files.</typeparam>
     public sealed class Defragmentation<TTag> where TTag : ITag, new()
     {
         private readonly FileInfo keyStoreFile;
         private readonly FileInfo valueStoreFile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Defragmentation{TTag}"/> class.
+        /// </summary>
+        /// <param name="keyStoreFile">The <see cref="FileInfo"/> to the key store file to defragment.</param>
+        /// <param name="valueStoreFile">The <see cref="FileInfo"/> to the value store file to defragment.</param>
         public Defragmentation(FileInfo keyStoreFile, FileInfo valueStoreFile)
         {
             this.keyStoreFile = keyStoreFile;
             this.valueStoreFile = valueStoreFile;
         }
 
+        /// <summary>
+        /// Defragments the key and value store files.
+        /// </summary>
         public void StartDefragmentation()
         {
             var newValueStoreFile = new FileInfo(Path.GetTempFileName());
@@ -32,6 +42,9 @@ namespace OctoAwesome.Database
             newValueStoreFile.MoveTo(valueStoreFile.FullName);
         }
 
+        /// <summary>
+        /// Recreates the key tag file from the value store.
+        /// </summary>
         public void RecreateKeyFile()
         {
             var keyBuffer = new byte[Key<TTag>.KEY_SIZE];
@@ -54,6 +67,29 @@ namespace OctoAwesome.Database
 
         private IEnumerable<Key<TTag>> DefragmentValues(FileInfo newValueStoreFile, byte[] keyBuffer)
         {
+            bool TryReadInt(FileStream currentValueStoreStream, out int length)
+            {
+                Span<byte> intBuffer = stackalloc byte[sizeof(int)];
+                if (currentValueStoreStream.Read(intBuffer) == 0)
+                {
+                    length = 0;
+                    return false;
+                }
+
+                length = BitConverter.ToInt32(intBuffer) - sizeof(int);
+                return true;
+            }
+
+            bool TryWriteValue(Key<TTag> key, FileStream currentValueStoreStream, FileStream newValueStoreStream)
+            {
+                Span<byte> buffer = stackalloc byte[key.ValueLength];
+                if (currentValueStoreStream.Read(buffer) == 0)
+                    return false;
+                newValueStoreStream.Write(keyBuffer, 0, keyBuffer.Length);
+                newValueStoreStream.Write(buffer);
+                return true;
+            }
+
             using (FileStream newValueStoreStream = newValueStoreFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             using (FileStream currentValueStoreStream = valueStoreFile.Open(FileMode.Open, FileAccess.Read, FileShare.None))
             {
@@ -65,21 +101,16 @@ namespace OctoAwesome.Database
 
                     if (key.IsEmpty)
                     {
-                        Span<byte> intBuffer = stackalloc byte[sizeof(int)];
-                        if (currentValueStoreStream.Read(intBuffer) == 0)
+                        if (!TryReadInt(currentValueStoreStream, out var length))
                             break;
-                        var length = BitConverter.ToInt32(intBuffer) - sizeof(int);
                         if (length < 0)
                             throw new DataMisalignedException();
                         currentValueStoreStream.Seek(length, SeekOrigin.Current);
                     }
                     else
                     {
-                        Span<byte> buffer = stackalloc byte[key.ValueLength];
-                        if (currentValueStoreStream.Read(buffer) == 0)
+                        if (!TryWriteValue(key, currentValueStoreStream, newValueStoreStream))
                             break;
-                        newValueStoreStream.Write(keyBuffer, 0, keyBuffer.Length);
-                        newValueStoreStream.Write(buffer);
                         yield return key;
                     }
                 } while (currentValueStoreStream.Position < currentValueStoreStream.Length);

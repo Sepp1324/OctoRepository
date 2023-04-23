@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OctoAwesome.Basics
 {
+    /// <summary>
+    /// Map populater to populate the world with trees.
+    /// </summary>
     public class TreePopulator : MapPopulator
     {
-        private IEnumerable<ITreeDefinition> treeDefinitions = null;
+        private IEnumerable<ITreeDefinition>? treeDefinitions = null;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TreePopulator"/> class.
+        /// </summary>
         public TreePopulator()
         {
             Order = 10;
         }
 
-        private static IChunkColumn getColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
+        private static IChunkColumn GetColumn(IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11, int x, int y)
         {
             IChunkColumn column;
             if (x >= Chunk.CHUNKSIZE_X && y >= Chunk.CHUNKSIZE_Y)
@@ -30,9 +35,10 @@ namespace OctoAwesome.Basics
             return column;
         }
 
+        /// <inheritdoc />
         public override void Populate(IResourceManager resourceManager, IPlanet planet, IChunkColumn column00, IChunkColumn column10, IChunkColumn column01, IChunkColumn column11)
         {
-            // Tree Definitions initialisieren
+            // Initialize tree definitions
             if (treeDefinitions == null)
             {
                 treeDefinitions = resourceManager.DefinitionManager.GetDefinitions<ITreeDefinition>().OrderBy(d => d.Order).ToArray();
@@ -44,7 +50,7 @@ namespace OctoAwesome.Basics
             Random random = new Random(planet.Seed + salt);
 
             Index3 sample = new Index3(column00.Index.X * Chunk.CHUNKSIZE_X, column00.Index.Y * Chunk.CHUNKSIZE_Y, column00.Heights[0, 0]);
-            
+
             foreach (var treeDefinition in treeDefinitions)
             {
                 int density = treeDefinition.GetDensity(planet, sample);

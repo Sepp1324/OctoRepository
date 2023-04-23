@@ -2,16 +2,16 @@
 using OctoAwesome.Components;
 using OctoAwesome.Definitions;
 using OctoAwesome.EntityComponents;
+using OctoAwesome.Extension;
 using OctoAwesome.Network;
 using OctoAwesome.Notifications;
 using OctoAwesome.Runtime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OctoAwesome.Client
 {
@@ -20,34 +20,75 @@ namespace OctoAwesome.Client
     /// </summary>
     public class ContainerResourceManager : IResourceManager, IDisposable
     {
-        public IDefinitionManager DefinitionManager => resourceManager.DefinitionManager;
-        public IUniverse CurrentUniverse => resourceManager.CurrentUniverse;
-        
-        public bool IsMultiplayer { get; private set; }
-        public Player CurrentPlayer => resourceManager.CurrentPlayer;
+        /// <inheritdoc />
+        public IDefinitionManager DefinitionManager => ResourceManager.DefinitionManager;
 
+        /// <inheritdoc />
+        public IUniverse? CurrentUniverse => ResourceManager.CurrentUniverse;
+
+        /// <summary>
+        /// Gets a value indicating whether the resource manager is in multiplayer mode.
+        /// </summary>
+        public bool IsMultiplayer { get; private set; }
+
+        /// <inheritdoc />
+        public Player CurrentPlayer => ResourceManager.CurrentPlayer;
+
+        /// <inheritdoc />
         public IUpdateHub UpdateHub { get; }
 
-        public ConcurrentDictionary<int, IPlanet> Planets => resourceManager.Planets;
+        /// <inheritdoc />
+        public ConcurrentDictionary<int, IPlanet> Planets
+        {
+            get
+            {
+                Debug.Assert(ResourceManager != null, nameof(ResourceManager) + " != null");
+                return ResourceManager.Planets;
+            }
+        }
 
-        private readonly IExtensionResolver extensionResolver;
+        private readonly OctoAwesome.Extension.ExtensionService extensionService;
+        private ResourceManager ResourceManager
+        {
+            get
+            {
+                Debug.Assert(resourceManager != null, nameof(resourceManager) + " != null");
+                return resourceManager;
+            }
+        }
+
         private readonly IDefinitionManager definitionManager;
         private readonly ISettings settings;
         private readonly ITypeContainer typeContainer;
 
-        private ResourceManager resourceManager;
-        private NetworkUpdateManager networkUpdateManager;
+        private ResourceManager? resourceManager;
+        private NetworkUpdateManager? networkUpdateManager;
 
-        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub, IExtensionResolver extensionResolver, IDefinitionManager definitionManager, ISettings settings)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContainerResourceManager"/> class.
+        /// </summary>
+        /// <param name="typeContainer">The type container to manage types.</param>
+        /// <param name="updateHub">The update hub to use for update notifications.</param>
+        /// <param name="extensionService">The extension service.</param>
+        /// <param name="definitionManager">The manager for definitions.</param>
+        /// <param name="settings">The application settings.</param>
+        public ContainerResourceManager(ITypeContainer typeContainer, IUpdateHub updateHub, OctoAwesome.Extension.ExtensionService extensionService, IDefinitionManager definitionManager, ISettings settings)
         {
             UpdateHub = updateHub;
             this.typeContainer = typeContainer;
-            this.extensionResolver = extensionResolver;
+            this.extensionService = extensionService;
             this.definitionManager = definitionManager;
             this.settings = settings;
-
         }
 
+        /// <summary>
+        /// Create the wrapped manager dependant on whether it is a multiplayer game or not.
+        /// </summary>
+        /// <param name="multiplayer">Whether a multiplayer resource manager should be initialized or not.</param>
+        /// <remarks>
+        /// Creates <see cref="DiskPersistenceManager"/> for single player;
+        /// otherwise <see cref="NetworkPersistenceManager"/>.
+        /// </remarks>
         public void CreateManager(bool multiplayer)
         {
             IPersistenceManager persistenceManager;
@@ -68,9 +109,8 @@ namespace OctoAwesome.Client
             {
                 var rawIpAddress = settings.Get<string>("server").Trim();
                 string host;
-                IPAddress iPAddress;
                 int port = -1;
-                if (rawIpAddress[0] == '[' || !IPAddress.TryParse(rawIpAddress, out iPAddress)) //IPV4 || IPV6 without port
+                if (rawIpAddress[0] == '[' || !IPAddress.TryParse(rawIpAddress, out var iPAddress)) //IPV4 || IPV6 without port
                 {
                     string stringIpAddress;
                     if (rawIpAddress[0] == '[') // IPV6 with Port
@@ -78,7 +118,7 @@ namespace OctoAwesome.Client
                         port = int.Parse(rawIpAddress.Split(':').Last());
                         stringIpAddress = rawIpAddress[1..rawIpAddress.IndexOf(']')];
                     }
-                    else if (rawIpAddress.Contains(':') && 
+                    else if (rawIpAddress.Contains(':') &&
                         IPAddress.TryParse(rawIpAddress.Substring(0, rawIpAddress.IndexOf(':')), out iPAddress)) //IPV4 with Port
                     {
                         port = int.Parse(rawIpAddress.Split(':').Last());
@@ -107,12 +147,11 @@ namespace OctoAwesome.Client
             }
             else
             {
-                persistenceManager = new DiskPersistenceManager(extensionResolver, settings, UpdateHub);
+                persistenceManager = new DiskPersistenceManager(extensionService, settings, UpdateHub);
             }
 
-            resourceManager = new ResourceManager(extensionResolver, definitionManager, settings, persistenceManager, UpdateHub);
+            resourceManager = new ResourceManager(extensionService, definitionManager, settings, persistenceManager, UpdateHub);
 
-            
 
             IsMultiplayer = multiplayer;
 
@@ -128,59 +167,67 @@ namespace OctoAwesome.Client
 
         }
 
-        public void DeleteUniverse(Guid id) => resourceManager.DeleteUniverse(id);
+        /// <inheritdoc />
+        public void DeleteUniverse(Guid id) => ResourceManager.DeleteUniverse(id);
 
-        public IPlanet GetPlanet(int planetId) => resourceManager.GetPlanet(planetId);
+        /// <inheritdoc />
+        public IPlanet GetPlanet(int planetId) => ResourceManager.GetPlanet(planetId);
 
-        public IUniverse GetUniverse() => resourceManager.GetUniverse();
 
-        public IUniverse[] ListUniverses() => resourceManager.ListUniverses();
+        /// <inheritdoc />
+        public IUniverse[] ListUniverses() => ResourceManager.ListUniverses();
 
-        public Player LoadPlayer(string playername) => resourceManager.LoadPlayer(playername);
+        /// <inheritdoc />
+        public Player LoadPlayer(string playerName) => ResourceManager.LoadPlayer(playerName);
 
-        public bool TryLoadUniverse(Guid universeId) => resourceManager.TryLoadUniverse(universeId);
+        /// <inheritdoc />
+        public bool TryLoadUniverse(Guid universeId) => ResourceManager.TryLoadUniverse(universeId);
 
-        public Guid NewUniverse(string name, int seed) => resourceManager.NewUniverse(name, seed);
+        /// <inheritdoc />
+        public Guid NewUniverse(string name, int seed) => ResourceManager.NewUniverse(name, seed);
 
+        /// <inheritdoc />
         public void SaveComponentContainer<TContainer, TComponent>(TContainer container)
            where TContainer : ComponentContainer<TComponent>
            where TComponent : IComponent
-            => resourceManager.SaveComponentContainer<TContainer, TComponent>(container);
+            => ResourceManager.SaveComponentContainer<TContainer, TComponent>(container);
 
 
-        public void SavePlayer(Player player) => resourceManager.SavePlayer(player);
+        /// <inheritdoc />
+        public void SavePlayer(Player player) => ResourceManager.SavePlayer(player);
 
-        public void UnloadUniverse() => resourceManager.UnloadUniverse();
-        public void SaveChunkColumn(IChunkColumn chunkColumn) => resourceManager.SaveChunkColumn(chunkColumn);
-        public IChunkColumn LoadChunkColumn(IPlanet planet, Index2 index) => resourceManager.LoadChunkColumn(planet, index);
+        /// <inheritdoc />
+        public void UnloadUniverse() => ResourceManager.UnloadUniverse();
 
+        /// <inheritdoc />
+        public void SaveChunkColumn(IChunkColumn chunkColumn) => ResourceManager.SaveChunkColumn(chunkColumn);
+
+        /// <inheritdoc />
+        public IChunkColumn? LoadChunkColumn(IPlanet planet, Index2 index) => ResourceManager.LoadChunkColumn(planet, index);
+
+        /// <inheritdoc />
         public void Dispose()
         {
             if (resourceManager is IDisposable disposable)
                 disposable.Dispose();
         }
 
-        public Entity LoadEntity(Guid entityId) 
-            => resourceManager.LoadEntity(entityId);
+        /// <inheritdoc />
+        public Entity? LoadEntity(Guid entityId)
+            => ResourceManager.LoadEntity(entityId);
 
-        public TContainer LoadComponentContainer<TContainer, TComponent>(Guid id)
+        /// <inheritdoc />
+        public TContainer? LoadComponentContainer<TContainer, TComponent>(Guid id)
            where TContainer : ComponentContainer<TComponent>
            where TComponent : IComponent
-            => resourceManager.LoadComponentContainer<TContainer, TComponent>(id);
+            => ResourceManager.LoadComponentContainer<TContainer, TComponent>(id);
 
-        public IEnumerable<Entity> LoadEntitiesWithComponent<T>() where T : IEntityComponent
-            => resourceManager.LoadEntitiesWithComponent<T>();
-        public IEnumerable<Guid> GetEntityIdsFromComponent<T>() where T : IEntityComponent
-            => resourceManager.GetEntityIdsFromComponent<T>();       
-       
-
-        public (Guid Id, T Component)[] GetEntityComponents<T>(Guid[] entityIds) where T : IEntityComponent, new()
-            => resourceManager.GetEntityComponents<T>(entityIds);
-
+        /// <inheritdoc />
         public (Guid Id, T Component)[] GetAllComponents<T>() where T : IComponent, new()
-            => resourceManager.GetAllComponents<T>();
+            => ResourceManager.GetAllComponents<T>();
 
+        /// <inheritdoc />
         public T GetComponent<T>(Guid id) where T : IComponent, new()
-            => resourceManager.GetComponent<T>(id);
+            => ResourceManager.GetComponent<T>(id);
     }
 }
